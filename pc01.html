@@ -367,14 +367,14 @@
       tipo = "Alias Acuña";
     } else if (txt.toLowerCase().includes("Titular Cristian Acuña")) {
       tipo = "Titular Acuña";
-    } else {
-      tipo = "Texto copiado";
     } else if (txt.toLowerCase().includes("SOMOS BET300VIP")) {
       tipo = "Infoo";
     } else if (txt.toLowerCase().includes("¡Saldo acreditado!")) {
       tipo = "Cargado!";
     } else if (txt.toLowerCase().includes("Para hacer el retiro")) {
       tipo = "Retiro";
+    } else {
+      tipo = "Texto copiado";
     }
     
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -504,6 +504,7 @@
 </script>
 </body>
 </html>
+
 
 
 
