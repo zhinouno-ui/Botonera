@@ -355,28 +355,28 @@
       tipo = "Mistery Box";
     } else if (txt.includes("ruleta-bet300vip.vercel.app")) {
       tipo = "Ruleta";
-    } else if (txt.toLowerCase().includes("ceramella")) {
-      tipo = "Copiado Ceramella";
-    } else if (txt.toLowerCase().includes("brubank")) {
-      tipo = "Copiado Brubank";
-    } else if (txt.toLowerCase().includes("uala")) {
-      tipo = "Copiado Ualá";
-    } else if (txt.toLowerCase().includes("prex")) {
-      tipo = "Copiado Prex";
-    } else if (txt.toLowerCase().includes("mercadopago")) {
-      tipo = "Copiado Mercado Pago";
-    } else if (txt.toLowerCase().includes("alias") || txt.toLowerCase().includes("cbu") || txt.toLowerCase().includes("cvu")) {
-      tipo = "Alias/CBU/CVU copiado";
-    } else if (txt.toLowerCase().includes("titular")) {
-      tipo = "Titular copiado";
-    } else if (txt.toLowerCase().includes("cargado")) {
-      tipo = "Info de cargado copiada";
-    } else if (txt.toLowerCase().includes("retiro")) {
-      tipo = "Info de retiro copiada";
+    } else if (txt.toLowerCase().includes("ceramella.01.mp")) {
+      tipo = "Copiado Alias Ceramella";
+    } else if (txt.toLowerCase().includes("Titular Ceramella")) {
+      tipo = "Copiado Titular Ceramella";
+    } else if (txt.toLowerCase().includes("dylanto.01.mp")) {
+      tipo = "Copiado Alias Torres";
+    } else if (txt.toLowerCase().includes("Titular Torres")) {
+      tipo = "Copiado Titular Torres";
+    } else if (txt.toLowerCase().includes("acuna.03.mp")) {
+      tipo = "Copiado Alias Acuña";
+    } else if (txt.toLowerCase().includes("Titular Cristian Acuña")) {
+      tipo = "Copiado Titular Acuña";
     } else {
       tipo = "Texto copiado";
+    } else if (txt.toLowerCase().includes("SOMOS BET300VIP")) {
+      tipo = "Copiado Infoo";
+    } else if (txt.toLowerCase().includes("¡Saldo acreditado!")) {
+      tipo = "Copiado Cargado!";
+    } else if (txt.toLowerCase().includes("Para hacer el retiro")) {
+      tipo = "Copiado Retiro";
     }
-
+    
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
         showToast(tipo);
@@ -504,6 +504,7 @@
 </script>
 </body>
 </html>
+
 
 
 
