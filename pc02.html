@@ -385,5 +385,115 @@ showToast(tipo);
 }
 }
 </script>
+  <style>
+  /* Caja historial integrada */
+  #historial-box {
+    margin-top: 15px;
+    background: #34495e; /* gris azulado */
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  #historial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  #historial-arrow {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    font-size: 14px;
+  }
+
+  #historial-content {
+    margin-top: 8px;
+    display: none;
+    background: rgba(255,255,255,0.1);
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  #historial-text {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 6px;
+    white-space: pre-wrap; /* permite saltos de línea */
+    word-wrap: break-word; /* ajusta texto largo */
+  }
+
+  #historial-copy {
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  #historial-copy:hover {
+    background: rgba(0,0,0,0.6);
+  }
+</style>
+
+<div id="historial-box">
+  <div id="historial-header">
+    📝 Último copiado
+    <span id="historial-arrow">⌄</span>
+  </div>
+  <div id="historial-content">
+    <span id="historial-text">Nada copiado aún...</span>
+    <button id="historial-copy">Copy</button>
+  </div>
+</div>
+
+<script>
+  const histHeader = document.getElementById("historial-header");
+  const histArrow = document.getElementById("historial-arrow");
+  const histContent = document.getElementById("historial-content");
+  const histText = document.getElementById("historial-text");
+  const histCopyBtn = document.getElementById("historial-copy");
+
+  let lastCopied = "";
+
+  // Toggle plegable
+  histHeader.onclick = () => {
+    if (histContent.style.display === "none") {
+      histContent.style.display = "block";
+      histArrow.style.transform = "rotate(180deg)";
+    } else {
+      histContent.style.display = "none";
+      histArrow.style.transform = "rotate(0deg)";
+    }
+  };
+
+  // Guardar último copiado
+  function addHistorial(txt) {
+    lastCopied = txt;
+    histText.textContent = txt;
+    histContent.style.display = "block";
+    histArrow.style.transform = "rotate(180deg)";
+  }
+
+  // Botón Copy en historial
+  histCopyBtn.onclick = () => {
+    if (lastCopied) {
+      copyText(lastCopied);
+    }
+  };
+
+  // ✅ Inyectar en tu función copyText
+  const originalCopyText = copyText;
+  copyText = function(txt) {
+    originalCopyText(txt);
+    addHistorial(txt);
+  };
+</script>
 </body>
 </html>
+
