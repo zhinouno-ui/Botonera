@@ -276,30 +276,30 @@
     // ... el resto del array ...
   ];
 
-  // Copia un saludo según el slider
-  function copiarSaludo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-
-    let filtrados = [];
-    if (modoSlider === 0) {
-      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
-    } else if (modoSlider === 2) {
-      filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
-    } else {
-      filtrados = saludos;
-    }
-
-    const randomIndex = Math.floor(Math.random() * filtrados.length);
-    const mensaje = filtrados[randomIndex]
-      .replaceAll("{usuario}", usuario)
-      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
-
-    copyText(mensaje);
+ // Copia un saludo según el slider
+function copiarSaludo() {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
   }
+
+  let filtrados = [];
+  if (modoSlider === 0) {
+    filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
+  } else if (modoSlider === 2) {
+    filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
+  } else {
+    filtrados = saludos;
+  }
+
+  const randomIndex = Math.floor(Math.random() * filtrados.length);
+  const mensaje = filtrados[randomIndex]
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+
+  copyText(mensaje);
+}
 </script>
   
  <script>
@@ -550,6 +550,7 @@
 </script>
 </body>
 </html>
+
 
 
 
