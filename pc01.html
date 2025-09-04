@@ -343,11 +343,31 @@
   function copyText(txt) {
     let tipo = "Texto";
 
-    if (txt.includes("mistery-box-one.vercel.app")) {
-      tipo = "Mistery Box";
-    } else if (txt.includes("ruleta-bet300vip.vercel.app")) {
-      tipo = "Ruleta";
-    }
+if (txt.includes("mistery-box-one.vercel.app")) {
+  tipo = "Mistery Box";
+} else if (txt.includes("ruleta-bet300vip.vercel.app")) {
+  tipo = "Ruleta";
+} else if (txt.toLowerCase().includes("ceramella")) {
+  tipo = "Copiado Ceramella";
+} else if (txt.toLowerCase().includes("brubank")) {
+  tipo = "Copiado Brubank";
+} else if (txt.toLowerCase().includes("uala")) {
+  tipo = "Copiado Ualá";
+} else if (txt.toLowerCase().includes("prex")) {
+  tipo = "Copiado Prex";
+} else if (txt.toLowerCase().includes("mercadopago")) {
+  tipo = "Copiado Mercado Pago";
+} else if (txt.toLowerCase().includes("alias") || txt.toLowerCase().includes("cbu") || txt.toLowerCase().includes("cvu")) {
+  tipo = "Alias/CBU/CVU copiado";
+} else if (txt.toLowerCase().includes("titular")) {
+  tipo = "Titular copiado";
+} else if (txt.toLowerCase().includes("cargado")) {
+  tipo = "Info de cargado copiada";
+} else if (txt.toLowerCase().includes("retiro")) {
+  tipo = "Info de retiro copiada";
+} else {
+  tipo = "Texto copiado";
+}
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
@@ -474,6 +494,7 @@
 </script>
 </body>
 </html>
+
 
 
 
