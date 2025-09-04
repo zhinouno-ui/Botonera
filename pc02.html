@@ -350,30 +350,29 @@ function copyText(txt) {
   let tipo = "Texto";
   const txtNorm = normalizar(txt);
 
-  if (txtNorm.includes("mistery-box-one.vercel.app")) {
+ if (txtLower.includes("mistery-box-one.vercel.app")) {
     tipo = "Mistery Box";
-  } else if (txtNorm.includes("ruleta-bet300vip.vercel.app")) {
+  } else if (txtLower.includes("ruleta-bet300vip.vercel.app")) {
     tipo = "Ruleta";
-  } else if (txtNorm.includes("galvagno.02.mp")) {
+  } else if (txtLower.includes("galvagno.02.mp")) {
     tipo = "Alias Galvagno";
-  } else if (txtNorm.includes("titular fernando galvagno")) {
+  } else if (txtLower.includes("titular fernando galvagno")) { // <-- minúsculas!
     tipo = "Titular Galvagno";
-  } else if (txtNorm.includes("martineza.02.mp")) {
+  } else if (txtLower.includes("martineza.02.mp")) {
     tipo = "Alias Martinez";
-  } else if (txtNorm.includes("titular adriana martinez")) {
+  } else if (txtLower.includes("titular adriana martinez")) { // <-- minúsculas!
     tipo = "Titular Martinez";
-  } else if (txtNorm.includes("arevalo.03.mp")) {
+  } else if (txtLower.includes("arevalo.03.mp")) {
     tipo = "Alias Arevalo";
-  } else if (txtNorm.includes("titular matias arevalo")) {
+  } else if (txtLower.includes("titular matias arevalo")) { // <-- minúsculas!
     tipo = "Titular Arevalo";
-  } else if (txtNorm.includes("somos bet300vip")) {
+  } else if (txtLower.includes("somos bet300vip")) {
     tipo = "Infoo";
-  } else if (txtNorm.includes("saldo acreditado!")) {
+  } else if (txtLower.includes("¡saldo acreditado!")) {
     tipo = "Cargado!";
-  } else if (txtNorm.includes("para hacer el retiro")) {
+  } else if (txtLower.includes("para hacer el retiro")) {
     tipo = "Retiro";
   }
-
 
 if (navigator.clipboard && navigator.clipboard.writeText) {
 navigator.clipboard.writeText(txt).then(() => {
@@ -500,6 +499,7 @@ showToast(tipo);
 </script>
 </body>
 </html>
+
 
 
 
