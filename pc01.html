@@ -348,32 +348,33 @@
   }
 
   // La función copyText con detección de tipo y toast
-  function copyText(txt) {
-    let tipo = "Texto";
+ function copyText(txt) {
+  let tipo = "Texto";
+  const txtLower = txt.toLowerCase();
 
-    if (txt.includes("mistery-box-one.vercel.app")) {
-      tipo = "Mistery Box";
-    } else if (txt.includes("ruleta-bet300vip.vercel.app")) {
-      tipo = "Ruleta";
-    } else if (txt.toLowerCase().includes("ceramella.01.mp")) {
-      tipo = "Alias Ceramella";
-    } else if (txt.toLowerCase().includes("Titular Ceramella")) {
-      tipo = "Titular Ceramella";
-    } else if (txt.toLowerCase().includes("dylanto.01.mp")) {
-      tipo = "Alias Torres";
-    } else if (txt.toLowerCase().includes("Titular Torres")) {
-      tipo = "Titular Torres";
-    } else if (txt.toLowerCase().includes("acuna.03.mp")) {
-      tipo = "Alias Acuña";
-    } else if (txt.toLowerCase().includes("Titular Cristian Acuña")) {
-      tipo = "Titular Acuña";
-    } else if (txt.toLowerCase().includes("SOMOS BET300VIP")) {
-      tipo = "Infoo";
-    } else if (txt.toLowerCase().includes("¡Saldo acreditado!")) {
-      tipo = "Cargado!";
-    } else if (txt.toLowerCase().includes("Para hacer el retiro")) {
-      tipo = "Retiro";
-    }
+  if (txtLower.includes("mistery-box-one.vercel.app")) {
+    tipo = "Mistery Box";
+  } else if (txtLower.includes("ruleta-bet300vip.vercel.app")) {
+    tipo = "Ruleta";
+  } else if (txtLower.includes("ceramella.01.mp")) {
+    tipo = "Alias Ceramella";
+  } else if (txtLower.includes("titular ceramella")) {
+    tipo = "Titular Ceramella";
+  } else if (txtLower.includes("dylanto.01.mp")) {
+    tipo = "Alias Torres";
+  } else if (txtLower.includes("titular torres")) {
+    tipo = "Titular Torres";
+  } else if (txtLower.includes("acuna.03.mp")) {
+    tipo = "Alias Acuña";
+  } else if (txtLower.includes("titular cristian acuña")) {
+    tipo = "Titular Acuña";
+  } else if (txtLower.includes("somos bet300vip")) {
+    tipo = "Infoo";
+  } else if (txtLower.includes("¡saldo acreditado!")) {
+    tipo = "Cargado!";
+  } else if (txtLower.includes("para hacer el retiro")) {
+    tipo = "Retiro";
+  }
     
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
@@ -502,6 +503,7 @@
 </script>
 </body>
 </html>
+
 
 
 
