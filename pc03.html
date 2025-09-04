@@ -374,6 +374,7 @@ function copyText(txt) {
   } else if (txtLower.includes("para hacer el retiro")) {
     tipo = "Retiro";
   }
+  
 if (navigator.clipboard && navigator.clipboard.writeText) {
 navigator.clipboard.writeText(txt).then(() => {
 showToast(tipo);
@@ -499,6 +500,7 @@ showToast(tipo);
 </script>
 </body>
 </html>
+
 
 
 
