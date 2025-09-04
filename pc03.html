@@ -351,29 +351,29 @@ function copyText(txt) {
   let tipo = "Texto";
   const txtNorm = normalizar(txt);
 
- if (txtLower.includes("mistery-box-one.vercel.app")) {
-    tipo = "Mistery Box";
-  } else if (txtLower.includes("ruleta-bet300vip.vercel.app")) {
-    tipo = "Ruleta";
-  } else if (txtLower.includes("almiron.03.mp")) {
-    tipo = "Alias Almiron";
-  } else if (txtLower.includes("titular daniel eduardo almiron")) { // <-- minúsculas!
-    tipo = "Titular Almiron";
-  } else if (txtLower.includes("martinezd.03.mp")) {
-    tipo = "Alias Martinez";
-  } else if (txtLower.includes("titular diego sebastian martinez")) { // <-- minúsculas!
-    tipo = "Titular Martinez";
-  } else if (txtLower.includes("mrodriguez3.mp")) {
-    tipo = "Alias Rodriguez";
-  } else if (txtLower.includes("titular maria luisa rodriguez")) { // <-- minúsculas!
-    tipo = "Titular Rodriguez";
-  } else if (txtLower.includes("somos bet300vip")) {
-    tipo = "Infoo";
-  } else if (txtLower.includes("¡saldo acreditado!")) {
-    tipo = "Cargado!";
-  } else if (txtLower.includes("para hacer el retiro")) {
-    tipo = "Retiro";
-  }
+if (txtNorm.includes("mistery-box-one.vercel.app")) {
+  tipo = "Mistery Box";
+} else if (txtNorm.includes("ruleta-bet300vip.vercel.app")) {
+  tipo = "Ruleta";
+} else if (txtNorm.includes("almiron.03.mp")) {
+  tipo = "Alias Almiron";
+} else if (txtNorm.includes("titular daniel eduardo almiron")) {
+  tipo = "Titular Almiron";
+} else if (txtNorm.includes("martinezd.03.mp")) {
+  tipo = "Alias Martinez";
+} else if (txtNorm.includes("titular diego sebastian martinez")) {
+  tipo = "Titular Martinez";
+} else if (txtNorm.includes("mrodriguez3.mp")) {
+  tipo = "Alias Rodriguez";
+} else if (txtNorm.includes("titular maria luisa rodriguez")) {
+  tipo = "Titular Rodriguez";
+} else if (txtNorm.includes("somos bet300vip")) {
+  tipo = "Infoo";
+} else if (txtNorm.includes("saldo acreditado")) { // <- sin signos ni tildes
+  tipo = "Cargado!";
+} else if (txtNorm.includes("para hacer el retiro")) {
+  tipo = "Retiro";
+}
   
 if (navigator.clipboard && navigator.clipboard.writeText) {
 navigator.clipboard.writeText(txt).then(() => {
@@ -500,6 +500,7 @@ showToast(tipo);
 </script>
 </body>
 </html>
+
 
 
 
