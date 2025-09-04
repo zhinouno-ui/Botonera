@@ -342,14 +342,33 @@ toast.classList.remove("show");
 }
 
 // Modifico copyText para detectar Mistery/Ruleta
-function copyText(txt) {
-let tipo = "Texto";
+ function copyText(txt) {
+  let tipo = "Texto";
+  const txtLower = txt.toLowerCase();
 
-if (txt.includes("mistery-box-one.vercel.app")) {
-tipo = "Mistery Box";
-} else if (txt.includes("ruleta-bet300vip.vercel.app")) {
-tipo = "Ruleta";
-}
+  if (txtLower.includes("mistery-box-one.vercel.app")) {
+    tipo = "Mistery Box";
+  } else if (txtLower.includes("ruleta-bet300vip.vercel.app")) {
+    tipo = "Ruleta";
+  } else if (txtLower.includes("galvagno.02.mp")) {
+    tipo = "Alias Galvagno";
+  } else if (txtLower.includes("Titular Fernando Galvagno")) {
+    tipo = "Titular Galvagno";
+  } else if (txtLower.includes("martineza.02.mp")) {
+    tipo = "Alias Martinez";
+  } else if (txtLower.includes("Titular Adriana Martinez")) {
+    tipo = "Titular Martinez";
+  } else if (txtLower.includes("arevalo.03.mp")) {
+    tipo = "Alias Arevalo";
+  } else if (txtLower.includes("Titular Matias Arevalo")) {
+    tipo = "Titular Arevalo";
+  } else if (txtLower.includes("somos bet300vip")) {
+    tipo = "Infoo";
+  } else if (txtLower.includes("¡saldo acreditado!")) {
+    tipo = "Cargado!";
+  } else if (txtLower.includes("para hacer el retiro")) {
+    tipo = "Retiro";
+  }
 
 if (navigator.clipboard && navigator.clipboard.writeText) {
 navigator.clipboard.writeText(txt).then(() => {
@@ -476,5 +495,6 @@ showToast(tipo);
 </script>
 </body>
 </html>
+
 
 
