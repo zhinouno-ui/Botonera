@@ -320,8 +320,73 @@
   }
 </script>
 
+  <style>
+  /* 🔔 Estilos del toast */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
+    z-index: 9999;
+  }
+
+  .toast.show {
+    opacity: 1;
+    bottom: 40px;
+  }
+</style>
+
+<div id="toast" class="toast"></div>
+
+<script>
+  // Mostrar toast dinámico
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = "✅ Copiado: " + message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2000);
+  }
+
+  // Modifico copyText para detectar Mistery/Ruleta
+  function copyText(txt) {
+    let tipo = "Texto";
+
+    if (txt.includes("mistery-box-one.vercel.app")) {
+      tipo = "Mistery Box";
+    } else if (txt.includes("ruleta-bet300vip.vercel.app")) {
+      tipo = "Ruleta";
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast(tipo);
+      }).catch(err => {
+        console.error("Error con Clipboard API:", err);
+        fallbackCopy(txt);
+        showToast(tipo);
+      });
+    } else {
+      fallbackCopy(txt);
+      showToast(tipo);
+    }
+  }
+</script>
+  
 </body>
 </html>
+
 
 
 
