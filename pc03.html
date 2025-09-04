@@ -129,8 +129,56 @@
 
   // 💡 Array con mensajes predeterminados
   // Usá {usuario} para texto y {usuarioENC} para links
-  const saludos = [
-`👀 {usuario}, la ruleta no espera… girala ya, sacá captura y mandala 🎯
+const saludos = [
+`👀 {usuario}, la suerte no espera… girá ya y mandá tu captura 🎯
+📲 WhatsApp: https://wa.me/5491168392647?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20bono
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=3`,
+
+`🎁 {usuario}, tu Mistery Box está lista para abrirse, no la dejes cerrada 💥
+📲 WhatsApp: https://wa.me/5491168392647?text=Hola%20soy%20{usuarioENC}%20envío%20captura%20para%20activar%20mi%20box
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=3`,
+
+`🔥 No la pienses {usuario}, un giro puede ser todo lo que necesitás 🚀
+📲 WhatsApp: https://wa.me/5491168392647?text=Soy%20{usuarioENC}%20y%20te%20mando%20mi%20captura
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=3`,
+
+`🎉 {usuario}, tu cofre está esperándote… ¿lo abrimos juntos? 🎲
+📲 WhatsApp: https://wa.me/5491168392647?text={usuarioENC}%20manda%20su%20captura%20para%20box
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=3`,
+
+`💎 Cada spin suma {usuario}, y el tuyo puede ser el que vale ⚡
+📲 WhatsApp: https://wa.me/5491168392647?text=Hola%20{usuarioENC}%20mando%20captura%20para%20activar
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=3`,
+
+`🔓 {usuario}, tu Mistery Box no se abre sola, pedí la llave acá 👇
+📲 WhatsApp: https://wa.me/5491168392647?text={usuarioENC}%20pide%20link%20para%20abrir%20la%20box
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=3`,
+
+`⚡ Giro rápido, captura y listo {usuario} 🎰
+📲 WhatsApp: https://wa.me/5491168392647?text={usuarioENC}%20solicita%20bono
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=3`,
+
+`🎯 {usuario}, un clic y tu Mistery Box se abre sola ✨
+📲 WhatsApp: https://wa.me/5491168392647?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=3`,
+
+`🚀 {usuario}, la ruleta ya está girando, falta tu jugada 👀
+📲 WhatsApp: https://wa.me/5491168392647?text=Hola%20soy%20{usuarioENC}%20y%20mando%20mi%20captura
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=3`,
+
+`🎁 Hoy puede abrirse tu Mistery Box, {usuario}, y depende de vos 🗝️
+📲 WhatsApp: https://wa.me/5491168392647?text={usuarioENC}%20envía%20captura%20para%20box
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=3`,
+
+`🎲 Un spin y listo {usuario}, así de rápido se activa 🔥
+📲 WhatsApp: https://wa.me/5491168392647?text=Captura%20de%20{usuarioENC}%20para%20ruleta
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=3`,
+
+`👀 {usuario}, tu Mistery Box brilla como nunca… ¿la abrimos? 🎉
+📲 WhatsApp: https://wa.me/5491168392647?text=Hola%20{usuarioENC}%20quiero%20mi%20box
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=3`,
+
+`Tenemos una promo para vos! {usuario}, la ruleta no espera… girala ya, sacá captura y mandala 🎯
 👉 Jugá: https://ruleta-bet300vip.vercel.app/?pc=3
 📲 WhatsApp: https://wa.me/5491168392647?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20bono`,
 
@@ -255,25 +303,88 @@
 📲 WhatsApp: https://wa.me/5491168392647?text={usuarioENC}%20quiere%20activar%20bono`
 ];
 
-  // Copia un saludo random
-  function copiarSaludo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
+// Copia un saludo random
+function copiarSaludo() {
+const usuario = document.getElementById("usuarioInput").value.trim();
+if (!usuario) {
+alert("⚠️ Escribí un usuario primero!");
+return;
+}
 
-    // Selecciona un mensaje al azar
-    const randomIndex = Math.floor(Math.random() * saludos.length);
+// Selecciona un mensaje al azar
+const randomIndex = Math.floor(Math.random() * saludos.length);
 
-    // Reemplazos múltiples
-    const mensaje = saludos[randomIndex]
-      .replaceAll("{usuario}", usuario)
-      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+// Reemplazos múltiples
+const mensaje = saludos[randomIndex]
+.replaceAll("{usuario}", usuario)
+.replaceAll("{usuarioENC}", encodeURIComponent(usuario));
 
-    copyText(mensaje);
-  }
+copyText(mensaje);
+}
 </script>
 
+<style>
+/* 🔔 Estilos del toast */
+.toast {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+background: rgba(0, 0, 0, 0.8);
+color: #fff;
+padding: 12px 18px;
+border-radius: 8px;
+font-size: 14px;
+font-weight: bold;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.5s ease, bottom 0.5s ease;
+z-index: 9999;
+}
+
+.toast.show {
+opacity: 1;
+bottom: 40px;
+}
+</style>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// Mostrar toast dinámico
+function showToast(message) {
+const toast = document.getElementById("toast");
+toast.textContent = "✅ Copiado: " + message;
+toast.classList.add("show");
+
+setTimeout(() => {
+toast.classList.remove("show");
+}, 2000);
+}
+
+// Modifico copyText para detectar Mistery/Ruleta
+function copyText(txt) {
+let tipo = "Texto";
+
+if (txt.includes("mistery-box-one.vercel.app")) {
+tipo = "Mistery Box";
+} else if (txt.includes("ruleta-bet300vip.vercel.app")) {
+tipo = "Ruleta";
+}
+
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(txt).then(() => {
+showToast(tipo);
+}).catch(err => {
+console.error("Error con Clipboard API:", err);
+fallbackCopy(txt);
+showToast(tipo);
+});
+} else {
+fallbackCopy(txt);
+showToast(tipo);
+}
+}
+</script>
 </body>
 </html>
