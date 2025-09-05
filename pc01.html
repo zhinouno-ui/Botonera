@@ -92,67 +92,56 @@
     <button onclick="copyText('Titular Cristian Acuña\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Acuña</button>
   </div>
 
-  <!-- Grupo Mensaje Revin -->
-<div class="grupo mensaje-revin" style="position: relative;">
-  <h3 style="display: flex; align-items: center; justify-content: space-between;">
-    Mensaje Revin
-    <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
-      <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
-      <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
-      <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
-    </div>
-  </h3>
-  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-  <button onclick="copiarSaludo()">Copiar saludo</button>
-</div>
+ <!-- Grupo Mensaje Revin con slider -->
+  <div class="grupo mensaje-revin" style="position: relative;">
+    <h3 style="display: flex; align-items: center; justify-content: space-between;">
+      Mensaje Revin
+      <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
+        <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
+        <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
+        <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
+      </div>
+    </h3>
+    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+    <button onclick="copiarSaludo()">Copiar saludo</button>
+  </div>
 
-<style>
-  .slider-btn {
-    background: #222;
-    color: #ccc;
-    border: none;
-    outline: none;
-    padding: 4px 14px;
-    font-size: 13px;
-    border-radius: 16px 16px 16px 16px;
-    margin-left: 3px;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    font-weight: 500;
-    opacity: 0.8;
-    box-shadow: 0 0 2px #0002;
-  }
-  .slider-btn.selected {
-    background: #fff;
-    color: #C93C20;
-    font-weight: bold;
-    opacity: 1;
-    box-shadow: 0 2px 6px #C93C2055;
-  }
-</style>
+  <!-- Historial -->
+  <div id="historial-box">
+    <div id="historial-header">
+      📝 Último copiado
+      <span id="historial-arrow">⌄</span>
+    </div>
+    <div id="historial-content">
+      <span id="historial-text">Nada copiado aún...</span>
+      <button id="historial-copy">Copy</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
 
 <script>
-  // Slider state
-  let modoSlider = 1; // 0 = Ruleta, 1 = Mix, 2 = Box
-
+  // Estado del slider
+  let modoSlider = 1; // 0=Ruleta, 1=Mix, 2=Box
   function actualizarSlider() {
     const botones = document.querySelectorAll('.slider-btn');
     botones.forEach((btn, i) => {
       btn.classList.toggle('selected', i === modoSlider);
     });
   }
-
-  // Eventos de los botones
   document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); };
   document.getElementById('slider-mix').onclick    = () => { modoSlider = 1; actualizarSlider(); };
   document.getElementById('slider-box').onclick    = () => { modoSlider = 2; actualizarSlider(); };
-
-  // Inicializar el slider (Mix por defecto)
   actualizarSlider();
 
-  // 💡 Array con mensajes predeterminados (igual que tu código)
+  // Array de saludos (acortado por espacio)
   const saludos = [
-    // ... todo tu array de mensajes ...
+    `🎲 {usuario}, probá tu giro ahora mismo 🚀
+📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}
+👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=1`,
+    `🎁 {usuario}, tu Mistery Box puede abrirse ✨
+📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}
+👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
 `🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
 📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
 👉 Ruleta: https://ruleta-bet300vip.vercel.app/?pc=1`,
@@ -273,48 +262,57 @@
 `👀 {usuario}, tu Mistery Box brilla esperando tu captura ✨
 📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20box
 👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`
-    // ... el resto del array ...
   ];
 
- // Copia un saludo según el slider
-function copiarSaludo() {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) {
-    alert("⚠️ Escribí un usuario primero!");
-    return;
+  // ✅ Copiar saludo según slider
+  function copiarSaludo() {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if (!usuario) {
+      alert("⚠️ Escribí un usuario primero!");
+      return;
+    }
+
+    let filtrados = [];
+    if (modoSlider === 0) {
+      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
+    } else if (modoSlider === 2) {
+      filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
+    } else {
+      filtrados = saludos;
+    }
+
+    const randomIndex = Math.floor(Math.random() * filtrados.length);
+    const mensaje = filtrados[randomIndex]
+      .replaceAll("{usuario}", usuario)
+      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+
+    copyText(mensaje);
   }
 
-  let filtrados = [];
-  if (modoSlider === 0) {
-    filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
-  } else if (modoSlider === 2) {
-    filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
-  } else {
-    filtrados = saludos;
-  }
-
-  const randomIndex = Math.floor(Math.random() * filtrados.length);
-  const mensaje = filtrados[randomIndex]
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
-
-  copyText(mensaje);
-}
-</script>
-  
- <script>
-  // ✅ Copiar texto con fallback
+  // ✅ Copiar texto con toast + historial
   function copyText(txt) {
+    let tipo = "Texto";
+    const txtLower = txt.toLowerCase();
+    if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
+    else if (txtLower.includes("ruleta-bet300vip")) tipo = "Ruleta";
+    else if (txtLower.includes("ceramella.01.mp")) tipo = "Alias Ceramella";
+    else if (txtLower.includes("titular ceramella")) tipo = "Titular Ceramella";
+    else if (txtLower.includes("dylanto.01.mp")) tipo = "Alias Torres";
+    else if (txtLower.includes("titular torres")) tipo = "Titular Torres";
+    else if (txtLower.includes("acuna.03.mp")) tipo = "Alias Acuña";
+    else if (txtLower.includes("titular cristian acuña")) tipo = "Titular Acuña";
+    else if (txtLower.includes("somos bet300vip")) tipo = "Info";
+    else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
+    else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
-        console.log("Copiado con Clipboard API:", txt);
-      }).catch(err => {
-        console.error("Error con Clipboard API:", err);
-        fallbackCopy(txt);
-      });
+        showToast(tipo);
+      }).catch(() => fallbackCopy(txt));
     } else {
       fallbackCopy(txt);
     }
+    addHistorial(txt);
   }
 
   function fallbackCopy(txt) {
@@ -324,246 +322,36 @@ function copiarSaludo() {
     temp.select();
     document.execCommand("copy");
     document.body.removeChild(temp);
-    alert("✅ Copiado!");
+    showToast("Texto");
   }
 
-  // Copia un saludo random
-  function copiarSaludo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-
-    // Selecciona un mensaje al azar
-    const randomIndex = Math.floor(Math.random() * saludos.length);
-
-    // Reemplazos múltiples
-    const mensaje = saludos[randomIndex]
-      .replaceAll("{usuario}", usuario)
-      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
-
-    copyText(mensaje);
-  }
-</script>
-
-  <style>
-  /* 🔔 Estilos del toast */
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease, bottom 0.5s ease;
-    z-index: 9999;
-  }
-
-  .toast.show {
-    opacity: 1;
-    bottom: 40px;
-  }
-</style>
-
-<div id="toast" class="toast"></div>
-
-<script>
-  // Mostrar toast dinámico
   function showToast(message) {
     const toast = document.getElementById("toast");
     toast.textContent = "✅ Copiado: " + message;
     toast.classList.add("show");
-
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, 2000);
+    setTimeout(() => toast.classList.remove("show"), 2000);
   }
 
-  // Guardar último copiado
-  function addHistorial(txt) {
-    lastCopied = txt;
-    histText.textContent = txt;
-    histContent.style.display = "block";
-    histArrow.style.transform = "rotate(180deg)";
-  }
-
-  // La función copyText con detección de tipo y toast
- function copyText(txt) {
-  let tipo = "Texto";
-  const txtLower = txt.toLowerCase();
-
-  if (txtLower.includes("mistery-box-one.vercel.app")) {
-    tipo = "Mistery Box";
-  } else if (txtLower.includes("ruleta-bet300vip.vercel.app")) {
-    tipo = "Ruleta";
-  } else if (txtLower.includes("ceramella.01.mp")) {
-    tipo = "Alias Ceramella";
-  } else if (txtLower.includes("titular ceramella")) {
-    tipo = "Titular Ceramella";
-  } else if (txtLower.includes("dylanto.01.mp")) {
-    tipo = "Alias Torres";
-  } else if (txtLower.includes("titular torres")) {
-    tipo = "Titular Torres";
-  } else if (txtLower.includes("acuna.03.mp")) {
-    tipo = "Alias Acuña";
-  } else if (txtLower.includes("titular cristian acuña")) {
-    tipo = "Titular Acuña";
-  } else if (txtLower.includes("somos bet300vip")) {
-    tipo = "Infoo";
-  } else if (txtLower.includes("¡saldo acreditado!")) {
-    tipo = "Cargado!";
-  } else if (txtLower.includes("para hacer el retiro")) {
-    tipo = "Retiro";
-  }
-    
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(() => {
-        showToast(tipo);
-      }).catch(err => {
-        console.error("Error con Clipboard API:", err);
-        fallbackCopy(txt);
-        showToast(tipo);
-      });
-    } else {
-      fallbackCopy(txt);
-      showToast(tipo);
-    }
-
-    addHistorial(txt); // <-- Agregá esto al final para guardar en historial
-  }
-</script>
-  <style>
-  /* Caja historial integrada */
-  #historial-box {
-    margin-top: 15px;
-    background: #34495e; /* gris azulado */
-    color: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 13px;
-  }
-
-  #historial-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  #historial-arrow {
-    transition: transform 0.3s ease;
-    display: inline-block;
-    font-size: 14px;
-  }
-
-  #historial-content {
-    margin-top: 8px;
-    display: none;
-    background: rgba(255,255,255,0.1);
-    padding: 8px;
-    border-radius: 4px;
-  }
-
-  #historial-text {
-    display: block;
-    font-size: 12px;
-    margin-bottom: 6px;
-    white-space: pre-wrap; /* permite saltos de línea */
-    word-wrap: break-word; /* ajusta texto largo */
-  }
-
-  #historial-copy {
-    background: rgba(0,0,0,0.4);
-    border: none;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-
-  #historial-copy:hover {
-    background: rgba(0,0,0,0.6);
-  }
-</style>
-
-<div id="historial-box">
-  <div id="historial-header">
-    📝 Último copiado
-    <span id="historial-arrow">⌄</span>
-  </div>
-  <div id="historial-content">
-    <span id="historial-text">Nada copiado aún...</span>
-    <button id="historial-copy">Copy</button>
-  </div>
-</div>
-
-<script>
+  // Historial
   const histHeader = document.getElementById("historial-header");
   const histArrow = document.getElementById("historial-arrow");
   const histContent = document.getElementById("historial-content");
   const histText = document.getElementById("historial-text");
   const histCopyBtn = document.getElementById("historial-copy");
-
   let lastCopied = "";
 
-  // Toggle plegable
   histHeader.onclick = () => {
-    if (histContent.style.display === "none") {
-      histContent.style.display = "block";
-      histArrow.style.transform = "rotate(180deg)";
-    } else {
-      histContent.style.display = "none";
-      histArrow.style.transform = "rotate(0deg)";
-    }
+    const visible = histContent.style.display === "block";
+    histContent.style.display = visible ? "none" : "block";
+    histArrow.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
   };
-
-  // Guardar último copiado
   function addHistorial(txt) {
     lastCopied = txt;
     histText.textContent = txt;
     histContent.style.display = "block";
     histArrow.style.transform = "rotate(180deg)";
   }
-
-  // Botón Copy en historial
-  histCopyBtn.onclick = () => {
-    if (lastCopied) {
-      copyText(lastCopied);
-    }
-  };
-
-  // ✅ Inyectar en tu función copyText
-  const originalCopyText = copyText;
-  copyText = function(txt) {
-    originalCopyText(txt);
-    addHistorial(txt);
-  };
+  histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
