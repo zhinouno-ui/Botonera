@@ -42,13 +42,12 @@
     }
 
     /* Colores personalizados según billetera */
-    .ceramella { background: #2ecc71; }   /* verde */
-    .torres { background: #3498db; }      /* azul */
-    .acuña { background: #9b59b6; }     /* violeta */
-    .utilidad { background: #e67e22; }    /* naranja */
-    .mensaje-revin { background: #C93C20; }  /* rojo ladrillo */
+    .ceramella { background: #2ecc71; }
+    .torres { background: #3498db; }
+    .acuña { background: #9b59b6; }
+    .utilidad { background: #e67e22; }
+    .mensaje-revin { background: #C93C20; }
 
-    /* Estilo para el input */
     .input-usuario {
       width: 100%;
       padding: 8px;
@@ -57,10 +56,102 @@
       border: none;
       font-size: 13px;
     }
+
+    .slider-btn {
+      background: #222;
+      color: #ccc;
+      border: none;
+      outline: none;
+      padding: 4px 14px;
+      font-size: 13px;
+      border-radius: 16px;
+      margin-left: 3px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-weight: 500;
+      opacity: 0.8;
+      box-shadow: 0 0 2px #0002;
+    }
+    .slider-btn.selected {
+      background: #fff;
+      color: #C93C20;
+      font-weight: bold;
+      opacity: 1;
+      box-shadow: 0 2px 6px #C93C2055;
+    }
+
+    /* 🔔 Estilos del toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, bottom 0.5s ease;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      bottom: 40px;
+    }
+
+    /* Caja historial */
+    #historial-box {
+      margin-top: 15px;
+      background: #34495e;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    #historial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #historial-arrow {
+      transition: transform 0.3s ease;
+      display: inline-block;
+      font-size: 14px;
+    }
+    #historial-content {
+      margin-top: 8px;
+      display: none;
+      background: rgba(255,255,255,0.1);
+      padding: 8px;
+      border-radius: 4px;
+    }
+    #historial-text {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 6px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    #historial-copy {
+      background: rgba(0,0,0,0.4);
+      border: none;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    #historial-copy:hover {
+      background: rgba(0,0,0,0.6);
+    }
   </style>
 </head>
 <body>
-
   <!-- Grupo Info Útil -->
   <div class="grupo utilidad">
     <h3>Utilidad</h3>
@@ -355,3 +446,4 @@
 </script>
 </body>
 </html>
+
