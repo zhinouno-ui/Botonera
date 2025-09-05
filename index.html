@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,46 +6,84 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #2c3e50;
-      color: white;
+      background: #121212;
+      color: #fff;
       text-align: center;
-      padding: 50px;
+      padding: 40px;
+      margin: 0;
+    }
+
+    /* 🖼️ Logo centrado */
+    #logo {
+      width: 180px;
+      max-width: 80%;
+      margin-bottom: 30px;
+      animation: fadeInDown 1s ease;
     }
 
     h1 {
-      margin-bottom: 40px;
+      margin-bottom: 30px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #f1c40f; /* amarillo bet */
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     .boton {
       display: block;
-      width: 200px;
+      width: 220px;
       margin: 15px auto;
       padding: 15px;
       font-size: 18px;
       font-weight: bold;
-      color: white;
-      background-color: #3498db;
+      color: #fff;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: 0.3s;
       text-decoration: none;
+      transition: transform 0.3s, background 0.3s;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
     }
 
+    /* Colores diferenciados */
+    .pc01 { background-color: #f1c40f; color: #000; } /* amarillo */
+    .pc02 { background-color: #3498db; } /* azul */
+    .pc03 { background-color: #9b59b6; } /* violeta */
+
     .boton:hover {
-      background-color: #2980b9;
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    /* Animaciones */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .boton {
+        width: 90%;
+        max-width: 300px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- 🖼️ Espacio para tu logo -->
+  <img src="logo.png" alt="Logo Bet300" id="logo">
+
   <h1>Selecciona tu PC</h1>
 
-  <a href="pc01.html" class="boton">pc01</a>
-  <a href="pc02.html" class="boton">pc02</a>
-  <a href="pc03.html" class="boton">pc03</a>
+  <a href="pc01.html" class="boton pc01">PC01</a>
+  <a href="pc02.html" class="boton pc02">PC02</a>
+  <a href="pc03.html" class="boton pc03">PC03</a>
 </body>
-
 </html>
-
-
-
