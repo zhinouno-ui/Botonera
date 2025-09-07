@@ -188,8 +188,28 @@
       </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    <button onclick="copiarSaludo()">Copiar saludo</button>
+    </h3>
+   <div style="display: flex; gap: 6px; margin-top: 6px;">
+    <button style="flex:1;" onclick="copiarSaludo()">Copiar saludo</button>
+    <button style="flex:1; background:#27ae60;" onclick="copiarSoloWsp()">Copiar WhatsApp</button>
   </div>
+</div>
+
+<script>
+  // ✅ Copiar solo el enlace de WhatsApp personalizado
+  function copiarSoloWsp() {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if (!usuario) {
+      alert("⚠️ Escribí un usuario primero!");
+      return;
+    }
+    const usuarioENC = encodeURIComponent(usuario);
+    const enlaceWsp = `https://wa.me/5491138601132?text=Hola%20soy%20${usuarioENC}%20quiero%20mi%20clave%20y%20cronograma`;
+
+    copyText(enlaceWsp); // usa la misma función que ya tenés para copiar
+  }
+</script>
+
 
   <!-- Historial -->
   <div id="historial-box">
@@ -795,6 +815,7 @@ histHeader.onclick = () => {
 </script>
 </body>
 </html>
+
 
 
 
