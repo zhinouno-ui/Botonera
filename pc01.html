@@ -880,6 +880,7 @@
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
     else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
+    else if (txtLower.includes("cronograma")) tipo = "enlace wa";
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
@@ -949,6 +950,7 @@ histHeader.onclick = () => {
 </script>
 </body>
 </html>
+
 
 
 
