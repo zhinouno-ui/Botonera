@@ -176,21 +176,25 @@
     <button onclick="copyText('Titular Cristian Acuña\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Acuña</button>
   </div>
 
- <!-- Grupo Mensaje Revin con slider -->
-  <div class="grupo mensaje-revin" style="position: relative;">
-    <h3 style="display: flex; align-items: center; justify-content: space-between;">
-      Mensaje Revin
-      <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
-        <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
-        <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
-      </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    </h3>
-   <div style="display: flex; gap: 6px; margin-top: 6px;">
+<!-- Grupo Mensaje Revin con slider -->
+<div class="grupo mensaje-revin" style="position: relative;">
+  <h3 style="display: flex; align-items: center; justify-content: space-between;">
+    Mensaje Revin
+    <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
+      <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
+      <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
+      <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
+    </div>
+  </h3>
+
+  <!-- Input usuario -->
+  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+
+  <!-- Botones -->
+  <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
     <button style="flex:1;" onclick="copiarSaludo()">Copiar saludo</button>
     <button style="flex:1; background:#27ae60;" onclick="copiarSoloWsp()">Copiar WhatsApp</button>
+    <button style="flex:1; background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
   </div>
 </div>
 
@@ -205,10 +209,31 @@
     const usuarioENC = encodeURIComponent(usuario);
     const enlaceWsp = `https://wa.me/5491138601132?text=Hola%20soy%20${usuarioENC}%20quiero%20mi%20clave%20y%20cronograma`;
 
-    copyText(enlaceWsp); // usa la misma función que ya tenés para copiar
+    copyText(enlaceWsp);
+  }
+
+  // ✅ Copiar Código Amigo
+  function copiarCodigoAmigo() {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if (!usuario) {
+      alert("⚠️ Escribí un usuario primero!");
+      return;
+    }
+
+    const mensaje = `TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c01.vercel.app/`;
+
+    copyText(mensaje);
   }
 </script>
+   <!-- Grupo Promo Amigo -->
+<div class="grupo promo-amigo">
+  <h3>Promo Amigo</h3>
 
+  <button onclick="copyText('🎉 PROMO AMIGOS 🎉\n\n💥 Por cada amigo que invites y cargue la mínima\n👉 Vos recibís $2.000 en fichas para jugar al instante.\n\n📌 Pedí tu CÓDIGO AMIGO\n📌 Compartilo a quien quieras\n📌 Cuando cargue, manda tu código y ¡premio para vos!\n\n‼️ Recordá: no debe tener usuario con nosotros ni haber cargado anteriormente.\n\nMás amigos = más fichas 🤑🎰\n\n🔗 https://300vip-c01.vercel.app/')">Promo amigo</button>
+
+  <button onclick="copyText('🎉 PROMO AMIGOS – ¡TRAÉ Y GANÁ! 🎉\n\n👥 Por cada amigo que traigas a nuestro panel…\n👉 Vos recibís $2.000 en fichas para jugar 💸\n\n✅ El invitado debe hacer su primera carga mínima de $2.000\n✅ Al cargar, tiene que enviar tu CÓDIGO AMIGO\n✅ Una vez acreditada su carga, ¡te regalamos las fichas!\n\n📌 Sin límite de invitados: mientras más sumás, más ganás 🤑🍀⚡🎰')">Info promo amigo</button>
+
+</div>
 
   <!-- Historial -->
   <div id="historial-box">
