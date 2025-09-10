@@ -105,9 +105,6 @@
     <option value="pc1">PC1</option>
     <option value="pc2">PC2</option>
     <option value="pc3">PC3</option>
-    <option value="pc4">PC4</option>
-    <option value="pc5">PC5</option>
-    <option value="pcalv">PCALV</option>
   </select>
 
   <!-- 2. Configuración Global -->
@@ -115,7 +112,7 @@
   <label for="inputWhatsapp">WhatsApp Principal:</label>
   <input type="text" id="inputWhatsapp" placeholder="Ej: 54911xxxxxxx">
   <label for="inputLink">Link de usuario:</label>
-  <input type="text" id="inputLink" placeholder="Ej: m01.bet300vip.com">
+  <input type="text" id="inputLink" placeholder="Ej: c01.bet300vip.com">
   <button onclick="guardarConfigGlobal()">Guardar Configuración</button>
 
   <!-- 3. Botón agregar grupo -->
@@ -359,7 +356,7 @@ function cargarData() {
     data = JSON.parse(localStorage.getItem("botonera_admin")) || {};
   } catch(e) { data = {}; }
   // Estructura por PC
-  ["pc1","pc2","pc3","pc4","pc5","pcalv"].forEach(pc=>{
+  ["pc1","pc2","pc3"].forEach(pc=>{
     if(!data[pc]) data[pc]={ whatsapp:"", link:"", grupos:[] };
   });
   return data;
