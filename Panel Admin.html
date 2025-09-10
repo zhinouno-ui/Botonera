@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 0. Estilos generales -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      color: #252525;
+    }
+    header {
+      background: #3B82F6;
+      color: #fff;
+      padding: 24px 0 16px 0;
+      text-align: center;
+      box-shadow: 0 2px 4px #0001;
+    }
+    .container {
+      max-width: 700px;
+      margin: 28px auto 0 auto;
+      padding: 0 12px;
+    }
+    h1 { font-size: 2.2em; margin-bottom: 8px; }
+    h2 { font-size: 1.2em; margin-top: 24px; }
+    .ayuda { font-size: 0.95em; color: #fff; background: #2563EB; padding: 8px 14px; border-radius: 8px; display: inline-block; margin: 8px 0 0 0; }
+    select, input, button { font-size: 1em; padding: 8px; margin: 6px 0; border-radius: 6px; border: 1px solid #d1d5db; outline: none; }
+    select { background: #e0e7ef; }
+    button { background: #3B82F6; color: #fff; border: none; cursor: pointer; transition: background 0.2s;}
+    button:hover { background: #2563EB; }
+    .grupo {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px #0001;
+      margin: 18px 0;
+      padding: 18px;
+      border-left: 8px solid #3B82F6;
+      transition: border-color 0.2s;
+    }
+    .grupo[data-color] { border-left-color: var(--color); }
+    .grupo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .grupo-titulo {
+      font-weight: bold;
+      font-size: 1.15em;
+      letter-spacing: 0.02em;
+    }
+    .grupo-acciones button { margin-left: 8px; }
+    .boton-lista { margin-top: 10px; }
+    .boton-item {
+      background: #f4f6fc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    .boton-texto { font-weight: 500; }
+    .boton-acciones button { margin-left: 6px; }
+    .add-btn, .edit-btn { background: #10B981;}
+    .add-btn:hover, .edit-btn:hover { background: #059669;}
+    .del-btn { background: #EF4444;}
+    .del-btn:hover { background: #B91C1C;}
+    .color-paleta {
+      display: flex; gap: 8px; margin: 14px 0;
+    }
+    .color-cuadro {
+      width: 28px; height: 28px; border-radius: 6px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 0 2px #0002;
+      transition: transform 0.2s, border 0.2s;
+    }
+    .color-cuadro.selected { border: 2px solid #3B82F6; transform: scale(1.2);}
+    /* Modal */
+    .modal-bg {
+      position: fixed; top:0; left:0; width:100vw; height:100vh; background:#0006; display:none; z-index:99;
+      align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: #fff; border-radius: 12px; padding: 32px 28px; min-width: 320px; box-shadow: 0 6px 24px #0002;
+      position: relative;
+    }
+    .modal-close { position: absolute; top: 14px; right: 18px; font-size: 1.3em; cursor: pointer; color: #EF4444;}
+    .modal-box label { font-weight: 500; margin-top: 8px;}
+    .modal-box input, .modal-box textarea { width: 100%; margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Panel Admin Botonera</h1>
+  <span class="ayuda">Agregá, editá y organizá tus grupos y mensajes. Todo se guarda localmente, fácil y seguro.</span>
+</header>
+<div class="container">
+
+  <!-- 1. Selector de PC -->
+  <label for="pcSelect"><b>Elegí la PC/casino:</b></label>
+  <select id="pcSelect">
+    <option value="pc1">PC1</option>
+    <option value="pc2">PC2</option>
+    <option value="pc3">PC3</option>
+    <option value="pc4">PC4</option>
+    <option value="pc5">PC5</option>
+    <option value="pcalv">PCALV</option>
+  </select>
+
+  <!-- 2. Configuración Global -->
+  <h2>Configuración Global</h2>
+  <label for="inputWhatsapp">WhatsApp Principal:</label>
+  <input type="text" id="inputWhatsapp" placeholder="Ej: 54911xxxxxxx">
+  <label for="inputLink">Link de usuario:</label>
+  <input type="text" id="inputLink" placeholder="Ej: m01.bet300vip.com">
+  <button onclick="guardarConfigGlobal()">Guardar Configuración</button>
+
+  <!-- 3. Botón agregar grupo -->
+  <h2>Grupos y Mensajes</h2>
+  <button class="add-btn" onclick="abrirModalGrupo()">➕ Crear Grupo</button>
+
+  <!-- 4. Contenedor de grupos -->
+  <div id="gruposContenedor"></div>
+
+</div>
+
+<!-- 5. Modal para grupo y color -->
+<div class="modal-bg" id="modalGrupoBg">
+  <div class="modal-box" id="modalGrupoBox">
+    <span class="modal-close" onclick="cerrarModalGrupo()">×</span>
+    <h3 id="modalGrupoTitulo">Nuevo Grupo</h3>
+    <label for="modalGrupoNombre">Nombre del grupo:</label>
+    <input type="text" id="modalGrupoNombre" placeholder="Ej: Utilidad, Retiros, etc">
+    <label>Color del grupo:</label>
+    <div class="color-paleta" id="modalGrupoPaleta"></div>
+    <button class="add-btn" onclick="guardarGrupo()">Guardar Grupo</button>
+  </div>
+</div>
+
+<!-- 6. Modal para botón -->
+<div class="modal-bg" id="modalBotonBg">
+  <div class="modal-box" id="modalBotonBox">
+    <span class="modal-close" onclick="cerrarModalBoton()">×</span>
+    <h3 id="modalBotonTitulo">Nuevo Botón</h3>
+    <label for="modalBotonTexto">Texto del botón:</label>
+    <input type="text" id="modalBotonTexto" placeholder="Ej: Alias Torres">
+    <label for="modalBotonMensaje">Mensaje a copiar:</label>
+    <textarea id="modalBotonMensaje" rows="4" placeholder="Mensaje completo, usa {usuario} para variable"></textarea>
+    <button class="add-btn" onclick="guardarBoton()">Guardar Botón</button>
+  </div>
+</div>
+
+<!-- 7. Scripts principales -->
+<script>
+/*
+==========================================================
+ÍNDICE DE SCRIPTS
+1. Definiciones y estado global
+2. Renderizar paleta de colores
+3. Renderizar grupos y botones
+4. Modal de grupo (crear/editar)
+5. Modal de botón (crear/editar)
+6. Guardado y carga en localStorage
+7. Configuración global (WhatsApp/link)
+==========================================================
+*/
+
+/* 1. Definiciones y estado global */
+const colores = ["#3B82F6","#10B981","#F59E42","#F43F5E","#6366F1","#84CC16","#FACC15","#A21CAF","#9CA3AF"];
+let colorGrupoSeleccionado = colores[0];
+let grupos = [];
+let grupoEditando = null;
+let botonEditando = null;
+let grupoActual = null; // índice del grupo actual para botón
+let pcActual = "pc1";
+
+/* 2. Renderizar paleta de colores */
+function renderPaleta(paletaId, selectedColor, onSelect) {
+  const paleta = document.getElementById(paletaId);
+  paleta.innerHTML = "";
+  colores.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "color-cuadro" + (c === selectedColor ? " selected" : "");
+    div.style.background = c;
+    div.onclick = () => { colorGrupoSeleccionado = c; renderPaleta(paletaId, c, onSelect); if(onSelect) onSelect(c); };
+    paleta.appendChild(div);
+  });
+}
+
+/* 3. Renderizar grupos y botones */
+function renderGrupos() {
+  const cont = document.getElementById("gruposContenedor");
+  cont.innerHTML = "";
+  grupos.forEach((g, gi) => {
+    const div = document.createElement("div");
+    div.className = "grupo";
+    div.setAttribute('data-color', g.color);
+    div.style.setProperty('--color', g.color);
+
+    // Header del grupo
+    const header = document.createElement("div");
+    header.className = "grupo-header";
+    header.innerHTML = `<span class="grupo-titulo">${g.titulo}</span>`;
+    // Acciones grupo
+    const acciones = document.createElement("div");
+    acciones.className = "grupo-acciones";
+    const btnEditar = document.createElement("button");
+    btnEditar.textContent = "✏️ Editar";
+    btnEditar.className = "edit-btn";
+    btnEditar.onclick = () => abrirModalGrupo(gi);
+    acciones.appendChild(btnEditar);
+    const btnBorrar = document.createElement("button");
+    btnBorrar.textContent = "🗑️ Eliminar";
+    btnBorrar.className = "del-btn";
+    btnBorrar.onclick = () => { if(confirm("¿Eliminar grupo?")) { grupos.splice(gi,1); guardarGrupos(); renderGrupos(); } };
+    acciones.appendChild(btnBorrar);
+    header.appendChild(acciones);
+
+    div.appendChild(header);
+
+    // Lista de botones
+    const lista = document.createElement("div");
+    lista.className = "boton-lista";
+    g.botones.forEach((b, bi) => {
+      const item = document.createElement("div");
+      item.className = "boton-item";
+      item.innerHTML = `<span class="boton-texto">${b.texto}</span>`;
+      const accionesB = document.createElement("div");
+      accionesB.className = "boton-acciones";
+      const btnEditB = document.createElement("button");
+      btnEditB.textContent = "✏️";
+      btnEditB.className = "edit-btn";
+      btnEditB.onclick = () => abrirModalBoton(gi, bi);
+      accionesB.appendChild(btnEditB);
+      const btnDelB = document.createElement("button");
+      btnDelB.textContent = "🗑️";
+      btnDelB.className = "del-btn";
+      btnDelB.onclick = () => { if(confirm("¿Eliminar botón?")) { g.botones.splice(bi,1); guardarGrupos(); renderGrupos(); } };
+      accionesB.appendChild(btnDelB);
+      item.appendChild(accionesB);
+      lista.appendChild(item);
+    });
+    div.appendChild(lista);
+
+    // Agregar botón
+    const btnAddB = document.createElement("button");
+    btnAddB.textContent = "➕ Agregar Botón";
+    btnAddB.className = "add-btn";
+    btnAddB.onclick = () => abrirModalBoton(gi, null);
+    div.appendChild(btnAddB);
+
+    cont.appendChild(div);
+  });
+}
+
+/* 4. Modal de grupo (crear/editar) */
+function abrirModalGrupo(indice=null) {
+  grupoEditando = indice;
+  document.getElementById("modalGrupoBg").style.display = "flex";
+  let titulo = "Nuevo Grupo";
+  let nombre = "";
+  let color = colores[0];
+  if (indice !== null) {
+    titulo = "Editar Grupo";
+    nombre = grupos[indice].titulo;
+    color = grupos[indice].color;
+    colorGrupoSeleccionado = color;
+  } else {
+    colorGrupoSeleccionado = colores[0];
+  }
+  document.getElementById("modalGrupoTitulo").textContent = titulo;
+  document.getElementById("modalGrupoNombre").value = nombre;
+  renderPaleta("modalGrupoPaleta", colorGrupoSeleccionado);
+}
+function cerrarModalGrupo() {
+  document.getElementById("modalGrupoBg").style.display = "none";
+}
+function guardarGrupo() {
+  const nombre = document.getElementById("modalGrupoNombre").value.trim();
+  if(!nombre) { alert("Escribe un nombre de grupo."); return; }
+  if(grupoEditando === null) {
+    grupos.push({ titulo: nombre, color: colorGrupoSeleccionado, botones: [] });
+  } else {
+    grupos[grupoEditando].titulo = nombre;
+    grupos[grupoEditando].color = colorGrupoSeleccionado;
+  }
+  guardarGrupos();
+  renderGrupos();
+  cerrarModalGrupo();
+}
+
+/* 5. Modal de botón (crear/editar) */
+function abrirModalBoton(gi, bi) {
+  grupoActual = gi;
+  botonEditando = bi;
+  document.getElementById("modalBotonBg").style.display = "flex";
+  let titulo = "Nuevo Botón";
+  let texto = "";
+  let mensaje = "";
+  if (bi !== null) {
+    titulo = "Editar Botón";
+    texto = grupos[gi].botones[bi].texto;
+    mensaje = grupos[gi].botones[bi].mensaje;
+  }
+  document.getElementById("modalBotonTitulo").textContent = titulo;
+  document.getElementById("modalBotonTexto").value = texto;
+  document.getElementById("modalBotonMensaje").value = mensaje;
+}
+function cerrarModalBoton() {
+  document.getElementById("modalBotonBg").style.display = "none";
+}
+function guardarBoton() {
+  const texto = document.getElementById("modalBotonTexto").value.trim();
+  const mensaje = document.getElementById("modalBotonMensaje").value;
+  if(!texto) { alert("Texto obligatorio"); return; }
+  if(!mensaje) { alert("Mensaje obligatorio"); return; }
+  if(botonEditando === null) {
+    grupos[grupoActual].botones.push({ texto, mensaje });
+  } else {
+    grupos[grupoActual].botones[botonEditando] = { texto, mensaje };
+  }
+  guardarGrupos();
+  renderGrupos();
+  cerrarModalBoton();
+}
+
+/* 6. Guardado y carga en localStorage */
+function guardarGrupos() {
+  const data = cargarData();
+  data[pcActual].grupos = grupos;
+  localStorage.setItem("botonera_admin", JSON.stringify(data));
+}
+function cargarGrupos() {
+  const data = cargarData();
+  grupos = data[pcActual].grupos || [];
+}
+
+/* 7. Configuración global (WhatsApp/link) */
+function guardarConfigGlobal() {
+  const data = cargarData();
+  data[pcActual].whatsapp = document.getElementById("inputWhatsapp").value.trim();
+  data[pcActual].link = document.getElementById("inputLink").value.trim();
+  localStorage.setItem("botonera_admin", JSON.stringify(data));
+  alert("✅ Configuración guardada.");
+}
+function cargarConfigGlobal() {
+  const data = cargarData();
+  document.getElementById("inputWhatsapp").value = data[pcActual].whatsapp || "";
+  document.getElementById("inputLink").value = data[pcActual].link || "";
+}
+
+/* Utilidad: inicialización del objeto */
+function cargarData() {
+  let data = {};
+  try {
+    data = JSON.parse(localStorage.getItem("botonera_admin")) || {};
+  } catch(e) { data = {}; }
+  // Estructura por PC
+  ["pc1","pc2","pc3","pc4","pc5","pcalv"].forEach(pc=>{
+    if(!data[pc]) data[pc]={ whatsapp:"", link:"", grupos:[] };
+  });
+  return data;
+}
+
+/* Selector de PC */
+document.getElementById("pcSelect").onchange = function() {
+  pcActual = this.value;
+  cargarGrupos();
+  renderGrupos();
+  cargarConfigGlobal();
+};
+
+/* Inicialización inicial */
+(function init(){
+  pcActual = document.getElementById("pcSelect").value;
+  cargarGrupos();
+  renderGrupos();
+  cargarConfigGlobal();
+  renderPaleta("modalGrupoPaleta", colorGrupoSeleccionado);
+})();
+</script>
+</body>
+</html>
