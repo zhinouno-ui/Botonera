@@ -165,16 +165,16 @@
 
   <!-- Grupo lescano -->
   <div class="grupo lescano">
-    <h3>Torres</h3>
+    <h3>Lescano</h3>
     <button onclick="copyText('LESCANO4MP')">ALIAS Lescano</button>
     <button onclick="copyText('Titular Sergio Daniel\nTe pido que junto con el comprobante envíes el nombre del titular de la cuenta. Gracias!')">Titular Lescano</button>
   </div>
 
   <!-- Grupo quiroga -->
   <div class="grupo quiroga">
-    <h3>acuña</h3>
-     <button onclick="copyText('QUIROGA012')">ALIAS quiroga</button>
-    <button onclick="copyText('Titular Raul Alonso\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Acuña</button>
+    <h3>Quiroga</h3>
+     <button onclick="copyText('QUIROGA012')">ALIAS Quiroga</button>
+    <button onclick="copyText('Titular Raul Alonso\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Quiroga</button>
   </div>
 
     <!-- Grupo Promo Amigo -->
@@ -351,7 +351,7 @@
 
     let filtrados = [];
     if (modoSlider === 0) {
-      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
+      filtrados = saludos.filter(s => s.includes('https://ruletabet300.vercel.app/?pc=01'));
     } else if (modoSlider === 2) {
       filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
     } else {
@@ -371,9 +371,9 @@
     let tipo = "Texto";
     const txtLower = txt.toLowerCase();
     if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
-    else if (txtLower.includes("ruleta-bet300vip")) tipo = "Ruleta";
+    else if (txtLower.includes("https://ruletabet300.vercel.app/?pc=01")) tipo = "Ruleta";
     else if (txtLower.includes("QUIROGA012")) tipo = "Alias Quieoga";
-    else if (txtLower.includes("titular Raul Alonso")) tipo = "Titular Quieoga";
+    else if (txtLower.includes("titular raul alonso")) tipo = "Titular Quieoga";
     else if (txtLower.includes("LESCANO4MP")) tipo = "Alias Lescano";
     else if (txtLower.includes("titular Sergio Daniel")) tipo = "Titular Lescano";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
