@@ -901,6 +901,8 @@
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
     else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
     else if (txtLower.includes("cronograma")) tipo = "Enlace Wsp";
+    else if (txtLower.includes("fichas extra al instante")) tipo = "Promo Amigos";
+    else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
@@ -970,6 +972,7 @@ histHeader.onclick = () => {
 </script>
 </body>
 </html>
+
 
 
 
