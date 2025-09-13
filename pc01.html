@@ -892,45 +892,6 @@
 
     copyText(mensaje);
   }
-    <script>
-    // --- Toggle retractil lateral Banco ---
-  const bancoToggle = document.getElementById('banco-toggle');
-  const bancoPanel = document.getElementById('banco-panel');
-
-  function cerrarBancoPanel() {
-    bancoPanel.classList.remove('open');
-    bancoToggle.classList.remove('open');
-  }
-
-  bancoToggle.onclick = function(e) {
-    e.stopPropagation();
-    if (bancoPanel.classList.contains('open')) {
-      cerrarBancoPanel();
-    } else {
-      bancoPanel.classList.add('open');
-      bancoToggle.classList.add('open');
-    }
-  };
-
-  // Cerrar si clic fuera del panel/toggle
-  document.addEventListener('click', function(e) {
-    if (
-      bancoPanel.classList.contains('open') &&
-      !bancoPanel.contains(e.target) &&
-      !bancoToggle.contains(e.target)
-    ) {
-      cerrarBancoPanel();
-    }
-  });
-
-  // Cerrar con ESC
-  document.addEventListener('keydown', function(e) {
-    if (e.key === "Escape") cerrarBancoPanel();
-  });
-
-</script>
-  <script>
-
   // ✅ Copiar texto con toast + historial
   function copyText(txt) {
     let tipo = "Texto";
@@ -1013,15 +974,46 @@ histHeader.onclick = () => {
   historialVisible = !historialVisible;
   histContent.style.display = historialVisible ? "block" : "none";
   histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
-};
+};  <script>
+    // --- Toggle retractil lateral Banco ---
+  const bancoToggle = document.getElementById('banco-toggle');
+  const bancoPanel = document.getElementById('banco-panel');
+
+  function cerrarBancoPanel() {
+    bancoPanel.classList.remove('open');
+    bancoToggle.classList.remove('open');
+  }
+
+  bancoToggle.onclick = function(e) {
+    e.stopPropagation();
+    if (bancoPanel.classList.contains('open')) {
+      cerrarBancoPanel();
+    } else {
+      bancoPanel.classList.add('open');
+      bancoToggle.classList.add('open');
+    }
+  };
+
+  // Cerrar si clic fuera del panel/toggle
+  document.addEventListener('click', function(e) {
+    if (
+      bancoPanel.classList.contains('open') &&
+      !bancoPanel.contains(e.target) &&
+      !bancoToggle.contains(e.target)
+    ) {
+      cerrarBancoPanel();
+    }
+  });
+
+  // Cerrar con ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") cerrarBancoPanel();
+  });
 
 </script>
-  
-  <script src="botonera-data.js"></script>
-<script src="botonera.js"></script>
-  
 </body>
 </html>
+
 
 
 
