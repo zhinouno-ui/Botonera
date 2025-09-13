@@ -149,9 +149,7 @@
     #historial-copy:hover {
       background: rgba(0,0,0,0.6);
     }
-  </style>
-</head>
-  /* Toggle Banco lateral */
+      /* Toggle Banco lateral */
   #banco-toggle {
     position: fixed;
     top: 100px;
@@ -212,52 +210,7 @@
     <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button>
     <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button>
   </div>
-
-  <!-- Tu contenido habitual aquí... -->
-
-  <script>
-    // Toggle retractil lateral Banco
-    const bancoToggle = document.getElementById('banco-toggle');
-    const bancoPanel = document.getElementById('banco-panel');
-
-    function cerrarBancoPanel() {
-      bancoPanel.classList.remove('open');
-      bancoToggle.classList.remove('open');
-    }
-
-    bancoToggle.onclick = function(e) {
-      e.stopPropagation();
-      const abierto = bancoPanel.classList.contains('open');
-      if (abierto) {
-        cerrarBancoPanel();
-      } else {
-        bancoPanel.classList.add('open');
-        bancoToggle.classList.add('open');
-      }
-    };
-
-    // Cerrar si clic fuera del panel
-    document.addEventListener('click', function(e) {
-      // Si está abierto y se hace clic fuera del panel y del toggle, se cierra
-      if (
-        bancoPanel.classList.contains('open') &&
-        !bancoPanel.contains(e.target) &&
-        !bancoToggle.contains(e.target)
-      ) {
-        cerrarBancoPanel();
-      }
-    });
-
-    // Opcional: cerrar con ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") cerrarBancoPanel();
-    });
-  </script>
-  <!-- ...Resto de tus scripts y contenido... -->
-</body>
-</html>
   
-<body>
   <!-- Grupo Info Útil -->
   <div class="grupo utilidad">
     <h3>Utilidad</h3>
@@ -1074,7 +1027,47 @@ histHeader.onclick = () => {
   histContent.style.display = historialVisible ? "block" : "none";
   histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
 };
+    <!-- Tu contenido habitual aquí... -->
 
+  <script>
+    // Toggle retractil lateral Banco
+    const bancoToggle = document.getElementById('banco-toggle');
+    const bancoPanel = document.getElementById('banco-panel');
+
+    function cerrarBancoPanel() {
+      bancoPanel.classList.remove('open');
+      bancoToggle.classList.remove('open');
+    }
+
+    bancoToggle.onclick = function(e) {
+      e.stopPropagation();
+      const abierto = bancoPanel.classList.contains('open');
+      if (abierto) {
+        cerrarBancoPanel();
+      } else {
+        bancoPanel.classList.add('open');
+        bancoToggle.classList.add('open');
+      }
+    };
+
+    // Cerrar si clic fuera del panel
+    document.addEventListener('click', function(e) {
+      // Si está abierto y se hace clic fuera del panel y del toggle, se cierra
+      if (
+        bancoPanel.classList.contains('open') &&
+        !bancoPanel.contains(e.target) &&
+        !bancoToggle.contains(e.target)
+      ) {
+        cerrarBancoPanel();
+      }
+    });
+
+    // Opcional: cerrar con ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") cerrarBancoPanel();
+    });
+  </script>
+  <!-- ...Resto de tus scripts y contenido... -->
 </script>
   
   <script src="botonera-data.js"></script>
@@ -1082,6 +1075,7 @@ histHeader.onclick = () => {
   
 </body>
 </html>
+
 
 
 
