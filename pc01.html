@@ -944,7 +944,8 @@
     copyText(mensaje);
   }
 
-  // ✅ Copiar texto con toast + historial
+  <script>
+  // --- Copiado con toast + historial ---
   function copyText(txt) {
     let tipo = "Texto";
     const txtLower = txt.toLowerCase();
@@ -990,92 +991,124 @@
     setTimeout(() => toast.classList.remove("show"), 2000);
   }
 
-  // Historial
+  // --- Historial ---
   const histHeader = document.getElementById("historial-header");
   const histArrow = document.getElementById("historial-arrow");
   const histContent = document.getElementById("historial-content");
   const histText = document.getElementById("historial-text");
   const histCopyBtn = document.getElementById("historial-copy");
   let lastCopied = "";
+  let historialVisible = false;
 
-  histHeader.onclick = () => {
-    const visible = histContent.style.display === "block";
-    histContent.style.display = visible ? "none" : "block";
-    histArrow.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
-  };
   function addHistorial(txt) {
     lastCopied = txt;
     histText.textContent = txt;
     histContent.style.display = "block";
     histArrow.style.transform = "rotate(180deg)";
   }
+
+  histHeader.onclick = () => {
+    historialVisible = !historialVisible;
+    histContent.style.display = historialVisible ? "block" : "none";
+    histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
+  };
   histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
-  let historialVisible = false;
 
-function addHistorial(txt) {
-  lastCopied = txt;
-  histText.textContent = txt;
-
-  if (historialVisible) {
-    histContent.style.display = "block";
-    histArrow.style.transform = "rotate(180deg)";
+  // --- Slider Mensaje Revin ---
+  let modoSlider = 1; // 0=Ruleta, 1=Mix, 2=Box
+  function actualizarSlider() {
+    const botones = document.querySelectorAll('.slider-btn');
+    botones.forEach((btn, i) => {
+      btn.classList.toggle('selected', i === modoSlider);
+    });
   }
-}
+  document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); };
+  document.getElementById('slider-mix').onclick    = () => { modoSlider = 1; actualizarSlider(); };
+  document.getElementById('slider-box').onclick    = () => { modoSlider = 2; actualizarSlider(); };
+  actualizarSlider();
 
-histHeader.onclick = () => {
-  historialVisible = !historialVisible;
-  histContent.style.display = historialVisible ? "block" : "none";
-  histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
-};
-  <script>
-    // Toggle retractil lateral Banco (único script)
-    const bancoToggle = document.getElementById('banco-toggle');
-    const bancoPanel = document.getElementById('banco-panel');
-
-    function cerrarBancoPanel() {
-      bancoPanel.classList.remove('open');
-      bancoToggle.classList.remove('open');
+  // --- Copiar saludo según slider ---
+  // (Asegurate de tener tu array de saludos en la página, aquí solo la función)
+  function copiarSaludo() {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if (!usuario) {
+      alert("⚠️ Escribí un usuario primero!");
+      return;
     }
+    let filtrados = [];
+    if (modoSlider === 0) {
+      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
+    } else if (modoSlider === 2) {
+      filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
+    } else {
+      filtrados = saludos;
+    }
+    const randomIndex = Math.floor(Math.random() * filtrados.length);
+    const mensaje = filtrados[randomIndex]
+      .replaceAll("{usuario}", usuario)
+      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+    copyText(mensaje);
+  }
 
-    bancoToggle.onclick = function(e) {
-      e.stopPropagation();
-      if (bancoPanel.classList.contains('open')) {
-        cerrarBancoPanel();
-      } else {
-        bancoPanel.classList.add('open');
-        bancoToggle.classList.add('open');
-      }
-    };
+  // --- Copiar solo WhatsApp personalizado ---
+  function copiarSoloWsp() {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if (!usuario) {
+      alert("⚠️ Escribí un usuario primero!");
+      return;
+    }
+    const usuarioENC = encodeURIComponent(usuario);
+    const enlaceWsp = `https://wa.me/5491138601132?text=Hola%20soy%20${usuarioENC}%20quiero%20mi%20clave%20y%20cronograma`;
+    copyText(enlaceWsp);
+  }
 
-    // Cerrar si clic fuera del panel/toggle
-    document.addEventListener('click', function(e) {
-      if (
-        bancoPanel.classList.contains('open') &&
-        !bancoPanel.contains(e.target) &&
-        !bancoToggle.contains(e.target)
-      ) {
-        cerrarBancoPanel();
-      }
-    });
+  // --- Copiar Código Amigo ---
+  function copiarCodigoAmigo() {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if (!usuario) {
+      alert("⚠️ Escribí un usuario primero!");
+      return;
+    }
+    const mensaje = `TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c01.vercel.app/`;
+    copyText(mensaje);
+  }
 
-    // Cerrar con ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") cerrarBancoPanel();
-    });
-  </script>
-</body>
+  // --- Toggle retractil lateral Banco ---
+  const bancoToggle = document.getElementById('banco-toggle');
+  const bancoPanel = document.getElementById('banco-panel');
 
+  function cerrarBancoPanel() {
+    bancoPanel.classList.remove('open');
+    bancoToggle.classList.remove('open');
+  }
 
+  bancoToggle.onclick = function(e) {
+    e.stopPropagation();
+    if (bancoPanel.classList.contains('open')) {
+      cerrarBancoPanel();
+    } else {
+      bancoPanel.classList.add('open');
+      bancoToggle.classList.add('open');
+    }
+  };
 
+  // Cerrar si clic fuera del panel/toggle
+  document.addEventListener('click', function(e) {
+    if (
+      bancoPanel.classList.contains('open') &&
+      !bancoPanel.contains(e.target) &&
+      !bancoToggle.contains(e.target)
+    ) {
+      cerrarBancoPanel();
+    }
+  });
 
+  // Cerrar con ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") cerrarBancoPanel();
+  });
 
-
-
-
-
-
-
-
+</script>
 
 
 
