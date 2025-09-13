@@ -151,25 +151,111 @@
     }
   </style>
 </head>
-<!-- 🔽 Toggle y Panel Banco -->
-<div id="banco-toggle">🏦 Banco</div>
+  /* Toggle Banco lateral */
+  #banco-toggle {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    background: #C93C20;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 18px 12px 12px;
+    cursor: pointer;
+    box-shadow: 2px 2px 8px #0004;
+    z-index: 10001;
+    transition: left 0.3s;
+    opacity: 0.95;
+  }
 
-<div id="banco-panel">
-  <h4>Banco</h4>
-  <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button>
-  <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button>
-</div>
-<script>
-  document.addEventListener("click", (e) => {
-    const clickDentroPanel = bancoPanel.contains(e.target);
-    const clickToggle = bancoToggle.contains(e.target);
+  #banco-toggle.open {
+    left: 220px; /* mismo ancho que el panel, para que no se solape */
+    transition: left 0.3s;
+  }
 
-    // Si hace clic fuera del panel y no fue en el toggle → cerramos
-    if (!clickDentroPanel && !clickToggle) {
-      bancoPanel.classList.remove("open");
+  /* Panel retractil Banco */
+  #banco-panel {
+    position: fixed;
+    top: 80px;
+    left: -220px; /* oculto fuera de vista */
+    width: 220px;
+    background: #222;
+    color: #fff;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 4px 0px 16px #0003;
+    padding: 18px 16px;
+    z-index: 10000;
+    transition: left 0.3s;
+    min-height: 120px;
+    opacity: 0.98;
+  }
+
+  #banco-panel.open {
+    left: 0;
+    transition: left 0.3s;
+  }
+
+  #banco-panel h4 {
+    margin-top: 0;
+    font-size: 17px;
+    letter-spacing: 1px;
+    color: #C93C20;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+  <!-- Toggle lateral y panel banco -->
+  <div id="banco-toggle">🏦 Banco</div>
+  <div id="banco-panel">
+    <h4>Banco</h4>
+    <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button>
+    <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button>
+  </div>
+
+  <!-- Tu contenido habitual aquí... -->
+
+  <script>
+    // Toggle retractil lateral Banco
+    const bancoToggle = document.getElementById('banco-toggle');
+    const bancoPanel = document.getElementById('banco-panel');
+
+    function cerrarBancoPanel() {
+      bancoPanel.classList.remove('open');
+      bancoToggle.classList.remove('open');
     }
-  });
-</script>
+
+    bancoToggle.onclick = function(e) {
+      e.stopPropagation();
+      const abierto = bancoPanel.classList.contains('open');
+      if (abierto) {
+        cerrarBancoPanel();
+      } else {
+        bancoPanel.classList.add('open');
+        bancoToggle.classList.add('open');
+      }
+    };
+
+    // Cerrar si clic fuera del panel
+    document.addEventListener('click', function(e) {
+      // Si está abierto y se hace clic fuera del panel y del toggle, se cierra
+      if (
+        bancoPanel.classList.contains('open') &&
+        !bancoPanel.contains(e.target) &&
+        !bancoToggle.contains(e.target)
+      ) {
+        cerrarBancoPanel();
+      }
+    });
+
+    // Opcional: cerrar con ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") cerrarBancoPanel();
+    });
+  </script>
+  <!-- ...Resto de tus scripts y contenido... -->
+</body>
+</html>
   
 <body>
   <!-- Grupo Info Útil -->
@@ -996,6 +1082,7 @@ histHeader.onclick = () => {
   
 </body>
 </html>
+
 
 
 
