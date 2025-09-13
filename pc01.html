@@ -159,14 +159,15 @@
   <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button>
   <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button>
 </div>
-
 <script>
-  // Script para abrir/cerrar el panel deslizante
-  const bancoToggle = document.getElementById("banco-toggle");
-  const bancoPanel = document.getElementById("banco-panel");
+  document.addEventListener("click", (e) => {
+    const clickDentroPanel = bancoPanel.contains(e.target);
+    const clickToggle = bancoToggle.contains(e.target);
 
-  bancoToggle.addEventListener("click", () => {
-    bancoPanel.classList.toggle("open");
+    // Si hace clic fuera del panel y no fue en el toggle → cerramos
+    if (!clickDentroPanel && !clickToggle) {
+      bancoPanel.classList.remove("open");
+    }
   });
 </script>
   
@@ -995,6 +996,7 @@ histHeader.onclick = () => {
   
 </body>
 </html>
+
 
 
 
