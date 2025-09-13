@@ -189,6 +189,14 @@
   </style>
 </head>
 <body>
+  <script>
+  function copyText(text) {
+    navigator.clipboard.writeText(text)
+      .then(() => console.log("Texto copiado:", text))
+      .catch(err => console.error("Error al copiar:", err));
+  }
+</script>
+  
   <!-- Toggle lateral y panel banco --> 
   <div id="banco-toggle">🏦 Banco</div> 
   <div id="banco-panel"> 
@@ -1003,6 +1011,7 @@
     </script>
 </body>
 </html>
+
 
 
 
