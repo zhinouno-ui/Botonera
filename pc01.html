@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -149,66 +150,15 @@
     #historial-copy:hover {
       background: rgba(0,0,0,0.6);
     }
-      /* Toggle Banco lateral */
-  #banco-toggle {
-    position: fixed;
-    top: 100px;
-    left: 0;
-    background: #C93C20;
-    color: #fff;
-    font-weight: bold;
-    border-radius: 0 8px 8px 0;
-    padding: 12px 18px 12px 12px;
-    cursor: pointer;
-    box-shadow: 2px 2px 8px #0004;
-    z-index: 10001;
-    transition: left 0.3s;
-    opacity: 0.95;
-  }
-
-  #banco-toggle.open {
-    left: 220px; /* mismo ancho que el panel, para que no se solape */
-    transition: left 0.3s;
-  }
-
-  /* Panel retractil Banco */
-  #banco-panel {
-    position: fixed;
-    top: 80px;
-    left: -220px; /* oculto fuera de vista */
-    width: 220px;
-    background: #222;
-    color: #fff;
-    border-radius: 0 12px 12px 0;
-    box-shadow: 4px 0px 16px #0003;
-    padding: 18px 16px;
-    z-index: 10000;
-    transition: left 0.3s;
-    min-height: 120px;
-    opacity: 0.98;
-  }
-
-  #banco-panel.open {
-    left: 0;
-    transition: left 0.3s;
-  }
-
-  #banco-panel h4 {
-    margin-top: 0;
-    font-size: 17px;
-    letter-spacing: 1px;
-    color: #C93C20;
-    margin-bottom: 12px;
-  }
-</style>
+  </style>
 </head>
 <body>
-   <!-- Toggle lateral y panel banco -->
-  <div id="banco-toggle">🏦 Banco</div>
-  <div id="banco-panel">
+  <!-- Toggle lateral y panel banco --> 
+  <div id="banco-toggle">🏦 Banco</div> 
+  <div id="banco-panel"> 
     <h4>Banco</h4>
-    <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button>
-    <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button>
+    <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button> 
+    <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button> 
   </div>
   
   <!-- Grupo Info Útil -->
@@ -293,6 +243,41 @@
 
     copyText(mensaje);
   }
+    // --- Toggle retractil lateral Banco ---
+  const bancoToggle = document.getElementById('banco-toggle');
+  const bancoPanel = document.getElementById('banco-panel');
+
+  function cerrarBancoPanel() {
+    bancoPanel.classList.remove('open');
+    bancoToggle.classList.remove('open');
+  }
+
+  bancoToggle.onclick = function(e) {
+    e.stopPropagation();
+    if (bancoPanel.classList.contains('open')) {
+      cerrarBancoPanel();
+    } else {
+      bancoPanel.classList.add('open');
+      bancoToggle.classList.add('open');
+    }
+  };
+
+  // Cerrar si clic fuera del panel/toggle
+  document.addEventListener('click', function(e) {
+    if (
+      bancoPanel.classList.contains('open') &&
+      !bancoPanel.contains(e.target) &&
+      !bancoToggle.contains(e.target)
+    ) {
+      cerrarBancoPanel();
+    }
+  });
+
+  // Cerrar con ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") cerrarBancoPanel();
+  });
+
 </script>
 
 
@@ -944,8 +929,7 @@
     copyText(mensaje);
   }
 
-  <script>
-  // --- Copiado con toast + historial ---
+  // ✅ Copiar texto con toast + historial
   function copyText(txt) {
     let tipo = "Texto";
     const txtLower = txt.toLowerCase();
@@ -991,124 +975,54 @@
     setTimeout(() => toast.classList.remove("show"), 2000);
   }
 
-  // --- Historial ---
+  // Historial
   const histHeader = document.getElementById("historial-header");
   const histArrow = document.getElementById("historial-arrow");
   const histContent = document.getElementById("historial-content");
   const histText = document.getElementById("historial-text");
   const histCopyBtn = document.getElementById("historial-copy");
   let lastCopied = "";
-  let historialVisible = false;
 
+  histHeader.onclick = () => {
+    const visible = histContent.style.display === "block";
+    histContent.style.display = visible ? "none" : "block";
+    histArrow.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
+  };
   function addHistorial(txt) {
     lastCopied = txt;
     histText.textContent = txt;
     histContent.style.display = "block";
     histArrow.style.transform = "rotate(180deg)";
   }
-
-  histHeader.onclick = () => {
-    historialVisible = !historialVisible;
-    histContent.style.display = historialVisible ? "block" : "none";
-    histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
-  };
   histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
+  let historialVisible = false;
 
-  // --- Slider Mensaje Revin ---
-  let modoSlider = 1; // 0=Ruleta, 1=Mix, 2=Box
-  function actualizarSlider() {
-    const botones = document.querySelectorAll('.slider-btn');
-    botones.forEach((btn, i) => {
-      btn.classList.toggle('selected', i === modoSlider);
-    });
+function addHistorial(txt) {
+  lastCopied = txt;
+  histText.textContent = txt;
+
+  if (historialVisible) {
+    histContent.style.display = "block";
+    histArrow.style.transform = "rotate(180deg)";
   }
-  document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); };
-  document.getElementById('slider-mix').onclick    = () => { modoSlider = 1; actualizarSlider(); };
-  document.getElementById('slider-box').onclick    = () => { modoSlider = 2; actualizarSlider(); };
-  actualizarSlider();
+}
 
-  // --- Copiar saludo según slider ---
-  // (Asegurate de tener tu array de saludos en la página, aquí solo la función)
-  function copiarSaludo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-    let filtrados = [];
-    if (modoSlider === 0) {
-      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
-    } else if (modoSlider === 2) {
-      filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
-    } else {
-      filtrados = saludos;
-    }
-    const randomIndex = Math.floor(Math.random() * filtrados.length);
-    const mensaje = filtrados[randomIndex]
-      .replaceAll("{usuario}", usuario)
-      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
-    copyText(mensaje);
-  }
-
-  // --- Copiar solo WhatsApp personalizado ---
-  function copiarSoloWsp() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-    const usuarioENC = encodeURIComponent(usuario);
-    const enlaceWsp = `https://wa.me/5491138601132?text=Hola%20soy%20${usuarioENC}%20quiero%20mi%20clave%20y%20cronograma`;
-    copyText(enlaceWsp);
-  }
-
-  // --- Copiar Código Amigo ---
-  function copiarCodigoAmigo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-    const mensaje = `TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c01.vercel.app/`;
-    copyText(mensaje);
-  }
-
-  // --- Toggle retractil lateral Banco ---
-  const bancoToggle = document.getElementById('banco-toggle');
-  const bancoPanel = document.getElementById('banco-panel');
-
-  function cerrarBancoPanel() {
-    bancoPanel.classList.remove('open');
-    bancoToggle.classList.remove('open');
-  }
-
-  bancoToggle.onclick = function(e) {
-    e.stopPropagation();
-    if (bancoPanel.classList.contains('open')) {
-      cerrarBancoPanel();
-    } else {
-      bancoPanel.classList.add('open');
-      bancoToggle.classList.add('open');
-    }
-  };
-
-  // Cerrar si clic fuera del panel/toggle
-  document.addEventListener('click', function(e) {
-    if (
-      bancoPanel.classList.contains('open') &&
-      !bancoPanel.contains(e.target) &&
-      !bancoToggle.contains(e.target)
-    ) {
-      cerrarBancoPanel();
-    }
-  });
-
-  // Cerrar con ESC
-  document.addEventListener('keydown', function(e) {
-    if (e.key === "Escape") cerrarBancoPanel();
-  });
+histHeader.onclick = () => {
+  historialVisible = !historialVisible;
+  histContent.style.display = historialVisible ? "block" : "none";
+  histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
+};
 
 </script>
+  
+  <script src="botonera-data.js"></script>
+<script src="botonera.js"></script>
+  
+</body>
+</html>
+
+
+
 
 
 
