@@ -203,7 +203,7 @@
 </style>
 </head>
 <body>
-  <!-- Toggle lateral y panel banco -->
+   <!-- Toggle lateral y panel banco -->
   <div id="banco-toggle">🏦 Banco</div>
   <div id="banco-panel">
     <h4>Banco</h4>
@@ -1027,10 +1027,8 @@ histHeader.onclick = () => {
   histContent.style.display = historialVisible ? "block" : "none";
   histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
 };
-    <!-- Tu contenido habitual aquí... -->
-
   <script>
-    // Toggle retractil lateral Banco
+    // Toggle retractil lateral Banco (único script)
     const bancoToggle = document.getElementById('banco-toggle');
     const bancoPanel = document.getElementById('banco-panel');
 
@@ -1041,8 +1039,7 @@ histHeader.onclick = () => {
 
     bancoToggle.onclick = function(e) {
       e.stopPropagation();
-      const abierto = bancoPanel.classList.contains('open');
-      if (abierto) {
+      if (bancoPanel.classList.contains('open')) {
         cerrarBancoPanel();
       } else {
         bancoPanel.classList.add('open');
@@ -1050,9 +1047,8 @@ histHeader.onclick = () => {
       }
     };
 
-    // Cerrar si clic fuera del panel
+    // Cerrar si clic fuera del panel/toggle
     document.addEventListener('click', function(e) {
-      // Si está abierto y se hace clic fuera del panel y del toggle, se cierra
       if (
         bancoPanel.classList.contains('open') &&
         !bancoPanel.contains(e.target) &&
@@ -1062,45 +1058,13 @@ histHeader.onclick = () => {
       }
     });
 
-    // Opcional: cerrar con ESC
+    // Cerrar con ESC
     document.addEventListener('keydown', function(e) {
       if (e.key === "Escape") cerrarBancoPanel();
     });
   </script>
-<script>
-  // --- Banco Lateral Toggle ---
-  const bancoToggle = document.getElementById('banco-toggle');
-  const bancoPanel = document.getElementById('banco-panel');
-  let bancoAbierto = false;
-
-  bancoToggle.onclick = function () {
-    bancoAbierto = !bancoAbierto;
-    if (bancoAbierto) {
-      bancoPanel.classList.add('open');
-      bancoToggle.classList.add('open');
-    } else {
-      bancoPanel.classList.remove('open');
-      bancoToggle.classList.remove('open');
-    }
-  };
-
-  // Opcional: cerrar el panel si se hace clic fuera de él
-  document.addEventListener('click', function (e) {
-    if (
-      bancoAbierto &&
-      !bancoPanel.contains(e.target) &&
-      !bancoToggle.contains(e.target)
-    ) {
-      bancoPanel.classList.remove('open');
-      bancoToggle.classList.remove('open');
-      bancoAbierto = false;
-    }
-  });
-
-</script>
-  
 </body>
-</html>
+
 
 
 
