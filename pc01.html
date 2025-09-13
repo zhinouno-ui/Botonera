@@ -1067,14 +1067,41 @@ histHeader.onclick = () => {
       if (e.key === "Escape") cerrarBancoPanel();
     });
   </script>
-  <!-- ...Resto de tus scripts y contenido... -->
+<script>
+  // --- Banco Lateral Toggle ---
+  const bancoToggle = document.getElementById('banco-toggle');
+  const bancoPanel = document.getElementById('banco-panel');
+  let bancoAbierto = false;
+
+  bancoToggle.onclick = function () {
+    bancoAbierto = !bancoAbierto;
+    if (bancoAbierto) {
+      bancoPanel.classList.add('open');
+      bancoToggle.classList.add('open');
+    } else {
+      bancoPanel.classList.remove('open');
+      bancoToggle.classList.remove('open');
+    }
+  };
+
+  // Opcional: cerrar el panel si se hace clic fuera de él
+  document.addEventListener('click', function (e) {
+    if (
+      bancoAbierto &&
+      !bancoPanel.contains(e.target) &&
+      !bancoToggle.contains(e.target)
+    ) {
+      bancoPanel.classList.remove('open');
+      bancoToggle.classList.remove('open');
+      bancoAbierto = false;
+    }
+  });
+
 </script>
-  
-  <script src="botonera-data.js"></script>
-<script src="botonera.js"></script>
   
 </body>
 </html>
+
 
 
 
