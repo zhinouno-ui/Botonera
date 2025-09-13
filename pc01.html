@@ -41,12 +41,14 @@
     button:hover {
       background: rgba(0,0,0,0.4);
     }
+
     /* Colores personalizados según billetera */
     .promo-amigo { background: #2ecc71; }
     .torres { background: #3498db; }
     .acuña { background: #9b59b6; }
     .utilidad { background: #e67e22; }
     .mensaje-revin { background: #C93C20; }
+
     .input-usuario {
       width: 100%;
       padding: 8px;
@@ -55,6 +57,7 @@
       border: none;
       font-size: 13px;
     }
+
     .slider-btn {
       background: #222;
       color: #ccc;
@@ -77,6 +80,7 @@
       opacity: 1;
       box-shadow: 0 2px 6px #C93C2055;
     }
+
     /* 🔔 Estilos del toast */
     .toast {
       position: fixed;
@@ -98,6 +102,7 @@
       opacity: 1;
       bottom: 40px;
     }
+
     /* Caja historial */
     #historial-box {
       margin-top: 15px;
@@ -145,66 +150,9 @@
     #historial-copy:hover {
       background: rgba(0,0,0,0.6);
     }
-       #banco-toggle {
-  position: fixed;
-  top: 100px;
-  left: 0;
-  background: #C93C20;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 0 8px 8px 0;
-  padding: 12px 18px 12px 12px;
-  cursor: pointer;
-  box-shadow: 2px 2px 8px #0004;
-  z-index: 10001;
-  transition: left 0.3s;
-  opacity: 0.95;
-}
-
-#banco-toggle.open {
-  left: 220px;
-  transition: left 0.3s;
-}
-
-#banco-panel {
-  position: fixed;
-  top: 80px;
-  left: -220px;
-  width: 220px;
-  background: #222;
-  color: #fff;
-  border-radius: 0 12px 12px 0;
-  box-shadow: 4px 0px 16px #0003;
-  padding: 18px 16px;
-  z-index: 10000;
-  transition: left 0.3s;
-  min-height: 120px;
-  opacity: 0.98;
-}
-
-#banco-panel.open {
-  left: 0;
-  transition: left 0.3s;
-}
   </style>
 </head>
 <body>
-  <script>
-  function copyText(text) {
-    navigator.clipboard.writeText(text)
-      .then(() => console.log("Texto copiado:", text))
-      .catch(err => console.error("Error al copiar:", err));
-  }
-</script>
-  
-  <!-- Toggle lateral y panel banco --> 
-  <div id="banco-toggle">🏦 Banco</div> 
-  <div id="banco-panel"> 
-    <h4>Banco</h4>
-    <button onclick="copyText('ALIAS Arellano (agregar alias aquí)')">Arellano</button> 
-    <button onclick="copyText('ALIAS Chiguay (agregar alias aquí)')">Chiguay</button> 
-  </div>
-  
   <!-- Grupo Info Útil -->
   <div class="grupo utilidad">
     <h3>Utilidad</h3>
@@ -287,7 +235,8 @@
 
     copyText(mensaje);
   }
-  </script>
+</script>
+
 
   <!-- Historial -->
   <div id="historial-box">
@@ -936,6 +885,7 @@
 
     copyText(mensaje);
   }
+
   // ✅ Copiar texto con toast + historial
   function copyText(txt) {
     let tipo = "Texto";
@@ -1003,27 +953,30 @@
   }
   histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
   let historialVisible = false;
+
+function addHistorial(txt) {
+  lastCopied = txt;
+  histText.textContent = txt;
+
   if (historialVisible) {
     histContent.style.display = "block";
     histArrow.style.transform = "rotate(180deg)";
   }
-<script src="toggle-banco.js">
-    </script>
+}
+
+histHeader.onclick = () => {
+  historialVisible = !historialVisible;
+  histContent.style.display = historialVisible ? "block" : "none";
+  histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
+};
+
+</script>
+  
+  <script src="botonera-data.js"></script>
+<script src="botonera.js"></script>
+  
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
