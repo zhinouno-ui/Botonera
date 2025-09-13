@@ -1000,21 +1000,10 @@
   }
   histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
   let historialVisible = false;
-
-function addHistorial(txt) {
-  lastCopied = txt;
-  histText.textContent = txt;
-
   if (historialVisible) {
     histContent.style.display = "block";
     histArrow.style.transform = "rotate(180deg)";
   }
-}
-
-histHeader.onclick = () => {
-  historialVisible = !historialVisible;
-  histContent.style.display = historialVisible ? "block" : "none";
-  histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
 };
   <script>
   // --- Toggle retractil lateral Banco ---
@@ -1054,6 +1043,7 @@ histHeader.onclick = () => {
 </script>
 </body>
 </html>
+
 
 
 
