@@ -977,12 +977,14 @@ document.addEventListener('keydown', function(e) {
     else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
     else if (txtLower.includes("con solo enviarle el enlace ya tienen el whatsApp y el chat")) tipo = "Codigo amigo";
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
         showToast(tipo);
       }).catch(() => fallbackCopy(txt));
     } else {
       fallbackCopy(txt);
+    }
+    addHistorial(txt);
   }
 
   function fallbackCopy(txt) {
@@ -1010,13 +1012,28 @@ document.addEventListener('keydown', function(e) {
   const histCopyBtn = document.getElementById("historial-copy");
   let lastCopied = "";
 
-let historialVisible = false;
+  histHeader.onclick = () => {
+    const visible = histContent.style.display === "block";
+    histContent.style.display = visible ? "none" : "block";
+    histArrow.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
+  };
+  function addHistorial(txt) {
+    lastCopied = txt;
+    histText.textContent = txt;
+    histContent.style.display = "block";
+    histArrow.style.transform = "rotate(180deg)";
+  }
+  histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
+  let historialVisible = false;
+
 function addHistorial(txt) {
   lastCopied = txt;
   histText.textContent = txt;
-  histContent.style.display = "block";
-  histArrow.style.transform = "rotate(180deg)";
-  historialVisible = true;
+
+  if (historialVisible) {
+    histContent.style.display = "block";
+    histArrow.style.transform = "rotate(180deg)";
+  }
 }
 
 histHeader.onclick = () => {
@@ -1024,16 +1041,6 @@ histHeader.onclick = () => {
   histContent.style.display = historialVisible ? "block" : "none";
   histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
 };
-
-histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
-  }
-  histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
-  let historialVisible = false;
-
-  if (historialVisible) {
-    histContent.style.display = "block";
-    histArrow.style.transform = "rotate(180deg)";
-  }
 
 </script>
   <script>
@@ -1083,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </body>
 </html>
+
 
 
 
