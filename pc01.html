@@ -975,6 +975,8 @@ document.addEventListener('keydown', function(e) {
     else if (txtLower.includes("cronograma")) tipo = "Enlace Wsp";
     else if (txtLower.includes("fichas extra al instante")) tipo = "Promo Amigos";
     else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
+    else if (txtLower.includes("tu codigo amigo") && txtLower.includes("r" + usuario.toLowerCase())) {
+  tipo = "Tu Código Amigo";
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(() => {
@@ -1082,6 +1084,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </body>
 </html>
+
 
 
 
