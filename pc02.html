@@ -224,25 +224,28 @@
 </div>
 
   
- <!-- Grupo Mensaje Revin con slider -->
-  <div class="grupo mensaje-revin" style="position: relative;">
-    <h3 style="display: flex; align-items: center; justify-content: space-between;">
-      Mensaje Revin
-      <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
-        <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
-        <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
-      </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    </h3>
-   <div style="display: flex; gap: 6px; margin-top: 6px;">
+<!-- Grupo Mensaje Revin con slider -->
+<div class="grupo mensaje-revin" style="position: relative;">
+  <h3 style="display: flex; align-items: center; justify-content: space-between;">
+    Mensaje Revin
+    <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
+      <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
+      <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
+      <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
+    </div>
+  </h3>
+
+  <!-- Input usuario -->
+  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+
+  <!-- Botones -->
+  <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
     <button style="flex:1;" onclick="copiarSaludo()">Copiar saludo</button>
-     <button style="flex:1; background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
     <button style="flex:1; background:#27ae60;" onclick="copiarSoloWsp()">Copiar WhatsApp</button>
+    <button style="flex:1; background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
   </div>
 </div>
-
+  
 <script>
   // ✅ Copiar solo el enlace de WhatsApp personalizado
   function copiarSoloWsp() {
@@ -960,6 +963,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </body>
 </html>
+
 
 
 
