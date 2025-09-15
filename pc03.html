@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>ChinBotones</title>
-  <style>
+   <style>
     body {
       font-family: Arial, sans-serif;
       background: #121212;
@@ -46,9 +46,7 @@
     .Martinez { background: #3498db; }      /* azul */
     .promo-amigo { background: #BE024A; }
     .utilidad { background: #e67e22; }    /* naranja */
-      .mensaje-revin { background: #C93C20; }    /* rosa pastel*/
-
-
+    .mensaje-revin { background: #C93C20; }    /* rosa pastel*/
     .input-usuario {
       width: 100%;
       padding: 8px;
@@ -150,6 +148,47 @@
     #historial-copy:hover {
       background: rgba(0,0,0,0.6);
     }
+           #banco-toggle {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  background: #C93C20;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 18px 12px 12px;
+  cursor: pointer;
+  box-shadow: 2px 2px 8px #0004;
+  z-index: 10001;
+  transition: left 0.3s;
+  opacity: 0.95;
+}
+
+#banco-toggle.open {
+  left: 220px;
+  transition: left 0.3s;
+}
+
+#banco-panel {
+  position: fixed;
+  top: 80px;
+  left: -220px;
+  width: 220px;
+  background: #222;
+  color: #fff;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 4px 0px 16px #0003;
+  padding: 18px 16px;
+  z-index: 10000;
+  transition: left 0.3s;
+  min-height: 120px;
+  opacity: 0.98;
+}
+
+#banco-panel.open {
+  left: 0;
+  transition: left 0.3s;
+}
   </style>
 </head>
 <body>
@@ -192,21 +231,24 @@
 </div>
 
  <!-- Grupo Mensaje Revin con slider -->
-  <div class="grupo mensaje-revin" style="position: relative;">
-    <h3 style="display: flex; align-items: center; justify-content: space-between;">
-      Mensaje Revin
-      <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
-        <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
-        <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
-      </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    </h3>
-   <div style="display: flex; gap: 6px; margin-top: 6px;">
+<div class="grupo mensaje-revin" style="position: relative;">
+  <h3 style="display: flex; align-items: center; justify-content: space-between;">
+    Mensaje Revin
+    <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
+      <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
+      <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
+      <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
+    </div>
+  </h3>
+
+  <!-- Input usuario -->
+  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+
+  <!-- Botones -->
+  <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
     <button style="flex:1;" onclick="copiarSaludo()">Copiar saludo</button>
-     <button style="flex:1; background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
     <button style="flex:1; background:#27ae60;" onclick="copiarSoloWsp()">Copiar WhatsApp</button>
+    <button style="flex:1; background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
   </div>
 </div>
 
@@ -237,7 +279,6 @@
   }
 </script>
   
-</script>
   <!-- Historial -->
   <div id="historial-box">
     <div id="historial-header">
@@ -747,7 +788,7 @@ const saludos = [
 
     let filtrados = [];
     if (modoSlider === 0) {
-      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
+      filtrados = saludos.filter(s => s.includes('ruleta-bet300.vercel.app'));
     } else if (modoSlider === 2) {
       filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
     } else {
@@ -761,6 +802,38 @@ const saludos = [
 
     copyText(mensaje);
   }
+const bancoToggle = document.getElementById('banco-toggle');
+const bancoPanel = document.getElementById('banco-panel');
+
+function cerrarBancoPanel() {
+  bancoPanel.classList.remove('open');
+  bancoToggle.classList.remove('open');
+}
+
+bancoToggle.onclick = function(e) {
+  e.stopPropagation();
+  if (bancoPanel.classList.contains('open')) {
+    cerrarBancoPanel();
+  } else {
+    bancoPanel.classList.add('open');
+    bancoToggle.classList.add('open');
+  }
+};
+
+document.addEventListener('click', function(e) {
+  if (
+    bancoPanel.classList.contains('open') &&
+    !bancoPanel.contains(e.target) &&
+    !bancoToggle.contains(e.target)
+  ) {
+    cerrarBancoPanel();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === "Escape") cerrarBancoPanel();
+});
+  
 
  // ✅ Copiar texto con toast + historial
   function copyText(txt) {
@@ -846,8 +919,55 @@ histHeader.onclick = () => {
 };
 
 </script>
+  </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const bancoToggle = document.getElementById('banco-toggle');
+  const bancoPanel = document.getElementById('banco-panel');
+
+  if (!bancoToggle || !bancoPanel) return; // Evita errores si los elementos no existen
+
+  function cerrarBancoPanel() {
+    bancoPanel.classList.remove('open');
+    bancoToggle.classList.remove('open');
+  }
+
+  bancoToggle.onclick = function(e) {
+    e.stopPropagation();
+    if (bancoPanel.classList.contains('open')) {
+      cerrarBancoPanel();
+    } else {
+      bancoPanel.classList.add('open');
+      bancoToggle.classList.add('open');
+    }
+  };
+
+  document.addEventListener('click', function(e) {
+    if (
+      bancoPanel.classList.contains('open') &&
+      !bancoPanel.contains(e.target) &&
+      !bancoToggle.contains(e.target)
+    ) {
+      cerrarBancoPanel();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") cerrarBancoPanel();
+  });
+});
+  </script>
+  <!-- Botonera Toggle Banco -->
+  <div id="banco-toggle">Banco</div>
+  <div id="banco-panel">
+    <h3 style="margin-top:0;">Panel Banco</h3>
+     <button onclick="copyText('365.ofi.mp')">ALIAS CHIGUAY</button>
+     <button onclick="copyText('edgardo.928.arado.mp')">arellano mp</button>
+    <button onclick="copyText('arellano.banco')">arellano pp</button>
+  </div>
 </body>
 </html>
+
 
 
 
