@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>ChinBotones</title>
-  <style>
+   <style>
     body {
       font-family: Arial, sans-serif;
       background: #121212;
@@ -40,15 +40,12 @@
     button:hover {
       background: rgba(0,0,0,0.4);
     }
-
-  /* Colores personalizados según billetera */
-    .Rodriguez { background: #3498db; }      /* azul */
-    .Galvagno { background: #9b59b6; }     /* violeta */
-     .promo-amigo { background: #2ecc71; }
-    .utilidad { background: #e67e22; }    /* naranja */
-     .mensaje-revin { background: #C93C20; }    /* rosa pastel*/
-
-
+    /* Colores personalizados según billetera */
+    .promo-amigo { background: #2ecc71; }
+    .torres { background: #3498db; }
+    .acuña { background: #9b59b6; }
+    .utilidad { background: #e67e22; }
+    .mensaje-revin { background: #C93C20; }
     .input-usuario {
       width: 100%;
       padding: 8px;
@@ -57,7 +54,6 @@
       border: none;
       font-size: 13px;
     }
-
     .slider-btn {
       background: #222;
       color: #ccc;
@@ -80,7 +76,6 @@
       opacity: 1;
       box-shadow: 0 2px 6px #C93C2055;
     }
-
     /* 🔔 Estilos del toast */
     .toast {
       position: fixed;
@@ -102,7 +97,6 @@
       opacity: 1;
       bottom: 40px;
     }
-
     /* Caja historial */
     #historial-box {
       margin-top: 15px;
@@ -150,6 +144,47 @@
     #historial-copy:hover {
       background: rgba(0,0,0,0.6);
     }
+       #banco-toggle {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  background: #C93C20;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 18px 12px 12px;
+  cursor: pointer;
+  box-shadow: 2px 2px 8px #0004;
+  z-index: 10001;
+  transition: left 0.3s;
+  opacity: 0.95;
+}
+
+#banco-toggle.open {
+  left: 220px;
+  transition: left 0.3s;
+}
+
+#banco-panel {
+  position: fixed;
+  top: 80px;
+  left: -220px;
+  width: 220px;
+  background: #222;
+  color: #fff;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 4px 0px 16px #0003;
+  padding: 18px 16px;
+  z-index: 10000;
+  transition: left 0.3s;
+  min-height: 120px;
+  opacity: 0.98;
+}
+
+#banco-panel.open {
+  left: 0;
+  transition: left 0.3s;
+}
   </style>
 </head>
 <body>
@@ -744,7 +779,7 @@
 
     let filtrados = [];
     if (modoSlider === 0) {
-      filtrados = saludos.filter(s => s.includes('ruleta-bet300vip.vercel.app'));
+      filtrados = saludos.filter(s => s.includes('ruleta-bet300.vercel.app'));
     } else if (modoSlider === 2) {
       filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
     } else {
@@ -758,6 +793,37 @@
 
     copyText(mensaje);
   }
+  const bancoToggle = document.getElementById('banco-toggle');
+const bancoPanel = document.getElementById('banco-panel');
+
+function cerrarBancoPanel() {
+  bancoPanel.classList.remove('open');
+  bancoToggle.classList.remove('open');
+}
+
+bancoToggle.onclick = function(e) {
+  e.stopPropagation();
+  if (bancoPanel.classList.contains('open')) {
+    cerrarBancoPanel();
+  } else {
+    bancoPanel.classList.add('open');
+    bancoToggle.classList.add('open');
+  }
+};
+
+document.addEventListener('click', function(e) {
+  if (
+    bancoPanel.classList.contains('open') &&
+    !bancoPanel.contains(e.target) &&
+    !bancoToggle.contains(e.target)
+  ) {
+    cerrarBancoPanel();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === "Escape") cerrarBancoPanel();
+});
 
   // ✅ Copiar texto con toast + historial
   function copyText(txt) {
@@ -775,6 +841,10 @@
     else if (txtLower.includes("cronograma")) tipo = "Enlace Wsp";
     else if (txtLower.includes("fichas extra al instante")) tipo = "Promo Amigos";
     else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
+    else if (txtLower.includes("arellano.banco")) tipo = "Banco, Arellano PP";
+    else if (txtLower.includes("edgardo.928.arado.mp")) tipo = "Banco, Arellano MP";
+    else if (txtLower.includes("365.ofi.mp")) tipo = "banco, Chiguay MP";
+    else if (txtLower.includes("con solo enviarle el enlace ya tienen el whatsApp y el chat")) tipo = "Codigo amigo";
 
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -843,8 +913,54 @@ histHeader.onclick = () => {
 };
 
 </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const bancoToggle = document.getElementById('banco-toggle');
+  const bancoPanel = document.getElementById('banco-panel');
+
+  if (!bancoToggle || !bancoPanel) return; // Evita errores si los elementos no existen
+
+  function cerrarBancoPanel() {
+    bancoPanel.classList.remove('open');
+    bancoToggle.classList.remove('open');
+  }
+
+  bancoToggle.onclick = function(e) {
+    e.stopPropagation();
+    if (bancoPanel.classList.contains('open')) {
+      cerrarBancoPanel();
+    } else {
+      bancoPanel.classList.add('open');
+      bancoToggle.classList.add('open');
+    }
+  };
+
+  document.addEventListener('click', function(e) {
+    if (
+      bancoPanel.classList.contains('open') &&
+      !bancoPanel.contains(e.target) &&
+      !bancoToggle.contains(e.target)
+    ) {
+      cerrarBancoPanel();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") cerrarBancoPanel();
+  });
+});
+  </script>
+  <!-- Botonera Toggle Banco -->
+  <div id="banco-toggle">Banco</div>
+  <div id="banco-panel">
+    <h3 style="margin-top:0;">Panel Banco</h3>
+     <button onclick="copyText('365.ofi.mp')">ALIAS CHIGUAY</button>
+     <button onclick="copyText('edgardo.928.arado.mp')">arellano mp</button>
+    <button onclick="copyText('arellano.banco')">arellano pp</button>
+  </div>
 </body>
 </html>
+
 
 
 
