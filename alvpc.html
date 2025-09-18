@@ -184,6 +184,29 @@
   left: 0;
   transition: left 0.3s;
 }
+     <style>
+  .drag-handle {
+    cursor: grab;
+    font-size: 16px;
+    color: #ccc;
+    margin-left: auto; /* empuja a la derecha */
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  .grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .grupo h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  </style>
+
   </style>
 </head>
 <body>
@@ -199,7 +222,7 @@
 
   <!-- Grupo meza -->
   <div class="grupo meza">
-    <h3>meza</h3>
+    <h3>meza <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
      <button onclick="copyText('0000003100073049569289')">CBU Meza</button>
     
     <button onclick="copyText('meza01.mp \nTitular yamila gisella meza- MP')">Alias Meza</button>
@@ -207,7 +230,7 @@
 
     <!-- Grupo luna -->
   <div class="grupo luna">
-    <h3>luna</h3>
+    <h3>luna <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
      <button onclick="copyText('0000003100057182382088')">CBU Luna</button>
     
     <button onclick="copyText('luna011.mp \nTitular Juan Ignacio Luna - MP')">Alias Luna</button>
@@ -215,7 +238,7 @@
   
     <!-- Grupo toledo -->
   <div class="grupo toledo">
-    <h3>toledo</h3>
+    <h3>toledo <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
      <button onclick="copyText('0000003100042476697612')">CBU Toledo</button>
     
     <button onclick="copyText('toledo001.mp \nTitular Marina Belen Toledo- Mercado Pago')">Alias Toledo</button>
@@ -504,6 +527,19 @@ document.addEventListener('DOMContentLoaded', function() {
      <button onclick="copyText('365.ofi.mp')">ALIAS CHIGUAY</button>
      <button onclick="copyText('edgardo.928.arado.mp')">arellano mp</button>
     <button onclick="copyText('arellano.banco')">arellano pp</button>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Hacer drag de todos los grupos
+  new Sortable(document.body, {
+    animation: 150,
+    handle: '.drag-handle',
+    filter: '#banco-panel, #historial-box', // evita mover panel banco o historial
+    ghostClass: 'sortable-ghost'
+  });
+});
+</script>
   </div>
 </body>
 </html>
