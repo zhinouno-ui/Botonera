@@ -152,6 +152,28 @@
     #historial-copy:hover {
       background: rgba(0,0,0,0.6);
     }
+        <style>
+  .drag-handle {
+    cursor: grab;
+    font-size: 16px;
+    color: #ccc;
+    margin-left: auto; /* empuja a la derecha */
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  .grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .grupo h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  </style>
   </style>
 </head>
 <body>
@@ -167,21 +189,21 @@
 
   <!-- Grupo parejas -->
   <div class="grupo parejas">
-    <h3>Parejas</h3>
+    <h3>Parejas <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
     <button onclick="copyText('PAREJA01MP')">ALIAS Parejas</button>
     <button onclick="copyText('Titular Alejandro Parejas\nTe pido que junto con el comprobante envíes el nombre del titular de la cuenta. Gracias!')">Titular Parejas</button>
   </div>
   
     <!-- Grupo luna -->
   <div class="grupo luna">
-    <h3>Luna</h3>
+    <h3>Luna <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
     <button onclick="copyText('LUNA03MP')">ALIAS Luna</button>
     <button onclick="copyText('Titular Hugo Cesar\nTe pido que junto con el comprobante envíes el nombre del titular de la cuenta. Gracias!')">Titular Luna</button>
   </div>
 
   <!-- Grupo gimenez -->
   <div class="grupo gimenez">
-    <h3>Gimenez</h3>
+    <h3>Gimenez <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
      <button onclick="copyText('GIMENEZ01MP')">ALIAS Gimenez</button>
     <button onclick="copyText('Titular Anibal Javier\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Gimenez</button>
   </div>
@@ -456,7 +478,17 @@ histHeader.onclick = () => {
   histContent.style.display = historialVisible ? "block" : "none";
   histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
 };
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Hacer drag de todos los grupos
+  new Sortable(document.body, {
+    animation: 150,
+    handle: '.drag-handle',
+    filter: '#banco-panel, #historial-box', // evita mover panel banco o historial
+    ghostClass: 'sortable-ghost'
+  });
+});
+</script>
 </script>
 </body>
 </html>
