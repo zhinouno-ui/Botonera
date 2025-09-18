@@ -186,6 +186,28 @@
   transition: left 0.3s;
 }
   </style>
+       <style>
+  .drag-handle {
+    cursor: grab;
+    font-size: 16px;
+    color: #ccc;
+    margin-left: auto; /* empuja a la derecha */
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  .grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .grupo h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  </style>
 </head>
 <body>
 
@@ -201,14 +223,14 @@
 
 <!-- Grupo Rodriguez -->
   <div class="grupo Rodriguez">
-    <h3>Rodriguez</h3>
+    <h3>Rodriguez <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
     <button onclick="copyText('mrodriguez3.mp')">ALIAS Rodriguez</button>
     <button onclick="copyText('Titular Maria Luisa Rodriguez\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Rodriguez</button>
   </div>
 
   <!-- Grupo Galvagno -->
   <div class="grupo Galvagno">
-    <h3>Galvagno</h3>
+    <h3>Galvagno <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
     <button onclick="copyText('galvagno.02.mp')">ALIAS Galvagno</button>
     <button onclick="copyText('Titular Fernando Galvagno\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Galvagno</button>
   </div>
@@ -961,8 +983,20 @@ document.addEventListener('DOMContentLoaded', function() {
      <button onclick="copyText('edgardo.928.arado.mp')">arellano mp</button>
     <button onclick="copyText('arellano.banco')">arellano pp</button>
   </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Hacer drag de todos los grupos
+  new Sortable(document.body, {
+    animation: 150,
+    handle: '.drag-handle',
+    filter: '#banco-panel, #historial-box', // evita mover panel banco o historial
+    ghostClass: 'sortable-ghost'
+  });
+});
+</script>
 </body>
 </html>
+
 
 
 
