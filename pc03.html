@@ -988,19 +988,20 @@ document.addEventListener('DOMContentLoaded', function() {
      <button onclick="copyText('edgardo.928.arado.mp')">arellano mp</button>
     <button onclick="copyText('arellano.banco')">arellano pp</button>
   </div>
-  <script>
+ <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Hacer drag de todos los grupos
   new Sortable(document.body, {
     animation: 150,
-    handle: '.drag-handle',
-    filter: '#banco-panel, #historial-box', // evita mover panel banco o historial
+    handle: '.drag-handle',              // ☰ será la manija
+    filter: '#banco-panel, #historial-box', // evita mover estos
     ghostClass: 'sortable-ghost'
   });
 });
 </script>
 </body>
 </html>
+
 
 
 
