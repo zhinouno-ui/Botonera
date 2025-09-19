@@ -88,27 +88,30 @@ button:hover {
   border: none;
   font-size: 13px;
 }
+    /* Contenedor horizontal */
+#modo-slider {
+  display: flex;
+  gap: 6px;
+  background: #2a2a2a; /* Fondo oscuro detrás del grupo */
+  padding: 4px;
+  border-radius: 20px;
+}
 .slider-btn {
-  background: #222;
-  color: #ccc;
+  background: #3a3a3a;   /* Gris oscuro cuando no está activo */
+  color: #ccc;           /* Texto claro */
   border: none;
-  outline: none;
-  padding: 4px 14px;
-  font-size: 13px;
+  padding: 6px 16px;
   border-radius: 16px;
-  margin-left: 3px;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  font-weight: 500;
-  opacity: 0.8;
-  box-shadow: 0 0 2px #0002;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.25s ease;
 }
 .slider-btn.selected {
-  background: #fff;
-  color: #C93C20;
+  background: #111;       /* Negro */
+  color: #C93C20;         /* Rojo oscuro (tu color institucional) */
   font-weight: bold;
-  opacity: 1;
-  box-shadow: 0 2px 6px #C93C2055;
+  box-shadow: 0 2px 6px rgba(201,60,32,0.4); /* leve glow rojo */
 }
 #modo-slider {
   display: flex;
