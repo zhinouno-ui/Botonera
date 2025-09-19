@@ -295,12 +295,12 @@ button:hover {
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copyText('0000003100073049569289')">CBU Meza</button>
-          <button onclick="copyText('meza01.mp \nTitular yamila gisella meza- MP')">Alias Meza</button>
+          <button onclick="copyText('0000003100073049569289')">CBU Mercado Pago</button>
+          <button onclick="copyText('meza01.mp \nTitular yamila gisella meza *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
-          <button onclick="copyText('personal.meza')">Alias Personal Pay</button>
-          <button onclick="copyText('1234567890')">CBU Personal Pay</button>
+          <button onclick="copyText('0000076500000043003428')">CBU PPay</button>
+          <button onclick="copyText('ymeza44.ppay \nTitular yamila gisella meza *PPay*')">Alias PPay</button>
         </div>
       </div>
     </div>
@@ -318,12 +318,12 @@ button:hover {
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copyText('0000003100057182382088')">CBU Luna</button>
-          <button onclick="copyText('luna011.mp \nTitular Juan Ignacio Luna - MP')">Alias Luna</button>
+          <button onclick="copyText('0000003100057182382088')">CBU Mercado Pago</button>
+          <button onclick="copyText('luna011.mp \nTitular Juan Ignacio Luna *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
-          <button onclick="copyText('personal.meza')">Alias Personal Pay</button>
-          <button onclick="copyText('1234567890')">CBU Personal Pay</button>
+          <button onclick="copyText('0000076500000042994646')">CBU PPay</button>
+          <button onclick="copyText('jluna192320.ppay \nTitular Juan Ignacio Luna *PPay*')">Alias PPay</button>
         </div>
       </div>
     </div>
@@ -341,12 +341,12 @@ button:hover {
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copyText('0000003100042476697612')">CBU Toledo</button>
-          <button onclick="copyText('toledo001.mp \nTitular Marina Belen Toledo- Mercado Pago')">Alias Toledo</button>
+          <button onclick="copyText('0000003100042476697612')">CBU Mercado Pago</button>
+          <button onclick="copyText('toledo001.mp \nTitular Marina Belen Toledo *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
-          <button onclick="copyText('personal.meza')">Alias Personal Pay</button>
-          <button onclick="copyText('1234567890')">CBU Personal Pay</button>
+          <button onclick="copyText('4530000800018010604187')">Cbu NX</button>
+          <button onclick="copyText('MTOLEDO3561.NX.ARS \nTitular Marina Belen Toledo *NX*')">Alias NX</button>
         </div>
       </div>
     </div>
@@ -490,12 +490,18 @@ button:hover {
     const txtLower=txt.toLowerCase();
     if(txtLower.includes("mistery-box-one")) tipo="Mistery Box";
     else if(txtLower.includes("ruleta-bet300")) tipo="Ruleta";
-    else if(txtLower.includes("meza01.mp")) tipo="Alias Meza";
-    else if(txtLower.includes("0000003100073049569289")) tipo="Cbu Meza";
-    else if(txtLower.includes("luna011.mp")) tipo="Alias Luna";
-    else if(txtLower.includes("0000003100057182382088")) tipo="Cbu Luna";
-    else if(txtLower.includes("toledo001.mp")) tipo="Alias Toledo";
-    else if(txtLower.includes("0000003100042476697612")) tipo="Cbu Toledo";
+    else if(txtLower.includes("meza01.mp")) tipo="Alias Meza MP";
+          else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
+    else if(txtLower.includes("0000003100073049569289")) tipo="Cbu Meza MP";
+      else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
+    else if(txtLower.includes("luna011.mp")) tipo="Alias Luna MP";
+          else if(txtLower.includes("jluna192320.ppay")) tipo="Alias Luna PPay";
+    else if(txtLower.includes("0000003100057182382088")) tipo="Cbu Luna MP";
+      else if(txtLower.includes("0000076500000042994646")) tipo="Cbu Luna PPay";
+    else if(txtLower.includes("toledo001.mp")) tipo="Alias Toledo MP";
+      else if(txtLower.includes("MTOLEDO3561.NX.ARS")) tipo="Alias Toledo NX";
+    else if(txtLower.includes("0000003100042476697612")) tipo="Cbu Toledo MP";
+      else if(txtLower.includes("4530000800018010604187")) tipo="Cbu Toledo NX";
     else if(txtLower.includes("arellano.banco")) tipo="Banco, Arellano PP";
     else if(txtLower.includes("edgardo.928.arado.mp")) tipo="Banco, Arellano MP";
     else if(txtLower.includes("365.ofi.mp")) tipo="Banco, Chiguay MP";
