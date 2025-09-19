@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -152,6 +153,29 @@
       background: rgba(0,0,0,0.6);
     }
   </style>
+       <style>
+  .drag-handle {
+    cursor: grab;
+    font-size: 16px;
+    color: #ccc;
+    margin-left: auto; /* empuja a la derecha */
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  .grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .grupo h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  </style>
+  </style>
 </head>
 <body>
   <!-- Grupo Info Útil -->
@@ -166,21 +190,21 @@
 
   <!-- Grupo lescano -->
   <div class="grupo lescano">
-    <h3>Lescano</h3>
+    <h3>Lescano <div class="drag-handle" title="Arrastrar para mover">☰</div></h3>
     <button onclick="copyText('LESCANO4MP')">ALIAS Lescano</button>
     <button onclick="copyText('Titular Sergio Daniel\nTe pido que junto con el comprobante envíes el nombre del titular de la cuenta. Gracias!')">Titular Lescano</button>
   </div>
 
   <!-- Grupo quiroga -->
   <div class="grupo quiroga">
-    <h3>Quiroga</h3>
+    <h3>Quiroga <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
      <button onclick="copyText('QUIROGA012')">ALIAS Quiroga</button>
     <button onclick="copyText('Titular Raul Alonso\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Quiroga</button>
   </div>
 
   <!-- Grupo monzon -->
   <div class="grupo monzon">
-    <h3>Monzon</h3>
+    <h3>Monzon <div class="drag-handle" title="Arrastrar para mover">☰</div> </h3>
      <button onclick="copyText('MONZON03MP')">ALIAS Monzon</button>
     <button onclick="copyText('Titular Raul Alberto\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Monzon</button>
   </div>
@@ -384,6 +408,8 @@
     else if (txtLower.includes("titular raul alonso")) tipo = "Titular Quiroga";
     else if (txtLower.includes("lescano4mp")) tipo = "Alias Lescano";
     else if (txtLower.includes("titular sergio daniel")) tipo = "Titular Lescano";
+    else if (txtLower.includes("monzon03mp")) tipo = "Alias Monzon";
+    else if (txtLower.includes("titular raul alberto")) tipo = "Titular Monzon";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
     else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
@@ -455,7 +481,22 @@ histHeader.onclick = () => {
   histContent.style.display = historialVisible ? "block" : "none";
   histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
 };
+</script> <!-- 🔹 cerrar el primer script grande -->
 
+<!-- 🔹 cargar la librería Sortable -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<!-- 🔹 inicializar Sortable -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  new Sortable(document.body, {
+    animation: 150,
+    handle: '.drag-handle',
+    filter: '#banco-panel, #historial-box',
+    ghostClass: 'sortable-ghost'
+  });
+});
 </script>
 </body>
 </html>
+
