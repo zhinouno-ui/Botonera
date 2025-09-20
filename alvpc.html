@@ -404,6 +404,12 @@ button:hover {
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
+ 
+    function animateButton(button){
+  button.style.transform = "scale(0.95)";
+  setTimeout(()=> button.style.transform = "", 150);
+}
+  
   // ======================
   // SLIDER SALUDOS
   // ======================
