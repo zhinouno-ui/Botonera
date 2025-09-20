@@ -404,126 +404,156 @@ button:hover {
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
- 
-    function animateButton(button){
-  button.style.transform = "scale(0.95)";
-  setTimeout(()=> button.style.transform = "", 150);
-}
+
   
+<script>
   // ======================
   // SLIDER SALUDOS
   // ======================
   let modoSlider = 1;
   function actualizarSlider() {
     document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
-      btn.classList.toggle('selected',i===modoSlider);
+      btn.classList.toggle('selected', i === modoSlider);
     });
   }
-  document.getElementById('slider-ruleta').onclick=()=>{modoSlider=0;actualizarSlider();}
-  document.getElementById('slider-mix').onclick=()=>{modoSlider=1;actualizarSlider();}
-  document.getElementById('slider-box').onclick=()=>{modoSlider=2;actualizarSlider();}
+  document.getElementById('slider-ruleta').onclick = () => {modoSlider = 0; actualizarSlider();};
+  document.getElementById('slider-mix').onclick    = () => {modoSlider = 1; actualizarSlider();};
+  document.getElementById('slider-box').onclick    = () => {modoSlider = 2; actualizarSlider();};
   actualizarSlider();
 
-  const saludos = []; // <- aquí se cargan los saludos
+  const saludos = []; // <- aquí se cargan los saludos dinámicos
 
-  function copiarSaludo() {
-    const usuario=document.getElementById("usuarioInput").value.trim();
-    if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-    let filtrados=[];
-    if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('ruleta-bet300'));}
-    else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
-    else {filtrados=saludos;}
-    if(filtrados.length===0){alert("No hay saludos cargados!");return;}
-    const randomIndex=Math.floor(Math.random()*filtrados.length);
-    const mensaje=filtrados[randomIndex].replaceAll("{usuario}",usuario).replaceAll("{usuarioENC}",encodeURIComponent(usuario));
-    copyText(mensaje);
+  // ======================
+  // FEEDBACK VISUAL
+  // ======================
+  function animateButton(button){
+    if(!button) return;
+    button.style.transform = "scale(0.92)";
+    button.style.transition = "transform 0.15s ease";
+    setTimeout(()=> button.style.transform = "", 150);
   }
 
-  function copiarSoloWsp(){
-    const usuario=document.getElementById("usuarioInput").value.trim();
+  // ======================
+  // FUNCIONES DE COPIADO
+  // ======================
+  function copiarSaludo(event) {
+    const usuario = document.getElementById("usuarioInput").value.trim();
+    if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
+    let filtrados = [];
+    if(modoSlider === 0){filtrados = saludos.filter(s => s.includes('ruleta-bet300'));}
+    else if(modoSlider === 2){filtrados = saludos.filter(s => s.includes('mistery-box-one'));}
+    else {filtrados = saludos;}
+    if(filtrados.length === 0){alert("No hay saludos cargados!");return;}
+    const randomIndex = Math.floor(Math.random() * filtrados.length);
+    const mensaje = filtrados[randomIndex]
+      .replaceAll("{usuario}", usuario)
+      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+    copyText(mensaje);
+    animateButton(event?.target);
+  }
+
+  function copiarSoloWsp(event){
+    const usuario = document.getElementById("usuarioInput").value.trim();
     if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
     copyText(`https://wa.me/5491150030414?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
+    animateButton(event?.target);
   }
 
-  function copiarCodigoAmigo(){
-    const usuario=document.getElementById("usuarioInput").value.trim();
+  function copiarCodigoAmigo(event){
+    const usuario = document.getElementById("usuarioInput").value.trim();
     if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-    const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://alvge.bet300vip.com/`;
+    const mensaje = `TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://alvge.bet300vip.com/`;
     copyText(mensaje);
+    animateButton(event?.target);
   }
 
   // ======================
   // HISTORIAL + TOAST
   // ======================
-  let lastCopied="", historialVisible=false;
-  const histHeader=document.getElementById("historial-header");
-  const histArrow=document.getElementById("historial-arrow");
-  const histContent=document.getElementById("historial-content");
-  const histText=document.getElementById("historial-text");
-  const histCopyBtn=document.getElementById("historial-copy");
+  let lastCopied = "", historialVisible = false;
+  const histHeader = document.getElementById("historial-header");
+  const histArrow  = document.getElementById("historial-arrow");
+  const histContent= document.getElementById("historial-content");
+  const histText   = document.getElementById("historial-text");
+  const histCopyBtn= document.getElementById("historial-copy");
 
-  histHeader.onclick=()=>{
-    historialVisible=!historialVisible;
-    histContent.style.display=historialVisible?"block":"none";
-    histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
+  histHeader.onclick = () => {
+    historialVisible = !historialVisible;
+    histContent.style.display = historialVisible ? "block" : "none";
+    histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
   };
-  histCopyBtn.onclick=()=>{if(lastCopied)copyText(lastCopied);};
+  histCopyBtn.onclick = () => { if(lastCopied) copyText(lastCopied); };
 
   function addHistorial(txt){
-    lastCopied=txt;
-    histText.textContent=txt;
-    histContent.style.display="block";
-    histArrow.style.transform="rotate(180deg)";
-    historialVisible=true;
+    lastCopied = txt;
+    histText.textContent = txt;
+    histContent.style.display = "block";
+    histArrow.style.transform = "rotate(180deg)";
+    historialVisible = true;
   }
 
   function showToast(message){
-    const toast=document.getElementById("toast");
-    toast.textContent="✅ Copiado: "+message;
-   toast.classList.add("show");
+    const toast = document.getElementById("toast");
+    toast.textContent = "✅ Copiado: " + message;
+    toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 2000);
   }
 
   function fallbackCopy(txt){
-    const temp=document.createElement("textarea");
-    temp.value=txt;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-    showToast("Texto");
+    try {
+      const temp = document.createElement("textarea");
+      temp.value = txt;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      showToast("Texto");
+    } catch {
+      prompt("Copia manualmente el texto:", txt);
+    }
   }
 
   function copyText(txt){
-    let tipo="Texto";
-    const txtLower=txt.toLowerCase();
-    if(txtLower.includes("mistery-box-one")) tipo="Mistery Box";
-    else if(txtLower.includes("ruleta-bet300")) tipo="Ruleta";
-    else if(txtLower.includes("meza01.mp")) tipo="Alias Meza MP";
-          else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
-    else if(txtLower.includes("0000003100073049569289")) tipo="Cbu Meza MP";
-      else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
-    else if(txtLower.includes("luna011.mp")) tipo="Alias Luna MP";
-          else if(txtLower.includes("jluna192320.ppay")) tipo="Alias Luna PPay";
-    else if(txtLower.includes("0000003100057182382088")) tipo="Cbu Luna MP";
-      else if(txtLower.includes("0000076500000042994646")) tipo="Cbu Luna PPay";
-    else if(txtLower.includes("toledo001.mp")) tipo="Alias Toledo MP";
-      else if(txtLower.includes("MTOLEDO3561.NX.ARS")) tipo="Alias Toledo NX";
-    else if(txtLower.includes("0000003100042476697612")) tipo="Cbu Toledo MP";
-      else if(txtLower.includes("4530000800018010604187")) tipo="Cbu Toledo NX";
-    else if(txtLower.includes("arellano.banco")) tipo="Banco, Arellano PP";
-    else if(txtLower.includes("edgardo.928.arado.mp")) tipo="Banco, Arellano MP";
-    else if(txtLower.includes("365.ofi.mp")) tipo="Banco, Chiguay MP";
-    else if(txtLower.includes("somos bet300vip")) tipo="Info";
-    else if(txtLower.includes("¡saldo acreditado!")) tipo="Cargado";
-    else if(txtLower.includes("para hacer el retiro")) tipo="Retiro";
-    else if(txtLower.includes("cronograma")) tipo="Enlace Wsp";
-    else if(txtLower.includes("fichas extra al instante")) tipo="Promo Amigos";
-    else if(txtLower.includes("debe enviar tu código")) tipo="Info Promo Amigos";
-    else if(txtLower.includes("con solo enviarle el enlace ya tienen el whatsapp")) tipo="Codigo amigo";
+    if(!txt) return;
+    let tipo = "Texto";
+    const txtLower = txt.toLowerCase();
 
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
+    const tipos = {
+      "mistery-box-one": "Mistery Box",
+      "ruleta-bet300": "Ruleta",
+      "meza01.mp": "Alias Meza MP",
+      "ymeza44.ppay": "Alias Meza PPay",
+      "0000003100073049569289": "Cbu Meza MP",
+      "0000076500000043003428": "Cbu Meza PPay",
+      "luna011.mp": "Alias Luna MP",
+      "jluna192320.ppay": "Alias Luna PPay",
+      "0000003100057182382088": "Cbu Luna MP",
+      "0000076500000042994646": "Cbu Luna PPay",
+      "toledo001.mp": "Alias Toledo MP",
+      "mtoledo3561.nx.ars": "Alias Toledo NX",
+      "0000003100042476697612": "Cbu Toledo MP",
+      "4530000800018010604187": "Cbu Toledo NX",
+      "arellano.banco": "Banco, Arellano PP",
+      "edgardo.928.arado.mp": "Banco, Arellano MP",
+      "365.ofi.mp": "Banco, Chiguay MP",
+      "somos bet300vip": "Info",
+      "¡saldo acreditado!": "Cargado",
+      "para hacer el retiro": "Retiro",
+      "cronograma": "Enlace Wsp",
+      "fichas extra al instante": "Promo Amigos",
+      "debe enviar tu código": "Info Promo Amigos",
+      "con solo enviarle el enlace ya tienen el whatsapp": "Codigo amigo"
+    };
+
+    for(const clave in tipos){
+      if(txtLower.includes(clave)){
+        tipo = tipos[clave];
+        break;
+      }
+    }
+
+    if(navigator.clipboard?.writeText){
+      navigator.clipboard.writeText(txt).then(()=>showToast(tipo)).catch(()=>fallbackCopy(txt));
     } else {
       fallbackCopy(txt);
     }
@@ -533,15 +563,15 @@ button:hover {
   // ======================
   // BANCO PANEL
   // ======================
-  const bancoToggle=document.getElementById("banco-toggle");
-  const bancoPanel=document.getElementById("banco-panel");
+  const bancoToggle = document.getElementById("banco-toggle");
+  const bancoPanel  = document.getElementById("banco-panel");
 
   function cerrarBancoPanel(){
     bancoPanel.classList.remove("open");
     bancoToggle.classList.remove("open");
   }
 
-  bancoToggle.onclick=function(e){
+  bancoToggle.onclick = function(e){
     e.stopPropagation();
     if(bancoPanel.classList.contains("open")){
       cerrarBancoPanel();
@@ -551,25 +581,24 @@ button:hover {
     }
   };
 
-  document.addEventListener("click",function(e){
-    if(bancoPanel.classList.contains("open")&&!bancoPanel.contains(e.target)&&!bancoToggle.contains(e.target)){
+  document.addEventListener("click", function(e){
+    if(bancoPanel.classList.contains("open") && !bancoPanel.contains(e.target) && !bancoToggle.contains(e.target)){
       cerrarBancoPanel();
     }
   });
-  document.addEventListener("keydown",function(e){
-    if(e.key==="Escape") cerrarBancoPanel();
+
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") cerrarBancoPanel();
   });
 
   // ======================
   // FLIP CARDS
   // ======================
   document.querySelectorAll(".grupo").forEach(grupo=>{
-    const flipBtn=grupo.querySelector(".flip-btn");
-    const card=grupo.querySelector(".wallets-card");
-    if(flipBtn&&card){
-      flipBtn.addEventListener("click",()=>{
-        card.classList.toggle("flipped");
-      });
+    const flipBtn = grupo.querySelector(".flip-btn");
+    const card = grupo.querySelector(".wallets-card");
+    if(flipBtn && card){
+      flipBtn.addEventListener("click", ()=> card.classList.toggle("flipped"));
     }
   });
 
@@ -577,10 +606,8 @@ button:hover {
   // DRAG & DROP (SortableJS)
   // ======================
   new Sortable(document.body,{
-    handle:".drag-handle",
-    animation:150,
-    draggable:".grupo"
+    handle: ".drag-handle",
+    animation: 150,
+    draggable: ".grupo"
   });
-  </script>
-</body>
-</html>
+</script>
