@@ -1,150 +1,202 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>ChinBotones</title>
-   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      margin: 10px;
-      padding: 10px;
-      color: #fff;
-    }
-    h3 {
-      margin: 0 0 8px 0;
-      font-size: 14px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    .grupo {
-      margin-bottom: 12px;
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
-    }
-    button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      font-size: 13px;
-      cursor: pointer;
-      border: none;
-      border-radius: 4px;
-      background: rgba(0,0,0,0.2);
-      color: #fff;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-    button:hover {
-      background: rgba(0,0,0,0.4);
-    }
-    /* Colores personalizados según billetera */
-    .promo-amigo { background: #2ecc71; }
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  background: #121212;
+  margin: 10px;
+  padding: 10px;
+  color: #fff;
+}
+.grupo {
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.titulo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+button:hover {
+  background: rgba(0,0,0,0.4);
+}
+.flip-btn, .drag-handle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  margin-left: 2px;
+  transition: background 0.1s;
+}
+.flip-btn:hover, .drag-handle:hover { background: #444; }
+.drag-handle:active {
+  cursor: grabbing;
+}
+/* Colores personalizados según billetera */
+  .promo-amigo { background: #2ecc71; }
     .torres { background: #3498db; }
     .acuña { background: #9b59b6; }
     .utilidad { background: #e67e22; }
     .mensaje-revin { background: #C93C20; }
-  .input-usuario {
+
+.input-usuario {
   width: 100%;
-  margin: 4px 1cm 5px 0; /* arriba der abajo izq */
+  margin: 4px 1cm 5px 0;
   padding: 8px;
   border-radius: 4px;
   border: none;
   font-size: 13px;
 }
-    .slider-btn {
-      background: #222;
-      color: #ccc;
-      border: none;
-      outline: none;
-      padding: 4px 14px;
-      font-size: 13px;
-      border-radius: 16px;
-      margin-left: 3px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      font-weight: 500;
-      opacity: 0.8;
-      box-shadow: 0 0 2px #0002;
-    }
-    .slider-btn.selected {
-      background: #fff;
-      color: #C93C20;
-      font-weight: bold;
-      opacity: 1;
-      box-shadow: 0 2px 6px #C93C2055;
-    }
-    /* 🔔 Estilos del toast */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: bold;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease, bottom 0.5s ease;
-      z-index: 9999;
-    }
-    .toast.show {
-      opacity: 1;
-      bottom: 40px;
-    }
-    /* Caja historial */
-    #historial-box {
-      margin-top: 15px;
-      background: #34495e;
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-    #historial-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    #historial-arrow {
-      transition: transform 0.3s ease;
-      display: inline-block;
-      font-size: 14px;
-    }
-    #historial-content {
-      margin-top: 8px;
-      display: none;
-      background: rgba(255,255,255,0.1);
-      padding: 8px;
-      border-radius: 4px;
-    }
-    #historial-text {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 6px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    #historial-copy {
-      background: rgba(0,0,0,0.4);
-      border: none;
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    #historial-copy:hover {
-      background: rgba(0,0,0,0.6);
-    }
-       #banco-toggle {
+    /* Contenedor horizontal */
+#modo-slider {
+  display: flex;
+  gap: 6px;
+  background: #2a2a2a; /* Fondo oscuro detrás del grupo */
+  padding: 4px;
+  border-radius: 20px;
+}
+.slider-btn {
+  background: #3a3a3a;
+  color: #ccc;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+}
+
+.slider-btn:active {
+  transform: scale(0.88);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+}
+
+.slider-btn.selected {
+  background: #111;
+  color: #C93C20;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(201,60,32,0.5), inset 0 0 4px rgba(201,60,32,0.3);
+  transform: scale(1.05);
+}
+#modo-slider {
+  display: flex;
+  gap: 6px;
+}
+#modo-slider .slider-btn {
+  flex: 1; /* opcional, para que todos midan lo mismo */
+}
+/* 🔔 Estilos del toast */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, bottom 0.5s ease;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+/* Caja historial */
+#historial-box {
+  margin-top: 15px;
+  background: #34495e;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+#historial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+#historial-arrow {
+  transition: transform 0.3s ease;
+  display: inline-block;
+  font-size: 14px;
+}
+#historial-content {
+  margin-top: 8px;
+  display: none;
+  background: rgba(255,255,255,0.1);
+  padding: 8px;
+  border-radius: 4px;
+}
+#historial-text {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+#historial-copy {
+  background: rgba(0,0,0,0.4);
+  border: none;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+#historial-copy:hover {
+  background: rgba(0,0,0,0.6);
+}
+#banco-toggle {
   position: fixed;
   top: 100px;
   left: 0;
@@ -159,7 +211,6 @@
   transition: left 0.3s;
   opacity: 0.95;
 }
-
 #banco-toggle.open {
   left: 220px;
   transition: left 0.3s;
@@ -183,115 +234,118 @@
   left: 0;
   transition: left 0.3s;
 }
-          <style>
-  .drag-handle {
-    cursor: grab;
-    font-size: 16px;
-    color: #ccc;
-    margin-left: auto; /* empuja a la derecha */
-  }
-  .drag-handle:active {
-    cursor: grabbing;
-  }
-  .grupo {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    position: relative;
-  }
-  .grupo h3 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  </style>
+/* FLIP CARD */
+.wallets-container {
+  perspective: 1200px;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+.wallets-card {
+  width: 100%;
+  min-height: 96px;
+  position: relative;
+  transition: transform 0.45s cubic-bezier(.2,.9,.3,1);
+  transform-style: preserve-3d;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.wallets-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+  padding: 12px 8px;
+  box-sizing: border-box;
+}
+.wallets-face.front { transform: rotateY(0deg); z-index: 2; }
+.wallets-face.back { transform: rotateY(180deg); z-index: 1; }
+.wallets-card.flipped { transform: rotateY(180deg); }
+.wallets-face button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 0;
+  box-shadow: 0 1px 4px #0001;
+  transition: background 0.18s;
+}
+.wallets-face button:hover { background: rgba(0,0,0,0.35);}
   </style>
 </head>
 <body>
   <!-- Grupo Info Útil -->
   <div class="grupo utilidad">
     <h3>Utilidad</h3>
-    <button onclick="copyText('✨ SOMOS BET300VIP ✨\n\nDisfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮\n\n📲 ¿Listo para disfrutar al máximo? 🚀\n\nPara añadir saldo, lo haces mediante CBU. 🧾\n‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️\n📩 Envianos el comprobante y empezá a jugar. 🚀\n\n📍 C4RG4 MÍNIMA: $2000\n📍 RET1R0 MÍNIMO: $5000\nSin Monto Maximo!!\nUn retiro cada 24hs exactas!\n\n🕐 Atención personalizada las 24hs los 365 dias del año!!!!')">Info</button>
+    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨\n\nDisfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮\n\n📲 ¿Listo para disfrutar al máximo? 🚀\n\nPara añadir saldo, lo haces mediante CBU. 🧾\n‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️\n📩 Envianos el comprobante y empezá a jugar. 🚀\n\n📍 C4RG4 MÍNIMA: $2000\n📍 RET1R0 MÍNIMO: $5000\nSin Monto Maximo!!\nUn retiro cada 24hs exactas!\n\n🕐 Atención personalizada las 24hs los 365 dias del año!!!!')">Info</button>
 
-    <button onclick="copyText('✅ ¡Saldo acreditado!\nTu cuenta ya está lista para girar y ganar 🎰\n🍀 ¡Éxitos en cada tirada!\nSi no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado o el chat en:\n🔗 300vip-c01.vercel.app\n🎰 Recorda que el chat de la plataforma está funcionando!\n💰 Beneficio de 2 retiros cada 24 hs cargando desde ahí!')">Cargado</button>
-
-    <button onclick="copyText('✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
-  </div>
+    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!\nTu cuenta ya está lista para girar y ganar 🎰\n🍀 ¡Éxitos en cada tirada!\nSi no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado o el chat en:\n🔗 https://300vip-c01.vercel.app\n🎰 Recorda que el chat de la plataforma está funcionando!\n💰 Beneficio de 2 retiros cada 24 hs cargando desde ahí!')">Cargado</button>
+    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
+   </div>
 
   <!-- Grupo acuñao -->
-  <div class="grupo acuña">
-    <h3>acuña <div class="drag-handle" title="Arrastrar para mover">☰</div>
- </h3>
-     <button onclick="copyText('acuna.03.mp')">ALIAS Acuña</button>
-    
-    <button onclick="copyText('Titular Cristian Acuña\nTe pido que junto con el comprobante envies el nombre del titular de la cuenta. Gracias!')">Titular Acuña</button>
-  </div>
-
-    <!-- Grupo Promo Amigo -->
-<div class="grupo promo-amigo">
-  <h3>Promo Amigo</h3>
-
-<button onclick="copyText('🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://300vip-c01.vercel.app/')">Promo amigo</button>
-  
-<button onclick="copyText('ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
-</div>
-  
-<!-- Grupo Mensaje Revin con slider -->
-<div class="grupo mensaje-revin" style="position: relative;">
-  <h3 style="display: flex; align-items: center; justify-content: space-between;">
-    Mensaje Revin
-    <div id="modo-slider" style="display: flex; gap: 0; align-items: center; margin-left: 10px;">
-      <button class="slider-btn" data-modo="0" id="slider-ruleta">Ruleta</button>
-      <button class="slider-btn" data-modo="1" id="slider-mix">Mix</button>
-      <button class="slider-btn" data-modo="2" id="slider-box">Box</button>
+  <div class="grupo acuña" draggable="false">
+    <div class="header">
+      <div class="titulo">Acuña</div>
+      <div class="controls">
+      //aca iria el boton para dar vuelta las billes a posteriori!//
+        <button type="button" class="drag-handle">☰</button>
+      </div>
     </div>
-  </h3>
-
-  <!-- Input usuario -->
-  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-
-  <!-- Botones -->
-  <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
-    <button style="flex:1;" onclick="copiarSaludo()">Copiar saludo</button>
-    <button style="flex:1; background:#27ae60;" onclick="copiarSoloWsp()">Copiar WhatsApp</button>
-    <button style="flex:1; background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100099477012498')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'acuna.03.mp \nTitular Cristian Ariel *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'No tiene, no se que tocas')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'te ilusionaste no?')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Grupo Promo Amigo -->
+  <div class="grupo promo-amigo">
+    <h3>Promo Amigo</h3>
+<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://https://300vip-c01.vercel.app/')">Promo amigo</button>
+<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
-<script>
-  // ✅ Copiar solo el enlace de WhatsApp personalizado
-  function copiarSoloWsp() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-    const usuarioENC = encodeURIComponent(usuario);
-    const enlaceWsp = `https://wa.me/5491138601132?text=Hola%20soy%20${usuarioENC}%20quiero%20mi%20clave%20y%20cronograma`;
-
-    copyText(enlaceWsp);
-  }
-
-  // ✅ Copiar Código Amigo
-  function copiarCodigoAmigo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-
-    const mensaje = `TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c01.vercel.app/`;
-
-    copyText(mensaje);
-  }
-</script>
-
+  <!-- Grupo Mensaje Revin -->
+  <div class="grupo mensaje-revin">
+    <h3 style="display:flex;justify-content:space-between;align-items:center;">
+      Mensaje Revin
+      <div id="modo-slider">
+        <button class="slider-btn" id="slider-ruleta">Ruleta</button>
+        <button class="slider-btn" id="slider-mix">Mix</button>
+        <button class="slider-btn" id="slider-box">Box</button>
+      </div>
+    </h3>
+    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+<button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
+<button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
+<button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
+    </div>
+  </div>
 
   <!-- Historial -->
   <div id="historial-box">
     <div id="historial-header">
-      📝 Último copiado
-      <span id="historial-arrow">⌄</span>
+      📝 Último copiado <span id="historial-arrow">⌄</span>
     </div>
     <div id="historial-content">
       <span id="historial-text">Nada copiado aún...</span>
@@ -301,677 +355,114 @@
 
   <div id="toast" class="toast"></div>
 
-<script>
-  // Estado del slider
-  let modoSlider = 1; // 0=Ruleta, 1=Mix, 2=Box
+  <!-- Panel Banco -->
+  <div id="banco-toggle">Banco</div>
+  <div id="banco-panel">
+    <h3 style="margin-top:0;">Panel Banco</h3>
+    <button onclick="copiarYAnimar(event,'365.ofi.mp')">ALIAS CHIGUAY</button>
+    <button onclick="copiarYAnimar(event,'edgardo.928.arado.mp')">Arellano MP</button>
+    <button onclick="copiarYAnimar(event,'arellano.banco')">Arellano PP</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script>
+ 
+    function animateButton(button){
+  button.style.transform = "scale(0.95)";
+  setTimeout(()=> button.style.transform = "", 150);
+}
+  
+  // ======================
+  // SLIDER SALUDOS
+  // ======================
+  let modoSlider = 1;
   function actualizarSlider() {
-    const botones = document.querySelectorAll('.slider-btn');
-    botones.forEach((btn, i) => {
-      btn.classList.toggle('selected', i === modoSlider);
+    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
+      btn.classList.toggle('selected',i===modoSlider);
     });
   }
-  document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); };
-  document.getElementById('slider-mix').onclick    = () => { modoSlider = 1; actualizarSlider(); };
-  document.getElementById('slider-box').onclick    = () => { modoSlider = 2; actualizarSlider(); };
+  document.getElementById('slider-ruleta').onclick=()=>{modoSlider=0;actualizarSlider();}
+  document.getElementById('slider-mix').onclick=()=>{modoSlider=1;actualizarSlider();}
+  document.getElementById('slider-box').onclick=()=>{modoSlider=2;actualizarSlider();}
   actualizarSlider();
 
-  // Array de saludos (acortado por espacio)
-  const saludos = [
-`🎲 {usuario}, probá tu giro ahora mismo 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse en este instante ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse en este instante ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔓 {usuario}, tu Mistery Box espera por vos… abrila ya 🎲
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, un clic más y tu Mistery Box se abre 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box está esperando que la abras 🔥
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`👀 {usuario}, no dejes cerrada tu Mistery Box… está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Tu Mistery Box tiene la llave lista, {usuario} 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, tu Mistery Box no deja de brillar ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Hoy es el día {usuario}, tu Mistery Box puede abrirse ahora 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box se abre solo si la pedís 📦
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🔑 Mistery Box esperando… ¿la abrimos {usuario}? 🎊
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box guarda algo especial 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20su%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎊 {usuario}, tu Mistery Box está esperando el clic final 💎
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20pido%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Mistery Box lista para abrirse {usuario} 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👑 Mistery Box exclusiva para vos {usuario}, pedila 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, Mistery Box se abre con tu captura 👀
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Mistery Box bloqueada… {usuario}, pedí abrirla 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20quiere%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede darte la sorpresa 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ Mistery Box encendida, solo falta tu clic {usuario} 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 No la dejes cerrada {usuario}, tu Mistery Box está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box brilla esperando tu captura ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse en este instante ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔓 {usuario}, tu Mistery Box espera por vos… abrila ya 🎲
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, un clic más y tu Mistery Box se abre 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box está esperando que la abras 🔥
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`👀 {usuario}, no dejes cerrada tu Mistery Box… está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Tu Mistery Box tiene la llave lista, {usuario} 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, tu Mistery Box no deja de brillar ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Hoy es el día {usuario}, tu Mistery Box puede abrirse ahora 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box se abre solo si la pedís 📦
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🔑 Mistery Box esperando… ¿la abrimos {usuario}? 🎊
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box guarda algo especial 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20su%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎊 {usuario}, tu Mistery Box está esperando el clic final 💎
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20pido%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Mistery Box lista para abrirse {usuario} 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👑 Mistery Box exclusiva para vos {usuario}, pedila 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, Mistery Box se abre con tu captura 👀
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Mistery Box bloqueada… {usuario}, pedí abrirla 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20quiere%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede darte la sorpresa 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ Mistery Box encendida, solo falta tu clic {usuario} 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 No la dejes cerrada {usuario}, tu Mistery Box está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box brilla esperando tu captura ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse en este instante ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔓 {usuario}, tu Mistery Box espera por vos… abrila ya 🎲
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, un clic más y tu Mistery Box se abre 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box está esperando que la abras 🔥
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`👀 {usuario}, no dejes cerrada tu Mistery Box… está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Tu Mistery Box tiene la llave lista, {usuario} 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, tu Mistery Box no deja de brillar ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Hoy es el día {usuario}, tu Mistery Box puede abrirse ahora 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box se abre solo si la pedís 📦
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🔑 Mistery Box esperando… ¿la abrimos {usuario}? 🎊
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box guarda algo especial 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20su%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎊 {usuario}, tu Mistery Box está esperando el clic final 💎
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20pido%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Mistery Box lista para abrirse {usuario} 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👑 Mistery Box exclusiva para vos {usuario}, pedila 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, Mistery Box se abre con tu captura 👀
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Mistery Box bloqueada… {usuario}, pedí abrirla 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20quiere%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede darte la sorpresa 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ Mistery Box encendida, solo falta tu clic {usuario} 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 No la dejes cerrada {usuario}, tu Mistery Box está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box brilla esperando tu captura ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`{usuario}, muchas veces una sola decisión cambia el día. Hoy tu ruleta está lista y puede darte una sorpresa inesperada ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola,%20soy%20{usuarioENC},%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
+  const saludos = []; // <- aquí se cargan los saludos
 
-`{usuario}, hay una caja esperando que la abras. Dentro puede haber algo pensado solo para vos, no la dejes cerrada 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola,%20soy%20{usuarioENC},%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`{usuario}, a veces un giro basta para sorprender. La ruleta está cargada y esperando que la pongas en movimiento 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20activar%20mi%20giro
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu Mistery Box está lista desde hace rato. No te quedes con la duda, abrila y descubrí qué guarda para vos 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Cada día trae una oportunidad distinta {usuario}. La tuya está en la ruleta, lista para girar y sorprenderte 💫
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC},%20quiero%20usar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu box no se abrirá sola. Adentro puede haber algo especial, y solo vos podés descubrirlo hoy 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20necesito%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Un momento simple puede cambiar todo {usuario}. Tu ruleta está esperando tu giro, animate a probar 💎
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola,%20soy%20{usuarioENC},%20quiero%20activar%20mi%20giro
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, a veces lo especial está escondido en lo más simple. Tu Mistery Box es un clic que abre la puerta a lo inesperado ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`{usuario}, tu ruleta está lista. Girarla no lleva más de un instante, pero puede alegrarte el día 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20mi%20giro
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu Mistery Box puede guardarte una buena sorpresa. No dejes que quede cerrada más tiempo 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC},%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Un giro más {usuario}, sin esfuerzo y con la chance de sorprenderte. Todo está listo para vos 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, hay cajas que cambian el momento. La tuya está lista, esperándote tranquila para abrirse 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`{usuario}, tu giro puede estar a un paso. La ruleta está encendida y preparada para vos ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC},%20necesito%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`La curiosidad también se abre {usuario}. Tu Mistery Box puede darte la sorpresa del día, ¿la probamos? 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Hoy puede ser distinto si lo intentás {usuario}. Tu giro está preparado y esperando un solo clic 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, no hay que pensar demasiado: tu Box está esperando y abrirla puede ser más fácil de lo que imaginás 🎉
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC},%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Cada giro trae una historia distinta {usuario}. El tuyo ya está listo para empezar 💫
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20quiere%20activar%20su%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`Una caja cerrada siempre guarda intriga {usuario}. La tuya ya se puede abrir y descubrir lo que tiene adentro 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Tu ruleta no espera {usuario}, está activa y preparada. Solo falta que la pongas en marcha 🎲
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola,%20soy%20{usuarioENC},%20quiero%20usar%20la%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, la Mistery Box que tenés pendiente está lista. Una sola apertura y lo descubrís todo 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Hoy puede empezar distinto con un solo giro {usuario}. La ruleta ya está encendida 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20activar%20mi%20giro
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu Mistery Box no se abre sola. Vos tenés la llave y hoy podés usarla 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC},%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Un clic {usuario}, y la ruleta puede cambiar el momento. Animate a girar 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu Mistery Box puede darte la sorpresa de la semana. No la dejes cerrada ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Un giro fácil {usuario}, sin vueltas y sin demora. La ruleta ya está lista 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC},%20quiero%20usar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu Mistery Box está iluminada esperando tu clic 🎉
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20necesita%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
-`Hoy tu giro puede sorprender {usuario}, no lo dejes pasar 💫
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC},%20quiero%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-
-`{usuario}, tu Mistery Box ya está lista y esperándote tranquila. Abrila y descubrí qué tiene adentro 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC},%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse en este instante ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede abrirse en este instante ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔓 {usuario}, tu Mistery Box espera por vos… abrila ya 🎲
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, un clic más y tu Mistery Box se abre 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box está esperando que la abras 🔥
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`👀 {usuario}, no dejes cerrada tu Mistery Box… está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20abrir%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Tu Mistery Box tiene la llave lista, {usuario} 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20abrir%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, tu Mistery Box no deja de brillar ✨
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Hoy es el día {usuario}, tu Mistery Box puede abrirse ahora 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box se abre solo si la pedís 📦
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🔑 Mistery Box esperando… ¿la abrimos {usuario}? 🎊
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ {usuario}, tu Mistery Box guarda algo especial 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20su%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎊 {usuario}, tu Mistery Box está esperando el clic final 💎
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20pido%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 Mistery Box lista para abrirse {usuario} 🗝️
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👑 Mistery Box exclusiva para vos {usuario}, pedila 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20foto%20para%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 {usuario}, Mistery Box se abre con tu captura 👀
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🗝️ Mistery Box bloqueada… {usuario}, pedí abrirla 🔓
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20quiere%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎁 {usuario}, tu Mistery Box puede darte la sorpresa 💎
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20abrir%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`✨ Mistery Box encendida, solo falta tu clic {usuario} 🔑
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20pide%20activar%20su%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`🎉 No la dejes cerrada {usuario}, tu Mistery Box está lista 🎁
-📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20y%20quiero%20abrir%20la%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-`👀 {usuario}, tu Mistery Box brilla esperando tu captura ✨
-📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20mi%20box
-👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`
-  ];
-
-  // ✅ Copiar saludo según slider
-  function copiarSaludo() {
-    const usuario = document.getElementById("usuarioInput").value.trim();
-    if (!usuario) {
-      alert("⚠️ Escribí un usuario primero!");
-      return;
-    }
-
-    let filtrados = [];
-    if (modoSlider === 0) {
-      filtrados = saludos.filter(s => s.includes('https://ruleta-bet300.vercel.app/?pc=1'));
-    } else if (modoSlider === 2) {
-      filtrados = saludos.filter(s => s.includes('mistery-box-one.vercel.app'));
-    } else {
-      filtrados = saludos;
-    }
-
-    const randomIndex = Math.floor(Math.random() * filtrados.length);
-    const mensaje = filtrados[randomIndex]
-      .replaceAll("{usuario}", usuario)
-      .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
-
-    copyText(mensaje);
-}
-const bancoToggle = document.getElementById('banco-toggle');
-const bancoPanel = document.getElementById('banco-panel');
-
-function cerrarBancoPanel() {
-  bancoPanel.classList.remove('open');
-  bancoToggle.classList.remove('open');
+function copiarSaludo(event) {
+  const usuario=document.getElementById("usuarioInput").value.trim();
+  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
+  let filtrados=[];
+  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('ruleta-bet300'));}
+  else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
+  else {filtrados=saludos;}
+  if(filtrados.length===0){alert("No hay saludos cargados!");return;}
+  const randomIndex=Math.floor(Math.random()*filtrados.length);
+  const mensaje=filtrados[randomIndex].replaceAll("{usuario}",usuario).replaceAll("{usuarioENC}",encodeURIComponent(usuario));
+  copyText(mensaje);
+  animateButton(event?.target); // 🔥 feedback visual aquí
 }
 
-bancoToggle.onclick = function(e) {
-  e.stopPropagation();
-  if (bancoPanel.classList.contains('open')) {
-    cerrarBancoPanel();
-  } else {
-    bancoPanel.classList.add('open');
-    bancoToggle.classList.add('open');
+function copiarSoloWsp(event){
+  const usuario=document.getElementById("usuarioInput").value.trim();
+  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
+  copyText(`https://wa.me/5491138601132?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
+  animateButton(event?.target); // 🔥 feedback visual aquí
+}
+
+function copiarCodigoAmigo(event){
+  const usuario=document.getElementById("usuarioInput").value.trim();
+  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
+  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c01.vercel.app/`;
+  copyText(mensaje);
+  animateButton(event?.target); // 🔥 feedback visual aquí
+}
+
+  // ======================
+  // HISTORIAL + TOAST
+  // ======================
+  let lastCopied="", historialVisible=false;
+  const histHeader=document.getElementById("historial-header");
+  const histArrow=document.getElementById("historial-arrow");
+  const histContent=document.getElementById("historial-content");
+  const histText=document.getElementById("historial-text");
+  const histCopyBtn=document.getElementById("historial-copy");
+
+  histHeader.onclick=()=>{
+    historialVisible=!historialVisible;
+    histContent.style.display=historialVisible?"block":"none";
+    histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
+  };
+  histCopyBtn.onclick=()=>{if(lastCopied)copyText(lastCopied);};
+
+  function addHistorial(txt){
+    lastCopied=txt;
+    histText.textContent=txt;
+    histContent.style.display="block";
+    histArrow.style.transform="rotate(180deg)";
+    historialVisible=true;
   }
-};
 
-document.addEventListener('click', function(e) {
-  if (
-    bancoPanel.classList.contains('open') &&
-    !bancoPanel.contains(e.target) &&
-    !bancoToggle.contains(e.target)
-  ) {
-    cerrarBancoPanel();
+  function showToast(message){
+    const toast=document.getElementById("toast");
+    toast.textContent="✅ Copiado: "+message;
+   toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
   }
-});
 
-document.addEventListener('keydown', function(e) {
-  if (e.key === "Escape") cerrarBancoPanel();
-});
-  
+  function fallbackCopy(txt){
+    const temp=document.createElement("textarea");
+    temp.value=txt;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+    showToast("Texto");
+  }
 
-  // ✅ Copiar texto con toast + historial
-  function copyText(txt) {
-    let tipo = "Texto";
-    const txtLower = txt.toLowerCase();
-    if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
+  function copyText(txt){
+    let tipo="Texto";
+    const txtLower=txt.toLowerCase();
+  if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
     else if (txtLower.includes("ruleta-bet300")) tipo = "Ruleta";
     else if (txtLower.includes("ceramella.01.mp")) tipo = "Alias Ceramella";
     else if (txtLower.includes("titular ceramella")) tipo = "Titular Ceramella";
@@ -990,152 +481,75 @@ document.addEventListener('keydown', function(e) {
     else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
     else if (txtLower.includes("con solo enviarle el enlace ya tienen el whatsApp y el chat")) tipo = "Codigo amigo";
 
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(() => {
-        showToast(tipo);
-      }).catch(() => fallbackCopy(txt));
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
     } else {
       fallbackCopy(txt);
     }
     addHistorial(txt);
   }
 
-  function fallbackCopy(txt) {
-    const temp = document.createElement("textarea");
-    temp.value = txt;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-    showToast("Texto");
+  // ======================
+  // BANCO PANEL
+  // ======================
+  const bancoToggle=document.getElementById("banco-toggle");
+  const bancoPanel=document.getElementById("banco-panel");
+
+  function cerrarBancoPanel(){
+    bancoPanel.classList.remove("open");
+    bancoToggle.classList.remove("open");
   }
 
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = "✅ Copiado: " + message;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
-  }
-
-  // Historial
-  const histHeader = document.getElementById("historial-header");
-  const histArrow = document.getElementById("historial-arrow");
-  const histContent = document.getElementById("historial-content");
-  const histText = document.getElementById("historial-text");
-  const histCopyBtn = document.getElementById("historial-copy");
-  let lastCopied = "";
-
-  histHeader.onclick = () => {
-    const visible = histContent.style.display === "block";
-    histContent.style.display = visible ? "none" : "block";
-    histArrow.style.transform = visible ? "rotate(0deg)" : "rotate(180deg)";
-  };
-  function addHistorial(txt) {
-    lastCopied = txt;
-    histText.textContent = txt;
-    histContent.style.display = "block";
-    histArrow.style.transform = "rotate(180deg)";
-  }
-  histCopyBtn.onclick = () => { if (lastCopied) copyText(lastCopied); };
-  let historialVisible = false;
-
-function addHistorial(txt) {
-  lastCopied = txt;
-  histText.textContent = txt;
-
-  if (historialVisible) {
-    histContent.style.display = "block";
-    histArrow.style.transform = "rotate(180deg)";
-  }
-}
-
-histHeader.onclick = () => {
-  historialVisible = !historialVisible;
-  histContent.style.display = historialVisible ? "block" : "none";
-  histArrow.style.transform = historialVisible ? "rotate(180deg)" : "rotate(0deg)";
-};
-
-</script>
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const bancoToggle = document.getElementById('banco-toggle');
-  const bancoPanel = document.getElementById('banco-panel');
-
-  if (!bancoToggle || !bancoPanel) return; // Evita errores si los elementos no existen
-
-  function cerrarBancoPanel() {
-    bancoPanel.classList.remove('open');
-    bancoToggle.classList.remove('open');
-  }
-
-  bancoToggle.onclick = function(e) {
+  bancoToggle.onclick=function(e){
     e.stopPropagation();
-    if (bancoPanel.classList.contains('open')) {
+    if(bancoPanel.classList.contains("open")){
       cerrarBancoPanel();
     } else {
-      bancoPanel.classList.add('open');
-      bancoToggle.classList.add('open');
+      bancoPanel.classList.add("open");
+      bancoToggle.classList.add("open");
     }
   };
 
-  document.addEventListener('click', function(e) {
-    if (
-      bancoPanel.classList.contains('open') &&
-      !bancoPanel.contains(e.target) &&
-      !bancoToggle.contains(e.target)
-    ) {
+  document.addEventListener("click",function(e){
+    if(bancoPanel.classList.contains("open")&&!bancoPanel.contains(e.target)&&!bancoToggle.contains(e.target)){
       cerrarBancoPanel();
     }
   });
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Escape") cerrarBancoPanel();
+  });
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === "Escape") cerrarBancoPanel();
+  // ======================
+  // FLIP CARDS
+  // ======================
+  document.querySelectorAll(".grupo").forEach(grupo=>{
+    const flipBtn=grupo.querySelector(".flip-btn");
+    const card=grupo.querySelector(".wallets-card");
+    if(flipBtn&&card){
+      flipBtn.addEventListener("click",()=>{
+        card.classList.toggle("flipped");
+      });
+    }
   });
-});
+
+  // ======================
+  // DRAG & DROP (SortableJS)
+  // ======================
+  new Sortable(document.body,{
+    handle:".drag-handle",
+    animation:150,
+    draggable:".grupo"
+  });
+function animateButton(button){
+  if(!button) return;
+  button.style.transform = "scale(0.92)";
+  button.style.transition = "transform 0.15s ease";
+  setTimeout(()=> button.style.transform = "", 150);
+}
+    function copiarYAnimar(event, texto){
+  copyText(texto);
+  animateButton(event?.target); // reutiliza la animación que ya agregaste
+      }
   </script>
-  <!-- Botonera Toggle Banco -->
-  <div id="banco-toggle">Banco</div>
-  <div id="banco-panel">
-    <h3 style="margin-top:0;">Panel Banco</h3>
-     <button onclick="copyText('365.ofi.mp')">ALIAS CHIGUAY</button>
-     <button onclick="copyText('edgardo.928.arado.mp')">arellano mp</button>
-    <button onclick="copyText('arellano.banco')">arellano pp</button>
-  </div>
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Hacer drag de todos los grupos
-  new Sortable(document.body, {
-    animation: 150,
-    handle: '.drag-handle',
-    filter: '#banco-panel, #historial-box', // evita mover panel banco o historial
-    ghostClass: 'sortable-ghost'
-  });
-});
-</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
