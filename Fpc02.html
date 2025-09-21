@@ -347,7 +347,7 @@ button:hover {
   <div class="grupo promo-amigo">
     <h3>Promo Amigo</h3>
 <button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$1.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://https://fge.bet300vip.com/')">Promo amigo</button>
-<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
+<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$1.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
   <!-- Grupo Mensaje Revin -->
@@ -356,8 +356,6 @@ button:hover {
       Mensaje Revin
       <div id="modo-slider">
         <button class="slider-btn" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" id="slider-mix">Mix</button>
-        <button class="slider-btn" id="slider-box">Box</button>
       </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
@@ -485,7 +483,7 @@ function copiarSaludo(event) {
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
   let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('ruleta-bet300'));}
+  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('ruletabet300'));}
   else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
   else {filtrados=saludos;}
   if(filtrados.length===0){alert("No hay saludos cargados!");return;}
