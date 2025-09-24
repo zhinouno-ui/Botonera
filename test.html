@@ -4,7 +4,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>ChinBotones</title>
+  <title>ChinBotones EPC</title>
   <style>
 body {
   font-family: Arial, sans-serif;
@@ -75,11 +75,12 @@ button:hover {
   cursor: grabbing;
 }
 /* Colores personalizados según billetera */
-.promo-amigo { background: #2ecc71; }
-.parejas { background: #3498db; }
-.luna { background: #BE024A; }
-.utilidad { background: #e67e22; }
-.mensaje-revin { background: #C93C20; }
+    .promo-amigo { background: #2ecc71; }
+    .quiroga { background: #3498db; }
+    .lescano { background: #9b59b6; }
+    .monzon { background: #BE024A; }
+    .utilidad { background: #e67e22; }
+    .mensaje-revin { background: #C93C20; }
 
 .input-usuario {
   width: 100%;
@@ -257,10 +258,10 @@ button:hover {
     <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
    </div>
 
-  <!-- Grupo parejas -->
+  <!-- Grupo quiroga -->
   <div class="grupo parejas" draggable="false">
     <div class="header">
-      <div class="titulo">Parejas</div>
+      <div class="titulo">Quiroga</div>
       <div class="controls">
 
         <button type="button" class="drag-handle">☰</button>
@@ -269,21 +270,21 @@ button:hover {
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100079779846751')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'PAREJA01MP \nTitular Alejandro Parejas *Mercado Pago*')">Alias Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'0000003100011663063040')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'QUIROGA012 \nTitular Raul Alonso *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
           <button onclick="copiarYAnimar(event,'0000003100079779846751')">CBU PPay</button>
-          <button onclick="copiarYAnimar(event,'PAREJA01MP \nTitular Alejandro Parejas *Mercado Pago*')">Alias Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'QUIROGA012 \nTitular Raul Alonso *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Grupo Luna -->
-  <div class="grupo luna" draggable="false">
+  <!-- Grupo Monzon -->
+  <div class="grupo monzon" draggable="false">
     <div class="header">
-      <div class="titulo">Luna</div>
+      <div class="titulo">Monzon</div>
       <div class="controls">
 
         <button type="button" class="drag-handle">☰</button>
@@ -292,8 +293,8 @@ button:hover {
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100026833924797')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'LUNA03MP \nTitular Hugo Cesar Luna *Mercado Pago*')">Alias Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'0000003100081514242601')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'MONZON03MP \nTitular Raul Alberto *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
                     <button onclick="copiarYAnimar(event,'0000003100057182382088')">CBU Mercado Pago</button>
@@ -302,7 +303,29 @@ button:hover {
       </div>
     </div>
   </div>
+  
+  <!-- Grupo Lescano -->
+  <div class="grupo lescano" draggable="false">
+    <div class="header">
+      <div class="titulo">Lescano</div>
+      <div class="controls">
 
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100066773504251')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'LESCANO4MP \nTitular Sergio Daniel *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+                    <button onclick="copiarYAnimar(event,'0000003100057182382088')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'luna011.mp \nTitular Juan Ignacio Luna *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Grupo Promo Amigo -->
   <div class="grupo promo-amigo">
@@ -341,6 +364,7 @@ button:hover {
   </div>
 
   <div id="toast" class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
   <script>
  
@@ -365,87 +389,87 @@ button:hover {
 
   const saludos = [
 `🎲 {usuario}, probá tu giro ahora mismo 🚀
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491156463327?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491156463327?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20ruleta
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491156463327?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491156463327?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491156463327?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491156463327?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491156463327?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20manda%20captura%20para%20ruleta
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491156463327?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491156463327?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20activar
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491156463327?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491156463327?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491156463327?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
 
 `💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491156463327?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=1`,
+📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
+👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
   ]; // <- aquí se cargan los saludos
 
 function copiarSaludo(event) {
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
   let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=1'));}
+  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=2'));}
   else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
   else {filtrados=saludos;}
   if(filtrados.length===0){alert("No hay saludos cargados!");return;}
@@ -458,7 +482,7 @@ function copiarSaludo(event) {
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  copyText(`https://wa.me/5491156463327?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
+  copyText(`https://wa.me/5491166587968?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
   animateButton(event?.target); // 🔥 feedback visual aquí
 }
 
@@ -512,17 +536,17 @@ function copiarCodigoAmigo(event){
     showToast("Texto");
   }
 
-  function copyText(txt){
-   let tipo = "Texto";
+ function copyText(txt) {
+    let tipo = "Texto";
     const txtLower = txt.toLowerCase();
     if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
-    else if (txtLower.includes("https://ruletabet300.vercel.app/?pc=1")) tipo = "Ruleta";
-    else if (txtLower.includes("pareja01mp")) tipo = "Alias Parejas";
-    else if (txtLower.includes("0000003100079779846751")) tipo = "Cbu Parejas";
-    else if (txtLower.includes("gimenez01mp")) tipo = "Alias Gimenez";
-    else if (txtLower.includes("titular anibal javier")) tipo = "Titular Gimenez";
-    else if (txtLower.includes("luna03mp")) tipo = "Alias Luna";
-    else if (txtLower.includes("0000003100026833924797")) tipo = "Cbu Luna";
+    else if (txtLower.includes("https://ruletabet300.vercel.app/?pc=01")) tipo = "Ruleta";
+    else if (txtLower.includes("quiroga012")) tipo = "Alias Quieoga";
+    else if (txtLower.includes("0000003100011663063040")) tipo = "Cbu Quiroga";
+    else if (txtLower.includes("lescano4mp")) tipo = "Alias Lescano";
+    else if (txtLower.includes("0000003100066773504251")) tipo = "Cbu Lescano";
+    else if (txtLower.includes("monzon03mp")) tipo = "Alias Monzon";
+    else if (txtLower.includes("0000003100081514242601")) tipo = "Cbu Monzon";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
     else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
@@ -537,36 +561,6 @@ function copiarCodigoAmigo(event){
     }
     addHistorial(txt);
   }
-
-  // ======================
-  // BANCO PANEL
-  // ======================
-  const bancoToggle=document.getElementById("banco-toggle");
-  const bancoPanel=document.getElementById("banco-panel");
-
-  function cerrarBancoPanel(){
-    bancoPanel.classList.remove("open");
-    bancoToggle.classList.remove("open");
-  }
-
-  bancoToggle.onclick=function(e){
-    e.stopPropagation();
-    if(bancoPanel.classList.contains("open")){
-      cerrarBancoPanel();
-    } else {
-      bancoPanel.classList.add("open");
-      bancoToggle.classList.add("open");
-    }
-  };
-
-  document.addEventListener("click",function(e){
-    if(bancoPanel.classList.contains("open")&&!bancoPanel.contains(e.target)&&!bancoToggle.contains(e.target)){
-      cerrarBancoPanel();
-    }
-  });
-  document.addEventListener("keydown",function(e){
-    if(e.key==="Escape") cerrarBancoPanel();
-  });
 
   // ======================
   // FLIP CARDS
@@ -584,11 +578,17 @@ function copiarCodigoAmigo(event){
   // ======================
   // DRAG & DROP (SortableJS)
   // ======================
+</script> <!-- 👈 CERRAMOS el script anterior -->
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
   new Sortable(document.body,{
     handle:".drag-handle",
     animation:150,
     draggable:".grupo"
   });
+</script>
+  <script>
 function animateButton(button){
   if(!button) return;
   button.style.transform = "scale(0.92)";
