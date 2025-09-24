@@ -432,8 +432,84 @@ button:hover {
   document.getElementById('slider-box').onclick=()=>{modoSlider=2;actualizarSlider();}
   actualizarSlider();
 
-  const saludos = []; // <- aquí se cargan los saludos
 
+  const saludos = [
+`🎲 {usuario}, probá tu giro ahora mismo 🚀
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
+📲 WhatsApp: https://wa.me/5491150030414?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
+📲 WhatsApp: https://wa.me/5491150030414?text=Captura%20de%20{usuarioENC}%20para%20ruleta
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🔥 Un spin más {usuario}, y todo puede cambiar 💎
+📲 WhatsApp: https://wa.me/5491150030414?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
+📲 WhatsApp: https://wa.me/5491150030414?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎰 Un solo click {usuario}, girá y mandá captura ⚡
+📲 WhatsApp: https://wa.me/5491150030414?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎲 {usuario}, cada giro es una nueva chance 💥
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`⚡ La ruleta está lista {usuario}, faltás vos 🚀
+📲 WhatsApp: https://wa.me/5491150030414?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
+📲 WhatsApp: https://wa.me/5491150030414?text={usuarioENC}%20manda%20captura%20para%20ruleta
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
+📲 WhatsApp: https://wa.me/5491150030414?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎲 Un spin puede ser tuyo {usuario}, animate 💥
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`💥 {usuario}, tu giro puede cambiarlo todo 🎯
+📲 WhatsApp: https://wa.me/5491150030414?text=Captura%20de%20{usuarioENC}%20para%20activar
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🔥 Giro rápido, captura y premio {usuario} 🚀
+📲 WhatsApp: https://wa.me/5491150030414?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🎯 La suerte está girando {usuario}, jugá ya 🎰
+📲 WhatsApp: https://wa.me/5491150030414?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
+📲 WhatsApp: https://wa.me/5491150030414?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+
+`💎 {usuario}, un spin más puede activar tu premio ⚡
+📲 WhatsApp: https://wa.me/5491150030414?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
+👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=1`,
+  ]; // <- aquí se cargan los saludos
 function copiarSaludo(event) {
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
