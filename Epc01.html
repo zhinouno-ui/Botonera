@@ -585,7 +585,8 @@ function copiarCodigoAmigo(event){
   // ======================
   // DRAG & DROP (SortableJS)
   // ======================
-    </script>
+</script> <!-- 👈 CERRAMOS el script anterior -->
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
   new Sortable(document.body,{
@@ -593,6 +594,8 @@ function copiarCodigoAmigo(event){
     animation:150,
     draggable:".grupo"
   });
+</script>
+  <script>
 function animateButton(button){
   if(!button) return;
   button.style.transform = "scale(0.92)";
