@@ -1,605 +1,408 @@
 
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>ChinBotones EPC</title>
-  <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #121212;
-  margin: 10px;
-  padding: 10px;
-  color: #fff;
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BET300 · Ruleta</title>
+<meta name="theme-color" content="#0b0f1e"/>
+<style>
+:root{
+  --bg:#0b0f1e; --panel:#121634; --panel2:#0f1330; --border:#1e2150;
+  --text:#e8ebff; --muted:#b7b9d6; --ok:#25D366; --pointer:#22d3ee;
 }
-.grupo {
-  margin-bottom: 12px;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  position: relative;
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;color:var(--text);background:var(--bg);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(900px 500px at 50% -10%, rgba(101,74,255,.25), transparent),
+  radial-gradient(700px 350px at 100% 0%, rgba(0,209,255,.18), transparent),
+  linear-gradient(180deg,#0b0f1e 0%,#0b0f1e 60%,#0a0d20 100%);
 }
-button {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.2);
-  color: #fff;
-  font-weight: bold;
-  transition: 0.2s;
-}
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.titulo {
-  font-size: 18px;
-  font-weight: bold;
-  margin-right: 10px;
-}
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-button:hover {
-  background: rgba(0,0,0,0.4);
-}
-.flip-btn, .drag-handle {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background: #333;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 16px;
-  border: none;
-  margin-left: 2px;
-  transition: background 0.1s;
-}
-.flip-btn:hover, .drag-handle:hover { background: #444; }
-.drag-handle:active {
-  cursor: grabbing;
-}
-/* Colores personalizados según billetera */
-    .promo-amigo { background: #2ecc71; }
-    .quiroga { background: #3498db; }
-    .lescano { background: #9b59b6; }
-    .monzon { background: #BE024A; }
-    .utilidad { background: #e67e22; }
-    .mensaje-revin { background: #C93C20; }
+.container{max-width:980px;margin:14px auto;padding:0 14px 92px}
+.card{background: radial-gradient(120% 100% at 50% 0%, rgba(124,77,255,.08), transparent), var(--panel2);
+  border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 15px 40px rgba(0,0,0,.35)}
+@media(max-width:520px){.container{padding:0 0 92px}.card{border-radius:0;border-left:0;border-right:0;padding:14px}}
+.head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.brand{height:28px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.pill{background:linear-gradient(90deg,rgba(124,77,255,.15),rgba(0,209,255,.15));border:1px solid var(--border);
+  border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+.pill.time{display:flex;gap:8px;align-items:center}
+.pill.sound{cursor:pointer;user-select:none}
+.count{display:inline-flex;gap:6px;align-items:center;padding:4px 8px;border-radius:999px;background:rgba(255,204,0,.15);
+  border:1px solid rgba(255,204,0,.35);color:#ffe27a;font-weight:700;font-variant-numeric:tabular-nums}
 
-.input-usuario {
-  width: 100%;
-  margin: 4px 1cm 5px 0;
-  padding: 8px;
-  border-radius: 4px;
-  border: none;
-  font-size: 13px;
-}
-    /* Contenedor horizontal */
-#modo-slider {
-  display: flex;
-  gap: 6px;
-  background: #2a2a2a; /* Fondo oscuro detrás del grupo */
-  padding: 4px;
-  border-radius: 20px;
-}
-.slider-btn {
-  background: #3a3a3a;
-  color: #ccc;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.15s ease;
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
-}
+.grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.grid{grid-template-columns:1.15fr .85fr}}
 
-.slider-btn:active {
-  transform: scale(0.88);
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
-}
+.stage{position:relative;display:flex;align-items:center;justify-content:center}
+.wrap{width:100%;max-width:520px;margin:auto;position:relative}
+canvas{width:100%;height:auto;display:block}
+.pointer{position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--pointer);z-index:2;
+  filter:drop-shadow(0 4px 10px rgba(34,211,238,.35))}
+@media(max-width:420px){.pointer{border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid var(--pointer);top:4px}}
 
-.slider-btn.selected {
-  background: #111;
-  color: #C93C20;
-  font-weight: bold;
-  box-shadow: 0 0 12px rgba(201,60,32,0.5), inset 0 0 4px rgba(201,60,32,0.3);
-  transform: scale(1.05);
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
+.center{text-align:center}
+h1,h2,h3,p{margin:0 0 8px} h1{font-size:24px} .muted{color:var(--muted)}
+.stat{display:flex;gap:12px;align-items:center;justify-content:center;margin:8px 0 14px}
+.badge{min-width:72px;height:46px;border-radius:12px;background:radial-gradient(100% 100% at 50% 0%, rgba(0,209,255,.35), rgba(124,77,255,.35));
+  display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:inset 0 0 10px rgba(124,77,255,.35)}
+.smallline{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Bloque plataforma */
+.promo{display:grid;grid-template-columns:1fr minmax(200px,260px);align-items:center;gap:12px;margin-top:10px;padding:12px;border:1px dashed var(--border);border-radius:12px}
+.promo.expired{border-color:rgba(255,107,107,.5)}
+.promo .copy{display:grid;gap:4px}
+.promo .eyebrow{padding:2px 8px;border-radius:999px;border:1px solid rgba(255,204,0,.35);background:rgba(255,204,0,.12);color:#ffe27a;font-weight:700;font-size:12px;width:max-content}
+.btn.play{display:inline-flex;gap:10px;align-items:center;justify-content:center;padding:14px 16px;border-radius:12px;font-weight:800;
+  background:linear-gradient(90deg,#ffd166,#ff7ab6);color:#0a0f20;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+@media(max-width:520px){.promo{grid-template-columns:1fr}.btn.play{width:100%}}
+
+/* Dock inferior */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:10;background:linear-gradient(180deg, rgba(11,15,30,0) 0%, rgba(11,15,30,.85) 22%, rgba(11,15,30,.95) 100%);
+  padding:10px 16px 14px;display:flex;gap:12px;align-items:center}
+.btn{appearance:none;border:none;cursor:pointer;padding:14px 16px;border-radius:14px;font-weight:800;background:linear-gradient(90deg,#6c59ff,#00d1ff);color:#0a0f20;width:100%;
+  box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.ok{background:#25D366;color:#0b0f1e}
+
+/* Naranja para “Girar” */
+#spinBtn{ background: linear-gradient(90deg,#FF9A3D,#FF5C39); color:#0b0f1e; }
+#spinBtn:disabled{ background: linear-gradient(90deg,#FFBC82,#FF8C78); }
+
+/* Confetti (papelitos) */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+.confetti i{
+  position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;opacity:0;
+  animation:confFall 1.6s linear forwards;
 }
-#modo-slider {
-  display: flex;
-  gap: 6px;
+@keyframes confFall{
+  8%{opacity:1}
+  100%{transform:translateY(110vh) rotate(360deg);opacity:0}
 }
-#modo-slider .slider-btn {
-  flex: 1; /* opcional, para que todos midan lo mismo */
-}
-/* 🔔 Estilos del toast */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease, bottom 0.5s ease;
-  z-index: 9999;
-}
-.toast.show {
-  opacity: 1;
-  bottom: 40px;
-}
-/* Caja historial */
-#historial-box {
-  margin-top: 15px;
-  background: #34495e;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-#historial-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  font-weight: bold;
-}
-#historial-arrow {
-  transition: transform 0.3s ease;
-  display: inline-block;
-  font-size: 14px;
-}
-#historial-content {
-  margin-top: 8px;
-  display: none;
-  background: rgba(255,255,255,0.1);
-  padding: 8px;
-  border-radius: 4px;
-}
-#historial-text {
-  display: block;
-  font-size: 12px;
-  margin-bottom: 6px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-#historial-copy {
-  background: rgba(0,0,0,0.4);
-  border: none;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-}
-#historial-copy:hover {
-  background: rgba(0,0,0,0.6);
-}
-/* FLIP CARD */
-.wallets-container {
-  perspective: 1200px;
-  width: 100%;
-  margin-top: 8px;
-  margin-bottom: 6px;
-}
-.wallets-card {
-  width: 100%;
-  min-height: 96px;
-  position: relative;
-  transition: transform 0.45s cubic-bezier(.2,.9,.3,1);
-  transform-style: preserve-3d;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.04);
-}
-.wallets-face {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: center;
-  align-items: stretch;
-  padding: 12px 8px;
-  box-sizing: border-box;
-}
-.wallets-face.front { transform: rotateY(0deg); z-index: 2; }
-.wallets-face.back { transform: rotateY(180deg); z-index: 1; }
-.wallets-card.flipped { transform: rotateY(180deg); }
-.wallets-face button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: none;
-  background: rgba(0,0,0,0.25);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 15px;
-  margin: 0;
-  box-shadow: 0 1px 4px #0001;
-  transition: background 0.18s;
-}
-.wallets-face button:hover { background: rgba(0,0,0,0.35);}
-  </style>
+</style>
 </head>
 <body>
-  <!-- Grupo Info Útil -->
-  <div class="grupo utilidad">
-    <h3>Utilidad</h3>
-    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨\n\nDisfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮\n\n📲 ¿Listo para disfrutar al máximo? 🚀\n\nPara añadir saldo, lo haces mediante CBU. 🧾\n‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️\n📩 Envianos el comprobante y empezá a jugar. 🚀\n\n📍 C4RG4 MÍNIMA: $2000\n📍 RET1R0 MÍNIMO: $5000\nSin Monto Maximo!!\nUn retiro cada 24hs exactas!\n\n🕐 Atención personalizada las 24hs los 365 dias del año!!!!')">Info</button>
 
-    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!\nTu cuenta ya está lista para girar y ganar 🎰\n🍀 ¡Éxitos en cada tirada!\nSi no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado o el chat en:\n🔗 https://fge.bet300vip.com/\n🎰 Recorda que el chat de la plataforma está funcionando!\n💰 Beneficio de 2 retiros cada 24 hs cargando desde ahí!')">Cargado</button>
-    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
-   </div>
+<!-- papelitos -->
+<div id="confetti" class="confetti" aria-hidden="true"></div>
 
-  <!-- Grupo quiroga -->
-  <div class="grupo quiroga" draggable="false">
-    <div class="header">
-      <div class="titulo">Quiroga</div>
-      <div class="controls">
-
-        <button type="button" class="drag-handle">☰</button>
-      </div>
+<div class="container">
+  <div class="card">
+    <div class="head">
+      <img class="brand" src="img/logo-bet300.svg" alt="BET300" onerror="this.outerHTML='<strong>BET300</strong>'">
+      <span class="pill">Promo interactiva</span>
+      <span class="pill time">⚡ Tiempo limitado <span class="count" id="countdown">--:--</span></span>
+      <span class="pill sound" id="soundToggle">🔊 Sonido: <b id="soundState">ON</b></span>
     </div>
-    <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100011663063040')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'QUIROGA012 \nTitular Raul Alonso *Mercado Pago*')">Alias Mercado Pago</button>
-        </div>
-        <div class="wallets-face back">
-          <button onclick="copiarYAnimar(event,'0000003100079779846751')">CBU PPay</button>
-          <button onclick="copiarYAnimar(event,'QUIROGA012 \nTitular Raul Alonso *Mercado Pago*')">Alias Mercado Pago</button>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="stage">
+          <div class="wrap">
+            <canvas id="wheel" width="620" height="620"></canvas>
+            <div class="pointer" aria-hidden="true"></div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Grupo Monzon -->
-  <div class="grupo monzon" draggable="false">
-    <div class="header">
-      <div class="titulo">Monzon</div>
-      <div class="controls">
-
-        <button type="button" class="drag-handle">☰</button>
-      </div>
-    </div>
-    <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100081514242601')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'MONZON03MP \nTitular Raul Alberto *Mercado Pago*')">Alias Mercado Pago</button>
+      <div class="panel">
+        <div class="center">
+          <div class="stat">
+            <div>
+              <div class="badge" id="badge">-</div>
+              <div class="smallline" id="stampLine" aria-live="polite"></div>
+            </div>
+            <div>
+              <h1 id="title">Tenés 1 giro disponible</h1>
+              <p class="muted" id="subtitle">Los premios se acreditan con tu <b>próxima carga mínima</b>.</p>
+            </div>
+          </div>
         </div>
-        <div class="wallets-face back">
-                    <button onclick="copiarYAnimar(event,'0000003100057182382088')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'luna011.mp \nTitular Juan Ignacio Luna *Mercado Pago*')">Alias Mercado Pago</button>
+
+        <div class="promo" id="promoBox">
+          <div class="copy">
+            <span class="eyebrow">Acceso especial</span>
+            <strong>Tiempo limitado.</strong>
+            <span class="muted">Entrá y participá antes de que termine.</span>
+          </div>
+          <a id="playNow" class="btn play" target="_blank" rel="noopener">
+            <span class="icon">🎮</span>
+            <span class="label">Entrar a la plataforma</span>
+          </a>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- Grupo Lescano -->
-  <div class="grupo lescano" draggable="false">
-    <div class="header">
-      <div class="titulo">Lescano</div>
-      <div class="controls">
-
-        <button type="button" class="drag-handle">☰</button>
-      </div>
-    </div>
-    <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100066773504251')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'LESCANO4MP \nTitular Sergio Daniel *Mercado Pago*')">Alias Mercado Pago</button>
-        </div>
-        <div class="wallets-face back">
-                    <button onclick="copiarYAnimar(event,'0000003100057182382088')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'luna011.mp \nTitular Juan Ignacio Luna *Mercado Pago*')">Alias Mercado Pago</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Grupo Promo Amigo -->
-  <div class="grupo promo-amigo">
-    <h3>Promo Amigo</h3>
-<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$1.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://https://fge.bet300vip.com//')">Promo amigo</button>
-<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$1.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
-  <!-- Grupo Mensaje Revin -->
-  <div class="grupo mensaje-revin">
-    <h3 style="display:flex;justify-content:space-between;align-items:center;">
-      Mensaje Revin
-      <div id="modo-slider">
-        <button class="slider-btn" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" id="slider-mix">Mix</button>
-        <button class="slider-btn" id="slider-box">Box</button>
-      </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-<button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
-<button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
-<button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
-    </div>
-  </div>
+<!-- Dock fijo -->
+<div class="dock">
+  <button id="spinBtn" class="btn">🎯 Girar</button>
+  <button id="claimBtn" class="btn ok" disabled>📲 Reclamar</button>
+</div>
 
-  <!-- Historial -->
-  <div id="historial-box">
-    <div id="historial-header">
-      📝 Último copiado <span id="historial-arrow">⌄</span>
-    </div>
-    <div id="historial-content">
-      <span id="historial-text">Nada copiado aún...</span>
-      <button id="historial-copy">Copy</button>
-    </div>
-  </div>
-
-  <div id="toast" class="toast"></div>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
-  <script>
- 
-    function animateButton(button){
-  button.style.transform = "scale(0.95)";
-  setTimeout(()=> button.style.transform = "", 150);
-}
-  
-  // ======================
-  // SLIDER SALUDOS
-  // ======================
-  let modoSlider = 1;
-  function actualizarSlider() {
-    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
-      btn.classList.toggle('selected',i===modoSlider);
-    });
-  }
-  document.getElementById('slider-ruleta').onclick=()=>{modoSlider=0;actualizarSlider();}
-  document.getElementById('slider-mix').onclick=()=>{modoSlider=1;actualizarSlider();}
-  document.getElementById('slider-box').onclick=()=>{modoSlider=2;actualizarSlider();}
-  actualizarSlider();
-
-  const saludos = [
-`🎲 {usuario}, probá tu giro ahora mismo 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-  ]; // <- aquí se cargan los saludos
-
-function copiarSaludo(event) {
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=2'));}
-  else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
-  else {filtrados=saludos;}
-  if(filtrados.length===0){alert("No hay saludos cargados!");return;}
-  const randomIndex=Math.floor(Math.random()*filtrados.length);
-  const mensaje=filtrados[randomIndex].replaceAll("{usuario}",usuario).replaceAll("{usuarioENC}",encodeURIComponent(usuario));
-  copyText(mensaje);
-  animateButton(event?.target); // 🔥 feedback visual aquí
-}
-
-function copiarSoloWsp(event){
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  copyText(`https://wa.me/5491166587968?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
-  animateButton(event?.target); // 🔥 feedback visual aquí
-}
-
-function copiarCodigoAmigo(event){
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://fge.bet300vip.com//`;
-  copyText(mensaje);
-  animateButton(event?.target); // 🔥 feedback visual aquí
-}
-
-  // ======================
-  // HISTORIAL + TOAST
-  // ======================
-  let lastCopied="", historialVisible=false;
-  const histHeader=document.getElementById("historial-header");
-  const histArrow=document.getElementById("historial-arrow");
-  const histContent=document.getElementById("historial-content");
-  const histText=document.getElementById("historial-text");
-  const histCopyBtn=document.getElementById("historial-copy");
-
-  histHeader.onclick=()=>{
-    historialVisible=!historialVisible;
-    histContent.style.display=historialVisible?"block":"none";
-    histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
-  };
-  histCopyBtn.onclick=()=>{if(lastCopied)copyText(lastCopied);};
-
-  function addHistorial(txt){
-    lastCopied=txt;
-    histText.textContent=txt;
-    histContent.style.display="block";
-    histArrow.style.transform="rotate(180deg)";
-    historialVisible=true;
-  }
-
-  function showToast(message){
-    const toast=document.getElementById("toast");
-    toast.textContent="✅ Copiado: "+message;
-   toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
-  }
-
-  function fallbackCopy(txt){
-    const temp=document.createElement("textarea");
-    temp.value=txt;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-    showToast("Texto");
-  }
-
- function copyText(txt) {
-    let tipo = "Texto";
-    const txtLower = txt.toLowerCase();
-    if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
-    else if (txtLower.includes("https://ruletabet300.vercel.app/?pc=2")) tipo = "Ruleta";
-    else if (txtLower.includes("quiroga012")) tipo = "Alias Quieoga";
-    else if (txtLower.includes("0000003100011663063040")) tipo = "Cbu Quiroga";
-    else if (txtLower.includes("lescano4mp")) tipo = "Alias Lescano";
-    else if (txtLower.includes("0000003100066773504251")) tipo = "Cbu Lescano";
-    else if (txtLower.includes("monzon03mp")) tipo = "Alias Monzon";
-    else if (txtLower.includes("0000003100081514242601")) tipo = "Cbu Monzon";
-    else if (txtLower.includes("somos bet300vip")) tipo = "Info";
-    else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
-    else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
-    else if (txtLower.includes("cronograma")) tipo = "Enlace Wsp";
-    else if (txtLower.includes("fichas extra al instante")) tipo = "Promo Amigos";
-    else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
-    else if (txtLower.includes("recomendado lo tiene que enviar al final")) tipo = "Cod Amigo!";
-
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
-    } else {
-      fallbackCopy(txt);
-    }
-    addHistorial(txt);
-  }
-
-  // ======================
-  // FLIP CARDS
-  // ======================
-  document.querySelectorAll(".grupo").forEach(grupo=>{
-    const flipBtn=grupo.querySelector(".flip-btn");
-    const card=grupo.querySelector(".wallets-card");
-    if(flipBtn&&card){
-      flipBtn.addEventListener("click",()=>{
-        card.classList.toggle("flipped");
-      });
-    }
-  });
-
-  // ======================
-  // DRAG & DROP (SortableJS)
-  // ======================
-</script> <!-- 👈 CERRAMOS el script anterior -->
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-  new Sortable(document.body,{
-    handle:".drag-handle",
-    animation:150,
-    draggable:".grupo"
-  });
-</script>
-  <script>
-function animateButton(button){
-  if(!button) return;
-  button.style.transform = "scale(0.92)";
-  button.style.transition = "transform 0.15s ease";
-  setTimeout(()=> button.style.transform = "", 150);
+/* ===== Premios: $ intercalado con % ===== */
+const MONEY_VALUES   = [2000,3000,4000,5000,3000,2000,5000,4000,1000];
+const PERCENT_VALUES = [10,20,30];
+const PRIZES = (()=>{const r=[];const m=Math.max(MONEY_VALUES.length,PERCENT_VALUES.length);
+  for(let i=0;i<m;i++){ if(i<MONEY_VALUES.length)r.push({type:'money',value:MONEY_VALUES[i]});
+    if(i<PERCENT_VALUES.length)r.push({type:'percent',value:PERCENT_VALUES[i]}); } return r; })();
+const COLORS=["#44e0ff","#7a5bff","#16e2b6","#ff6ad5","#ffd166","#4be1a0","#8ab6ff","#ff9bd1","#6ee7ff","#a78bfa","#34d39a","#ffa3e0","#ffe08a","#7ce1b9"];
+
+/* WhatsApp / plataforma por pc */
+const WP_NUMBERS={principal:"5491157737173",pc1:"5491157748613",pc2:"5491157748076"};
+const PLATFORM_LINKS={principal:"https://plataforma.example/inicio",pc1:"https://e01.bet300vip.com/",pc2:"https://f01.bet300vip.com/"};
+const params=new URLSearchParams(location.search);const pc=params.get('pc');
+let WP=WP_NUMBERS.principal, PLATFORM=PLATFORM_LINKS.principal;
+if(pc==='1'){WP=WP_NUMBERS.pc1;PLATFORM=PLATFORM_LINKS.pc1}
+if(pc==='2'){WP=WP_NUMBERS.pc2;PLATFORM=PLATFORM_LINKS.pc2}
+document.getElementById('playNow').href=PLATFORM;
+
+/* ===== Antifraude: device id + código + timestamp visibles ===== */
+const SALT = "bet300-ruleta-v1"; // podés rotarlo periódicamente
+function ensureDeviceId(){
+  let id = localStorage.getItem('device_id');
+  if(!id){ id = (crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2,8)}`); localStorage.setItem('device_id', id); }
+  return id;
 }
-    function copiarYAnimar(event, texto){
-  copyText(texto);
-  animateButton(event?.target); // reutiliza la animación que ya agregaste
-      }
-  </script>
+const DEVICE_ID = ensureDeviceId();
+function todayKey(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`}
+function tsString(d=new Date()){
+  const dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0'),yyyy=d.getFullYear();
+  const hh=String(d.getHours()).padStart(2,'0'),mi=String(d.getMinutes()).padStart(2,'0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+}
+async function sha256hex(msg){
+  const enc = new TextEncoder().encode(msg);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function makeClaimCode(prizeLabel){
+  const base = `${DEVICE_ID}|${todayKey()}|${prizeLabel}|pc:${pc||'0'}|${SALT}`;
+  const hex = await sha256hex(base);
+  return hex.slice(0,10).toUpperCase();
+}
+
+/* ===== Audio (ticks + win) ===== */
+let soundOn=true;
+const soundToggle=document.getElementById('soundToggle');
+const soundState=document.getElementById('soundState');
+const AudioKit=(()=>{
+  const Ctx=window.AudioContext||window.webkitAudioContext;
+  const ctx=new Ctx(); let unlocked=false;
+  function unlock(){ if(!unlocked){ ctx.resume().catch(()=>{}); unlocked=true; } }
+  function click(freq=900,dur=0.04,vol=0.05){
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='square'; o.frequency.value=freq; g.gain.value=0; o.connect(g).connect(ctx.destination);
+    const t=ctx.currentTime; g.gain.linearRampToValueAtTime(vol, t+0.005); g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.start(t); o.stop(t+dur);
+  }
+  function spinStart(){ const id=setInterval(()=>click(860+Math.random()*120,0.035,0.045),110); return ()=>clearInterval(id); }
+  function win(){ [880,1175,1568].forEach((f,i)=>setTimeout(()=>click(f,0.12,0.09), i*130)); }
+  return {ctx,unlock,spinStart,win};
+})();
+soundToggle.addEventListener('click',()=>{ soundOn=!soundOn; soundState.textContent=soundOn?'ON':'OFF'; });
+
+/* ===== Canvas / ruleta ===== */
+const wheel=document.getElementById('wheel'), ctx=wheel.getContext('2d');
+const spinBtn=document.getElementById('spinBtn'), claimBtn=document.getElementById('claimBtn');
+const badge=document.getElementById('badge'), title=document.getElementById('title'), subtitle=document.getElementById('subtitle');
+const countdownEl=document.getElementById('countdown'), promoBox=document.getElementById('promoBox');
+const confetti = document.getElementById('confetti');
+const stampEl = document.getElementById('stampLine');
+
+let angle=0, spinning=false, cx,cy,r, cssW=0;
+
+const money=n=>"$"+n.toLocaleString("es-AR");
+const label=p=>p.type==='money'?money(p.value):(`${p.value}%`);
+const subtitleHTML=p=>p.type==='money'
+  ? `Recibís <b>${money(p.value)} extra</b> con tu próxima carga.`
+  : `Recibís un <b>${p.value}% extra</b> con tu próxima carga.`;
+
+/* WhatsApp con código + fecha/hora */
+function whatsappText(prizeLabel){
+  const code = localStorage.getItem('spin_code') || '(SIN-COD)';
+  const ts   = localStorage.getItem('spin_ts')   || tsString();
+  return `Hola, gané ${prizeLabel} en la ruleta y quiero reclamarlo con mi próxima carga. Código: ${code} · ${ts}`;
+}
+
+function getWrapWidth(){return Math.floor(document.querySelector('.wrap').getBoundingClientRect().width)}
+function setSize(){
+  const dpr=window.devicePixelRatio||1;
+  const w=Math.min(520,Math.max(280,getWrapWidth()));
+  cssW=w; wheel.width=Math.floor(w*dpr); wheel.height=Math.floor(w*dpr);
+  wheel.style.width=w+'px'; wheel.style.height=w+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  cx=wheel.width/dpr/2; cy=wheel.height/dpr/2; r=Math.min(cx,cy)-10;
+}
+addEventListener('resize',()=>{clearTimeout(window.__wTo);window.__wTo=setTimeout(()=>{setSize()},120)})
+
+function draw(a){
+  ctx.clearRect(0,0,wheel.width,wheel.height);
+  const n=PRIZES.length, arc=Math.PI*2/n;
+  const font= cssW<=340?"700 20px system-ui,-apple-system,Segoe UI":
+               cssW<=380?"700 24px system-ui,-apple-system,Segoe UI":
+               cssW<=440?"700 28px system-ui,-apple-system,Segoe UI":"700 32px system-ui,-apple-system,Segoe UI";
+  for(let i=0;i<n;i++){
+    const s=a+i*arc, e=s+arc;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
+    ctx.fillStyle=COLORS[i%COLORS.length];ctx.fill();
+    ctx.strokeStyle="rgba(10,15,35,.35)";ctx.lineWidth=2;ctx.stroke();
+    const txt=label(PRIZES[i]);
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);
+    ctx.textAlign="right";ctx.fillStyle="#091024";ctx.font=font;
+    ctx.fillText(txt,r-18,10);ctx.restore();
+  }
+  // aro + luces
+  ctx.beginPath();ctx.lineWidth=Math.max(8,r*0.04);ctx.strokeStyle="#424864";ctx.arc(cx,cy,r*1.02,0,Math.PI*2);ctx.stroke();
+  const bulbs=54, rr=r*1.02, t=Date.now()/130;
+  for(let i=0;i<bulbs;i++){
+    const ang=i/bulbs*Math.PI*2; const x=cx+Math.cos(ang)*rr; const y=cy+Math.sin(ang)*rr;
+    const on=(Math.floor(t)%bulbs)===i;
+    ctx.beginPath();ctx.fillStyle=on?"rgba(220,235,255,1)":"rgba(220,235,255,.55)";
+    ctx.arc(x,y,Math.max(3,r*0.03),0,Math.PI*2);ctx.fill();
+  }
+  // centro
+  const rCenter=cssW<=360?Math.max(26,r*.085):cssW<=420?Math.max(30,r*.095):Math.max(34,r*.105);
+  ctx.beginPath();ctx.arc(cx,cy,rCenter,0,Math.PI*2);ctx.fillStyle="#0e1230";ctx.fill();
+  ctx.strokeStyle="rgba(124,77,255,.6)";ctx.lineWidth=Math.max(2,rCenter*.08);ctx.stroke();
+}
+// idle
+(function glow(){ draw(angle); requestAnimationFrame(glow); })();
+
+/* Ganador exacto por sector */
+function normAngle(rad){ const T = Math.PI * 2; return ((rad % T) + T) % T; }
+function winnerIndexByAngle(a){
+  const n = PRIZES.length;
+  const arc = (Math.PI * 2) / n;
+  const pointer = Math.PI * 1.5; // 12 en punto
+  const rel = normAngle(pointer - a);
+  const idx = Math.floor(rel / arc) % n;
+  return idx;
+}
+function animateTo(target,ms,cb){
+  const start=performance.now(),from=angle;
+  (function loop(t){
+    const k=Math.min(1,(t-start)/ms),ease=1-Math.pow(1-k,3);
+    angle=from+(target-from)*ease;
+    if(k<1){requestAnimationFrame(loop)}else{cb&&cb()}
+  })(start);
+}
+
+/* ===== Persistencia / reset / countdown ===== */
+function restoreDaily(){
+  const today=todayKey(); const stored=localStorage.getItem('spin_date');
+  if(stored && stored!==today){
+    localStorage.removeItem('spin_done');
+    localStorage.removeItem('spin_prize');
+    localStorage.removeItem('spin_code');
+    localStorage.removeItem('spin_ts');
+    localStorage.setItem('spin_date',today);
+  } else if(!stored){ localStorage.setItem('spin_date',today) }
+}
+function restorePrizeIfAny(){
+  const done=localStorage.getItem('spin_done')==='1'; const saved=localStorage.getItem('spin_prize');
+  if(done && saved){
+    const p=JSON.parse(saved);
+    const code = localStorage.getItem('spin_code') || '—';
+    const ts   = localStorage.getItem('spin_ts')   || tsString();
+    badge.textContent=label(p);
+    title.textContent="🎉 ¡Premio obtenido!";
+    subtitle.innerHTML=subtitleHTML(p);
+    stampEl.textContent = `Código: ${code} · ${ts}`;
+    claimBtn.disabled=false; spinBtn.disabled=true;
+    const msg=whatsappText(label(p));
+    claimBtn.onclick=()=>location.href=`https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+  }
+}
+function scheduleMidnightReset(){
+  const now=new Date(); const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,5,0);
+  setTimeout(()=>{localStorage.removeItem('spin_done');localStorage.removeItem('spin_prize');localStorage.removeItem('spin_code');localStorage.removeItem('spin_ts');localStorage.setItem('spin_date',todayKey());
+    spinBtn.disabled=false;badge.textContent='-';title.textContent='Tenés 1 giro disponible';
+    subtitle.innerHTML='Los premios se acreditan con tu <b>próxima carga mínima</b>.';stampEl.textContent='';}, midnight.getTime()-now.getTime());
+}
+function endOfDay(){const n=new Date();const end=new Date(n.getFullYear(),n.getMonth(),n.getDate(),23,59,0,0).getTime();
+  return end>Date.now()?end:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,23,59,0,0).getTime()}
+function tickCountdown(){
+  const ms=endOfDay()-Date.now(); const total=Math.max(0,Math.floor(ms/1000));
+  const h=Math.floor(total/3600), m=Math.floor((total%3600)/60), s=total%60;
+  countdownEl.textContent=h>0?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(ms<=0){promoBox.classList.add('expired');spinBtn.disabled=true;title.textContent="⏱️ Oferta finalizada";
+    subtitle.innerHTML="Los giros promocionales se habilitan en la próxima ventana.";}
+}
+
+/* Confetti */
+function confettiBurst(){
+  confetti.innerHTML='';
+  const n = 28;
+  for(let i=0;i<n;i++){
+    const p=document.createElement('i');
+    p.style.left = (Math.random()*100)+'vw';
+    p.style.animationDelay = (Math.random()*0.5)+'s';
+    p.style.background = Math.random()<.5
+      ? 'linear-gradient(#80ffea,#4e9cff)'
+      : 'linear-gradient(#ffd166,#ff3d7f)';
+    confetti.appendChild(p);
+  }
+  setTimeout(()=>{confetti.innerHTML='';}, 1800);
+}
+
+/* ===== Spin ===== */
+let stopTicks=null;
+document.addEventListener('click',()=>AudioKit.unlock(),{once:true}); // desbloqueo audio
+
+spinBtn.addEventListener('click', async ()=>{
+  if(spinning) return;
+  if(localStorage.getItem('spin_done')==='1'){ alert("Ya usaste tu giro de hoy"); return; }
+
+  spinning=true; spinBtn.disabled=true;
+  AudioKit.unlock();
+  if(soundOn){ stopTicks = AudioKit.spinStart(); }
+
+  const extra=5+Math.random()*1.5, offset=Math.random()*Math.PI*2, final=angle+(Math.PI*2*extra)+offset;
+
+  animateTo(final, 3000, async ()=>{
+    angle=final;
+    const idx=winnerIndexByAngle(angle); const prize=PRIZES[idx];
+    const prizeLabel = label(prize);
+
+    // generar y persistir código + timestamp
+    const code = await makeClaimCode(prizeLabel);
+    const ts   = tsString(new Date());
+    localStorage.setItem('spin_code', code);
+    localStorage.setItem('spin_ts', ts);
+
+    // pintar UI
+    badge.textContent=prizeLabel;
+    title.textContent="🎉 ¡Premio obtenido!";
+    subtitle.innerHTML=subtitleHTML(prize);
+    stampEl.textContent = `Código: ${code} · ${ts}`;
+
+    // WhatsApp
+    const msg = whatsappText(prizeLabel);
+    claimBtn.disabled=false;
+    claimBtn.onclick=()=>location.href=`https://wa.me/${WP}?text=${encodeURIComponent(msg)}`;
+
+    // persistencia de giro
+    localStorage.setItem('spin_done','1');
+    localStorage.setItem('spin_prize',JSON.stringify(prize));
+    localStorage.setItem('spin_date',todayKey());
+
+    if(soundOn){ if(stopTicks) stopTicks(); AudioKit.win(); }
+    confettiBurst();
+    spinning=false;
+  });
+});
+
+/* ===== Init ===== */
+function init(){
+  setSize(); restoreDaily(); restorePrizeIfAny(); tickCountdown();
+  setInterval(tickCountdown,1000);
+  scheduleMidnightReset();
+}
+init();
+</script>
 </body>
 </html>
