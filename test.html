@@ -197,44 +197,6 @@ button:hover {
 #historial-copy:hover {
   background: rgba(0,0,0,0.6);
 }
-#banco-toggle {
-  position: fixed;
-  top: 100px;
-  left: 0;
-  background: #C93C20;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 0 8px 8px 0;
-  padding: 12px 18px 12px 12px;
-  cursor: pointer;
-  box-shadow: 2px 2px 8px #0004;
-  z-index: 10001;
-  transition: left 0.3s;
-  opacity: 0.95;
-}
-#banco-toggle.open {
-  left: 220px;
-  transition: left 0.3s;
-}
-#banco-panel {
-  position: fixed;
-  top: 80px;
-  left: -220px;
-  width: 220px;
-  background: #222;
-  color: #fff;
-  border-radius: 0 12px 12px 0;
-  box-shadow: 4px 0px 16px #0003;
-  padding: 18px 16px;
-  z-index: 10000;
-  transition: left 0.3s;
-  min-height: 120px;
-  opacity: 0.98;
-}
-#banco-panel.open {
-  left: 0;
-  transition: left 0.3s;
-}
 /* FLIP CARD */
 .wallets-container {
   perspective: 1200px;
@@ -493,7 +455,7 @@ function copiarSaludo(event) {
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
   let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('ruleta-bet300'));}
+  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=1'));}
   else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
   else {filtrados=saludos;}
   if(filtrados.length===0){alert("No hay saludos cargados!");return;}
@@ -566,11 +528,11 @@ function copiarCodigoAmigo(event){
     if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
     else if (txtLower.includes("https://ruletabet300.vercel.app/?pc=1")) tipo = "Ruleta";
     else if (txtLower.includes("pareja01mp")) tipo = "Alias Parejas";
-    else if (txtLower.includes("titular alejandro parejas")) tipo = "Titular Parejas";
+    else if (txtLower.includes("0000003100079779846751")) tipo = "Cbu Parejas";
     else if (txtLower.includes("gimenez01mp")) tipo = "Alias Gimenez";
     else if (txtLower.includes("titular anibal javier")) tipo = "Titular Gimenez";
     else if (txtLower.includes("luna03mp")) tipo = "Alias Luna";
-    else if (txtLower.includes("titular hugo cesar")) tipo = "Titular Luna";
+    else if (txtLower.includes("0000003100026833924797")) tipo = "Cbu Luna";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
     else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
