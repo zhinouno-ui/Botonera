@@ -514,7 +514,7 @@ function copiarSaludo(event) {
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
   let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://bet300-ruleta-luj.vercel.app/?pc=1'));}
+  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('bet300-ruleta-luj'));}
   else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('mistery-box-one'));}
   else {filtrados=saludos;}
   if(filtrados.length===0){alert("No hay saludos cargados!");return;}
