@@ -375,10 +375,10 @@ button:hover {
     <h3 style="display:flex;justify-content:space-between;align-items:center;">
       Mensaje Revin
       <div id="modo-slider">
-        <button class="slider-btn" id="slider-ruleta">PC01</button>
-        <button class="slider-btn" id="slider-mix">PC02</button>
-        <button class="slider-btn" id="slider-box">PC03</button>
-        <button class="slider-btn" id="slider-box">PC04</button>
+        <button class="slider-btn" id="slider-PC01">PC01</button>
+        <button class="slider-btn" id="slider-PC02">PC02</button>
+        <button class="slider-btn" id="slider-PC03">PC03</button>
+        <button class="slider-btn" id="slider-PC04">PC04</button>
       </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
@@ -422,7 +422,7 @@ button:hover {
   // ======================
   // SLIDER SALUDOS
   // ======================
-  let modoSlider = 1;
+  let modoSlider = 0;
   function actualizarSlider() {
     document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
       btn.classList.toggle('selected',i===modoSlider);
