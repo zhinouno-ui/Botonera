@@ -627,20 +627,23 @@ button:hover {
 `💎 Tu spin puede activar el premio {usuario} ⚡ 📲 WhatsApp: https://wa.me/5491150030414?text={usuarioENC}%20envía%20captura%20para%20ruleta, 👉 Ruleta: https://bet300-ruleta-luj.vercel.app/?pc=4`,
 
   ]; // <- aquí se cargan los saludos
-function copiarSaludo(event) {
-  const usuario=document.getElementById("usuarioInput").value.trim();
+window.copiarSaludo = function(event) {
+  const usuario = document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
   let filtrados=[];
   if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('pc=1'));}
   else if(modoSlider===1){filtrados=saludos.filter(s=>s.includes('pc=2'));}
-     else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('pc=3'));}
- else if(modoSlider===3){filtrados=saludos.filter(s=>s.includes('pc=4'));}
-     else {filtrados=saludos;}
+  else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('pc=3'));}
+  else if(modoSlider===3){filtrados=saludos.filter(s=>s.includes('pc=4'));}
+  else {filtrados=saludos;}
+
   if(filtrados.length===0){alert("No hay saludos cargados!");return;}
-  const randomIndex=Math.floor(Math.random()*filtrados.length);
-  const mensaje=filtrados[randomIndex].replaceAll("{usuario}",usuario).replaceAll("{usuarioENC}",encodeURIComponent(usuario));
+  const randomIndex = Math.floor(Math.random()*filtrados.length);
+  const mensaje = filtrados[randomIndex]
+    .replaceAll("{usuario}",usuario)
+    .replaceAll("{usuarioENC}",encodeURIComponent(usuario));
   copyText(mensaje);
-  animateButton(event?.target); // 🔥 feedback visual aquí
+  animateButton(event?.target);
 }
 
 function copiarSoloWsp(event){
