@@ -999,6 +999,9 @@ function copiarCodigoAmigo(event){
     else if (txtLower.includes("fichas extra al instante")) tipo = "Promo Amigos";
     else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
     else if (txtLower.includes("TU CODIGO AMIGO")) tipo = "COD amigo";
+       else if(txtLower.includes("arellano.banco")) tipo="Banco, Arellano PP";
+    else if(txtLower.includes("edgardo.928.arado.mp")) tipo="Banco, Arellano MP";
+    else if(txtLower.includes("365.ofi.mp")) tipo="Banco, Chiguay MP";
 
      if(navigator.clipboard&&navigator.clipboard.writeText){
       navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
@@ -1072,6 +1075,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
