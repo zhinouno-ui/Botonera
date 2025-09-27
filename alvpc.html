@@ -1071,10 +1071,17 @@ function animateButton(button){
   button.style.transition = "transform 0.15s ease";
   setTimeout(()=> button.style.transform = "", 150);
 }
-    function copiarYAnimar(event, texto){
-  copyText(texto);
-  animateButton(event?.target); // reutiliza la animación que ya agregaste
-      }
+    function copiarYAnimar(texto, boton) {
+  if (!navigator.clipboard) {
+    console.warn("Clipboard API no soportada");
+    return;
+  }
+  navigator.clipboard.writeText(texto).then(() => {
+    boton.classList.add("copiado");
+    setTimeout(() => boton.classList.remove("copiado"), 1200);
+  });
+}
+
   </script>
 </body>
 </html>
