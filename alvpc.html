@@ -77,6 +77,7 @@ button:hover {
 .promo-amigo { background: #2ecc71; }
 .meza { background: #3498db; }
 .toledo { background: #9b59b6; }
+      .Nores { background: #495692; }
 .luna { background: #BE024A; }
 .utilidad { background: #e67e22; }
 .mensaje-revin { background: #C93C20; }
@@ -295,6 +296,30 @@ button:hover {
     <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
    </div>
 
+    <!-- Grupo Nores -->
+  <div class="grupo Nores" draggable="false">
+    <div class="header">
+      <div class="titulo">Nores</div>
+      <div class="controls">
+        <button type="button" class="flip-btn">🔄</button>
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100024726794249')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'sandra.615.cerco.mp \nTitular Sandra Gabriela Nores *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'0000076500000044710091')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'snores6.ppay \nTitular Sandra Gabriela Nores *PPay*')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
   <!-- Grupo Meza -->
   <div class="grupo meza" draggable="false">
     <div class="header">
@@ -990,6 +1015,10 @@ function copiarCodigoAmigo(event){
     else if(txtLower.includes("0000003100057182382088")) tipo="Cbu Luna MP";
       else if(txtLower.includes("0000076500000042994646")) tipo="Cbu Luna PPay";
     else if(txtLower.includes("toledo001.mp")) tipo="Alias Toledo MP";
+          else if(txtLower.includes("snores6.ppay")) tipo="Alias Nores PPay";
+    else if(txtLower.includes("0000003100024726794249")) tipo="Cbu Nores MP";
+      else if(txtLower.includes("0000076500000044710091")) tipo="Cbu Nores PPay";
+    else if(txtLower.includes("sandra.615.cerco.mp")) tipo="Alias Nores MP";
       else if(txtLower.includes("MTOLEDO3561.NX.ARS")) tipo="Alias Toledo NX";
     else if(txtLower.includes("0000003100042476697612")) tipo="Cbu Toledo MP";
       else if(txtLower.includes("4530000800018010604187")) tipo="Cbu Toledo NX";
