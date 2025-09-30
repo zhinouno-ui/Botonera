@@ -320,6 +320,28 @@ button:hover {
     </div>
   </div>
 
+      <!-- Grupo Gabriel -->
+  <div class="grupo Nores" draggable="false">
+    <div class="header">
+      <div class="titulo">Gabriel</div>
+      <div class="controls">
+        <button type="button" class="flip-btn">🔄</button>
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp \nTitular sebastian gabriel *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'1430001713045000150010')">CBU Bru</button>
+          <button onclick="copiarYAnimar(event,'sgonzalez.bru.5269 \nTitular sebastian gabriel *PPay*')">Alias Bru</button>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <!-- Grupo Meza -->
   <div class="grupo meza" draggable="false">
@@ -1034,6 +1056,10 @@ function copiarCodigoAmigo(event){
           else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
     else if(txtLower.includes("0000003100073049569289")) tipo="Cbu Meza MP";
       else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
+    else if(txtLower.includes("sgonzalez.bru.5269")) tipo="Alias Gonzales Bru";
+          else if(txtLower.includes("gonzalez.088.rulo.mp")) tipo="Alias Gonzales MP";
+    else if(txtLower.includes("1430001713045000150010")) tipo="Cbu Gonzales Bru";
+      else if(txtLower.includes("0000003100038708992000")) tipo="Cbu Gonzales MP";
     else if(txtLower.includes("luna011.mp")) tipo="Alias Luna MP"
       else if(txtLower.includes("0000003100089153966098")) tipo="Cbu Nahuel MP";
     else if(txtLower.includes("nahuel.882.caseta.mp")) tipo="Alias Nahuel MP";   
