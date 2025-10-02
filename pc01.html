@@ -76,6 +76,8 @@ button:hover {
 /* Colores personalizados según billetera */
 .promo-amigo { background: #2ecc71; }
 .acuña { background: #3498db; }
+.Arellano { background: #456465; }
+    .Torres { background: #4541; }
 .utilidad { background: #e67e22; }
 .mensaje-revin { background: #C93C20; }
 
@@ -293,7 +295,53 @@ button:hover {
     <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
    </div>
 
-  <!-- Grupo acuñao -->
+  <!-- Grupo Arellano -->
+  <div class="grupo acuña" draggable="false">
+    <div class="header">
+      <div class="titulo">Arellano</div>
+      <div class="controls">
+    <button type="button" class="flip-btn">🔄</button>   
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100090162487340')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'arellano.333.mp \n edgardo damian arellano *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'0000076500000023104989')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'arellano.300pp \n edgardo damian arellano *PPay*')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Grupo Torres -->
+  <div class="grupo acuña" draggable="false">
+    <div class="header">
+      <div class="titulo">Torres</div>
+      <div class="controls">
+     <button type="button" class="flip-btn">🔄</button>  
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100074067202002')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'dylanto.01.mp \nTitular dylan enzo torres *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'No tiene, no se que tocas')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'te ilusionaste no?')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Grupo acuñao -->
   <div class="grupo acuña" draggable="false">
     <div class="header">
       <div class="titulo">Acuña</div>
@@ -360,8 +408,7 @@ button:hover {
   <div id="banco-panel">
     <h3 style="margin-top:0;">Panel Banco</h3>
     <button onclick="copiarYAnimar(event,'365.ofi.mp')">ALIAS CHIGUAY</button>
-    <button onclick="copiarYAnimar(event,'edgardo.928.arado.mp')">Arellano MP</button>
-    <button onclick="copiarYAnimar(event,'arellano.banco')">Arellano PP</button>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -565,12 +612,14 @@ function copiarCodigoAmigo(event){
           else if (txtLower.includes("memoplay")) tipo = "Memo";
     else if (txtLower.includes("ceramella.01.mp")) tipo = "Alias Ceramella";
     else if (txtLower.includes("titular ceramella")) tipo = "Titular Ceramella";
-    else if (txtLower.includes("dylanto.01.mp")) tipo = "Alias Torres";
-    else if (txtLower.includes("titular torres")) tipo = "Titular Torres";
+    else if (txtLower.includes("0000003100074067202002")) tipo = "Cbu Torres";
+    else if (txtLower.includes("titular torres")) tipo = "Alias Torres";
     else if (txtLower.includes("acuna.03.mp")) tipo = "Alias Acuña";
     else if (txtLower.includes("0000003100099477012498")) tipo = "Cbu Acuña";
-     else if (txtLower.includes("arellano.banco")) tipo = "Banco, Arellano PP";
-      else if (txtLower.includes("edgardo.928.arado.mp")) tipo = "Banco, Arellano MP";
+     else if (txtLower.includes("0000076500000023104989")) tipo = " Cbu Arellano PP";
+            else if (txtLower.includes("arellano.300pp")) tipo = " Alias Arellano PP";
+      else if (txtLower.includes("0000003100090162487340")) tipo = "Cbu Arellano MP";
+                   else if (txtLower.includes("arellano.333.mp")) tipo = " Alias Arellano MP";
        else if (txtLower.includes("365.ofi.mp")) tipo = "banco, Chiguay MP";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
@@ -652,6 +701,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
