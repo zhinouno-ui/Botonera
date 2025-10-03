@@ -545,8 +545,8 @@ function copiarSaludo(event) {
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
   let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=2'));}
-  else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=01'));}
+  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=01'));}
+  else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=2'));}
   else {filtrados=saludos;}
   if(filtrados.length===0){alert("No hay saludos cargados!");return;}
   const randomIndex=Math.floor(Math.random()*filtrados.length);
@@ -616,7 +616,8 @@ function copiarCodigoAmigo(event){
     let tipo = "Texto";
     const txtLower = txt.toLowerCase();
     if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
-    else if (txtLower.includes("https://ruletabet300.vercel.app/?pc=2")) tipo = "Ruleta";
+    else if (txtLower.includes("?pc=2")) tipo = "Ruleta PC02";
+         else if (txtLower.includes("?pc=01")) tipo = "Ruleta PC01";
     else if (txtLower.includes("quiroga012")) tipo = "Alias Quieoga";
     else if (txtLower.includes("0000003100011663063040")) tipo = "Cbu Quiroga";
     else if (txtLower.includes("lescano4mp")) tipo = "Alias Lescano";
