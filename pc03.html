@@ -75,6 +75,7 @@ button:hover {
     /* Colores personalizados según billetera */
     .Almiron { background: #2ecc71; }   /* verde */
     .Martinez { background: #3498db; }      /* azul */
+      .Sebas { background: #854257; }  
     .promo-amigo { background: #BE024A; }
     .utilidad { background: #e67e22; }    /* naranja */
     .mensaje-revin { background: #C93C20; }    /* rosa pastel*/
@@ -317,6 +318,29 @@ button:hover {
       </div>
     </div>
   </div>
+
+    <!-- Grupo Sebas -->
+  <div class="grupo Sebas" draggable="false">
+    <div class="header">
+      <div class="titulo">Sebas</div>
+      <div class="controls">
+           <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+       <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU Mercado Pago</button>
+    <button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp \nTitular Sebastian Gonzales *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'No tiene, no se que tocas')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'te ilusionaste no?')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
     <!-- Grupo Martinez -->
   <div class="grupo Martinez" draggable="false">
@@ -992,6 +1016,8 @@ function copiarCodigoAmigo(event){
     else if (txtLower.includes("0000003100096400824328")) tipo = "Titular Almiron";
     else if (txtLower.includes("martinezd.03.mp")) tipo = "Alias Martinez";
     else if (txtLower.includes("0000003100077580185612")) tipo = "Cbu Martinez";
+          else if (txtLower.includes("gonzalez.088.rulo.mp")) tipo = "Alias Sebas";
+    else if (txtLower.includes("0000003100038708992000")) tipo = "Cbu Sebas";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
     else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
     else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
@@ -1075,6 +1101,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
