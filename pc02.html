@@ -76,6 +76,7 @@ button:hover {
     .promo-amigo { background: #2ecc71; }
     .Rodriguez { background: #3498db; }
     .Juan { background: #495692; }
+        .Nancy { background: #380600; }
     .Galvagno { background: #9b59b6; }
     .utilidad { background: #e67e22; }
     .mensaje-revin { background: #C93C20; }
@@ -343,6 +344,29 @@ button:hover {
     </div>
   </div>
 
+    <!-- Grupo Nancy -->
+  <div class="grupo Nancy" draggable="false">
+    <div class="header">
+      <div class="titulo">Nancy</div>
+      <div class="controls">
+           <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+       <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100027653806085')">CBU Mercado Pago</button>
+    <button onclick="copiarYAnimar(event,'nancy.118.dique.mp \nTitular Nancy Elizabeth Nores *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'No tiene, no se que tocas')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'te ilusionaste no?')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
     <!-- Grupo Galvagno -->
   <div class="grupo Galvagno" draggable="false">
     <div class="header">
@@ -408,8 +432,7 @@ button:hover {
   <div id="banco-panel">
     <h3 style="margin-top:0;">Panel Banco</h3>
     <button onclick="copiarYAnimar(event,'365.ofi.mp')">ALIAS CHIGUAY</button>
-    <button onclick="copiarYAnimar(event,'edgardo.928.arado.mp')">Arellano MP</button>
-    <button onclick="copiarYAnimar(event,'arellano.banco')">Arellano PP</button>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -1022,6 +1045,8 @@ function copiarCodigoAmigo(event){
              else if (txtLower.includes("mrodrigue183982.ppay")) tipo = "Alias Rodriguez PPay";
                else if (txtLower.includes("juan.402.cedas.mp")) tipo = "Alias Juan MP";
                  else if (txtLower.includes("0000003100094931906564")) tipo = "Cbu Juan MP";
+                       else if (txtLower.includes("nancy.118.dique.mp")) tipo = "Alias Nancy MP";
+                 else if (txtLower.includes("0000003100027653806085")) tipo = "Cbu Nancy MP";
                                     else if (txtLower.includes("0000003100073049569289")) tipo = "Cbu Juan PX";
                                                        else if (txtLower.includes("20282615.prex")) tipo = "Alias Juan PX";
     else if (txtLower.includes("somos bet300vip")) tipo = "Info";
@@ -1108,5 +1133,6 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
