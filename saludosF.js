@@ -2,7 +2,7 @@
 // saludosF.js
 // ==========================
 window.SALUDOS = {
-PC01 = [
+ PC01: [
 
 `🎲 {usuario}, probá tu giro ahora mismo 🚀
 📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}
@@ -81,7 +81,7 @@ PC01 = [
 👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
     ]
 
-PC02 = [
+ PC02: [
 
 `🎲 {usuario}, probá tu giro ahora mismo 🚀
 📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}
@@ -158,7 +158,7 @@ PC02 = [
 `💎 {usuario}, un spin más puede activar tu premio ⚡
 📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
 👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-  ],
+  ]
 
   // Si más adelante querés agregar BOX o MIX, podés sumarlo así:
 window.SALUDOS = {
