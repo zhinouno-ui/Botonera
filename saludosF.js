@@ -2,7 +2,7 @@
 // saludosF.js
 // ==========================
 window.SALUDOS = {
-const saludosPC01 = [
+PC01 = [
 
 `🎲 {usuario}, probá tu giro ahora mismo 🚀
 📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}
@@ -81,7 +81,7 @@ const saludosPC01 = [
 👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
     ];
 
-const saludosPC02 = [
+PC02 = [
 
 `🎲 {usuario}, probá tu giro ahora mismo 🚀
 📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}
