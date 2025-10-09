@@ -79,7 +79,7 @@ PC01 = [
 `💎 {usuario}, un spin más puede activar tu premio ⚡
 📲 WhatsApp: https://wa.me/5491171323400?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
 👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-    ];
+    ]
 
 PC02 = [
 
