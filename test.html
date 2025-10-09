@@ -340,7 +340,6 @@ button:hover {
       Mensaje Revin
       <div id="modo-slider">
         <button class="slider-btn" id="slider-ruleta01">Ruleta PC01</button>
-        <button class="slider-btn" id="slider-mix">Mix</button>
         <button class="slider-btn" id="slider-ruleta02">Ruleta PC02</button>
       </div>
     </h3>
@@ -385,35 +384,72 @@ function actualizarSlider() {
     btn.classList.toggle('selected', i === modoSlider);
   });
 }
-document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); }
-document.getElementById('slider-mix').onclick = () => { modoSlider = 1; actualizarSlider(); }
-document.getElementById('slider-box').onclick = () => { modoSlider = 2; actualizarSlider(); }
+document.getElementById('slider-ruletaPC01').onclick = () => { modoSlider = 0; actualizarSlider(); }
+document.getElementById('slider-ruletaPC02').onclick = () => { modoSlider = 1; actualizarSlider(); }
+
 actualizarSlider();
 
-// 🔄 Nuevo sistema de saludos
-function copiarSaludo(event) {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) { alert("⚠️ Escribí un usuario primero!"); return; }
-
+// 🔄 Obtiene un saludo aleatorio según PC o mezcla general
+function obtenerSaludoAleatorio(usuario, tipo = "MIX") {
   const grupos = window.SALUDOS || {};
-  let tipo = "MIX";
-  if (modoSlider === 0) tipo = "RULETA";
-  if (modoSlider === 2) tipo = "BOX";
+  let pool = [];
 
-  let pool = grupos[tipo] || [];
-  if (tipo === "MIX" || !pool.length)
+  if (tipo && grupos[tipo]) {
+    pool = grupos[tipo];
+  } else if (tipo === "MIX" || !tipo) {
+    // mezcla todos los saludos de todas las PCs
     pool = Object.values(grupos).flat();
+  }
 
-  if (!pool.length) { alert("No hay saludos cargados!"); return; }
+  if (pool.length === 0) return "⚠️ No hay saludos disponibles.";
 
-  const mensaje = pool[Math.floor(Math.random() * pool.length)]
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  return saludo
     .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+    .replaceAll("{usuarioENC}", usuarioENC);
+}
 
+// 📋 Copia el saludo según el tipo actual (por ejemplo slider)
+function copiarSaludo(event, tipo = "PC01") {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const mensaje = obtenerSaludoAleatorio(usuario, tipo);
   copyText(mensaje);
   animateButton(event?.target);
 }
 
+
+function copiarSaludo(event) {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
+  const tipo = mapSlider[modoSlider] || "PC01";
+  const grupos = window.SALUDOS || {};
+
+  let pool = grupos[tipo] || [];
+  if (pool.length === 0) {
+    alert("No hay saludos cargados para " + tipo);
+    return;
+  }
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  const mensaje = saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+
+  copyText(mensaje);
+  animateButton(event?.target);
+}
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
