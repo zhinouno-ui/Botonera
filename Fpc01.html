@@ -339,9 +339,8 @@ button:hover {
     <h3 style="display:flex;justify-content:space-between;align-items:center;">
       Mensaje Revin
       <div id="modo-slider">
-        <button class="slider-btn" id="slider-ruleta01">Ruleta PC01</button>
-        <button class="slider-btn" id="slider-mix">Mix</button>
-        <button class="slider-btn" id="slider-ruleta02">Ruleta PC02</button>
+        <button class="slider-btn" id="slider-ruletaPC01">Ruleta PC01</button>
+        <button class="slider-btn" id="slider-ruletaPC02">Ruleta PC02</button>
       </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
@@ -364,11 +363,14 @@ button:hover {
   </div>
 
   <div id="toast" class="toast"></div>
+
+      <script src="saludosF.js"></script>
+    
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
   <script>
  
-    function animateButton(button){
+        function animateButton(button){
   button.style.transform = "scale(0.95)";
   setTimeout(()=> button.style.transform = "", 150);
 }
@@ -376,182 +378,82 @@ button:hover {
   // ======================
   // SLIDER SALUDOS
   // ======================
-  let modoSlider = 1;
-  function actualizarSlider() {
-    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
-      btn.classList.toggle('selected',i===modoSlider);
-    });
+let modoSlider = 1;
+function actualizarSlider() {
+  document.querySelectorAll('.slider-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === modoSlider);
+  });
+}
+document.getElementById('slider-ruletaPC01').onclick = () => { modoSlider = 0; actualizarSlider(); }
+document.getElementById('slider-ruletaPC02').onclick = () => { modoSlider = 1; actualizarSlider(); }
+
+actualizarSlider();
+
+// 🔄 Obtiene un saludo aleatorio según PC o mezcla general
+function obtenerSaludoAleatorio(usuario, tipo = "MIX") {
+  const grupos = window.SALUDOS || {};
+  let pool = [];
+
+  if (tipo && grupos[tipo]) {
+    pool = grupos[tipo];
+  } else if (tipo === "MIX" || !tipo) {
+    // mezcla todos los saludos de todas las PCs
+    pool = Object.values(grupos).flat();
   }
-  document.getElementById('slider-ruleta01').onclick=()=>{modoSlider=0;actualizarSlider();}
-  document.getElementById('slider-mix').onclick=()=>{modoSlider=1;actualizarSlider();}
-  document.getElementById('slider-ruleta02').onclick=()=>{modoSlider=2;actualizarSlider();}
-  actualizarSlider();
 
-  const saludos = [
-    `🎲 {usuario}, probá tu giro ahora mismo 🚀
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
+  if (pool.length === 0) return "⚠️ No hay saludos disponibles.";
 
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  return saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+}
 
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491171323400?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
+// 📋 Copia el saludo según el tipo actual (por ejemplo slider)
+function copiarSaludo(event, tipo = "PC01") {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
 
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491171323400?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
+  const mensaje = obtenerSaludoAleatorio(usuario, tipo);
+  copyText(mensaje);
+  animateButton(event?.target);
+}
 
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491171323400?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491171323400?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491171323400?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491171323400?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491171323400?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491171323400?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491171323400?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491171323400?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491171323400?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491171323400?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491171323400?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=01`,
-    
-`🎲 {usuario}, probá tu giro ahora mismo 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎲 {usuario}, probá tu giro ahora mismo, la suerte espera 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20spin
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 {usuario}, girá ahora y asegurá tu premio exclusivo 🎯
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💎 Cada giro suma {usuario}, y el tuyo puede ser el ganador 👀
-📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎯 Dale {usuario}, la ruleta está girando y te espera 👇
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🔥 Un spin más {usuario}, y todo puede cambiar 💎
-📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20manda%20captura%20para%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 Es tu momento {usuario}, la ruleta no espera ⏳
-📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20el%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎰 Un solo click {usuario}, girá y mandá captura ⚡
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20quiero%20activar%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎲 {usuario}, cada giro es una nueva chance 💥
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20y%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`⚡ La ruleta está lista {usuario}, faltás vos 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20te%20mando%20captura%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎯 No la pienses más {usuario}, la ruleta ya gira 🌀
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20y%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💎 Cada spin importa {usuario}, el tuyo puede ser el ganador 👑
-📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20manda%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 {usuario}, la ruleta está encendida, girá ya ⚡
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20soy%20{usuarioENC}%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎲 Un spin puede ser tuyo {usuario}, animate 💥
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20quiero%20activar%20mi%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💥 {usuario}, tu giro puede cambiarlo todo 🎯
-📲 WhatsApp: https://wa.me/5491166587968?text=Captura%20de%20{usuarioENC}%20para%20activar
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🔥 Giro rápido, captura y premio {usuario} 🚀
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20necesito%20activar%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🎯 La suerte está girando {usuario}, jugá ya 🎰
-📲 WhatsApp: https://wa.me/5491166587968?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`🚀 {usuario}, la ruleta gira sola pero el bono lo activás vos 👀
-📲 WhatsApp: https://wa.me/5491166587968?text=Hola%20{usuarioENC}%20quiero%20mi%20bono
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-
-`💎 {usuario}, un spin más puede activar tu premio ⚡
-📲 WhatsApp: https://wa.me/5491166587968?text={usuarioENC}%20envía%20su%20captura%20para%20ruleta
-👉 Ruleta: https://ruletabet300.vercel.app/?pc=2`,
-  ]; // <- aquí se cargan los saludos
 
 function copiarSaludo(event) {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const mapSlider = ["PC01", "PC02"];
+  const tipo = mapSlider[modoSlider] || "PC01";
+  const grupos = window.SALUDOS || {};
+
+  let pool = grupos[tipo] || [];
+  if (pool.length === 0) {
+    alert("No hay saludos cargados para " + tipo);
+    return;
+  }
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  const mensaje = saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+
+  copyText(mensaje);
+  animateButton(event?.target);
+}
+function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=01'));}
-  else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('https://ruletabet300.vercel.app/?pc=2'));}
-  else {filtrados=saludos;}
-  if(filtrados.length===0){alert("No hay saludos cargados!");return;}
-  const randomIndex=Math.floor(Math.random()*filtrados.length);
-  const mensaje=filtrados[randomIndex].replaceAll("{usuario}",usuario).replaceAll("{usuarioENC}",encodeURIComponent(usuario));
-  copyText(mensaje);
+  copyText(`https://wa.me/5491156463327?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
   animateButton(event?.target); // 🔥 feedback visual aquí
 }
 
