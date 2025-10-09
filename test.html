@@ -546,20 +546,32 @@ function copiarSaludo(event, tipo = "PC01") {
 
 
 function copiarSaludo(event) {
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  let filtrados=[];
-  if(modoSlider===0){filtrados=saludos.filter(s=>s.includes('pc=1'));}
-  else if(modoSlider===1){filtrados=saludos.filter(s=>s.includes('pc=2'));}
-     else if(modoSlider===2){filtrados=saludos.filter(s=>s.includes('pc=3'));}
- else if(modoSlider===3){filtrados=saludos.filter(s=>s.includes('pc=4'));}
-     else {filtrados=saludos;}
-  if(filtrados.length===0){alert("No hay saludos cargados!");return;}
-  const randomIndex=Math.floor(Math.random()*filtrados.length);
-  const mensaje=filtrados[randomIndex].replaceAll("{usuario}",usuario).replaceAll("{usuarioENC}",encodeURIComponent(usuario));
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
+  const tipo = mapSlider[modoSlider] || "PC01";
+  const grupos = window.SALUDOS || {};
+
+  let pool = grupos[tipo] || [];
+  if (pool.length === 0) {
+    alert("No hay saludos cargados para " + tipo);
+    return;
+  }
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  const mensaje = saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+
   copyText(mensaje);
-  animateButton(event?.target); // 🔥 feedback visual aquí
+  animateButton(event?.target);
 }
+
 
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
