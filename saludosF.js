@@ -1,6 +1,7 @@
 // ==========================
 // saludosF.js
 // ==========================
+window.SALUDOS = {
 const saludosPC01 = [
 
 `🎲 {usuario}, probá tu giro ahora mismo 🚀
