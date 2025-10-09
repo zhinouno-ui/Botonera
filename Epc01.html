@@ -360,8 +360,6 @@ function actualizarSlider() {
   });
 }
 document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); }
-document.getElementById('slider-mix').onclick = () => { modoSlider = 1; actualizarSlider(); }
-document.getElementById('slider-box').onclick = () => { modoSlider = 2; actualizarSlider(); }
 actualizarSlider();
 
 // 🔄 Nuevo sistema de saludos
@@ -372,7 +370,7 @@ function copiarSaludo(event) {
   const grupos = window.SALUDOS || {};
   let tipo = "MIX";
   if (modoSlider === 0) tipo = "RULETA";
-  if (modoSlider === 2) tipo = "BOX";
+
 
   let pool = grupos[tipo] || [];
   if (tipo === "MIX" || !pool.length)
