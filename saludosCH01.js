@@ -2,7 +2,7 @@
 // saludosCH01.js
 // ==========================
 window.SALUDOS_CH01 = [
-  // 🎰 Ruleta
+ RULETA: [
 `🔥 {usuario}, girá ahora mismo y reclamá tu chance 💎 📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20mi%20spin, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
 `🚀 Tu momento llegó {usuario}, girá y ganá 🎯 📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20soy%20{usuarioENC}%20quiero%20activar%20ruleta, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
 `💎 {usuario}, cada giro suma puntos, el tuyo puede premiar 👀 📲 WhatsApp: https://wa.me/5491138601132?text=Captura%20de%20{usuarioENC}%20para%20bono, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
@@ -21,8 +21,8 @@ window.SALUDOS_CH01 = [
 `🎯 La suerte gira {usuario}, jugá ya 🎰 📲 WhatsApp: https://wa.me/5491138601132?text=Soy%20{usuarioENC}%20te%20mando%20mi%20captura, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
 `🚀 {usuario}, la ruleta no espera, girá 👀 📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20mi%20bono, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
 `💎 Tu spin puede activar el premio {usuario} ⚡ 📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20envía%20captura%20para%20ruleta, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
-  
-
+  ]
+ Mistery box: [
   // 🎁 Mistery Box
 `{usuario}, tu Mistery Box está lista desde hace rato. No te quedes con la duda, abrila y descubrí qué guarda para vos 🎁
 📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20solicita%20activar%20su%20box
@@ -49,7 +49,7 @@ window.SALUDOS_CH01 = [
 `{usuario}, no hay que pensar demasiado: tu Box está esperando y abrirla puede ser más fácil de lo que imaginás 🎉
 📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC},%20quiero%20abrir%20mi%20box
 👉 Mistery Box: https://mistery-box-one.vercel.app/?pc=1`,
-
+ Memo: [
   // 🧠 Memo
  `🎲 {usuario}, tu MemoPlay está listo para jugar 🚀 📲 WhatsApp: https://wa.me/5491138601132?text=Hola%20{usuarioENC}%20quiero%20activar%20memoplay, 👉 Memo: https://bet300-memoplay.vercel.app/?pc=1`,
 `🔥 {usuario}, hacé tu intento ahora y reclamá tu chance 💎 📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20activar%20memo, 👉 Memo: https://bet300-memoplay.vercel.app/?pc=1`,
