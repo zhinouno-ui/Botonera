@@ -1,6 +1,3 @@
-/ ==========================
-// saludosCH01.js
-// ==========================
 window.SALUDOS_CH01 = {
  RULETA: [
 `🔥 {usuario}, girá ahora mismo y reclamá tu chance 💎 📲 WhatsApp: https://wa.me/5491138601132?text={usuarioENC}%20manda%20captura%20para%20mi%20spin, 👉 Ruleta: https://ruleta-bet300.vercel.app/?pc=1`,
