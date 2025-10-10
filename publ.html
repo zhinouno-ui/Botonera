@@ -451,26 +451,27 @@ button:hover {
 <div class="grupo mensaje-revin">
   <h3 style="display:flex;justify-content:space-between;align-items:center;">
  <!--   Mensaje Revin -->
-    <div style="display:flex;gap:7px;">
-   Slider Tipo Mensaje 
-      <div class="sliderTipo" style="background:#232323;padding:4px 10px;border-radius:18px;">
-        <label style="margin-right:6px;">
-          <input type="radio" name="tipoMensaje" value="ruleta" checked>
-        Ruleta
-        </label>
-        <label>
-          <input type="radio" name="tipoMensaje" value="promoMama">
-      <!--    Promo Mamá -->
-        </label>
-      </div>
-      <!-- Slider PC -->
-      <div id="modo-slider">
-        <label><input type="radio" name="selectorPC" value="PC01" checked style="display:none;"><button class="slider-btn" id="slider-PC01">PC01</button></label>
-        <label><input type="radio" name="selectorPC" value="PC02" style="display:none;"><button class="slider-btn" id="slider-PC02">PC02</button></label>
-        <label><input type="radio" name="selectorPC" value="PC03" style="display:none;"><button class="slider-btn" id="slider-PC03">PC03</button></label>
-        <label><input type="radio" name="selectorPC" value="PC04" style="display:none;"><button class="slider-btn" id="slider-PC04">PC04</button></label>
-      </div>
-    </div>
+<div style="display:flex;gap:7px;">
+  Slider Tipo Mensaje
+  <div class="sliderTipo" style="background:#232323;padding:4px 10px;border-radius:18px; display:flex; gap:6px;">
+    <label style="font-weight:bold; color:#C93C20;">
+      <input type="radio" name="tipoMensaje" value="ruleta" checked>
+      Ruleta
+    </label>
+    <label>
+      <input type="radio" name="tipoMensaje" value="promoMama">
+      Promo Mamá
+    </label>
+  </div>
+
+  <!-- Slider PC -->
+  <div id="modo-slider">
+    <label><input type="radio" name="selectorPC" value="PC01" checked style="display:none;"><button class="slider-btn" id="slider-PC01">PC01</button></label>
+    <label><input type="radio" name="selectorPC" value="PC02" style="display:none;"><button class="slider-btn" id="slider-PC02">PC02</button></label>
+    <label><input type="radio" name="selectorPC" value="PC03" style="display:none;"><button class="slider-btn" id="slider-PC03">PC03</button></label>
+    <label><input type="radio" name="selectorPC" value="PC04" style="display:none;"><button class="slider-btn" id="slider-PC04">PC04</button></label>
+  </div>
+</div>
   </h3>
   <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
   <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
