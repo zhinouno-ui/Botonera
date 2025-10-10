@@ -449,166 +449,129 @@ button:hover {
     </div>
 <script src="saludosCH02.js"></script>
 
-<!-- Grupo Mensaje Revin -->
-<div class="grupo mensaje-revin">
-  <h3>Mensaje Revin</h3>
-
-  <!-- Slider de tipo de mensaje -->
-  <div id="modo-slider-tipo" class="slider-container">
-    <button class="slider-btn slider-tipo" id="slider-ruleta">🎰 Ruleta</button>
-    <button class="slider-btn slider-tipo" id="slider-promo">🎁 Promo Mamá</button>
-  </div>
-
-  <!-- Slider de PCs -->
-  <div id="modo-slider" class="slider-container">
-    <button class="slider-btn slider-pc" id="slider-PC01">PC01</button>
-    <button class="slider-btn slider-pc" id="slider-PC02">PC02</button>
-    <button class="slider-btn slider-pc" id="slider-PC03">PC03</button>
-    <button class="slider-btn slider-pc" id="slider-PC04">PC04</button>
-  </div>
-
-  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-
-  <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-    <button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
-    <button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
-    <button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
-  </div>
-</div>
-
-<style>
-/* ✅ SLIDERS */
-.slider-container {
-  display: flex;
-  gap: 6px;
-  background: #2a2a2a;
-  padding: 4px;
-  border-radius: 20px;
-  justify-content: center;
-  margin: 6px 0;
-}
-
-.slider-btn {
-  background: #3a3a3a;
-  color: #ccc;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.15s ease;
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
-}
-
-.slider-btn:hover {
-  background: #4a4a4a;
-  transform: scale(1.05);
-}
-
-.slider-btn.selected {
-  background: #111;
-  color: #C93C20;
-  font-weight: bold;
-  box-shadow: 0 0 12px rgba(201,60,32,0.5),
-              inset 0 0 4px rgba(201,60,32,0.3);
-  transform: scale(1.05);
-}
-</style>
-
 <script>
-// ======================
-// SLIDER DE TIPO DE MENSAJE (Ruleta / Promo Mamá)
-// ======================
-let tipoSlider = 0; // 0 = Ruleta, 1 = Promo Mamá
+(function(){
+  // espera a que exista el DOM (por si lo pegas antes de cerrar body)
+  document.addEventListener('DOMContentLoaded', () => {
 
-function actualizarTipoSlider() {
-  document.querySelectorAll('.slider-tipo').forEach((btn, i) => {
-    btn.classList.toggle('selected', i === tipoSlider);
-  });
-}
+    // --- selectors robustos (soportan tus distintas variantes de clases/markup) ---
+    const pcContainer = document.getElementById('modo-slider');
+    const tipoContainer = document.getElementById('modo-slider-tipo');
 
-document.getElementById('slider-ruleta').onclick = () => {
-  tipoSlider = 0;
-  actualizarTipoSlider();
-};
-document.getElementById('slider-promo').onclick = () => {
-  tipoSlider = 1;
-  actualizarTipoSlider();
-};
-actualizarTipoSlider();
+    // Si tus botones usan otras clases, los buscamos de forma flexible:
+    let pcButtons = pcContainer ? Array.from(pcContainer.querySelectorAll('.slider-btn-pc, .slider-btn')) : [];
+    let tipoButtons = tipoContainer ? Array.from(tipoContainer.querySelectorAll('.slider-btn-tipo, .slider-btn')) : [];
 
-// ======================
-// SLIDER DE PCS
-// ======================
-let modoSlider = 0; // 0=PC01, 1=PC02, 2=PC03, 3=PC04
+    // fallback si no encuentra (por seguridad)
+    if (pcButtons.length === 0 && pcContainer) pcButtons = Array.from(pcContainer.querySelectorAll('button'));
+    if (tipoButtons.length === 0 && tipoContainer) tipoButtons = Array.from(tipoContainer.querySelectorAll('button'));
 
-function actualizarSlider() {
-  document.querySelectorAll('.slider-pc').forEach((btn, i) => {
-    btn.classList.toggle('selected', i === modoSlider);
-  });
-}
+    // Estado (índices)
+    let modoPcIndex = 0;     // 0=PC01,1=PC02,2=PC03,3=PC04
+    let tipoSliderIndex = 0; // 0=Ruleta, 1=Promo Mamá
 
-document.getElementById('slider-PC01').onclick = () => {
-  modoSlider = 0;
-  actualizarSlider();
-};
-document.getElementById('slider-PC02').onclick = () => {
-  modoSlider = 1;
-  actualizarSlider();
-};
-document.getElementById('slider-PC03').onclick = () => {
-  modoSlider = 2;
-  actualizarSlider();
-};
-document.getElementById('slider-PC04').onclick = () => {
-  modoSlider = 3;
-  actualizarSlider();
-};
-actualizarSlider();
+    // Actualizar visual selected
+    function actualizarPcVisual(){
+      pcButtons.forEach((b,i)=> b.classList.toggle('selected', i===modoPcIndex));
+    }
+    function actualizarTipoVisual(){
+      tipoButtons.forEach((b,i)=> b.classList.toggle('selected', i===tipoSliderIndex));
+    }
+
+    // listeners (con protección)
+    pcButtons.forEach((btn,i)=>{
+      btn.addEventListener('click', (e)=>{
+        modoPcIndex = i;
+        actualizarPcVisual();
+      });
+    });
+    tipoButtons.forEach((btn,i)=>{
+      btn.addEventListener('click', (e)=>{
+        tipoSliderIndex = i;
+        actualizarTipoVisual();
+      });
+    });
+
+    // inicializa visual
+    actualizarPcVisual();
+    actualizarTipoVisual();
+
+    // UTIL: obtener la estructura de saludos de forma tolerante
+    function getSaludosData(){
+      // trata varias posibilidades para no romper si defines SALUDOS o SALUDOS_ALV o estructuras distintas
+      return window.SALUDOS_ALV || window.SALUDOS || window.SALUDOS_CH01 || {};
+    }
+
+    // MAPA PCs
+    const pcs = ['PC01','PC02','PC03','PC04'];
+
+    // SÓLO una función copiarSaludo (sobrescribe otras definiciones si existieran)
+    window.copiarSaludo = function(event){
+      const usuario = document.getElementById('usuarioInput')?.value?.trim();
+      if(!usuario){
+        alert('⚠️ Escribí un usuario primero!');
+        return;
+      }
+
+      const data = getSaludosData();
+
+      const pcKey = pcs[modoPcIndex] || 'PC01';
+      let pool = [];
+
+      // 1) caso RULETA (tipoSliderIndex === 0)
+      if (tipoSliderIndex === 0) {
+        // buscamos en varias formas comunes:
+        if (data.ruleta && Array.isArray(data.ruleta[pcKey])) pool = data.ruleta[pcKey].slice();
+        else if (data.RULETA && Array.isArray(data.RULETA[pcKey])) pool = data.RULETA[pcKey].slice();
+        else if (Array.isArray(data[pcKey])) pool = data[pcKey].slice(); // estructura simple window.SALUDOS.PC01 = [...]
+      } else {
+        // 2) PROMO MAMÁ
+        if (data.promoMama && Array.isArray(data.promoMama[pcKey])) pool = data.promoMama[pcKey].slice();
+        else if (data.promo && Array.isArray(data.promo[pcKey])) pool = data.promo[pcKey].slice();
+        else if (Array.isArray(data.PROMO)) pool = data.PROMO.slice(); // estructura global PROMO
+        else if (data.PROMOMAMA && Array.isArray(data.PROMOMAMA[pcKey])) pool = data.PROMOMAMA[pcKey].slice();
+      }
+
+      // fallback: intentar mezclar/extraer de cualquier lugar útil (para tolerancia)
+      if (!pool.length){
+        // si existe data[pcKey] como array, úsalo
+        if (Array.isArray(data[pcKey])) pool = data[pcKey].slice();
+        else if (data.ruleta && Object.values(data.ruleta).flat().length) pool = Object.values(data.ruleta).flat();
+        else if (data.PC01 && Array.isArray(data.PC01)) pool = Object.values(data).flat();
+        else pool = Object.values(data).flat().filter(Boolean); // todo lo que haya
+      }
+
+      if (!pool || pool.length === 0){
+        alert(`⚠️ No hay saludos cargados para ${pcKey} (${ tipoSliderIndex === 0 ? 'Ruleta' : 'Promo Mamá' })`);
+        return;
+      }
+
+      const template = pool[Math.floor(Math.random()*pool.length)];
+      // reemplazo seguro de placeholders
+      const mensaje = (''+template).replaceAll('{usuario}', usuario).replaceAll('{usuarioENC}', encodeURIComponent(usuario));
+      // usa tu función copyText que ya existe en tu proyecto:
+      if (typeof copyText === 'function') {
+        copyText(mensaje);
+      } else {
+        // fallback básico
+        navigator.clipboard?.writeText(mensaje).then(()=> {
+          const toast = document.getElementById('toast');
+          if (toast) { toast.textContent = '✅ Copiado: Texto'; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2000); }
+        }).catch(()=> {
+          const t = document.createElement('textarea'); t.value = mensaje; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+        });
+      }
+      // animación (si existe)
+      try{ animateButton(event?.target); }catch(e){}
+    };
+
+    // Exporto las funciones de actualización por si querés llamarlas desde otro script:
+    window.__ALV_updateSliderVisual = function(){ actualizarPcVisual(); actualizarTipoVisual(); };
+
+  }); // DOMContentLoaded
+})(); 
 
 
-// ======================
-// COPIAR SALUDO
-// ======================
-function copiarSaludo(event) {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) {
-    alert("⚠️ Escribí un usuario primero!");
-    return;
-  }
-
-  const pcs = ["PC01", "PC02", "PC03", "PC04"];
-  const tipoPC = pcs[modoSlider] || "PC01";
-  const tipoMsg = tipoSlider === 0 ? "ruleta" : "promoMama";
-
-const grupos = window.SALUDOS || {};
-let pool = [];
-
-if (tipoSlider === 0) {
-  // Ruleta (usa las PC)
-  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
-  const tipo = mapSlider[modoSlider] || "PC01";
-  pool = grupos[tipo] || [];
-} else {
-  // Promo Mamá
-  pool = grupos.PROMO || [];
-}
-
-  if (pool.length === 0) {
-    alert(`⚠️ No hay saludos para ${tipoPC}`);
-    return;
-  }
-
-  const usuarioENC = encodeURIComponent(usuario);
-  const saludo = pool[Math.floor(Math.random() * pool.length)];
-  const mensaje = saludo
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", usuarioENC);
-
-  copyText(mensaje);
-  animateButton(event?.target);
-}
 
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
