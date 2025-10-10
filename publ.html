@@ -579,8 +579,18 @@ function copiarSaludo(event) {
   const tipoPC = pcs[modoSlider] || "PC01";
   const tipoMsg = tipoSlider === 0 ? "ruleta" : "promoMama";
 
-  const grupos = window.SALUDOS || {};
-  const pool = grupos[tipoPC] || [];
+const grupos = window.SALUDOS || {};
+let pool = [];
+
+if (tipoSlider === 0) {
+  // Ruleta (usa las PC)
+  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
+  const tipo = mapSlider[modoSlider] || "PC01";
+  pool = grupos[tipo] || [];
+} else {
+  // Promo Mamá
+  pool = grupos.PROMO || [];
+}
 
   if (pool.length === 0) {
     alert(`⚠️ No hay saludos para ${tipoPC}`);
