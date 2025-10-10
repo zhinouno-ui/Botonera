@@ -433,50 +433,44 @@ button:hover {
     document.getElementById('slider-box').onclick    = () => { modoSlider = 3; actualizarSlider(); };
     actualizarSlider();
 
-    // ===== Copiar saludo dinámico =====
-    function copiarSaludo(event) {
-      const usuario = document.getElementById("usuarioInput").value.trim();
-      if (!usuario) {
-        alert("⚠️ Escribí un usuario primero!");
-        return;
-      }
-      const saludosArr = window.SALUDOS_CH01 || [];  // desde saludosCH01.js
-      if (!saludosArr.length) {
-        alert("No hay saludos cargados.");
-        return;
-      }
+ function copiarSaludo(event) {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
 
-      // Filtrar según modoSlider
-      let filtrados;
-      switch (modoSlider) {
-        case 0:  // Ruleta
-          filtrados = saludosArr.filter(s => s.toLowerCase().includes('ruleta-bet300'));
-          break;
-        case 2:  // Memo
-          filtrados = saludosArr.filter(s => s.toLowerCase().includes('memoplay'));
-          break;
-        case 3:  // Box
-          filtrados = saludosArr.filter(s => s.toLowerCase().includes('mistery-box-one'));
-          break;
-        case 1:  // Mix (todos)
-        default:
-          filtrados = saludosArr;
-          break;
-      }
+  // Selecciona el array correcto según modoSlider
+  let saludosArr = [];
+  switch (modoSlider) {
+    case 0: saludosArr = window.SALUDOS_CH01?.RULETA || []; break;
+    case 2: saludosArr = window.SALUDOS_CH01?.Memo || []; break;
+    case 3: saludosArr = window.SALUDOS_CH01?.Mistery_box || []; break;
+    case 1: // Mix: todos juntos
+      saludosArr = [
+        ...(window.SALUDOS_CH01?.RULETA || []),
+        ...(window.SALUDOS_CH01?.Memo || []),
+        ...(window.SALUDOS_CH01?.Mistery_box || [])
+      ];
+      break;
+    default:
+      saludosArr = [];
+      break;
+  }
 
-      if (!filtrados.length) {
-        alert("No hay saludos cargados para este modo.");
-        return;
-      }
+  if (!saludosArr.length) {
+    alert("No hay saludos cargados para este modo.");
+    return;
+  }
 
-      const idx = Math.floor(Math.random() * filtrados.length);
-      let mensaje = filtrados[idx]
-        .replaceAll("{usuario}", usuario)
-        .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+  const idx = Math.floor(Math.random() * saludosArr.length);
+  let mensaje = saludosArr[idx]
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
 
-      copyText(mensaje);
-      animateButton(event?.target);
-    }
+  copyText(mensaje);
+  animateButton(event?.target);
+}
 
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
