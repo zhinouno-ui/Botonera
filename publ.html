@@ -287,6 +287,8 @@ button:hover {
   transition: background 0.18s;
 }
 .wallets-face button:hover { background: rgba(0,0,0,0.35);}
+    let pcSeleccionada   = "PC01";
+    let tipoSeleccionado = "ruleta";
   </style>
 </head>
 <body>
@@ -446,24 +448,38 @@ button:hover {
 <button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
-  <!-- Grupo Mensaje Revin -->
-  <div class="grupo mensaje-revin">
-    <h3 style="display:flex;justify-content:space-between;align-items:center;">
-      Mensaje Revin
-      <div id="modo-slider">
-        <button class="slider-btn" id="slider-PC01">PC01</button>
-        <button class="slider-btn" id="slider-PC02">PC02</button>
-        <button class="slider-btn" id="slider-PC03">PC03</button>
-        <button class="slider-btn" id="slider-PC04">PC04</button>
+<div class="grupo mensaje-revin">
+  <h3 style="display:flex;justify-content:space-between;align-items:center;">
+ <!--   Mensaje Revin -->
+    <div style="display:flex;gap:7px;">
+   Slider Tipo Mensaje 
+      <div class="sliderTipo" style="background:#232323;padding:4px 10px;border-radius:18px;">
+        <label style="margin-right:6px;">
+          <input type="radio" name="tipoMensaje" value="ruleta" checked>
+        Ruleta
+        </label>
+        <label>
+          <input type="radio" name="tipoMensaje" value="promoMama">
+      <!--    Promo Mamá -->
+        </label>
       </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-<button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
-<button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
-<button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
+      <!-- Slider PC -->
+      <div id="modo-slider">
+        <label><input type="radio" name="selectorPC" value="PC01" checked style="display:none;"><button class="slider-btn" id="slider-PC01">PC01</button></label>
+        <label><input type="radio" name="selectorPC" value="PC02" style="display:none;"><button class="slider-btn" id="slider-PC02">PC02</button></label>
+        <label><input type="radio" name="selectorPC" value="PC03" style="display:none;"><button class="slider-btn" id="slider-PC03">PC03</button></label>
+        <label><input type="radio" name="selectorPC" value="PC04" style="display:none;"><button class="slider-btn" id="slider-PC04">PC04</button></label>
+      </div>
     </div>
+  </h3>
+  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+  <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+    <button style="flex:1;" onclick="copiarSaludo()">Copiar saludo</button>
+    <button style="flex:1;background:#27ae60;" onclick="copiarWhatsApp()">Copiar WhatsApp</button>
+    <button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo()">Código Amigo</button>
   </div>
+</div>
+
 
   <!-- Historial -->
   <div id="historial-box">
@@ -496,81 +512,80 @@ button:hover {
   setTimeout(()=> button.style.transform = "", 150);
 }
   
-  // ======================
-  // SLIDER SALUDOS
-  // ======================
-  let modoSlider = 0;
-  function actualizarSlider() {
-    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
-      btn.classList.toggle('selected',i===modoSlider);
-    });
-  }
-  document.getElementById('slider-PC01').onclick=()=>{modoSlider=0;actualizarSlider();}
-  document.getElementById('slider-PC02').onclick=()=>{modoSlider=1;actualizarSlider();}
-  document.getElementById('slider-PC03').onclick=()=>{modoSlider=2;actualizarSlider();}
-  document.getElementById('slider-PC04').onclick=()=>{modoSlider=3;actualizarSlider();}
-  actualizarSlider();
+ // Slider de tipo (Ruleta / Promo Mamá)
+document.querySelectorAll("input[name='tipoMensaje']").forEach(radio => {
+  radio.addEventListener("change", e => {
+    tipoSeleccionado = e.target.value;
+    actualizarSliderTipo();
+  });
+});
 
-// 🔄 Obtiene un saludo aleatorio según PC o mezcla general
-function obtenerSaludoAleatorio(usuario, tipo = "MIX") {
-  const grupos = window.SALUDOS || {};
-  let pool = [];
+// Slider de PC (PC01…PC04)
+document.querySelectorAll("input[name='selectorPC']").forEach(radio => {
+  radio.addEventListener("change", e => {
+    pcSeleccionada = e.target.value;
+    actualizarSliderPC();
+  });
+});
 
-  if (tipo && grupos[tipo]) {
-    pool = grupos[tipo];
-  } else if (tipo === "MIX" || !tipo) {
-    // mezcla todos los saludos de todas las PCs
-    pool = Object.values(grupos).flat();
-  }
-
-  if (pool.length === 0) return "⚠️ No hay saludos disponibles.";
-
-  const usuarioENC = encodeURIComponent(usuario);
-  const saludo = pool[Math.floor(Math.random() * pool.length)];
-  return saludo
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", usuarioENC);
+// Activar visualmente el slider Tipo
+function actualizarSliderTipo() {
+  document.querySelectorAll(".sliderTipo input").forEach(radio => {
+    radio.parentElement.style.fontWeight = radio.checked ? "bold" : "";
+    radio.parentElement.style.color = radio.checked ? "#C93C20" : "";
+  });
 }
+actualizarSliderTipo();
 
-// 📋 Copia el saludo según el tipo actual (por ejemplo slider)
-function copiarSaludo(event, tipo = "PC01") {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) {
-    alert("⚠️ Escribí un usuario primero!");
-    return;
-  }
-
-  const mensaje = obtenerSaludoAleatorio(usuario, tipo);
-  copyText(mensaje);
-  animateButton(event?.target);
-}
-
-
-function copiarSaludo(event) {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) {
-    alert("⚠️ Escribí un usuario primero!");
-    return;
-  }
-
+// Activar visualmente el slider PC
+function actualizarSliderPC() {
+  // Marca el botón slider como seleccionado
   const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
-  const tipo = mapSlider[modoSlider] || "PC01";
-  const grupos = window.SALUDOS || {};
+  mapSlider.forEach(pc=>{
+    const btn=document.getElementById("slider-"+pc);
+    if(btn) btn.classList.toggle("selected",pc===pcSeleccionada);
+  });
+}
+actualizarSliderPC();
 
-  let pool = grupos[tipo] || [];
-  if (pool.length === 0) {
-    alert("No hay saludos cargados para " + tipo);
-    return;
+// Botones visuales del slider PC
+document.getElementById("slider-PC01").onclick = () => {
+  document.querySelector("input[name='selectorPC'][value='PC01']").checked = true;
+  pcSeleccionada = "PC01";
+  actualizarSliderPC();
+};
+document.getElementById("slider-PC02").onclick = () => {
+  document.querySelector("input[name='selectorPC'][value='PC02']").checked = true;
+  pcSeleccionada = "PC02";
+  actualizarSliderPC();
+};
+document.getElementById("slider-PC03").onclick = () => {
+  document.querySelector("input[name='selectorPC'][value='PC03']").checked = true;
+  pcSeleccionada = "PC03";
+  actualizarSliderPC();
+};
+document.getElementById("slider-PC04").onclick = () => {
+  document.querySelector("input[name='selectorPC'][value='PC04']").checked = true;
+  pcSeleccionada = "PC04";
+  actualizarSliderPC();
+};
+
+function generarSaludo() {
+  if (!window.SALUDOS || !window.SALUDOS[tipoSeleccionado]) {
+    alert("⚠️ No hay saludos cargados para este tipo.");
+    return null;
   }
-
-  const usuarioENC = encodeURIComponent(usuario);
-  const saludo = pool[Math.floor(Math.random() * pool.length)];
-  const mensaje = saludo
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", usuarioENC);
-
-  copyText(mensaje);
-  animateButton(event?.target);
+  const grupo = window.SALUDOS[tipoSeleccionado];
+  let saludos = grupo[pcSeleccionada] || [];
+  if (!saludos.length) {
+    alert("⚠️ No hay saludos disponibles para esta combinación.");
+    return null;
+  }
+  // Reemplazo de usuario si corresponde
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  let saludo = getRandomItem(saludos);
+  saludo = saludo.replaceAll("{usuario}", usuario).replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+  return saludo;
 }
 
 
