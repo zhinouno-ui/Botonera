@@ -450,16 +450,17 @@ button:hover {
   <div class="grupo mensaje-revin">
     <h3 style="display:flex;justify-content:space-between;align-items:center;">
       Mensaje Revin
-      <div id="modo-slider-tipo" style="display:flex;gap:6px;margin-top:8px;">
-  <button class="slider-btn" id="slider-ruleta">🎰 Ruleta</button>
-  <button class="slider-btn" id="slider-promo">🎁 Promo Mamá</button>
+ <!-- Slider de tipo de mensaje -->
+<div id="modo-slider-tipo" style="display:flex;gap:6px;margin-top:8px;">
+  <button class="slider-btn-tipo" id="slider-ruleta">🎰 Ruleta</button>
+  <button class="slider-btn-tipo" id="slider-promo">🎁 Promo Mamá</button>
+<!-- Slider de PCs -->
+<div id="modo-slider">
+  <button class="slider-btn-pc" id="slider-PC01">PC01</button>
+  <button class="slider-btn-pc" id="slider-PC02">PC02</button>
+  <button class="slider-btn-pc" id="slider-PC03">PC03</button>
+  <button class="slider-btn-pc" id="slider-PC04">PC04</button>
 </div>
-      <div id="modo-slider">
-        <button class="slider-btn" id="slider-PC01">PC01</button>
-        <button class="slider-btn" id="slider-PC02">PC02</button>
-        <button class="slider-btn" id="slider-PC03">PC03</button>
-        <button class="slider-btn" id="slider-PC04">PC04</button>
-      </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
     <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
@@ -500,79 +501,32 @@ button:hover {
   setTimeout(()=> button.style.transform = "", 150);
 }
   
-  // ======================
-  // SLIDER SALUDOS
-  // ======================
-  let modoSlider = 0;
-  function actualizarSlider() {
-    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
-      btn.classList.toggle('selected',i===modoSlider);
-    });
-  }
-  document.getElementById('slider-PC01').onclick=()=>{modoSlider=0;actualizarSlider();}
-  document.getElementById('slider-PC02').onclick=()=>{modoSlider=1;actualizarSlider();}
-  document.getElementById('slider-PC03').onclick=()=>{modoSlider=2;actualizarSlider();}
-  document.getElementById('slider-PC04').onclick=()=>{modoSlider=3;actualizarSlider();}
-  actualizarSlider();
+// ======================
+// SLIDER DE PCS
+// ======================
+let modoSlider = 0; // 0=PC01, 1=PC02, 2=PC03, 3=PC04
 
-// 🔄 Obtiene un saludo aleatorio según PC o mezcla general
-function obtenerSaludoAleatorio(usuario, tipo = "MIX") {
-  const grupos = window.SALUDOS || {};
-  let pool = [];
-
-  if (tipo && grupos[tipo]) {
-    pool = grupos[tipo];
-  } else if (tipo === "MIX" || !tipo) {
-    // mezcla todos los saludos de todas las PCs
-    pool = Object.values(grupos).flat();
-  }
-
-  if (pool.length === 0) return "⚠️ No hay saludos disponibles.";
-
-  const usuarioENC = encodeURIComponent(usuario);
-  const saludo = pool[Math.floor(Math.random() * pool.length)];
-  return saludo
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", usuarioENC);
+function actualizarSlider() {
+  document.querySelectorAll('#modo-slider .slider-btn-pc').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === modoSlider);
+  });
 }
 
-// 📋 Copia el saludo según el tipo actual (por ejemplo slider)
-function copiarSaludo(event) {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) {
-    alert("⚠️ Escribí un usuario primero!");
-    return;
-  }
+document.getElementById('slider-PC01').onclick = () => { modoSlider = 0; actualizarSlider(); };
+document.getElementById('slider-PC02').onclick = () => { modoSlider = 1; actualizarSlider(); };
+document.getElementById('slider-PC03').onclick = () => { modoSlider = 2; actualizarSlider(); };
+document.getElementById('slider-PC04').onclick = () => { modoSlider = 3; actualizarSlider(); };
 
-  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
-  const tipoPC = mapSlider[modoSlider] || "PC01";
-  const tipoMsg = tipoSlider === 0 ? "ruleta" : "promoMama";
+actualizarSlider();
 
-  const grupos = window.SALUDOS_ALV || {};
-  const pool = (grupos[tipoMsg] && grupos[tipoMsg][tipoPC]) ? grupos[tipoMsg][tipoPC] : [];
-
-  if (pool.length === 0) {
-    alert(`⚠️ No hay saludos para ${tipoPC} (${tipoMsg})`);
-    return;
-  }
-
-  const usuarioENC = encodeURIComponent(usuario);
-  const saludo = pool[Math.floor(Math.random() * pool.length)];
-  const mensaje = saludo
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", usuarioENC);
-
-  copyText(mensaje);
-  animateButton(event?.target);
-}
 
 // ======================
-// SLIDER TIPO DE MENSAJE (Ruleta / Promo Mamá)
+// SLIDER DE TIPO DE MENSAJE (Ruleta / Promo Mamá)
 // ======================
 let tipoSlider = 0; // 0 = Ruleta, 1 = Promo Mamá
 
 function actualizarTipoSlider() {
-  document.querySelectorAll('#modo-slider-tipo .slider-btn').forEach((btn, i) => {
+  document.querySelectorAll('#modo-slider-tipo .slider-btn-tipo').forEach((btn, i) => {
     btn.classList.toggle('selected', i === tipoSlider);
   });
 }
