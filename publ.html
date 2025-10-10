@@ -446,97 +446,128 @@ button:hover {
 <button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
-  <!-- Grupo Mensaje Revin -->
-  <div class="grupo mensaje-revin">
-    <h3 style="display:flex;justify-content:space-between;align-items:center;">
-      Mensaje Revin
- <!-- Slider de tipo de mensaje -->
-<div id="modo-slider-tipo" style="display:flex;gap:6px;margin-top:8px;">
-  <button class="slider-btn-tipo" id="slider-ruleta">🎰 Ruleta</button>
-  <button class="slider-btn-tipo" id="slider-promo">🎁 Promo Mamá</button>
-<!-- Slider de PCs -->
-<div id="modo-slider">
-  <button class="slider-btn-pc" id="slider-PC01">PC01</button>
-  <button class="slider-btn-pc" id="slider-PC02">PC02</button>
-  <button class="slider-btn-pc" id="slider-PC03">PC03</button>
-  <button class="slider-btn-pc" id="slider-PC04">PC04</button>
+<!-- Grupo Mensaje Revin -->
+<div class="grupo mensaje-revin">
+  <h3>Mensaje Revin</h3>
+
+  <!-- Slider de tipo de mensaje -->
+  <div id="modo-slider-tipo" class="slider-container">
+    <button class="slider-btn slider-tipo" id="slider-ruleta">🎰 Ruleta</button>
+    <button class="slider-btn slider-tipo" id="slider-promo">🎁 Promo Mamá</button>
+  </div>
+
+  <!-- Slider de PCs -->
+  <div id="modo-slider" class="slider-container">
+    <button class="slider-btn slider-pc" id="slider-PC01">PC01</button>
+    <button class="slider-btn slider-pc" id="slider-PC02">PC02</button>
+    <button class="slider-btn slider-pc" id="slider-PC03">PC03</button>
+    <button class="slider-btn slider-pc" id="slider-PC04">PC04</button>
+  </div>
+
+  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+
+  <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+    <button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
+    <button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
+    <button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
+  </div>
 </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-<button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
-<button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
-<button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
-    </div>
-  </div>
 
-  <!-- Historial -->
-  <div id="historial-box">
-    <div id="historial-header">
-      📝 Último copiado <span id="historial-arrow">⌄</span>
-    </div>
-    <div id="historial-content">
-      <span id="historial-text">Nada copiado aún...</span>
-      <button id="historial-copy">Copy</button>
-    </div>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <!-- Panel Banco -->
-  <div id="banco-toggle">Banco</div>
-  <div id="banco-panel">
-    <h3 style="margin-top:0;">Panel Banco</h3>
-    <button onclick="copiarYAnimar(event,'365.ofi.mp')">ALIAS CHIGUAY</button>
-
-  </div>
-
-  <script src="saludosALV.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script>
- 
-    function animateButton(button){
-  button.style.transform = "scale(0.95)";
-  setTimeout(()=> button.style.transform = "", 150);
-}
-  
-// ======================
-// SLIDER DE PCS
-// ======================
-let modoSlider = 0; // 0=PC01, 1=PC02, 2=PC03, 3=PC04
-
-function actualizarSlider() {
-  document.querySelectorAll('#modo-slider .slider-btn-pc').forEach((btn, i) => {
-    btn.classList.toggle('selected', i === modoSlider);
-  });
+<style>
+/* ✅ SLIDERS */
+.slider-container {
+  display: flex;
+  gap: 6px;
+  background: #2a2a2a;
+  padding: 4px;
+  border-radius: 20px;
+  justify-content: center;
+  margin: 6px 0;
 }
 
-document.getElementById('slider-PC01').onclick = () => { modoSlider = 0; actualizarSlider(); };
-document.getElementById('slider-PC02').onclick = () => { modoSlider = 1; actualizarSlider(); };
-document.getElementById('slider-PC03').onclick = () => { modoSlider = 2; actualizarSlider(); };
-document.getElementById('slider-PC04').onclick = () => { modoSlider = 3; actualizarSlider(); };
+.slider-btn {
+  background: #3a3a3a;
+  color: #ccc;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+}
 
-actualizarSlider();
+.slider-btn:hover {
+  background: #4a4a4a;
+  transform: scale(1.05);
+}
 
+.slider-btn.selected {
+  background: #111;
+  color: #C93C20;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(201,60,32,0.5),
+              inset 0 0 4px rgba(201,60,32,0.3);
+  transform: scale(1.05);
+}
+</style>
 
+<script>
 // ======================
 // SLIDER DE TIPO DE MENSAJE (Ruleta / Promo Mamá)
 // ======================
 let tipoSlider = 0; // 0 = Ruleta, 1 = Promo Mamá
 
 function actualizarTipoSlider() {
-  document.querySelectorAll('#modo-slider-tipo .slider-btn-tipo').forEach((btn, i) => {
+  document.querySelectorAll('.slider-tipo').forEach((btn, i) => {
     btn.classList.toggle('selected', i === tipoSlider);
   });
 }
 
-document.getElementById('slider-ruleta').onclick = () => { tipoSlider = 0; actualizarTipoSlider(); };
-document.getElementById('slider-promo').onclick = () => { tipoSlider = 1; actualizarTipoSlider(); };
-
+document.getElementById('slider-ruleta').onclick = () => {
+  tipoSlider = 0;
+  actualizarTipoSlider();
+};
+document.getElementById('slider-promo').onclick = () => {
+  tipoSlider = 1;
+  actualizarTipoSlider();
+};
 actualizarTipoSlider();
 
-    
+// ======================
+// SLIDER DE PCS
+// ======================
+let modoSlider = 0; // 0=PC01, 1=PC02, 2=PC03, 3=PC04
+
+function actualizarSlider() {
+  document.querySelectorAll('.slider-pc').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === modoSlider);
+  });
+}
+
+document.getElementById('slider-PC01').onclick = () => {
+  modoSlider = 0;
+  actualizarSlider();
+};
+document.getElementById('slider-PC02').onclick = () => {
+  modoSlider = 1;
+  actualizarSlider();
+};
+document.getElementById('slider-PC03').onclick = () => {
+  modoSlider = 2;
+  actualizarSlider();
+};
+document.getElementById('slider-PC04').onclick = () => {
+  modoSlider = 3;
+  actualizarSlider();
+};
+actualizarSlider();
+
+
+// ======================
+// COPIAR SALUDO
+// ======================
 function copiarSaludo(event) {
   const usuario = document.getElementById("usuarioInput").value.trim();
   if (!usuario) {
@@ -544,13 +575,15 @@ function copiarSaludo(event) {
     return;
   }
 
-  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
-  const tipo = mapSlider[modoSlider] || "PC01";
-  const grupos = window.SALUDOS || {};
+  const pcs = ["PC01", "PC02", "PC03", "PC04"];
+  const tipoPC = pcs[modoSlider] || "PC01";
+  const tipoMsg = tipoSlider === 0 ? "ruleta" : "promoMama";
 
-  let pool = grupos[tipo] || [];
+  const grupos = window.SALUDOS || {};
+  const pool = grupos[tipoPC] || [];
+
   if (pool.length === 0) {
-    alert("No hay saludos cargados para " + tipo);
+    alert(`⚠️ No hay saludos para ${tipoPC}`);
     return;
   }
 
@@ -563,8 +596,7 @@ function copiarSaludo(event) {
   copyText(mensaje);
   animateButton(event?.target);
 }
-
-
+</script>
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
