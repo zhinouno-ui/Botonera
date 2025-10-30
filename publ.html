@@ -4,37 +4,51 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Revinculación — BET300VIP</title>
-<style>
-  /* Reset mínimo */
-  html, body { height: 100%; margin: 0; }
 
-  /* Fondo: imagen local 'fondo.jpg' + overlay para evitar que se vea "blanco" si no carga */
-  body {
-    /* color de respaldo si la imagen no existe o tarda en cargar */
-    background-color: #e9ebee;
+  <style>
+    /* Asegurarse que html/body ocupen toda la pantalla y sin márgenes */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
 
-    /* overlay suave + imagen en el mismo directorio */
-    background-image:
-      linear-gradient(rgba(10,12,20,0.06), rgba(10,12,20,0.06)),
-      url('./fondo.jpg');
+    /* Fondo: imagen local 'fondo.jpg' centrada y cubriendo toda la pantalla
+       independientemente de la relación de aspecto.
+       - Usa background-size: cover para forzar el recorte y cobertura total.
+       - background-position: center center asegura el centrado.
+       - background-repeat: no-repeat evita mosaicos.
+       - background-attachment: fixed (opcional) mantiene la imagen fija al hacer scroll.
+       - Include fallback background-color por si la imagen no está disponible.
+    */
+    body {
+      background-color: #111217; /* fallback mientras carga o si falla la imagen */
+      background-image: url('fondo.jpg');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
 
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
-    /* fixed puede omitirse si da problemas; deja si querés efecto parallax */
-    background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      /* opcional: forzar contraste del contenido sobre la imagen con un overlay vía pseudo-elemento
+         si querés que el bloque se destaque. Comentado por defecto; descomenta si lo necesitás. */
+    }
 
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+    /* Ejemplo de overlay semitransparente (descomentar para usar)
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.10); / * ajustar alpha para más/menos oscuridad * /
+      pointer-events: none;
+    }
+    */
 
-  /* Si querés más contraste para el bloque, ajustá el overlay aquí */
-  .bg-overlay-strong {
-    background-image:
-      linear-gradient(rgba(10,12,20,0.14), rgba(10,12,20,0.14)),
-      url('./fondo.jpg');
-  }
-
+    /* Variables / root (mantengo tus variables por si las usás luego) */
+    
     :root{
       --width: 1310px;
       --height: 201px;
