@@ -4,33 +4,36 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Revinculación — BET300VIP</title>
-  <style>
-    /* Asegurarse que html/body ocupen toda la pantalla y sin márgenes */
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
+<style>
+  /* Reset mínimo */
+  html, body { height: 100%; margin: 0; }
 
-    /* Fondo: uso de ruta relativa explícita, fallback con color/gradiente
-       y overlay para que nunca quede "blanco" si la imagen no carga.
-       Si la imagen está en el mismo directorio, ./fondo.jpg funciona bien. */
-    body {
-      /* color de respaldo si la imagen no existe o tarda en cargar */
-      background-color: #e9ebee;
+  /* Fondo: imagen local 'fondo.jpg' + overlay para evitar que se vea "blanco" si no carga */
+  body {
+    /* color de respaldo si la imagen no existe o tarda en cargar */
+    background-color: #e9ebee;
 
-      /* combinación: overlay suave + imagen de fondo local */
-      background-image:
-        linear-gradient(rgba(10,12,20,0.06), rgba(10,12,20,0.06)),
-        url('./fondo.jpg');
+    /* overlay suave + imagen en el mismo directorio */
+    background-image:
+      linear-gradient(rgba(10,12,20,0.06), rgba(10,12,20,0.06)),
+      url('./fondo.jpg');
 
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center center;
-      /* fixed puede comportarse raro en algunos navegadores locales, pero lo dejo si querés efecto parallax */
-      background-attachment: fixed;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    /* fixed puede omitirse si da problemas; deja si querés efecto parallax */
+    background-attachment: fixed;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Si querés más contraste para el bloque, ajustá el overlay aquí */
+  .bg-overlay-strong {
+    background-image:
+      linear-gradient(rgba(10,12,20,0.14), rgba(10,12,20,0.14)),
+      url('./fondo.jpg');
+  }
 
     :root{
       --width: 1310px;
