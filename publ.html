@@ -1,222 +1,247 @@
-<div id="revinculacion-container">
-    <div class="relinking-block">
-        <div class="message-preview-card">
-            <p class="message-text">
-                👋 Hola Pepe <br>
-                BET300 celebra el Mes de la Madre 💕 <br>
-                Entrá al Slot y descubrí tu premio 💫
-            </p>
-        </div>
-        <div class="action-buttons">
-            <button class="glass-button copy-button">Copiar mensaje</button>
-            <button class="glass-button whatsapp-button">
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="whatsapp-icon"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                Enviar por WhatsApp
-            </button>
-        </div>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Revinculación — BET300VIP</title>
+  <style>
+    /* BET300VIP — Glassmorphism revinculación block (solo HTML + CSS) */
+    :root{
+      --width: 1310px;
+      --height: 201px;
+
+      /* Brand colors */
+      --bet300-dark: #0f1724;
+      --bet300-purple: #8e44ad;
+      --bet300-gold: #f1c40f;
+      --bet300-pink-light: #fbecec;
+
+      --text-dark: #2c3e50;
+      --text-light: #f4f7f6;
+
+      /* glass backgrounds */
+      --glass-light: rgba(255,255,255,0.06);
+      --glass-lighter: rgba(255,255,255,0.09);
+      --glass-dark: rgba(0,0,0,0.25);
+
+      --border-light: rgba(255,255,255,0.12);
+      --border-dark: rgba(0,0,0,0.35);
+
+      --bet300-purple-rgb: 142,68,173;
+    }
+
+    /* layout wrapper (keeps the same id so you can paste into existing container) */
+    #revinculacion-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 18px 10px;
+      box-sizing: border-box;
+      font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .relinking-block{
+      width: var(--width);
+      max-width: 100%;
+      height: var(--height);
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 22px;
+      box-sizing: border-box;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid var(--border-light);
+      box-shadow: 0 8px 30px rgba(12, 18, 34, 0.12);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+    .relinking-block:active { transform: translateY(1px); }
+
+    /* Message preview area */
+    .message-preview-card{
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 1 1 auto;
+      height: calc(var(--height) - 40px);
+      padding: 18px 20px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(10,12,20,0.03);
+      overflow: hidden;
+    }
+
+    .message-text{
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: var(--text-dark);
+      text-align: left;
+      width: 100%;
+      word-break: break-word;
+      letter-spacing: 0.2px;
+    }
+
+    .message-text .brand{
+      font-weight: 700;
+      color: var(--bet300-purple);
+      margin-left: 6px;
+    }
+
+    /* Buttons container */
+    .action-buttons{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+      flex-shrink: 0;
+      width: 210px;
+      box-sizing: border-box;
+    }
+
+    /* Glass button base */
+    .glass-button{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      padding: 8px 12px;
+      height: 38px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--glass-lighter);
+      color: var(--text-light);
+      box-shadow: 0 3px 12px rgba(14,20,30,0.06);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      text-decoration: none;
+    }
+
+    .glass-button:active{ transform: translateY(1px); }
+
+    /* Copy button (primary) */
+    .copy-button{
+      background: linear-gradient(180deg, var(--bet300-purple), #77339e);
+      border: 1px solid rgba(var(--bet300-purple-rgb), 0.15);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(142,68,173,0.14);
+    }
+    .copy-button:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(142,68,173,0.18);
+    }
+
+    /* WhatsApp button (secondary) */
+    .whatsapp-button{
+      background: linear-gradient(180deg, #25d366, #19b856);
+      border: 1px solid rgba(0,0,0,0.08);
+      color: #fff;
+    }
+    .whatsapp-button:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(37,211,102,0.14);
+    }
+
+    .glass-button svg{
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* Small helper when buttons stacked vertically looks too long on small widths */
+    @media (max-width:1200px){
+      .action-buttons{ width: 180px; }
+    }
+    @media (max-width:880px){
+      .relinking-block{
+        flex-direction: column;
+        height: auto;
+        gap: 12px;
+        padding: 14px;
+      }
+      .message-preview-card{
+        height: auto;
+        width: 100%;
+      }
+      .action-buttons{
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+
+    /* Dark mode tweaks */
+    @media (prefers-color-scheme: dark){
+      :root{
+        --text-dark: #dfe8ea;
+        --text-light: #f6f7f8;
+      }
+      .relinking-block{
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));
+        border: 1px solid var(--border-dark);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+      }
+      .message-preview-card{
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.14));
+        border: 1px solid rgba(255,255,255,0.02);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+      }
+      .message-text{ color: var(--text-light); }
+      .glass-button{
+        color: var(--text-light);
+        border: 1px solid rgba(255,255,255,0.04);
+        background: rgba(255,255,255,0.02);
+      }
+    }
+
+    /* Fine typography for emojis (to look consistent) */
+    .message-text, .glass-button {
+      -webkit-font-smoothing:antialiased;
+      font-variant-ligatures: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="revinculacion-container">
+    <div class="relinking-block" role="region" aria-label="Bloque de revinculación BET300VIP">
+      <div class="message-preview-card" aria-hidden="false">
+        <p class="message-text" aria-label="Vista previa del mensaje">
+          👋 Hola <strong>Pepe</strong><br>
+          <span class="brand">BET300VIP</span> celebra el Mes de la Madre 💕<br>
+          Entrá al Slot y descubrí tu premio 💫
+        </p>
+      </div>
+
+      <div class="action-buttons" role="group" aria-label="Acciones del mensaje">
+        <button class="glass-button copy-button" type="button" title="Copiar mensaje">
+          <!-- clipboard icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copiar mensaje
+        </button>
+
+        <a class="glass-button whatsapp-button" href="#" role="button" title="Enviar por WhatsApp">
+          <!-- simple WhatsApp motif (decorative) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: white;">
+            <path d="M21.75 12.03a9.72 9.72 0 0 1-1.94 5.36 9.84 9.84 0 0 1-5.35 3.8l-.43.11-2.48.65.66-2.43-.13-.4a9.85 9.85 0 0 1 3.82-11.24 9.72 9.72 0 0 1 9.13-.85z" fill="currentColor" opacity="0.12"/>
+            <path d="M16.5 7.5c-.4-.1-1.1 0-1.5.3-.35.3-.9.9-1 1.2-.1.3-.1.7.1 1 .2.3.9.8 1.9 1.5 1 .7 1.4 1.1 1.6 1.4.2.3.2.6.1.8-.1.2-.7.7-1.3 1.1-.6.4-1.4.1-2.4-.2-1-.3-2.1-.6-3.1-.9-1-.3-1.7-.1-2.2.3-.5.4-.9 1.2-1 1.6-.1.4 0 .9.2 1.2.3.4.8.8 1.6.9 1 .1 2.8.1 5.8-1.7 2.9-1.8 3.9-4.7 3.9-6.1 0-1.4-1.2-2.4-1.8-2.6z" stroke="white" fill="none"/>
+          </svg>
+          Enviar por WhatsApp
+        </a>
+      </div>
     </div>
-</div>
-<scrypt>
-:root {
-    --bet300-dark: #1a1a2e;
-    --bet300-purple: #8e44ad; /* Tono de violeta principal */
-    --bet300-gold: #f1c40f;
-    --bet300-pink-light: #fbecec; /* Rosa claro para campañas */
-    --bet300-text-light: #ecf0f1;
-    --bet300-text-dark: #2c3e50;
-    --bet300-bg-glass-light: rgba(255, 255, 255, 0.1);
-    --bet300-bg-glass-dark: rgba(0, 0, 0, 0.2);
-    --bet300-border-light: rgba(255, 255, 255, 0.3);
-    --bet300-border-dark: rgba(0, 0, 0, 0.3);
-}
-
-body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f4f7f6; /* Fondo claro por defecto */
-    color: var(--bet300-text-dark);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Modo oscuro */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: var(--bet300-dark);
-        color: var(--bet300-text-light);
-    }
-}
-
-/* Contenedor principal del bloque de revinculación */
-.relinking-block {
-    width: 1310px;
-    height: 201px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--bet300-border-light);
-    background: var(--bet300-bg-glass-light);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transition: all 0.3s ease;
-}
-
-/* Ajustes para modo oscuro del bloque */
-@media (prefers-color-scheme: dark) {
-    .relinking-block {
-        border: 1px solid var(--bet300-border-dark);
-        background: var(--bet300-bg-glass-dark);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
-    }
-}
-
-/* Tarjeta de previsualización del mensaje */
-.message-preview-card {
-    width: 95%;
-    max-width: 800px; /* Ajusta según necesidad de ancho de mensaje */
-    padding: 15px 20px;
-    background-color: rgba(255, 255, 255, 0.05); /* Ligeramente más oscuro o claro que el fondo del bloque */
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
-    flex-grow: 1; /* Permite que la tarjeta ocupe el espacio disponible */
-    display: flex;
-    align-items: center; /* Centra el texto verticalmente */
-    text-align: center; /* Centra el texto horizontalmente si es corto */
-}
-
-@media (prefers-color-scheme: dark) {
-    .message-preview-card {
-        background-color: rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-}
-
-.message-text {
-    font-size: 1.1em;
-    line-height: 1.6;
-    color: inherit; /* Hereda el color del texto del body */
-    margin: 0;
-    width: 100%; /* Asegura que ocupe todo el ancho para el centrado */
-}
-
-/* Contenedor de botones de acción */
-.action-buttons {
-    display: flex;
-    gap: 15px;
-    flex-shrink: 0; /* Evita que los botones se encojan */
-}
-
-/* Estilo general de los botones "Glass Button" */
-.glass-button {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    color: var(--bet300-text-light); /* Color de texto claro por defecto */
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .glass-button {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(0, 0, 0, 0.4);
-        color: var(--bet300-text-light);
-    }
-}
-
-.glass-button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 15px rgba(var(--bet300-purple-rgb), 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-
-@media (prefers-color-scheme: dark) {
-    .glass-button:hover {
-        background: rgba(0, 0, 0, 0.5);
-        border-color: rgba(0, 0, 0, 0.6);
-        box-shadow: 0 0 15px rgba(var(--bet300-purple-rgb), 0.6), inset 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-}
-
-/* Botón de Copiar Mensaje */
-.copy-button {
-    background: var(--bet300-purple); /* Color principal de BET300 */
-    border-color: var(--bet300-purple);
-    color: white;
-}
-
-@media (prefers-color-scheme: dark) {
-    .copy-button {
-        background: var(--bet300-purple);
-        border-color: var(--bet300-purple);
-        color: white;
-    }
-}
-
-.copy-button:hover {
-    background: #a359c2; /* Tono más claro de violeta al pasar el ratón */
-    border-color: #a359c2;
-    box-shadow: 0 0 15px rgba(var(--bet300-purple-rgb), 0.6);
-}
-
-@media (prefers-color-scheme: dark) {
-    .copy-button:hover {
-        background: #a359c2;
-        border-color: #a359c2;
-        box-shadow: 0 0 15px rgba(var(--bet300-purple-rgb), 0.8);
-    }
-}
-
-/* Botón de WhatsApp */
-.whatsapp-button {
-    background: #25d366; /* Verde de WhatsApp */
-    border-color: #25d366;
-    color: white;
-}
-
-@media (prefers-color-scheme: dark) {
-    .whatsapp-button {
-        background: #25d366;
-        border-color: #25d366;
-        color: white;
-    }
-}
-
-.whatsapp-button:hover {
-    background: #1da851; /* Tono más oscuro de verde al pasar el ratón */
-    border-color: #1da851;
-    box-shadow: 0 0 15px rgba(37, 211, 102, 0.6);
-}
-
-@media (prefers-color-scheme: dark) {
-    .whatsapp-button:hover {
-        background: #1da851;
-        border-color: #1da851;
-        box-shadow: 0 0 15px rgba(37, 211, 102, 0.8);
-    }
-}
-
-.whatsapp-icon {
-    stroke: white;
-}
-
-/* Variables para colores BET300 en RGBA para sombras dinámicas */
-:root {
-    --bet300-purple-rgb: 142, 68, 173; /* RGB de #8e44ad */
-}
+  </div>
+</body>
+</html>
