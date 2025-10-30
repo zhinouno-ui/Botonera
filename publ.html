@@ -3,25 +3,52 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RevinPubli</title>
-
+  <title>Revinculación — BET300VIP</title>
   <style>
-    /* Asegurarse que html/body ocupen toda la pantalla y sin márgenes */
-    html, body {
+    /* mínimo reset */
+    html, body { height: 100%; margin: 0; }
+
+    /* contenedor del background (usa un <img> real para garantizar que la imagen se cargue
+       incluso en file:// y en entornos donde background-image falla) */
+    .bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none; /* no interfiere con clicks */
+      z-index: -2; /* detrás del contenido */
+    }
+    .bg img {
+      width: 100%;
       height: 100%;
-      margin: 0;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      object-fit: cover;         /* cubre toda la pantalla independientemente de la relación de aspecto */
+      object-position: center;   /* centrada */
+      display: block;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+    /* overlay para mejorar contraste (ajusta el alpha si lo querés más/menos oscuro) */
+    .bg .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.16);
+      z-index: 1;
+      pointer-events: none;
     }
 
-    /* Fondo: imagen local 'fondo.jpg' centrada y cubriendo toda la pantalla */
-    body {
-      background-color: #111217;
-      background-image: url('./fondo.jpg');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: cover;
-      background-attachment: fixed;
+    /* Asegurá que el contenido esté sobre el background */
+    #revinculacion-container {
+      position: relative;
+      z-index: 0;
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 18px 20px;
+      box-sizing: border-box;
+      font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
     :root{
