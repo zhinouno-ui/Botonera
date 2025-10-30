@@ -8,16 +8,19 @@
     /* mínimo reset */
     html, body { height: 100%; margin: 0; }
 
-    /* contenedor del background (usa un <img> real para garantizar que la imagen se cargue
-       incluso en file:// y en entornos donde background-image falla) */
+    /* BG: usamos un <img> posicionado por detrás para garantizar carga (funciona con file:// y HTTP).
+       Si por algún motivo la imagen falla, hay un fallback de color y un aviso en consola. */
     .bg {
       position: fixed;
       inset: 0;
       overflow: hidden;
       pointer-events: none; /* no interfiere con clicks */
       z-index: -2; /* detrás del contenido */
+      background: #111217; /* color fallback mientras carga */
     }
     .bg img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;         /* cubre toda la pantalla independientemente de la relación de aspecto */
@@ -25,6 +28,7 @@
       display: block;
       -webkit-user-drag: none;
       user-select: none;
+      transform: translateZ(0);  /* fuerza composición */
     }
     /* overlay para mejorar contraste (ajusta el alpha si lo querés más/menos oscuro) */
     .bg .overlay {
@@ -33,6 +37,11 @@
       background: rgba(0,0,0,0.16);
       z-index: 1;
       pointer-events: none;
+    }
+
+    /* Si la imagen no carga, añadimos esta clase por JS para que se vea un fallback distinto */
+    body.bg-failed {
+      background: linear-gradient(180deg,#0e0f12,#111217);
     }
 
     /* Asegurá que el contenido esté sobre el background */
@@ -57,17 +66,6 @@
       --bet300-purple: #8e44ad;
       --bet300-green: #25d366;
       --text-light: #f6f7f8;
-    }
-
-    #revinculacion-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      padding: 18px 10px;
-      box-sizing: border-box;
-      font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: transparent;
-      min-height: 100vh;
     }
 
     .relinking-block{
@@ -224,6 +222,13 @@
   </style>
 </head>
 <body>
+  <!-- fondo integrado: coloca el archivo 'fondo.jpg.jpg' EN EL MISMO DIRECTORIO que este HTML -->
+  <div class="bg" aria-hidden="true">
+    <!-- usa ./fondo.jpg.jpg — comprueba que el nombre y la extensión coincidan EXACTAMENTE -->
+    <img id="bg-img" src="./fondo.jpg.jpg.jpg" alt="fondo" />
+    <div class="overlay"></div>
+  </div>
+
   <div id="revinculacion-container">
     <div class="relinking-block" role="region" aria-label="Bloque de revinculación BET300VIP">
       <div class="message-preview-card" aria-hidden="false">
@@ -240,7 +245,6 @@
 
         <div class="action-buttons" aria-label="Acciones del mensaje">
           <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">
-            <!-- icon similar al otro diseño -->
             📋 Copiar mensaje
           </button>
 
@@ -255,127 +259,75 @@
   <div id="toast" class="toast" aria-hidden="true"></div>
 
   <script>
-    // Mensajes (provisión inicial). Próximamente integrarás tu array real; aquí se rotan/flippean.
-    // Usa {usuario} como placeholder para insertar el nombre que aparece en la vista.
+    // Verifica carga de la imagen y aplica fallback si falla.
+    (function verifyBgImage() {
+      const img = document.getElementById('bg-img');
+      if (!img) return;
+      // Si ya cargó correctamente, nada más que hacer
+      if (img.complete && img.naturalWidth > 0) {
+        console.info('fondo.jpg.jpg cargada correctamente (síncrona).');
+        return;
+      }
+      // Escuchar eventos
+      img.addEventListener('load', () => {
+        console.info('fondo.jpg.jpg cargada correctamente.');
+        document.body.classList.remove('bg-failed');
+      });
+      img.addEventListener('error', () => {
+        console.error('No se pudo cargar ./fondo.jpg.jpg — revisá nombre/ruta/depósito en el servidor.');
+        // fallback: si no se carga, marcamos body para usar un fondo alternativo y mostramos aviso en consola
+        document.body.classList.add('bg-failed');
+        // opcional: intentar cargar desde ruta absoluta (descomentar si corresponde)
+        // const tryUrl = '/fondo.jpg.jpg';
+        // const test = new Image();
+        // test.src = tryUrl;
+        // test.onload = () => { img.src = tryUrl; document.body.classList.remove('bg-failed'); console.info('Se cargó fondo desde /fondo.jpg.jpg'); };
+      });
+
+      // también probamos forzar la petición (útil en file:// algunos navegadores)
+      setTimeout(()=> {
+        if (!img.complete || img.naturalWidth === 0) {
+          console.warn('Comprobando de nuevo: la imagen de fondo no parece haber cargado todavía.');
+        }
+      }, 1200);
+    })();
+
+    /* --------------- resto del script (copiado/flip) --------------- */
     const mensajes = [
       "👋 Hola {usuario}\nBET300VIP celebra el Mes de la Madre 💕\nEntrá al Slot y descubrí tu premio 💫",
       "👋 Hola {usuario}\n¡Sorpresa! Tenés una oportunidad exclusiva hoy 🎁\nIngresá y reclamal tu premio ✨",
       "👋 Hola {usuario}\nEste es un mensaje alternativo de prueba — más variantes próximamente."
     ];
-
     let variantIndex = 0;
+    function getUsuario(){ const el=document.getElementById('usuario-name'); return el?el.textContent.trim():'Amigo'; }
+    function escapeHtml(str){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;"); }
+    function renderPreviewFromVariant(){ const u=getUsuario(); const t=mensajes[variantIndex].replaceAll('{usuario}',u); document.querySelector('.message-text').innerHTML = t.split('\n').map(escapeHtml).join('<br>'); }
+    renderPreviewFromVariant();
 
-    // Helpers: obtener nombre mostrado en la vista (strong#usuario-name)
-    function getUsuario() {
-      const el = document.getElementById('usuario-name');
-      return el ? el.textContent.trim() : 'Amigo';
+    function copyTextToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+      return new Promise((res,rej)=>{ try{ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); res(); }catch(e){ rej(e); } });
     }
-
-    function renderPreviewFromVariant() {
-      const usuario = getUsuario();
-      const texto = mensajes[variantIndex].replaceAll('{usuario}', usuario);
-      // Convert line breaks to <br> preserving emojis etc
-      const preview = document.querySelector('.message-text');
-      // Some messages already include HTML if needed; for now convert \n to <br>
-      preview.innerHTML = texto.split('\n').map(escapeHtml).join('<br>');
-      // restore brand style if present (if messages contain "BET300VIP", make it bold/purple)
-      preview.querySelectorAll('span.brand').forEach(s => s.classList.add('brand'));
-    }
-
-    // Simple HTML escape to avoid injection if you paste raw HTML later
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'",'&#39;');
-    }
-
-    // Clipboard copy with fallback (similar a chinbotones)
-    function copyTextToClipboard(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        return navigator.clipboard.writeText(text);
-      } else {
-        // fallback
-        return new Promise((resolve, reject) => {
-          try {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            resolve();
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-    }
-
-    // Toast
     const toastEl = document.getElementById('toast');
-    function showToast(msg) {
-      toastEl.textContent = '✅ Copiado: ' + msg;
-      toastEl.classList.add('show');
-      toastEl.setAttribute('aria-hidden', 'false');
-      setTimeout(() => {
-        toastEl.classList.remove('show');
-        toastEl.setAttribute('aria-hidden', 'true');
-      }, 2000);
-    }
+    function showToast(msg){ toastEl.textContent = '✅ Copiado: ' + msg; toastEl.classList.add('show'); toastEl.setAttribute('aria-hidden','false'); setTimeout(()=>{ toastEl.classList.remove('show'); toastEl.setAttribute('aria-hidden','true'); }, 2000); }
+    function animateButton(btn){ if(!btn) return; btn.style.transform='scale(0.96)'; setTimeout(()=>btn.style.transform='',140); }
 
-    // Animation small feedback
-    function animateButton(btn) {
-      if (!btn) return;
-      btn.style.transform = 'scale(0.96)';
-      setTimeout(() => btn.style.transform = '', 140);
-    }
-
-    // Copy actions
-    function getCurrentMessageText() {
-      const usuario = getUsuario();
-      return mensajes[variantIndex].replaceAll('{usuario}', usuario);
-    }
-
-    // Copy plain message
     document.getElementById('btn-copy').addEventListener('click', function(e){
-      const msg = getCurrentMessageText();
-      copyTextToClipboard(msg)
-        .then(() => showToast('Mensaje'))
-        .catch(() => showToast('Texto'));
+      const msg = mensajes[variantIndex].replaceAll('{usuario}', getUsuario());
+      copyTextToClipboard(msg).then(()=>showToast('Mensaje')).catch(()=>showToast('Texto'));
       animateButton(e.currentTarget);
     });
-
-    // Copy WhatsApp link (no abre, solo copia link listo para pegar)
     document.getElementById('btn-wsp').addEventListener('click', function(e){
-      const msg = getCurrentMessageText();
-      // Usamos wa.me con text param (no número fijo) — el usuario ya puede pegarlo o abrirlo
+      const msg = mensajes[variantIndex].replaceAll('{usuario}', getUsuario());
       const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
-      copyTextToClipboard(url)
-        .then(() => showToast('WhatsApp'))
-        .catch(() => showToast('Enlace'));
+      copyTextToClipboard(url).then(()=>showToast('WhatsApp')).catch(()=>showToast('Enlace'));
       animateButton(e.currentTarget);
     });
-
-    // Flip: cambia la variante y actualiza la vista
     document.getElementById('flip-variant').addEventListener('click', function(e){
       variantIndex = (variantIndex + 1) % mensajes.length;
       renderPreviewFromVariant();
       animateButton(e.currentTarget);
     });
-
-    // Inicializar preview con la variante 0 (puede sobreescribirse con futuros arrays)
-    renderPreviewFromVariant();
-
-    // Si en el futuro querés actualizar el array desde el exterior (por ejemplo fetch),
-    // podés reassignar `mensajes` o proporcionar una función que setee mensajes y haga renderPreviewFromVariant().
-
-    // Consejo: cuando subas tu array definitivo, asegurate que las plantillas usen {usuario}
-    // como marcador para mantener la sustitución automática del nombre visible en la vista.
   </script>
 </body>
 </html>
