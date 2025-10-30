@@ -212,14 +212,16 @@
         </p>
       </div>
 
-      <!-- BOTONES DE ACCIÓN -->
-      <div class="action-panel">
-        <div class="action-buttons">
-          <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">📋 Copiar mensaje</button>
-          <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
-        </div>
-      </div>
 
+  <!-- Input para username + botón para copiar un saludo personalizado -->
+  <div class="user-row" aria-label="Usuario y saludo">
+    <input id="usuarioInput" type="text" placeholder="Pepe" aria-label="Nombre del usuario (ej. Pepe)">
+  </div>
+             <!-- BOTONES DE ACCIÓN -->
+     <div class="action-buttons" aria-label="Acciones del mensaje">
+  <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">📋 Copiar mensaje</button>
+  <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
+</div>
     </div>
   </div>
 
