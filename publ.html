@@ -47,36 +47,15 @@
       color: var(--text-light);
     }
 
-    .relinking-block {
-      width: var(--width);
-      max-width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 18px 22px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));
-      border: 1px solid rgba(255,255,255,0.03);
-      box-shadow: 0 10px 40px rgba(1,3,8,0.6);
-      backdrop-filter: blur(6px);
-    }
-
-    /* ---------- INPUT USUARIO ---------- */
-    .user-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-    }
-    .user-row input {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.02);
-      color: var(--text-light);
-      font-weight: 600;
-      outline: none;
-    }
+.relinking-block{
+  width: var(--width);
+  max-width: 100%;
+  min-height: var(--height);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  /* ← Esto mantiene mensaje a la izquierda y panel al costado */
+}
 
     /* ---------- MENSAJE PREVIEW ---------- */
     .message-preview-card {
@@ -212,16 +191,14 @@
         </p>
       </div>
 
-
-<!-- PANEL DE ACCIÓN -->
 <div class="action-panel" role="group" aria-label="Panel de acciones">
 
-  <!-- Input para username -->
+  <!-- Input del usuario arriba -->
   <div class="user-row" aria-label="Usuario">
     <input id="usuarioInput" type="text" placeholder="Ingresá nombre de usuario" aria-label="Nombre del usuario">
   </div>
 
-  <!-- BOTONES DE ACCIÓN -->
+  <!-- Botones debajo -->
   <div class="action-buttons" aria-label="Acciones del mensaje">
     <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">📋 Copiar mensaje</button>
     <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
