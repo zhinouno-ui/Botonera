@@ -3,53 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Revinculación — BET300VIP</title>
+  <title>RevinPu</title>
   <style>
     /* mínimo reset */
     html, body { height: 100%; margin: 0; }
 
-    /* BG: usamos un <img> posicionado por detrás para garantizar carga (funciona con file:// y HTTP).
-       Si por algún motivo la imagen falla, hay un fallback de color y un aviso en consola. */
-    .bg {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none; /* no interfiere con clicks */
-      z-index: -2; /* detrás del contenido */
-      background: #111217; /* color fallback mientras carga */
-    }
-    .bg img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;         /* cubre toda la pantalla independientemente de la relación de aspecto */
-      object-position: center;   /* centrada */
-      display: block;
-      -webkit-user-drag: none;
-      user-select: none;
-      transform: translateZ(0);  /* fuerza composición */
-    }
-    /* overlay para mejorar contraste (ajusta el alpha si lo querés más/menos oscuro) */
-    .bg .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.16);
-      z-index: 1;
-      pointer-events: none;
-    }
+    /* BG: imagen posada por detrás (asegura carga en file:// y HTTP) */
+    .bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: -2; background: #111217; }
+    .bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; -webkit-user-drag: none; user-select: none; transform: translateZ(0); }
+    .bg .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.16); z-index: 1; pointer-events: none; }
 
-    /* Si la imagen no carga, añadimos esta clase por JS para que se vea un fallback distinto */
-    body.bg-failed {
-      background: linear-gradient(180deg,#0e0f12,#111217);
-    }
-
-    /* Asegurá que el contenido esté sobre el background */
+    /* contenedor principal */
     #revinculacion-container {
       position: relative;
       z-index: 0;
       width: 100%;
-      min-height: 100%;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -71,8 +40,7 @@
     .relinking-block{
       width: var(--width);
       max-width: 100%;
-      height: var(--height);
-      min-height: 160px;
+      min-height: var(--height);
       display: flex;
       align-items: center;
       gap: 18px;
@@ -85,7 +53,9 @@
       backdrop-filter: blur(6px);
     }
 
+    /* MESSAGE CARD: relativo para posicionar el flip en su esquina */
     .message-preview-card{
+      position: relative; /* importante para flip dentro del cuadro */
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -98,6 +68,27 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.45);
       overflow: hidden;
     }
+
+    /* Flip posicionado en la esquina superior derecha del cuadro de texto */
+    .msg-flip {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.26));
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.06);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+      z-index: 5;
+      backdrop-filter: blur(4px);
+    }
+    .msg-flip:hover { transform: scale(1.02); }
 
     .message-text{
       margin: 0;
@@ -116,7 +107,7 @@
       margin-left: 6px;
     }
 
-    /* Action panel (recuadro botonera) */
+    /* Action panel (botonera) */
     .action-panel{
       position: relative;
       display: flex;
@@ -124,8 +115,8 @@
       justify-content: center;
       flex-direction: column;
       gap: 10px;
-      width: 228px;
-      padding: 12px;
+      width: 260px;
+      padding: 14px;
       box-sizing: border-box;
       border-radius: 12px;
       background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));
@@ -134,43 +125,16 @@
       backdrop-filter: blur(6px);
     }
 
-    /* Flip button (esquina del panel) */
-    .flip-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.28);
-      color: #fff;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      font-size: 16px;
-    }
-    .flip-btn:hover { transform: scale(1.03); }
-
-    .action-buttons{
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: stretch;
-      width: 100%;
-      box-sizing: border-box;
-    }
+    .action-buttons{ width: 100%; display:flex; flex-direction:column; gap:12px; }
 
     .glass-button{
       display: inline-flex;
       align-items: center;
       gap: 10px;
       justify-content: center;
-      padding: 8px 12px;
-      height: 38px;
-      border-radius: 10px;
+      padding: 10px 12px;
+      height: 44px;
+      border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
@@ -182,75 +146,67 @@
       text-decoration: none;
     }
 
-    .copy-button{
-      background: linear-gradient(180deg, var(--bet300-purple), #77339e);
-      color: #fff;
-      border: 1px solid rgba(142,68,173,0.18);
-    }
-    .whatsapp-button{
-      background: linear-gradient(180deg, var(--bet300-green), #19b856);
-      color: #fff;
-      border: 1px solid rgba(37,211,102,0.12);
-    }
+    .copy-button{ background: linear-gradient(180deg, var(--bet300-purple), #77339e); color:#fff; border:1px solid rgba(142,68,173,0.18); }
+    .whatsapp-button{ background: linear-gradient(180deg, var(--bet300-green), #19b856); color:#fff; border:1px solid rgba(37,211,102,0.12); }
 
-    /* toast / feedback */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-weight: 700;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .25s ease, transform .25s ease;
-      z-index: 9999;
+    /* Input usuario + copiar saludo */
+    .user-row { display:flex; gap:8px; width:100%; margin-top:6px; }
+    .user-row input[type="text"]{
+      flex:1;
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-light);
+      outline: none;
+      font-weight:600;
     }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-6px);
-    }
+    .user-row button{ width:140px; padding:8px 10px; border-radius:8px; border:none; background:#C93C20; color:#fff; font-weight:700; cursor:pointer; }
+
+    /* toast */
+    .toast { position: fixed; bottom: 24px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.8); color:#fff; padding:10px 14px; border-radius:8px; font-weight:700; opacity:0; pointer-events:none; transition: opacity .25s, transform .25s; z-index:9999; }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); pointer-events:auto; }
 
     @media (max-width:880px){
-      .relinking-block{ flex-direction: column; height: auto; }
-      .action-panel{ width: 100%; flex-direction: row; justify-content: flex-end; padding: 10px; }
-      .action-buttons{ flex-direction: row; gap: 8px; }
+      .relinking-block{ flex-direction: column; gap:12px; }
+      .action-panel{ width:100%; flex-direction:row; justify-content:flex-end; padding:10px; }
+      .action-buttons{ flex-direction:row; gap:8px; }
+      .user-row { flex-direction:column; }
+      .user-row button{ width:100%; }
+      .msg-flip { top: 8px; right: 8px; }
     }
   </style>
 </head>
 <body>
-  <!-- fondo integrado: coloca el archivo 'fondo.jpg.jpg' EN EL MISMO DIRECTORIO que este HTML -->
   <div class="bg" aria-hidden="true">
-    <!-- usa ./fondo.jpg.jpg — comprueba que el nombre y la extensión coincidan EXACTAMENTE -->
-    <img id="bg-img" src="./fondo.jpg.jpg" alt="fondo" />
+    <img id="bg-img" src="./fondo.jpg" alt="" />
     <div class="overlay"></div>
   </div>
 
   <div id="revinculacion-container">
     <div class="relinking-block" role="region" aria-label="Bloque de revinculación BET300VIP">
+
       <div class="message-preview-card" aria-hidden="false">
+        <!-- Flip dentro del cuadro de texto, esquina superior derecha (no se superpone al contenido) -->
+        <button class="msg-flip" id="msg-flip" title="Cambiar variante">🔁</button>
+
         <p class="message-text" aria-label="Vista previa del mensaje">
-          👋 Hola <strong id="usuario-name">Pepe</strong><br>
+          👋 Hola <strong id="usuario-name">Amigo</strong><br>
           <span class="brand">BET300VIP</span> celebra el Mes de la Madre 💕<br>
           Entrá al Slot y descubrí tu premio 💫
         </p>
       </div>
 
       <div class="action-panel" role="group" aria-label="Panel de acciones">
-        <!-- Flip: cambia la variante actual que se copiará (funciona como en chinbotones) -->
-        <button class="flip-btn" id="flip-variant" title="Cambiar variante">🔄</button>
-
         <div class="action-buttons" aria-label="Acciones del mensaje">
-          <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">
-            📋 Copiar mensaje
-          </button>
+          <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">📋 Copiar mensaje</button>
+          <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
 
-          <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">
-            💬 Copiar WhatsApp
-          </button>
+          <!-- Input para username + botón para copiar un saludo personalizado -->
+          <div class="user-row" aria-label="Usuario y saludo">
+            <input id="usuarioInput" type="text" placeholder="Pepe" aria-label="Nombre del usuario (ej. Pepe)">
+            <button id="btn-saludo" type="button" title="Copiar saludo personalizado">Copiar saludo</button>
+          </div>
         </div>
       </div>
     </div>
@@ -259,75 +215,89 @@
   <div id="toast" class="toast" aria-hidden="true"></div>
 
   <script>
-    // Verifica carga de la imagen y aplica fallback si falla.
-    (function verifyBgImage() {
-      const img = document.getElementById('bg-img');
-      if (!img) return;
-      // Si ya cargó correctamente, nada más que hacer
-      if (img.complete && img.naturalWidth > 0) {
-        console.info('fondo.jpg.jpg cargada correctamente (síncrona).');
-        return;
-      }
-      // Escuchar eventos
-      img.addEventListener('load', () => {
-        console.info('fondo.jpg.jpg cargada correctamente.');
-        document.body.classList.remove('bg-failed');
-      });
-      img.addEventListener('error', () => {
-        console.error('No se pudo cargar ./fondo.jpg.jpg — revisá nombre/ruta/depósito en el servidor.');
-        // fallback: si no se carga, marcamos body para usar un fondo alternativo y mostramos aviso en consola
-        document.body.classList.add('bg-failed');
-        // opcional: intentar cargar desde ruta absoluta (descomentar si corresponde)
-        // const tryUrl = '/fondo.jpg.jpg';
-        // const test = new Image();
-        // test.src = tryUrl;
-        // test.onload = () => { img.src = tryUrl; document.body.classList.remove('bg-failed'); console.info('Se cargó fondo desde /fondo.jpg.jpg'); };
-      });
-
-      // también probamos forzar la petición (útil en file:// algunos navegadores)
-      setTimeout(()=> {
-        if (!img.complete || img.naturalWidth === 0) {
-          console.warn('Comprobando de nuevo: la imagen de fondo no parece haber cargado todavía.');
-        }
-      }, 1200);
-    })();
-
-    /* --------------- resto del script (copiado/flip) --------------- */
+    // mensajes de preview (usa {usuario})
     const mensajes = [
       "👋 Hola {usuario}\nBET300VIP celebra el Mes de la Madre 💕\nEntrá al Slot y descubrí tu premio 💫",
       "👋 Hola {usuario}\n¡Sorpresa! Tenés una oportunidad exclusiva hoy 🎁\nIngresá y reclamal tu premio ✨",
-      "👋 Hola {usuario}\nEste es un mensaje alternativo de prueba — más variantes próximamente."
+      "👋 Hola {usuario}\nRecordá visitar nuestras promos del día. 🤩"
     ];
     let variantIndex = 0;
-    function getUsuario(){ const el=document.getElementById('usuario-name'); return el?el.textContent.trim():'Amigo'; }
-    function escapeHtml(str){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;"); }
-    function renderPreviewFromVariant(){ const u=getUsuario(); const t=mensajes[variantIndex].replaceAll('{usuario}',u); document.querySelector('.message-text').innerHTML = t.split('\n').map(escapeHtml).join('<br>'); }
-    renderPreviewFromVariant();
 
+    const usuarioNameEl = document.getElementById('usuario-name');
+    const usuarioInput = document.getElementById('usuarioInput');
+    const toastEl = document.getElementById('toast');
+
+    // Render del preview reemplazando {usuario}
+    function escapeHtml(str){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
+    function renderPreview(){
+      const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
+      const texto = mensajes[variantIndex].replaceAll('{usuario}', nombre);
+      const preview = document.querySelector('.message-text');
+      preview.innerHTML = texto.split('\n').map(escapeHtml).join('<br>');
+    }
+
+    // Actualizar usuario en vista cuando cambia el input
+    usuarioInput.addEventListener('input', () => {
+      const v = usuarioInput.value.trim();
+      usuarioNameEl.textContent = v ? v : 'Amigo';
+      renderPreview();
+    });
+
+    // Flip dentro del cuadro (esquina superior derecha): cambia la variante
+    document.getElementById('msg-flip').addEventListener('click', (e) => {
+      variantIndex = (variantIndex + 1) % mensajes.length;
+      renderPreview();
+      animateButton(e.currentTarget);
+    });
+
+    // Copiar funciones (con fallback)
     function copyTextToClipboard(text){
       if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
       return new Promise((res,rej)=>{ try{ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); res(); }catch(e){ rej(e); } });
     }
-    const toastEl = document.getElementById('toast');
-    function showToast(msg){ toastEl.textContent = '✅ Copiado: ' + msg; toastEl.classList.add('show'); toastEl.setAttribute('aria-hidden','false'); setTimeout(()=>{ toastEl.classList.remove('show'); toastEl.setAttribute('aria-hidden','true'); }, 2000); }
+
+    function showToast(msg){
+      toastEl.textContent = '✅ Copiado: ' + msg;
+      toastEl.classList.add('show');
+      toastEl.setAttribute('aria-hidden','false');
+      setTimeout(()=>{ toastEl.classList.remove('show'); toastEl.setAttribute('aria-hidden','true'); }, 2000);
+    }
     function animateButton(btn){ if(!btn) return; btn.style.transform='scale(0.96)'; setTimeout(()=>btn.style.transform='',140); }
 
-    document.getElementById('btn-copy').addEventListener('click', function(e){
-      const msg = mensajes[variantIndex].replaceAll('{usuario}', getUsuario());
+    // copy message
+    document.getElementById('btn-copy').addEventListener('click', (e) => {
+      const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
+      const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
       copyTextToClipboard(msg).then(()=>showToast('Mensaje')).catch(()=>showToast('Texto'));
       animateButton(e.currentTarget);
     });
-    document.getElementById('btn-wsp').addEventListener('click', function(e){
-      const msg = mensajes[variantIndex].replaceAll('{usuario}', getUsuario());
+
+    // copy whatsapp link
+    document.getElementById('btn-wsp').addEventListener('click', (e) => {
+      const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
+      const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
       const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
       copyTextToClipboard(url).then(()=>showToast('WhatsApp')).catch(()=>showToast('Enlace'));
       animateButton(e.currentTarget);
     });
-    document.getElementById('flip-variant').addEventListener('click', function(e){
-      variantIndex = (variantIndex + 1) % mensajes.length;
-      renderPreviewFromVariant();
+
+    // copiar saludo personalizado (según lo pediste)
+    document.getElementById('btn-saludo').addEventListener('click', (e) => {
+      const nombre = usuarioInput.value.trim() || 'Amigo';
+      const saludo = `hola, ${nombre} te recuerdo que cambiamos de metodo de carga, podes contactarnos por wsp, https://wa.me/549XXXXXXXXX`;
+      copyTextToClipboard(saludo).then(()=>showToast('Saludo')).catch(()=>showToast('Texto'));
       animateButton(e.currentTarget);
     });
+
+    // verificación de carga de imagen de fondo (console + fallback visual por CSS)
+    (function verifyBgImage(){
+      const img = document.getElementById('bg-img');
+      if(!img) return;
+      img.addEventListener('error', ()=>{ console.error('No se pudo cargar ./fondo.jpg — revisá nombre/ruta.'); document.body.classList.add('bg-failed'); });
+    })();
+
+    // inicial
+    renderPreview();
   </script>
 </body>
 </html>
