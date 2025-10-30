@@ -179,7 +179,7 @@
 </head>
 <body>
   <div class="bg" aria-hidden="true">
-    <img id="bg-img" src="./fondo.jpg" alt="" />
+    <img id="bg-img" src="./fondo.jpg.jpg" alt="" />
     <div class="overlay"></div>
   </div>
 
@@ -293,7 +293,7 @@
     (function verifyBgImage(){
       const img = document.getElementById('bg-img');
       if(!img) return;
-      img.addEventListener('error', ()=>{ console.error('No se pudo cargar ./fondo.jpg — revisá nombre/ruta.'); document.body.classList.add('bg-failed'); });
+      img.addEventListener('error', ()=>{ console.error('No se pudo cargar ./fondo.jpg.jpg — revisá nombre/ruta.'); document.body.classList.add('bg-failed'); });
     })();
 
     // inicial
