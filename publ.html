@@ -5,19 +5,33 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Revinculación — BET300VIP</title>
   <style>
+    /* Asegurarse que html/body ocupen toda la pantalla y sin márgenes */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    /* Fondo: uso de ruta relativa explícita, fallback con color/gradiente
+       y overlay para que nunca quede "blanco" si la imagen no carga.
+       Si la imagen está en el mismo directorio, ./fondo.jpg funciona bien. */
     body {
-  background-image: url('fondo.jpg');
-  /* Otras propiedades para ajustar la imagen */
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
-}
-    /* BET300VIP — Glassmorphism revinculación block (solo HTML + CSS)
-       Cambios realizados:
-       - fondo del bloque principal más cálido/profesional (gradiente con acento púrpura/azul)
-       - la botonera ahora está dentro de un "action-panel" con fondo, borde coloreado y sombra (recuadro)
-       - eliminé la muestra de variantes visual para dejar solo la UI limpia
-    */
+      /* color de respaldo si la imagen no existe o tarda en cargar */
+      background-color: #e9ebee;
+
+      /* combinación: overlay suave + imagen de fondo local */
+      background-image:
+        linear-gradient(rgba(10,12,20,0.06), rgba(10,12,20,0.06)),
+        url('./fondo.jpg');
+
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      /* fixed puede comportarse raro en algunos navegadores locales, pero lo dejo si querés efecto parallax */
+      background-attachment: fixed;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
     :root{
       --width: 1310px;
       --height: 201px;
