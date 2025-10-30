@@ -10,73 +10,28 @@
     html, body {
       height: 100%;
       margin: 0;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Fondo: imagen local 'fondo.jpg.jpg' centrada y cubriendo toda la pantalla
-       independientemente de la relación de aspecto.
-       - Usa background-size: cover para forzar el recorte y cobertura total.
-       - background-position: center center asegura el centrado.
-       - background-repeat: no-repeat evita mosaicos.
-       - background-attachment: fixed (opcional) mantiene la imagen fija al hacer scroll.
-       - Include fallback background-color por si la imagen no está disponible.
-    */
+    /* Fondo: imagen local 'fondo.jpg' centrada y cubriendo toda la pantalla */
     body {
-      background-color: #111217; /* fallback mientras carga o si falla la imagen */
-      background-image: url('fondo.jpg.jpg');
+      background-color: #111217;
+      background-image: url('./fondo.jpg');
       background-repeat: no-repeat;
       background-position: center center;
       background-size: cover;
       background-attachment: fixed;
-      -webkit-background-size: cover;
-      -moz-background-size: cover;
-      -o-background-size: cover;
-
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      /* opcional: forzar contraste del contenido sobre la imagen con un overlay vía pseudo-elemento
-         si querés que el bloque se destaque. Comentado por defecto; descomenta si lo necesitás. */
     }
 
-    /* Ejemplo de overlay semitransparente (descomentar para usar)
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.10); / * ajustar alpha para más/menos oscuridad * /
-      pointer-events: none;
-    }
-    */
-
-    /* Variables / root (mantengo tus variables por si las usás luego) */
-    
     :root{
       --width: 1310px;
       --height: 201px;
-
-      /* Brand colors */
-      --bet300-dark: #0f1724;
       --bet300-purple: #8e44ad;
-      --bet300-gold: #f1c40f;
       --bet300-green: #25d366;
-      --bet300-cyan: #17c3b2;
-
-      --text-dark: #2c3e50;
-      --text-light: #f4f7f6;
-
-      /* glass backgrounds */
-      --glass-light: rgba(255,255,255,0.06);
-      --glass-lighter: rgba(255,255,255,0.09);
-      --glass-dark: rgba(0,0,0,0.25);
-
-      --border-light: rgba(255,255,255,0.12);
-      --border-dark: rgba(0,0,0,0.35);
-
-      --bet300-purple-rgb: 142,68,173;
-      --bet300-gold-rgb: 241,196,15;
-      --bet300-green-rgb: 37,211,102;
+      --text-light: #f6f7f8;
     }
 
-    /* layout wrapper (keeps the same id so you can paste into existing container) */
     #revinculacion-container {
       width: 100%;
       display: flex;
@@ -84,12 +39,10 @@
       padding: 18px 10px;
       box-sizing: border-box;
       font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
       background: transparent;
+      min-height: 100vh;
     }
 
-    /* Bloque principal con fondo renovado */
     .relinking-block{
       width: var(--width);
       max-width: 100%;
@@ -101,17 +54,12 @@
       padding: 18px 22px;
       box-sizing: border-box;
       border-radius: 14px;
-      /* Nuevo fondo: sutil gradiente con acento púrpura -> azul oscuro */
-      background: linear-gradient(135deg, rgba(142,68,173,0.07) 0%, rgba(21,32,64,0.06) 60%);
-      border: 1px solid rgba(142,68,173,0.06);
-      box-shadow: 0 10px 40px rgba(12, 18, 34, 0.10);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transition: transform .22s ease, box-shadow .22s ease;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 10px 40px rgba(1,3,8,0.6);
+      backdrop-filter: blur(6px);
     }
-    .relinking-block:active { transform: translateY(1px); }
 
-    /* Message preview area */
     .message-preview-card{
       display: flex;
       align-items: center;
@@ -120,9 +68,9 @@
       height: calc(var(--height) - 40px);
       padding: 18px 20px;
       border-radius: 10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.02));
-      border: 1px solid rgba(255,255,255,0.03);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(10,12,20,0.03);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.20));
+      border: 1px solid rgba(255,255,255,0.02);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.45);
       overflow: hidden;
     }
 
@@ -130,7 +78,7 @@
       margin: 0;
       font-size: 1.05rem;
       line-height: 1.5;
-      color: var(--text-dark);
+      color: var(--text-light);
       text-align: left;
       width: 100%;
       word-break: break-word;
@@ -143,8 +91,9 @@
       margin-left: 6px;
     }
 
-    /* Nuevo panel que contiene la botonera (recuadro) */
+    /* Action panel (recuadro botonera) */
     .action-panel{
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -154,14 +103,32 @@
       padding: 12px;
       box-sizing: border-box;
       border-radius: 12px;
-      /* panel propio con fondo semitransparente y borde coloreado */
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(142,68,173,0.14);
-      box-shadow: 0 8px 26px rgba(17,22,44,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));
+      border: 1px solid rgba(142,68,173,0.08);
+      box-shadow: 0 8px 26px rgba(2,6,12,0.6);
       backdrop-filter: blur(6px);
     }
 
-    /* Buttons container (ahora dentro del action-panel) */
+    /* Flip button (esquina del panel) */
+    .flip-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.28);
+      color: #fff;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      font-size: 16px;
+    }
+    .flip-btn:hover { transform: scale(1.03); }
+
     .action-buttons{
       display: flex;
       flex-direction: column;
@@ -171,7 +138,6 @@
       box-sizing: border-box;
     }
 
-    /* Glass button base */
     .glass-button{
       display: inline-flex;
       align-items: center;
@@ -180,111 +146,53 @@
       padding: 8px 12px;
       height: 38px;
       border-radius: 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.95rem;
+      font-weight: 700;
       cursor: pointer;
       user-select: none;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: var(--glass-lighter);
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
       color: var(--text-light);
-      box-shadow: 0 3px 12px rgba(14,20,30,0.06);
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      transition: transform .14s ease, box-shadow .14s ease;
       text-decoration: none;
     }
 
-    .glass-button:active{ transform: translateY(1px); }
-
-    /* Variant: purple (primary / copy) */
     .copy-button{
       background: linear-gradient(180deg, var(--bet300-purple), #77339e);
-      border: 1px solid rgba(var(--bet300-purple-rgb), 0.15);
       color: #fff;
-      box-shadow: 0 6px 18px rgba(142,68,173,0.14);
+      border: 1px solid rgba(142,68,173,0.18);
     }
-    .copy-button:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(142,68,173,0.18);
-    }
-
-    /* WhatsApp button (verde) */
     .whatsapp-button{
       background: linear-gradient(180deg, var(--bet300-green), #19b856);
-      border: 1px solid rgba(var(--bet300-green-rgb), 0.08);
       color: #fff;
-    }
-    .whatsapp-button:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 12px 26px rgba(37,211,102,0.14);
+      border: 1px solid rgba(37,211,102,0.12);
     }
 
-    .glass-button svg{
-      width: 18px;
-      height: 18px;
-      display: inline-block;
-      flex-shrink: 0;
+    /* toast / feedback */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-6px);
     }
 
-    /* Small helper when buttons stacked vertically looks too long on small widths */
-    @media (max-width:1200px){
-      .action-panel{ width: 200px; }
-    }
     @media (max-width:880px){
-      .relinking-block{
-        flex-direction: column;
-        height: auto;
-        gap: 12px;
-        padding: 14px;
-      }
-      .message-preview-card{
-        height: auto;
-        width: 100%;
-      }
-      .action-panel{
-        width: 100%;
-        flex-direction: row;
-        justify-content: flex-end;
-        padding: 10px;
-      }
-      .action-buttons{
-        flex-direction: row;
-        gap: 8px;
-        width: auto;
-      }
-    }
-
-    /* Dark mode tweaks */
-    @media (prefers-color-scheme: dark){
-      :root{
-        --text-dark: #dfe8ea;
-        --text-light: #f6f7f8;
-      }
-      .relinking-block{
-        background: linear-gradient(135deg, rgba(142,68,173,0.06) 0%, rgba(2,6,22,0.30) 60%);
-        border: 1px solid rgba(0,0,0,0.45);
-        box-shadow: 0 12px 48px rgba(0,0,0,0.5);
-      }
-      .message-preview-card{
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.14));
-        border: 1px solid rgba(255,255,255,0.02);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-      }
-      .message-text{ color: var(--text-light); }
-      .action-panel{
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));
-        border: 1px solid rgba(142,68,173,0.12);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-      }
-      .glass-button{
-        color: var(--text-light);
-        border: 1px solid rgba(255,255,255,0.04);
-        background: rgba(255,255,255,0.02);
-      }
-    }
-
-    /* Fine typography for emojis (to look consistent) */
-    .message-text, .glass-button {
-      -webkit-font-smoothing:antialiased;
-      font-variant-ligatures: none;
+      .relinking-block{ flex-direction: column; height: auto; }
+      .action-panel{ width: 100%; flex-direction: row; justify-content: flex-end; padding: 10px; }
+      .action-buttons{ flex-direction: row; gap: 8px; }
     }
   </style>
 </head>
@@ -293,34 +201,154 @@
     <div class="relinking-block" role="region" aria-label="Bloque de revinculación BET300VIP">
       <div class="message-preview-card" aria-hidden="false">
         <p class="message-text" aria-label="Vista previa del mensaje">
-          👋 Hola <strong>Pepe</strong><br>
+          👋 Hola <strong id="usuario-name">Pepe</strong><br>
           <span class="brand">BET300VIP</span> celebra el Mes de la Madre 💕<br>
           Entrá al Slot y descubrí tu premio 💫
         </p>
       </div>
 
       <div class="action-panel" role="group" aria-label="Panel de acciones">
+        <!-- Flip: cambia la variante actual que se copiará (funciona como en chinbotones) -->
+        <button class="flip-btn" id="flip-variant" title="Cambiar variante">🔄</button>
+
         <div class="action-buttons" aria-label="Acciones del mensaje">
-          <button class="glass-button copy-button" type="button" title="Copiar mensaje">
-            <!-- clipboard icon -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            Copiar mensaje
+          <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">
+            <!-- icon similar al otro diseño -->
+            📋 Copiar mensaje
           </button>
 
-          <a class="glass-button whatsapp-button" href="#" role="button" title="Enviar por WhatsApp">
-            <!-- WhatsApp simplified icon -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: white;">
-              <path d="M21 11.5a8.5 8.5 0 1 1-2.5-5.9L21 3v8.5z" fill="currentColor" opacity="0.12"></path>
-              <path d="M16.5 7.5c-.4-.1-1.1 0-1.5.3-.35.3-.9.9-1 1.2-.1.3-.1.7.1 1 .2.3.9.8 1.9 1.5 1 .7 1.4 1.1 1.6 1.4.2.3.2.6.1.8-.1.2-.7.7-1.3 1.1-.6.4-1.4.1-2.4-.2-1-.3-2.1-.6-3.1-.9-1-.3-1.7-.1-2.1.2-.4.3-.9 1.2-1.1 1.6-.2.4-.8 1-1.1 1.1" stroke="currentColor" fill="none"></path>
-            </svg>
-            Enviar por WhatsApp
-          </a>
+          <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">
+            💬 Copiar WhatsApp
+          </button>
         </div>
       </div>
     </div>
   </div>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <script>
+    // Mensajes (provisión inicial). Próximamente integrarás tu array real; aquí se rotan/flippean.
+    // Usa {usuario} como placeholder para insertar el nombre que aparece en la vista.
+    const mensajes = [
+      "👋 Hola {usuario}\nBET300VIP celebra el Mes de la Madre 💕\nEntrá al Slot y descubrí tu premio 💫",
+      "👋 Hola {usuario}\n¡Sorpresa! Tenés una oportunidad exclusiva hoy 🎁\nIngresá y reclamal tu premio ✨",
+      "👋 Hola {usuario}\nEste es un mensaje alternativo de prueba — más variantes próximamente."
+    ];
+
+    let variantIndex = 0;
+
+    // Helpers: obtener nombre mostrado en la vista (strong#usuario-name)
+    function getUsuario() {
+      const el = document.getElementById('usuario-name');
+      return el ? el.textContent.trim() : 'Amigo';
+    }
+
+    function renderPreviewFromVariant() {
+      const usuario = getUsuario();
+      const texto = mensajes[variantIndex].replaceAll('{usuario}', usuario);
+      // Convert line breaks to <br> preserving emojis etc
+      const preview = document.querySelector('.message-text');
+      // Some messages already include HTML if needed; for now convert \n to <br>
+      preview.innerHTML = texto.split('\n').map(escapeHtml).join('<br>');
+      // restore brand style if present (if messages contain "BET300VIP", make it bold/purple)
+      preview.querySelectorAll('span.brand').forEach(s => s.classList.add('brand'));
+    }
+
+    // Simple HTML escape to avoid injection if you paste raw HTML later
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+
+    // Clipboard copy with fallback (similar a chinbotones)
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      } else {
+        // fallback
+        return new Promise((resolve, reject) => {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            resolve();
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    }
+
+    // Toast
+    const toastEl = document.getElementById('toast');
+    function showToast(msg) {
+      toastEl.textContent = '✅ Copiado: ' + msg;
+      toastEl.classList.add('show');
+      toastEl.setAttribute('aria-hidden', 'false');
+      setTimeout(() => {
+        toastEl.classList.remove('show');
+        toastEl.setAttribute('aria-hidden', 'true');
+      }, 2000);
+    }
+
+    // Animation small feedback
+    function animateButton(btn) {
+      if (!btn) return;
+      btn.style.transform = 'scale(0.96)';
+      setTimeout(() => btn.style.transform = '', 140);
+    }
+
+    // Copy actions
+    function getCurrentMessageText() {
+      const usuario = getUsuario();
+      return mensajes[variantIndex].replaceAll('{usuario}', usuario);
+    }
+
+    // Copy plain message
+    document.getElementById('btn-copy').addEventListener('click', function(e){
+      const msg = getCurrentMessageText();
+      copyTextToClipboard(msg)
+        .then(() => showToast('Mensaje'))
+        .catch(() => showToast('Texto'));
+      animateButton(e.currentTarget);
+    });
+
+    // Copy WhatsApp link (no abre, solo copia link listo para pegar)
+    document.getElementById('btn-wsp').addEventListener('click', function(e){
+      const msg = getCurrentMessageText();
+      // Usamos wa.me con text param (no número fijo) — el usuario ya puede pegarlo o abrirlo
+      const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+      copyTextToClipboard(url)
+        .then(() => showToast('WhatsApp'))
+        .catch(() => showToast('Enlace'));
+      animateButton(e.currentTarget);
+    });
+
+    // Flip: cambia la variante y actualiza la vista
+    document.getElementById('flip-variant').addEventListener('click', function(e){
+      variantIndex = (variantIndex + 1) % mensajes.length;
+      renderPreviewFromVariant();
+      animateButton(e.currentTarget);
+    });
+
+    // Inicializar preview con la variante 0 (puede sobreescribirse con futuros arrays)
+    renderPreviewFromVariant();
+
+    // Si en el futuro querés actualizar el array desde el exterior (por ejemplo fetch),
+    // podés reassignar `mensajes` o proporcionar una función que setee mensajes y haga renderPreviewFromVariant().
+
+    // Consejo: cuando subas tu array definitivo, asegurate que las plantillas usen {usuario}
+    // como marcador para mantener la sustitución automática del nombre visible en la vista.
+  </script>
 </body>
 </html>
