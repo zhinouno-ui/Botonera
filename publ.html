@@ -120,6 +120,7 @@ button.copiado {
 
   <script>
     // solo usa window.SALUDOS - no hay fallback local
+    let saludoBase = "👋 Hola {usuario}, bienvenido a BET300VIP 🎰";
     const previewEl = document.getElementById('preview');
     const usuarioInput = document.getElementById('usuarioInput');
     const toastEl = document.getElementById('toast');
@@ -128,7 +129,9 @@ button.copiado {
     const mapSlider = ["Prom1","Prom2","Prom3","Prom4"];
     let modoSlider = 0;
     let variantIndex = 0;
-
+    
+usuarioInput.addEventListener('input', renderPreview);
+    
     function showToast(msg){
       toastEl.textContent = msg;
       toastEl.classList.add('show');
@@ -170,13 +173,19 @@ button.copiado {
       return grupos[tipo] || [];
     }
 
-    function renderPreview(){
-      const grupos = window.SALUDOS;
-      const usuario = usuarioInput.value.trim() || '{usuario}';
-      if(!grupos){
-        previewEl.innerText = '⚠️ promorevin.js no cargado. Añadí promorevin.js que defina window.SALUDOS';
-        return;
-      }
+ function renderPreview(){
+  const grupos = window.SALUDOS;
+  const usuario = usuarioInput.value.trim() || '{usuario}';
+
+  // Si promorevin.js aún no está cargado, usar saludoBase
+  if(!grupos){
+    const texto = saludoBase.replaceAll('{usuario}', usuario);
+    previewEl.innerHTML = texto
+      .split('\n')
+      .map(s => s.replaceAll('<','&lt;').replaceAll('>','&gt;'))
+      .join('<br>');
+    return;
+  }
       const tipo = mapSlider[modoSlider] || 'Prom1';
       const pool = obtenerPool(tipo);
       if(!pool || pool.length === 0){
