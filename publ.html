@@ -58,9 +58,12 @@
 }
 
 /* ---------- Ajustes para dar más espacio al preview ---------- */
-/* escondemos el input antiguo (ahora estará en el panel lateral, junto a la lupa) */
 .user-row {
-  display: none;
+  /* dejar el input compacto en columna izquierda */
+  flex: 0 0 240px;
+  max-width: 240px;
+  display: flex;
+  gap: 8px;
 }
 .user-row input {
   flex: 1;
@@ -89,43 +92,8 @@
 }
 
 /* ---------- INPUT USUARIO (mantener estilo) ---------- */
-/* ahora existe una versión minimal dentro del panel lateral */
+/* .user-row / .user-row input ya definidos arriba */
 
-/* estilo del pequeño input minimalista (ubicado donde estaba la lupa) */
-.mini-input {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  padding: 0 12px;
-  display: inline-flex;
-  align-items: center;
-  background: rgba(255,255,255,0.03);
-  color: var(--text-light);
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
-  font-weight: 700;
-  transition: width .18s ease, box-shadow .12s ease, background .12s;
-  cursor: text;
-  outline: none;
-  margin-top: 6px;
-  align-self: flex-end; /* justo a la derecha dentro del panel */
-}
-
-/* placeholder con icono pequeño */
-.mini-input::placeholder { color: rgba(246,247,248,0.6); font-weight: 600; }
-
-/* cuando el usuario enfoca, se expande para facilitar la edición */
-.mini-input:focus {
-  width: 180px;
-  background: rgba(255,255,255,0.045);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-}
-
-/* accesos rápidos: si hay texto, mantener ancho cómodo */
-.mini-input:not(:placeholder-shown) { width: 180px; }
-
-/* ---------- MENSAJES Y BOTONES ---------- */
 .msg-flip {
   position: absolute;
   top: 10px; right: 10px;
@@ -198,6 +166,29 @@
   color: #fff;
 }
 
+/* ---------- BOTON DE BÚSQUEDA (pequeño, redondeado y difuminado) ---------- */
+.search-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+  color: var(--text-light);
+  font-size: 1.05rem;
+  cursor: pointer;
+  align-self: flex-end; /* justo a la derecha dentro del panel */
+  transition: transform .12s ease, box-shadow .12s ease, background .12s;
+  margin-top: 6px; /* separado debajo de los botones */
+  opacity: 0.95;
+}
+.search-button:hover { transform: scale(1.06); box-shadow: 0 8px 18px rgba(0,0,0,0.55); }
+.search-button.loading { opacity: 0.7; transform: scale(0.98); cursor: default; }
+
 /* ---------- TOAST ---------- */
 .toast {
   position: fixed;
@@ -223,11 +214,10 @@
 @media (max-width: 880px) {
   .action-panel { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; }
   .action-buttons { flex-direction: row; gap: 8px; }
-  .user-row { display: none; }
+  .user-row { flex: 1 1 auto; max-width: none; width: 100%; flex-direction: column; }
   .message-preview-card { order: 3; width: 100%; }
   .action-panel { order: 2; }
-  .mini-input { align-self: center; margin-top: 0; width: 42px; }
-  .mini-input:focus { width: 140px; }
+  .search-button { align-self: center; margin-top: 0; }
 }
   </style>
 </head>
@@ -243,7 +233,7 @@
   <div id="revinculacion-container">
     <div class="relinking-block">
 
-      <!-- INPUT USUARIO (antiguo se esconde) -->
+      <!-- INPUT USUARIO -->
       <div class="user-row">
         <input id="usuarioInput" type="text" placeholder="Ingresá nombre de usuario" aria-label="Nombre de usuario">
       </div>
@@ -266,8 +256,8 @@
     <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
   </div>
 
-  <!-- Mini input minimalista (reemplaza la lupa y está justo debajo de los botones) -->
-  <input id="usuarioInput" class="mini-input" type="text" placeholder="🔎 Ingresá nombre de usuario" aria-label="Nombre de usuario">
+  <!-- Icono de búsqueda minimalista: pequeño, redondeado y difuminado, alineado a la derecha -->
+  <button id="btn-search" class="search-button" type="button" title="Buscar usuario">🔎</button>
 
 </div>
 
@@ -304,9 +294,9 @@
     /* ---------- ELEMENTOS ---------- */
     let variantIndex = 0;
     const usuarioNameEl = document.getElementById('usuario-name');
-    // selecciona el input minimalista (está dentro del panel lateral)
-    const usuarioInput = document.querySelector('#revinculacion-container #usuarioInput');
+    const usuarioInput = document.getElementById('usuarioInput');
     const toastEl = document.getElementById('toast');
+    const btnSearch = document.getElementById('btn-search');
 
     /* ---------- FUNCIONES ---------- */
     function escapeHtml(str) {
@@ -345,7 +335,7 @@
     }
 
     function showToast(msg) {
-      toastEl.textContent = '✅ Copiado: ' + msg;
+      toastEl.textContent = '✅ ' + msg;
       toastEl.classList.add('show');
       setTimeout(()=>toastEl.classList.remove('show'), 2000);
     }
@@ -359,7 +349,7 @@
     document.getElementById('btn-copy').addEventListener('click', (e) => {
       const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
       const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
-      copyTextToClipboard(msg).then(()=>showToast('Mensaje'));
+      copyTextToClipboard(msg).then(()=>showToast('Mensaje copiado'));
       animateButton(e.currentTarget);
     });
 
@@ -367,13 +357,66 @@
       const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
       const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
       const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
-      copyTextToClipboard(url).then(()=>showToast('WhatsApp'));
+      copyTextToClipboard(url).then(()=>showToast('Enlace WhatsApp copiado'));
       animateButton(e.currentTarget);
     });
 
-    // comportamiento minimal: si el usuario hace click en la pequeña lupa-placeholder,
-    // el input se enfoca (no hay botón separado).
-    // (no existe btn-search ahora; cualquier referencia previa se ignora)
+    // --- BUSCADOR (funcional, simulado) ---
+    // Simula una búsqueda remota; cambia a tu lógica real si tienes API
+    function mockSearchUser(name) {
+      // retorna true si nombre tiene >=2 caracteres (simulación)
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(name.length >= 2), 600);
+      });
+    }
+
+    async function searchUser() {
+      const name = usuarioInput.value.trim();
+      if (!name) {
+        showToast('Ingresá nombre de usuario');
+        usuarioInput.focus();
+        return;
+      }
+
+      // estado "cargando"
+      const prevContent = btnSearch.innerHTML;
+      btnSearch.disabled = true;
+      btnSearch.classList.add('loading');
+      btnSearch.innerHTML = '⌛';
+
+      try {
+        const found = await mockSearchUser(name);
+        if (found) {
+          usuarioNameEl.textContent = name;
+          renderPreview();
+          showToast('Usuario encontrado');
+        } else {
+          showToast('Usuario no encontrado');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Error en búsqueda');
+      } finally {
+        btnSearch.disabled = false;
+        btnSearch.classList.remove('loading');
+        btnSearch.innerHTML = prevContent;
+      }
+    }
+
+    // click en lupa
+    btnSearch.addEventListener('click', (e) => {
+      animateButton(e.currentTarget);
+      searchUser();
+    });
+
+    // Enter en input dispara búsqueda
+    usuarioInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchUser();
+      }
+    });
+
     // Cargar fondo
     document.getElementById('bg-img')?.addEventListener('error', () =>
       console.error('No se pudo cargar fondo.jpg.jpg')
