@@ -4,279 +4,233 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>BET300VIP - Botonera</title>
-
   <style>
-    html, body { height: 100%; margin: 0; font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif; }
-    .bg { position: fixed; inset: 0; z-index: -2; background: #111217; pointer-events: none; }
-    .bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    .bg .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.16); }
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#f6f7f8;background:#111217}
+    .bg{position:fixed;inset:0;z-index:-2;pointer-events:none}
+    .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+    .bg .overlay{position:absolute;inset:0;background:rgba(0,0,0,.16)}
 
-    :root {
-      --width: 1310px;
-      --height: 201px;
-      --bet300-purple: #8e44ad;
-      --bet300-green: #25d366;
-      --text-light: #f6f7f8;
-    }
+    :root{--width:1310px;--height:201px;--accent:rgba(255,255,255,.06);--purple:#8e44ad;--green:#25d366}
 
-    #revinculacion-container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 18px 20px;
-      min-height: 100vh;
-      color: var(--text-light);
-    }
+    #revinculacion-container{display:flex;justify-content:center;align-items:flex-start;padding:18px 20px;min-height:100vh}
+    .relinking-block{width:var(--width);max-width:100%;min-height:var(--height);display:flex;gap:18px;align-items:flex-start;min-width:0}
 
-    .relinking-block {
-      width: var(--width);
-      max-width: 100%;
-      min-height: var(--height);
-      display: flex;
-      gap: 18px;
-      align-items: flex-start;
-    }
-
-    .user-row { flex: 0 0 240px; max-width: 240px; display: none; } /* oculto: ahora tenemos mini-input dentro del panel */
-
-    .message-preview-card {
-      position: relative;
-      padding: 18px 20px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.20));
-      border: 1px solid rgba(255,255,255,0.02);
+    .message-preview-card{
+      position:relative;padding:18px 20px;border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.20));
+      border:1px solid rgba(255,255,255,0.02);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.45);
-      min-height: 140px;
-      flex: 1;
-      min-width: 0;
+      flex:1;min-width:0;min-height:140px;
     }
+    .msg-flip{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.26));border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .message-text{font-size:1.05rem;line-height:1.5;word-break:break-word}
 
-    .msg-flip {
-      position: absolute; top: 10px; right: 10px;
-      width: 38px; height: 38px; border-radius: 8px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.26));
-      border: 1px solid rgba(255,255,255,0.06);
-      display:flex; align-items:center; justify-content:center; cursor:pointer;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.45);
-    }
+    .action-panel{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));box-shadow:0 8px 26px rgba(2,6,12,0.6);backdrop-filter:blur(6px);width:220px;flex:0 0 auto}
+    .action-buttons{display:flex;flex-direction:column;gap:12px;width:100%}
+    .glass-button{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 12px;height:44px;border-radius:12px;font-weight:700;cursor:pointer;border:1px solid var(--accent);background:rgba(255,255,255,0.03);color:inherit}
+    .copy-button{background:linear-gradient(180deg,var(--purple),#77339e);color:#fff}
+    .whatsapp-button{background:linear-gradient(180deg,var(--green),#19b856);color:#fff}
 
-    .message-text { font-size: 1.05rem; line-height: 1.5; letter-spacing: 0.2px; word-break: break-word; }
+    .promo-slider{width:100%;display:flex;justify-content:center;margin-bottom:4px}
+    .slider-row{display:flex;gap:8px}
+    .slider-btn{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.02);color:inherit;border:1px solid rgba(255,255,255,0.03);cursor:pointer;font-weight:700;font-size:.85rem}
+    .slider-btn.selected{background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.24));border-color:var(--accent);box-shadow:0 8px 22px rgba(0,0,0,0.5)}
 
-    .action-panel {
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      padding: 14px; border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));
-      box-shadow: 0 8px 26px rgba(2,6,12,0.6); backdrop-filter: blur(6px);
-      width: 200px; flex: 0 0 auto;
-    }
+    .mini-input{width:42px;height:42px;border-radius:999px;padding:0 12px;display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--accent);backdrop-filter:blur(6px);box-shadow:0 6px 14px rgba(0,0,0,0.45);font-weight:700;transition:width .18s ease;cursor:text;outline:none;align-self:flex-end;margin-top:6px;color:inherit}
+    .mini-input::placeholder{color:rgba(246,247,248,.6);font-weight:600}
+    .mini-input:focus{width:180px;background:rgba(255,255,255,0.045);box-shadow:0 10px 24px rgba(0,0,0,0.55)}
+    .mini-input:not(:placeholder-shown){width:180px}
 
-    .action-buttons { display:flex; flex-direction:column; gap:12px; width:100%; }
-    .glass-button {
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      padding:10px 12px; height:44px; border-radius:12px; font-weight:700;
-      cursor:pointer; border:1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.03);
-      color: var(--text-light);
-    }
-    .copy-button { background: linear-gradient(180deg, var(--bet300-purple), #77339e); color:#fff; }
-    .whatsapp-button { background: linear-gradient(180deg, var(--bet300-green), #19b856); color:#fff; }
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);pointer-events:auto}
 
-    /* mini-input: minimal, redondeado, difuminado; se expande al focus */
-    .mini-input {
-      width: 42px; height: 42px; border-radius: 999px;
-      padding: 0 12px; display:inline-flex; align-items:center;
-      background: rgba(255,255,255,0.03); color: var(--text-light);
-      border:1px solid rgba(255,255,255,0.06); backdrop-filter: blur(6px);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.45); font-weight:700;
-      transition: width .18s ease, box-shadow .12s ease, background .12s;
-      cursor:text; outline: none; align-self:flex-end; margin-top:6px;
-    }
-    .mini-input::placeholder { color: rgba(246,247,248,0.6); font-weight:600; }
-    .mini-input:focus { width: 180px; background: rgba(255,255,255,0.045); box-shadow: 0 10px 24px rgba(0,0,0,0.55); }
-    .mini-input:not(:placeholder-shown) { width: 180px; }
-
-    .toast {
-      position: fixed; bottom:24px; left:50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.8); color:#fff; padding:10px 14px; border-radius:8px;
-      font-weight:700; opacity:0; pointer-events:none; transition: opacity .22s, transform .22s; z-index:9999;
-    }
-    .toast.show { opacity:1; transform: translateX(-50%) translateY(-6px); pointer-events:auto; }
-
-    @media (max-width:880px) {
-      .action-panel { width:100%; flex-direction:row; justify-content:space-between; align-items:center; }
-      .action-buttons { flex-direction:row; gap:8px; }
-      .message-preview-card { order:3; width:100%; }
-      .action-panel { order:2; }
-      .mini-input { align-self:center; margin-top:0; width:42px; }
-      .mini-input:focus { width:140px; }
-    }
+    @media (max-width:880px){.action-panel{width:100%;flex-direction:row;justify-content:space-between}.action-buttons{flex-direction:row;gap:8px}.message-preview-card{order:3;width:100%}.action-panel{order:2}.mini-input{align-self:center;margin-top:0;width:42px}.mini-input:focus{width:140px}}
   </style>
 </head>
-
 <body>
   <div class="bg" aria-hidden="true">
-    <img id="bg-img" src="./fondo.jpg.jpg" alt="Fondo BET300VIP" />
+    <img id="bg-img" src="./fondo.jpg.jpg" alt="Fondo BET300VIP">
     <div class="overlay"></div>
   </div>
 
   <div id="revinculacion-container">
     <div class="relinking-block">
 
-      <div class="user-row">
-        <input id="usuarioInputHidden" type="text" placeholder="Ingresá nombre de usuario" aria-label="Nombre de usuario">
-      </div>
-
       <div class="message-preview-card">
         <button class="msg-flip" id="msg-flip" title="Cambiar mensaje">🔁</button>
-        <p class="message-text">
-          👋 Hola <strong id="usuario-name">Amigo</strong><br>
-          En <span class="brand">BET300VIP</span> nos renovamos 💎<br>
-          Ingresá en 👉 https://bet300.site/ con tu CLAVE 12345a y obtené un 30% DE BONO CON TU PRIMER CARGA 🎁
+        <p class="message-text" id="preview">
+          ⚠️ Cargando saludos desde promorevin.js...
         </p>
       </div>
 
       <div class="action-panel" role="group" aria-label="Panel de acciones">
-        <div class="action-buttons" aria-label="Acciones del mensaje">
-          <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">📋 Copiar mensaje</button>
-          <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
+        <div class="promo-slider" aria-label="Selector promociones">
+          <div class="slider-row" role="tablist" aria-label="Promociones">
+            <button id="slider-PC01" class="slider-btn" role="tab" aria-selected="true">PC01</button>
+            <button id="slider-PC02" class="slider-btn" role="tab" aria-selected="false">PC02</button>
+            <button id="slider-PC03" class="slider-btn" role="tab" aria-selected="false">PC03</button>
+            <button id="slider-PC04" class="slider-btn" role="tab" aria-selected="false">PC04</button>
+          </div>
         </div>
 
-        <!-- INPUT MINIMAL (misma posición de la lupa, justo debajo de los botones) -->
-        <input id="usuarioInput" class="mini-input" type="text" placeholder="🔎" aria-label="Buscar usuario (Enter)" />
-      </div>
+        <div class="action-buttons" aria-label="Acciones del mensaje">
+          <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar saludo">📋 Copiar saludo</button>
+          <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="WhatsApp saludo">💬 WhatsApp</button>
+        </div>
 
+        <input id="usuarioInput" class="mini-input" type="text" placeholder="🔎" aria-label="Usuario (Enter para copiar)">
+
+      </div>
     </div>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script>
-    const mensajes = [
-      "👋 Hola {usuario}\nEn BET300VIP nos renovamos 💎\nAhora todas las cargas se hacen desde 👉 https://bet300.site/\nIniciá sesión con tu misma CLAVE 12345a y realizá tu PRIMER CARGA para recibir un 30% DE BONO 🎁",
-      "👋 Hola {usuario}\n¡Volvemos recargados en BET300VIP! ⚡\nA partir de ahora las cargas se realizan en 👉 https://bet300.site/\nUsá tu misma CLAVE 12345a y obtené un 30% DE BONO CON TU PRIMER CARGA 💰",
-      "👋 Hola {usuario}\nBET300VIP cambió para mejor ✨\nIngresá con tu misma CLAVE 12345a en 👉 https://bet300.site/ y realizá tu PRIMER CARGA.\n💸 Te espera un 30% DE BONO de regalo 🎁"
-    ];
+  <!-- promorevin.js debe exponer window.SALUDOS = { PC01: [...], PC02: [...], ... } -->
+  <script src="promorevin.js"></script>
 
-    let variantIndex = 0;
-    const usuarioNameEl = document.getElementById('usuario-name');
+  <script>
+    // solo usa window.SALUDOS - no hay fallback local
+    const previewEl = document.getElementById('preview');
     const usuarioInput = document.getElementById('usuarioInput');
     const toastEl = document.getElementById('toast');
+    const btnCopy = document.getElementById('btn-copy');
+    const btnWsp = document.getElementById('btn-wsp');
+    const mapSlider = ["PC01","PC02","PC03","PC04"];
+    let modoSlider = 0;
+    let variantIndex = 0;
 
-    function escapeHtml(str) {
-      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-    }
-
-    function renderPreview() {
-      const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
-      const texto = mensajes[variantIndex].replaceAll('{usuario}', nombre);
-      const preview = document.querySelector('.message-text');
-      preview.innerHTML = texto.split('\n').map(escapeHtml).join('<br>');
-    }
-
-    usuarioInput.addEventListener('input', () => {
-      // mantener minimal: no actualizamos hasta confirmar búsqueda,
-      // pero reflejamos el posible nombre en vivo si desea:
-      const v = usuarioInput.value.trim();
-      usuarioNameEl.textContent = v || 'Amigo';
-      renderPreview();
-    });
-
-    document.getElementById('msg-flip').addEventListener('click', (e) => {
-      variantIndex = (variantIndex + 1) % mensajes.length;
-      renderPreview();
-      animateButton(e.currentTarget);
-    });
-
-    function copyTextToClipboard(text) {
-      if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
-      return new Promise((res,rej)=>{
-        try {
-          const ta=document.createElement('textarea');
-          ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px';
-          document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-          document.body.removeChild(ta); res();
-        } catch(e){ rej(e); }
-      });
-    }
-
-    function showToast(msg) {
+    function showToast(msg){
       toastEl.textContent = msg;
       toastEl.classList.add('show');
-      setTimeout(()=> toastEl.classList.remove('show'), 1600);
+      setTimeout(()=>toastEl.classList.remove('show'),1400);
     }
 
     function animateButton(btn){
       if(!btn) return;
-      btn.style.transform='scale(0.96)';
+      btn.style.transform='scale(.96)';
       setTimeout(()=>btn.style.transform='',140);
     }
 
-    document.getElementById('btn-copy').addEventListener('click', (e) => {
-      const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
-      const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
-      copyTextToClipboard(msg).then(()=>showToast('Mensaje copiado'));
-      animateButton(e.currentTarget);
-    });
+    function actualizarSlider(){
+      document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
+        btn.classList.toggle('selected', i===modoSlider);
+        btn.setAttribute('aria-selected', String(i===modoSlider));
+      });
+      renderPreview();
+    }
+    document.getElementById('slider-PC01').onclick = ()=>{ modoSlider=0; actualizarSlider(); }
+    document.getElementById('slider-PC02').onclick = ()=>{ modoSlider=1; actualizarSlider(); }
+    document.getElementById('slider-PC03').onclick = ()=>{ modoSlider=2; actualizarSlider(); }
+    document.getElementById('slider-PC04').onclick = ()=>{ modoSlider=3; actualizarSlider(); }
+    actualizarSlider();
 
-    document.getElementById('btn-wsp').addEventListener('click', (e) => {
-      const nombre = usuarioNameEl.textContent.trim() || 'Amigo';
-      const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
-      const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
-      copyTextToClipboard(url).then(()=>showToast('Enlace WhatsApp copiado'));
-      animateButton(e.currentTarget);
-    });
-
-    // BUSCADOR FUNCIONAL SIMULADO (usa el mini-input en la misma posición)
-    function mockSearchUser(name) {
-      return new Promise((resolve) => {
-        // simulación: nombres con 2+ caracteres se "encuentran"
-        setTimeout(() => resolve(name.length >= 2), 520);
+    function copyTextToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+      return new Promise((res,rej)=>{
+        try{
+          const ta = document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); res();
+        }catch(e){ rej(e); }
       });
     }
 
-    async function searchUser() {
-      const name = usuarioInput.value.trim();
-      if (!name) { showToast('Ingresá nombre de usuario'); usuarioInput.focus(); return; }
-
-      // feedback visual: reducir opacidad del input momentáneamente
-      usuarioInput.disabled = true;
-      usuarioInput.style.opacity = '0.7';
-
-      try {
-        const found = await mockSearchUser(name);
-        if (found) {
-          usuarioNameEl.textContent = name;
-          renderPreview();
-          showToast('Usuario encontrado');
-        } else {
-          showToast('Usuario no encontrado');
-        }
-      } catch {
-        showToast('Error en búsqueda');
-      } finally {
-        usuarioInput.disabled = false;
-        usuarioInput.style.opacity = '';
-        usuarioInput.focus();
-      }
+    function obtenerPool(tipo){
+      const grupos = window.SALUDOS;
+      if(!grupos) return null;
+      return grupos[tipo] || [];
     }
 
-    // Enter en input dispara búsqueda
-    usuarioInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        searchUser();
+    function renderPreview(){
+      const grupos = window.SALUDOS;
+      const usuario = usuarioInput.value.trim() || '{usuario}';
+      if(!grupos){
+        previewEl.innerText = '⚠️ promorevin.js no cargado. Añadí promorevin.js que defina window.SALUDOS';
+        return;
+      }
+      const tipo = mapSlider[modoSlider] || 'PC01';
+      const pool = obtenerPool(tipo);
+      if(!pool || pool.length === 0){
+        previewEl.innerText = `⚠️ No hay saludos cargados para ${tipo}`;
+        return;
+      }
+      // asegurar índice dentro del pool
+      const saludo = pool[ variantIndex % pool.length ];
+      const texto = saludo.replaceAll('{usuario}', usuario).replaceAll('{usuarioENC}', encodeURIComponent(usuario));
+      // respetar saltos
+      previewEl.innerHTML = texto.split('\n').map(s=>s.replaceAll('<','&lt;').replaceAll('>','&gt;')).join('<br>');
+    }
+
+    // copiar saludo según slider
+    function copiarSaludo(evt){
+      const grupos = window.SALUDOS;
+      const usuario = usuarioInput.value.trim();
+      if(!grupos){ alert('promorevin.js no cargado'); return; }
+      if(!usuario){ alert('Escribí un usuario primero'); usuarioInput.focus(); return; }
+
+      const tipo = mapSlider[modoSlider] || 'PC01';
+      const pool = obtenerPool(tipo);
+      if(!pool || pool.length===0){ alert('No hay saludos para ' + tipo); return; }
+
+      const saludo = pool[Math.floor(Math.random()*pool.length)];
+      const mensaje = saludo.replaceAll('{usuario}', usuario).replaceAll('{usuarioENC}', encodeURIComponent(usuario));
+      copyTextToClipboard(mensaje).then(()=> showToast('Saludo copiado'));
+      animateButton(evt?.target);
+    }
+
+    btnCopy.addEventListener('click', (e)=> copiarSaludo(e));
+    btnWsp.addEventListener('click', async (e)=>{
+      const grupos = window.SALUDOS;
+      const usuario = usuarioInput.value.trim();
+      if(!grupos){ alert('promorevin.js no cargado'); return; }
+      if(!usuario){ alert('Escribí un usuario primero'); usuarioInput.focus(); return; }
+
+      const tipo = mapSlider[modoSlider] || 'PC01';
+      const pool = obtenerPool(tipo);
+      if(!pool || pool.length===0){ alert('No hay saludos para ' + tipo); return; }
+
+      const saludo = pool[Math.floor(Math.random()*pool.length)];
+      const mensaje = saludo.replaceAll('{usuario}', usuario).replaceAll('{usuarioENC}', encodeURIComponent(usuario));
+      const url = 'https://wa.me/?text=' + encodeURIComponent(mensaje);
+      try{
+        await copyTextToClipboard(url);
+        showToast('Enlace WhatsApp copiado');
+      }catch(e){
+        showToast('Error al copiar enlace');
+      }
+      animateButton(e.currentTarget);
+    });
+
+    // flip cycle por pool cuando presionan el botón
+    document.getElementById('msg-flip').addEventListener('click', ()=>{
+      const grupos = window.SALUDOS;
+      if(!grupos) { showToast('promorevin.js no cargado'); return; }
+      const tipo = mapSlider[modoSlider] || 'PC01';
+      const pool = obtenerPool(tipo) || [];
+      if(pool.length>0){
+        variantIndex = (variantIndex + 1) % pool.length;
+        renderPreview();
+        animateButton(document.getElementById('msg-flip'));
       }
     });
 
-    // click dentro del input (si está vacío) pone el caret y sugiere usar Enter
-    usuarioInput.addEventListener('click', () => {
-      if (!usuarioInput.value.trim()) usuarioInput.placeholder = '🔎 Ingresá usuario y Enter';
-    });
-    usuarioInput.addEventListener('blur', () => {
-      usuarioInput.placeholder = '🔎';
+    // Enter en input copia saludo (acción rápida)
+    usuarioInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){ e.preventDefault(); copiarSaludo({ target: btnCopy }); }
     });
 
-    // Inicializar vista
-    renderPreview();
+    // Si promorevin.js se carga/recarga después, actualizar vista
+    function tryInitFromPromorevin(){
+      if(window.SALUDOS) renderPreview();
+    }
+    // Si promorevin.js fue cargado antes this runs immediately
+    tryInitFromPromorevin();
+    // también observar cambios globales por si promorevin.js asigna SALUDOS async
+    let pollCount = 0;
+    const poll = setInterval(()=>{
+      if(window.SALUDOS){ renderPreview(); clearInterval(poll); }
+      if(++pollCount > 50) clearInterval(poll); // ~5s timeout
+    },100);
   </script>
 </body>
 </html>
