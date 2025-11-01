@@ -52,133 +52,172 @@
   max-width: 100%;
   min-height: var(--height);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 18px;
   /* ← Esto mantiene mensaje a la izquierda y panel al costado */
 }
 
-    /* ---------- MENSAJE PREVIEW ---------- */
-    .message-preview-card {
-      position: relative;
-      padding: 18px 20px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.20));
-      border: 1px solid rgba(255,255,255,0.02);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.45);
-      min-height: 120px;
-    }
+/* ---------- Ajustes para dar más espacio al preview ---------- */
+.user-row {
+  /* dejar el input compacto en columna izquierda */
+  flex: 0 0 240px;
+  max-width: 240px;
+  display: flex;
+  gap: 8px;
+}
+.user-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color: var(--text-light);
+  font-weight: 600;
+  outline: none;
+}
 
-        /* ---------- INPUT USUARIO ---------- */
-    .user-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-    }
-    .user-row input {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.02);
-      color: var(--text-light);
-      font-weight: 600;
-      outline: none;
-    }
-    
-    .msg-flip {
-      position: absolute;
-      top: 10px; right: 10px;
-      width: 38px; height: 38px;
-      border-radius: 8px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.26));
-      border: 1px solid rgba(255,255,255,0.06);
-      color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.45);
-    }
-    .msg-flip:hover { transform: scale(1.03); }
+/* ---------- MENSAJE PREVIEW (ocupa más espacio) ---------- */
+.message-preview-card {
+  position: relative;
+  padding: 18px 20px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.20));
+  border: 1px solid rgba(255,255,255,0.02);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.45);
+  min-height: 120px;
 
-    .message-text {
-      font-size: 1.05rem;
-      line-height: 1.5;
-      letter-spacing: 0.2px;
-      word-break: break-word;
-    }
+  /* permitir que el preview crezca y ocupe el espacio restante */
+  flex: 1;
+  min-width: 0; /* importante para evitar overflow en flex */
+}
 
-    /* ---------- PANEL DE ACCIÓN ---------- */
-    .action-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding: 14px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));
-      box-shadow: 0 8px 26px rgba(2,6,12,0.6);
-      backdrop-filter: blur(6px);
-    }
+/* ---------- INPUT USUARIO (mantener estilo) ---------- */
+/* .user-row / .user-row input ya definidos arriba */
 
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-    }
+.msg-flip {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.26));
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+}
+.msg-flip:hover { transform: scale(1.03); }
 
-    .glass-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 10px 12px;
-      height: 44px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.03);
-      color: var(--text-light);
-      transition: transform .14s ease, box-shadow .14s ease;
-    }
+.message-text {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  word-break: break-word;
+}
 
-    .copy-button {
-      background: linear-gradient(180deg, var(--bet300-purple), #77339e);
-      color: #fff;
-    }
-    .whatsapp-button {
-      background: linear-gradient(180deg, var(--bet300-green), #19b856);
-      color: #fff;
-    }
+/* ---------- PANEL DE ACCIÓN (más compacto) ---------- */
+.action-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22));
+  box-shadow: 0 8px 26px rgba(2,6,12,0.6);
+  backdrop-filter: blur(6px);
 
-    /* ---------- TOAST ---------- */
-    .toast {
-      position: fixed;
-      bottom: 24px; left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-weight: 700;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .25s, transform .25s;
-      z-index: 9999;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-6px);
-      pointer-events: auto;
-    }
+  /* mantener ancho contenido y dejar espacio al preview */
+  width: 200px;
+  flex: 0 0 auto;
+}
 
-    /* ---------- RESPONSIVE ---------- */
-    @media (max-width: 880px) {
-      .action-panel { width: 100%; flex-direction: row; justify-content: space-between; }
-      .action-buttons { flex-direction: row; }
-      .user-row { flex-direction: column; }
-    }
+/* botones principales */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.glass-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 12px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  color: var(--text-light);
+  transition: transform .14s ease, box-shadow .14s ease;
+}
+
+.copy-button {
+  background: linear-gradient(180deg, var(--bet300-purple), #77339e);
+  color: #fff;
+}
+.whatsapp-button {
+  background: linear-gradient(180deg, var(--bet300-green), #19b856);
+  color: #fff;
+}
+
+/* ---------- BOTON DE BÚSQUEDA (pequeño, redondeado y difuminado) ---------- */
+.search-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+  color: var(--text-light);
+  font-size: 1.05rem;
+  cursor: pointer;
+  align-self: flex-end; /* justo a la derecha dentro del panel */
+  transition: transform .12s ease, box-shadow .12s ease, background .12s;
+  margin-top: 6px; /* separado debajo de los botones */
+  opacity: 0.95;
+}
+.search-button:hover { transform: scale(1.06); box-shadow: 0 8px 18px rgba(0,0,0,0.55); }
+
+/* ---------- TOAST ---------- */
+.toast {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
+  pointer-events: auto;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 880px) {
+  .action-panel { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; }
+  .action-buttons { flex-direction: row; gap: 8px; }
+  .user-row { flex: 1 1 auto; max-width: none; width: 100%; flex-direction: column; }
+  .message-preview-card { order: 3; width: 100%; }
+  .action-panel { order: 2; }
+  .search-button { align-self: center; margin-top: 0; }
+}
   </style>
 </head>
 
@@ -215,6 +254,9 @@
     <button class="glass-button copy-button" id="btn-copy" type="button" title="Copiar mensaje">📋 Copiar mensaje</button>
     <button class="glass-button whatsapp-button" id="btn-wsp" type="button" title="Copiar enlace WhatsApp">💬 Copiar WhatsApp</button>
   </div>
+
+  <!-- Icono de búsqueda minimalista: pequeño, redondeado y difuminado, alineado a la derecha -->
+  <button id="btn-search" class="search-button" type="button" title="Buscar usuario">🔎</button>
 
 </div>
 
@@ -314,6 +356,12 @@
       const msg = mensajes[variantIndex].replaceAll('{usuario}', nombre);
       const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
       copyTextToClipboard(url).then(()=>showToast('WhatsApp'));
+      animateButton(e.currentTarget);
+    });
+
+    // nuevo: buscar -> enfocar input (minimal)
+    document.getElementById('btn-search').addEventListener('click', (e) => {
+      usuarioInput.focus();
       animateButton(e.currentTarget);
     });
 
