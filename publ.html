@@ -49,7 +49,9 @@
 </head>
 <body>
   <div class="bg" aria-hidden="true">
+    
     <img id="bg-img" src="./fondo.jpg.jpg" alt="Fondo BET300VIP">
+    
     <div class="overlay"></div>
   </div>
 
@@ -66,10 +68,10 @@
       <div class="action-panel" role="group" aria-label="Panel de acciones">
         <div class="promo-slider" aria-label="Selector promociones">
           <div class="slider-row" role="tablist" aria-label="Promociones">
-            <button id="slider-PC01" class="slider-btn" role="tab" aria-selected="true">PC01</button>
-            <button id="slider-PC02" class="slider-btn" role="tab" aria-selected="false">PC02</button>
-            <button id="slider-PC03" class="slider-btn" role="tab" aria-selected="false">PC03</button>
-            <button id="slider-PC04" class="slider-btn" role="tab" aria-selected="false">PC04</button>
+            <button id="slider-Prom1" class="slider-btn" role="tab" aria-selected="true">Prom1</button>
+            <button id="slider-Prom2" class="slider-btn" role="tab" aria-selected="false">Prom2</button>
+            <button id="slider-Prom3" class="slider-btn" role="tab" aria-selected="false">Prom3</button>
+            <button id="slider-Prom4" class="slider-btn" role="tab" aria-selected="false">Prom4</button>
           </div>
         </div>
 
@@ -96,7 +98,7 @@
     const toastEl = document.getElementById('toast');
     const btnCopy = document.getElementById('btn-copy');
     const btnWsp = document.getElementById('btn-wsp');
-    const mapSlider = ["PC01","PC02","PC03","PC04"];
+    const mapSlider = ["Prom1","Prom2","Prom3","Prom4"];
     let modoSlider = 0;
     let variantIndex = 0;
 
@@ -119,10 +121,10 @@
       });
       renderPreview();
     }
-    document.getElementById('slider-PC01').onclick = ()=>{ modoSlider=0; actualizarSlider(); }
-    document.getElementById('slider-PC02').onclick = ()=>{ modoSlider=1; actualizarSlider(); }
-    document.getElementById('slider-PC03').onclick = ()=>{ modoSlider=2; actualizarSlider(); }
-    document.getElementById('slider-PC04').onclick = ()=>{ modoSlider=3; actualizarSlider(); }
+    document.getElementById('slider-Prom1').onclick = ()=>{ modoSlider=0; actualizarSlider(); }
+    document.getElementById('slider-Prom2').onclick = ()=>{ modoSlider=1; actualizarSlider(); }
+    document.getElementById('slider-Prom3').onclick = ()=>{ modoSlider=2; actualizarSlider(); }
+    document.getElementById('slider-Prom4').onclick = ()=>{ modoSlider=3; actualizarSlider(); }
     actualizarSlider();
 
     function copyTextToClipboard(text){
@@ -148,7 +150,7 @@
         previewEl.innerText = '⚠️ promorevin.js no cargado. Añadí promorevin.js que defina window.SALUDOS';
         return;
       }
-      const tipo = mapSlider[modoSlider] || 'PC01';
+      const tipo = mapSlider[modoSlider] || 'Prom1';
       const pool = obtenerPool(tipo);
       if(!pool || pool.length === 0){
         previewEl.innerText = `⚠️ No hay saludos cargados para ${tipo}`;
@@ -168,7 +170,7 @@
       if(!grupos){ alert('promorevin.js no cargado'); return; }
       if(!usuario){ alert('Escribí un usuario primero'); usuarioInput.focus(); return; }
 
-      const tipo = mapSlider[modoSlider] || 'PC01';
+      const tipo = mapSlider[modoSlider] || 'Prom1';
       const pool = obtenerPool(tipo);
       if(!pool || pool.length===0){ alert('No hay saludos para ' + tipo); return; }
 
@@ -185,7 +187,7 @@
       if(!grupos){ alert('promorevin.js no cargado'); return; }
       if(!usuario){ alert('Escribí un usuario primero'); usuarioInput.focus(); return; }
 
-      const tipo = mapSlider[modoSlider] || 'PC01';
+      const tipo = mapSlider[modoSlider] || 'Prom1';
       const pool = obtenerPool(tipo);
       if(!pool || pool.length===0){ alert('No hay saludos para ' + tipo); return; }
 
@@ -205,7 +207,7 @@
     document.getElementById('msg-flip').addEventListener('click', ()=>{
       const grupos = window.SALUDOS;
       if(!grupos) { showToast('promorevin.js no cargado'); return; }
-      const tipo = mapSlider[modoSlider] || 'PC01';
+      const tipo = mapSlider[modoSlider] || 'Prom1';
       const pool = obtenerPool(tipo) || [];
       if(pool.length>0){
         variantIndex = (variantIndex + 1) % pool.length;
