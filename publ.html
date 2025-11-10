@@ -72,6 +72,63 @@ button.copiado {
     .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);pointer-events:auto}
 
     @media (max-width:880px){.action-panel{width:100%;flex-direction:row;justify-content:space-between}.action-buttons{flex-direction:row;gap:8px}.message-preview-card{order:3;width:100%}.action-panel{order:2}.mini-input{align-self:center;margin-top:0;width:42px}.mini-input:focus{width:140px}}
+
+    /* ===== Slider de enlaces ===== */
+.link-slider-container {
+  width: var(--width);
+  max-width: 100%;
+  margin: 22px auto 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.link-slider {
+  display: flex;
+  transition: transform 0.4s ease;
+  width: 200%;
+  cursor: grab;
+}
+
+.link-slider:active { cursor: grabbing; }
+
+.link-slider .slide {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 20px;
+  color: #fff;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.link-slider .slide h2 {
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.copy-link-btn {
+  width: 100%;
+  border: none;
+  background: linear-gradient(180deg, #6f42c1, #5a2da1);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 0 0 14px 14px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.copy-link-btn:hover {
+  background: linear-gradient(180deg, #8254d6, #6b3bc2);
+}
+    
   </style>
 </head>
 <body>
@@ -113,13 +170,20 @@ button.copiado {
     </div>
   </div>
 
-    <!-- Grupo Info Útil -->
-  <div class="grupo utilidad">
-    <h3>Utilidad</h3>
-    <button onclick="copiarYAnimar(event,'https://alvge.bet300vip.com/')">Enlace Mascara</button>
-
-    <button onclick="copiarYAnimar(event,'https://bet300.site/')">Enlace Landing</button>
-     </div>
+<!-- 🔄 Slider de Enlaces -->
+<div class="link-slider-container">
+  <div class="link-slider" id="link-slider">
+    <div class="slide" data-url="https://alvge.bet300vip.com/">
+      <h2>🔗 Enlace Máscara</h2>
+      <p>https://alvge.bet300vip.com/</p>
+    </div>
+    <div class="slide" data-url="https://bet300.site/">
+      <h2>🌐 Enlace Landing</h2>
+      <p>https://bet300.site/</p>
+    </div>
+  </div>
+  <button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
+</div>
   
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -270,6 +334,38 @@ function animateButton(button) {
   button.classList.add('copiado');
   setTimeout(() => button.classList.remove('copiado'), 300);
 }
+
+    // === Slider de Enlaces ===
+const slider = document.getElementById('link-slider');
+const copyLinkBtn = document.getElementById('btn-copy-link');
+let currentSlide = 0;
+let startX = 0;
+
+slider.addEventListener('mousedown', e => startX = e.pageX);
+slider.addEventListener('mouseup', e => handleSlide(e.pageX));
+slider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+slider.addEventListener('touchend', e => handleSlide(e.changedTouches[0].clientX));
+
+function handleSlide(endX) {
+  const diff = endX - startX;
+  if (Math.abs(diff) > 80) {
+    currentSlide = diff < 0 ? 1 : 0; // si desliza a la izquierda, va al slide 2
+    slider.style.transform = `translateX(-${currentSlide * 50}%)`;
+  }
+}
+
+// copiar enlace visible
+copyLinkBtn.addEventListener('click', async () => {
+  const slides = slider.querySelectorAll('.slide');
+  const active = slides[currentSlide];
+  const url = active.getAttribute('data-url');
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('Enlace copiado');
+  } catch {
+    showToast('Error al copiar enlace');
+  }
+});
     
     // Si promorevin.js se carga/recarga después, actualizar vista
     function tryInitFromPromorevin(){
