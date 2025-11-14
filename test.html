@@ -1,659 +1,607 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>ChinBotones</title>
+  <meta charset="UTF-8" />
+  <title>Comparador de Cargas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #121212;
-  margin: 10px;
-  padding: 10px;
-  color: #fff;
-}
-.grupo {
-  margin-bottom: 12px;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  position: relative;
-}
-button {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.2);
-  color: #fff;
-  font-weight: bold;
-  transition: 0.2s;
-}
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.titulo {
-  font-size: 18px;
-  font-weight: bold;
-  margin-right: 10px;
-}
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-button:hover {
-  background: rgba(0,0,0,0.4);
-}
-.flip-btn, .drag-handle {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background: #333;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 16px;
-  border: none;
-  margin-left: 2px;
-  transition: background 0.1s;
-}
-.flip-btn:hover, .drag-handle:hover { background: #444; }
-.drag-handle:active {
-  cursor: grabbing;
-}
-    /* Colores personalizados según billetera */
-    .promo-amigo { background: #2ecc71; }
-    .Rodriguez { background: #3498db; }
-    .Juan { background: #495692; }
-        .Nancy { background: #380600; }
-    .Galvagno { background: #9b59b6; }
-    .utilidad { background: #e67e22; }
-    .mensaje-revin { background: #C93C20; }
-   
-.input-usuario {
-  width: 100%;
-  margin: 4px 1cm 5px 0;
-  padding: 8px;
-  border-radius: 4px;
-  border: none;
-  font-size: 13px;
-}
-    /* Contenedor horizontal */
-#modo-slider {
-  display: flex;
-  gap: 6px;
-  background: #2a2a2a; /* Fondo oscuro detrás del grupo */
-  padding: 4px;
-  border-radius: 20px;
-}
-.slider-btn {
-  background: #3a3a3a;
-  color: #ccc;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.15s ease;
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
-}
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#06b6d4;
+      --muted:#94a3b8;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg,#071020 0%, #071827 60%);
+      color:#e6eef6;
+      min-height:100vh;
+      padding:28px;
+    }
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+    }
+    header{ display:flex; align-items:center; gap:16px; margin-bottom:18px;}
+    h1{ margin:0; font-size:20px; letter-spacing:0.2px;}
+    .card{
+      background: linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));
+      border-radius:12px;
+      padding:16px;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover{ transform: translateY(-4px); box-shadow:0 10px 30px rgba(2,6,23,0.8); }
 
-.slider-btn:active {
-  transform: scale(0.88);
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
-}
+    .controls{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:12px;}
+    label.inline{ font-size:13px; color:var(--muted); display:flex; gap:8px; align-items:center; }
 
-.slider-btn.selected {
-  background: #111;
-  color: #C93C20;
-  font-weight: bold;
-  box-shadow: 0 0 12px rgba(201,60,32,0.5), inset 0 0 4px rgba(201,60,32,0.3);
-  transform: scale(1.05);
-}
-#modo-slider {
-  display: flex;
-  gap: 6px;
-}
-#modo-slider .slider-btn {
-  flex: 1; /* opcional, para que todos midan lo mismo */
-}
-/* 🔔 Estilos del toast */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease, bottom 0.5s ease;
-  z-index: 9999;
-}
-.toast.show {
-  opacity: 1;
-  bottom: 40px;
-}
-/* Caja historial */
-#historial-box {
-  margin-top: 15px;
-  background: #34495e;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-#historial-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  font-weight: bold;
-}
-#historial-arrow {
-  transition: transform 0.3s ease;
-  display: inline-block;
-  font-size: 14px;
-}
-#historial-content {
-  margin-top: 8px;
-  display: none;
-  background: rgba(255,255,255,0.1);
-  padding: 8px;
-  border-radius: 4px;
-}
-#historial-text {
-  display: block;
-  font-size: 12px;
-  margin-bottom: 6px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-#historial-copy {
-  background: rgba(0,0,0,0.4);
-  border: none;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-}
-#historial-copy:hover {
-  background: rgba(0,0,0,0.6);
-}
-#banco-toggle {
-  position: fixed;
-  top: 100px;
-  left: 0;
-  background: #C93C20;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 0 8px 8px 0;
-  padding: 12px 18px 12px 12px;
-  cursor: pointer;
-  box-shadow: 2px 2px 8px #0004;
-  z-index: 10001;
-  transition: left 0.3s;
-  opacity: 0.95;
-}
-#banco-toggle.open {
-  left: 220px;
-  transition: left 0.3s;
-}
-#banco-panel {
-  position: fixed;
-  top: 80px;
-  left: -220px;
-  width: 220px;
-  background: #222;
-  color: #fff;
-  border-radius: 0 12px 12px 0;
-  box-shadow: 4px 0px 16px #0003;
-  padding: 18px 16px;
-  z-index: 10000;
-  transition: left 0.3s;
-  min-height: 120px;
-  opacity: 0.98;
-}
-#banco-panel.open {
-  left: 0;
-  transition: left 0.3s;
-}
-/* FLIP CARD */
-.wallets-container {
-  perspective: 1200px;
-  width: 100%;
-  margin-top: 8px;
-  margin-bottom: 6px;
-}
-.wallets-card {
-  width: 100%;
-  min-height: 96px;
-  position: relative;
-  transition: transform 0.45s cubic-bezier(.2,.9,.3,1);
-  transform-style: preserve-3d;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.04);
-}
-.wallets-face {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: center;
-  align-items: stretch;
-  padding: 12px 8px;
-  box-sizing: border-box;
-}
-.wallets-face.front { transform: rotateY(0deg); z-index: 2; }
-.wallets-face.back { transform: rotateY(180deg); z-index: 1; }
-.wallets-card.flipped { transform: rotateY(180deg); }
-.wallets-face button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: none;
-  background: rgba(0,0,0,0.25);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 15px;
-  margin: 0;
-  box-shadow: 0 1px 4px #0001;
-  transition: background 0.18s;
-}
-.wallets-face button:hover { background: rgba(0,0,0,0.35);}
+    input[type=file]{
+      background:var(--glass);
+      border:1px dashed rgba(255,255,255,0.03);
+      padding:8px 10px;
+      color:var(--muted);
+      border-radius:8px;
+    }
+    .group{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+
+    .btn{
+      background:linear-gradient(90deg,var(--accent), #3dd9f0);
+      color:#042a31;
+      border:none;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(4,37,43,0.25);
+      transition: transform .12s ease;
+    }
+    .btn:active{ transform: translateY(1px) scale(.997); }
+
+    .small-btn{
+      background:linear-gradient(90deg,#ffffff,#dbefff);
+      color:#042a31;
+      border:none;
+      padding:6px 8px;
+      border-radius:8px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:12px;
+      margin-left:8px;
+    }
+
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background: rgba(255,255,255,0.02);
+      padding:8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    /* fancy slider */
+    .sliderWrap{ display:flex; align-items:center; gap:10px; }
+    .sliderLabel{ font-size:13px; color:var(--muted); min-width:80px; text-align:center;}
+    .slider{
+      width:140px;
+      height:36px;
+      background:rgba(255,255,255,0.02);
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      padding:4px;
+      gap:6px;
+      position:relative;
+      user-select:none;
+    }
+    .slider span{ font-size:12px; color:var(--muted); padding:4px 8px; border-radius:6px; z-index:2; cursor:pointer }
+    .knob{
+      position:absolute;
+      width:62px;
+      height:28px;
+      background:linear-gradient(180deg,#ffffff,#dbefff);
+      border-radius:999px;
+      left:6px;
+      transition:left .22s cubic-bezier(.2,.9,.3,1), transform .12s;
+      box-shadow: 0 4px 16px rgba(4,37,43,0.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:#042a31;
+      font-size:13px;
+    }
+
+    .summary{
+      margin-top:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:12px;
+      border-radius:8px;
+      color:var(--muted);
+      font-size:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    #results{ margin-top:14px; color:#e6eef6; }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+      background: rgba(255,255,255,0.02);
+      border-radius:8px;
+      overflow:hidden;
+      transform-origin:top center;
+      animation: fadeIn .18s ease;
+    }
+    th, td{
+      padding:8px 10px;
+      font-size:13px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      text-align:left;
+      color:#dff6fb;
+    }
+    th{ background: rgba(0,0,0,0.15); font-weight:600; color:#bfeef9; position:sticky; top:0; }
+    tr:hover td{ background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
+
+    .badge{ background: rgba(255,255,255,0.03); padding:6px 8px; border-radius:8px; color:var(--muted); font-size:13px; }
+
+    /* toast */
+    .toast{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      background:linear-gradient(90deg,#052b32,#073644);
+      color:#dffefe;
+      padding:12px 14px;
+      border-radius:10px;
+      box-shadow: 0 10px 30px rgba(2,8,17,0.7);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      transform:translateY(18px) scale(.98);
+      opacity:0;
+      pointer-events:none;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+    .toast.show{ transform:translateY(0) scale(1); opacity:1; pointer-events:auto; }
+
+    .spinner{
+      width:14px;height:14px;border-radius:50%;
+      border:2px solid rgba(255,255,255,0.14);
+      border-top-color: #aef6ff;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+    @keyframes fadeIn{ from{ opacity:0; transform: translateY(6px) } to{ opacity:1; transform:none } }
+    .muted{ color:var(--muted); font-size:13px; }
+
+    /* responsive */
+    @media (max-width:760px){
+      .controls{ flex-direction:column; align-items:stretch; }
+      .slider{ width:120px; }
+      .small-btn{ display:none; }
+    }
   </style>
 </head>
 <body>
-
-
-
-  <!-- Grupo Info Útil -->
-  <div class="grupo utilidad">
-    <h3>Utilidad</h3>
-    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨\n\nDisfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮\n\n📲 ¿Listo para disfrutar al máximo? 🚀\n\nPara añadir saldo, lo haces mediante CBU. 🧾\n‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️\n📩 Envianos el comprobante y empezá a jugar. 🚀\n\n📍 C4RG4 MÍNIMA: $2000\n📍 RET1R0 MÍNIMO: $5000\nSin Monto Maximo!!\nUn retiro cada 24hs exactas!\n\n🕐 Atención personalizada las 24hs los 365 dias del año!!!!')">Info</button>
-
-    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!\nTu cuenta ya está lista para girar y ganar 🎰\n🍀 ¡Éxitos en cada tirada!\nSi no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado o el chat en:\n🔗 https://300vip-c03.vercel.app\n🎰 Recorda que el chat de la plataforma está funcionando!\n💰 Beneficio de 2 retiros cada 24 hs cargando desde ahí!')">Cargado</button>
-    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
-   </div>
-
-    <!-- Grupo Juan -->
-  <div class="grupo Juan" draggable="false">
-    <div class="header">
-      <div class="titulo">Juan</div>
-      <div class="controls">
-        <button type="button" class="flip-btn">🔄</button>
-        <button type="button" class="drag-handle">☰</button>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Comparador de Cargas Mensuales</h1>
+        <div class="muted">Cargá dos CSV y elegí el origen (mastr / agente). El parser se adapta.</div>
       </div>
-    </div>
-    <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100094931906564')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'juan.402.cedas.mp \nTitular Juan Pablo Irusta *Mercado Pago*')">Alias Mercado Pago</button>
+    </header>
+
+    <div class="card">
+      <div class="group controls">
+        <div>
+          <label class="inline">Archivo mes anterior (CSV):</label>
+          <input type="file" id="filePrev" accept=".csv" />
         </div>
-        <div class="wallets-face back">
-          <button onclick="copiarYAnimar(event,'0000003100073049569289')">CBU PX</button>
-          <button onclick="copiarYAnimar(event,'20282615.PREX \nTitular Juan Pablo Irusta *PREX*')">Alias PX</button>
+
+        <div>
+          <label class="inline">Archivo mes actual (CSV):</label>
+          <input type="file" id="fileCurr" accept=".csv" />
         </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Grupo Rodriguez -->
-  <div class="grupo Rodriguez" draggable="false">
-    <div class="header">
-      <div class="titulo">Rodriguez</div>
-      <div class="controls">
-                <button type="button" class="flip-btn">🔄</button>
-           <button type="button" class="drag-handle">☰</button>
-      </div>
-    </div>
-       <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100054673879045')">CBU Mercado Pago</button>
-    <button onclick="copiarYAnimar(event,'mrodriguez3.mp \nTitular Maria Luisa Rodriguez *Mercado Pago*')">Alias Mercado Pago</button>
+
+        <div class="toggle">
+          <div class="sliderWrap">
+            <div class="sliderLabel">Origen CSV</div>
+            <div class="slider" id="originSlider" role="switch" aria-checked="false" tabindex="0">
+              <span data-val="0" id="labelmastr"> </span>
+              <span data-val="1" id="labelagente"> </span>
+              <div class="knob" id="knob">mastr</div>
+            </div>
+          </div>
         </div>
-        <div class="wallets-face back">
-          <button onclick="copiarYAnimar(event,'0000076500000034820409')">CBU PPay</button>
-          <button onclick="copiarYAnimar(event,'mrodrigue183982.ppay \nTitular Maria Luisa Rodriguez *PPay*')">Alias PPay</button>
+
+        <div style="min-width:150px">
+          <label class="inline"><input type="checkbox" id="onlySingle"> Sólo usuarios con 1 carga (mes anterior)</label>
+          <label class="inline">Máx filas por turno (0 = sin límite)</label>
+          <input type="number" id="maxRows" value="0" min="0" step="1" style="width:110px;border-radius:8px;padding:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:var(--muted)"/>
+        </div>
+
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <button id="processBtn" class="btn">Procesar comparación</button>
+          <!-- toggle de orden (monto / operaciones) -->
+          <button id="toggleSort" class="small-btn" title="Alternar orden">Orden: Monto</button>
         </div>
       </div>
-    </div>
-  </div>
 
-    <!-- Grupo Nancy -->
-  <div class="grupo Nancy" draggable="false">
-    <div class="header">
-      <div class="titulo">Nancy</div>
-      <div class="controls">
-           <button type="button" class="drag-handle">☰</button>
-      </div>
-    </div>
-       <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100027653806085')">CBU Mercado Pago</button>
-    <button onclick="copiarYAnimar(event,'nancy.118.dique.mp \nTitular Nancy Elizabeth Nores *Mercado Pago*')">Alias Mercado Pago</button>
+      <div id="summary" class="summary" style="margin-top:16px;">
+        <div>
+          <strong id="summaryCount">Sin procesar</strong>
+          <div class="muted">Carga previa: —</div>
         </div>
-        <div class="wallets-face back">
-          <button onclick="copiarYAnimar(event,'No tiene, no se que tocas')">CBU PPay</button>
-          <button onclick="copiarYAnimar(event,'te ilusionaste no?')">Alias PPay</button>
+        <div style="text-align:right;display:flex;align-items:center;gap:8px">
+          <div style="text-align:right">
+            <div class="muted">Formato activo:</div>
+            <div id="formatBadge" class="badge">mastr</div>
+          </div>
         </div>
       </div>
+
+      <div id="results"></div>
     </div>
   </div>
 
-  
-    <!-- Grupo Galvagno -->
-  <div class="grupo Galvagno" draggable="false">
-    <div class="header">
-      <div class="titulo">Galvagno</div>
-      <div class="controls">
-           <button type="button" class="drag-handle">☰</button>
-      </div>
-    </div>
-       <div class="wallets-container">
-      <div class="wallets-card">
-        <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100069216002637')">CBU Mercado Pago</button>
-    <button onclick="copiarYAnimar(event,'galvagno.02.mp \nTitular Fernando Galvagno *Mercado Pago*')">Alias Mercado Pago</button>
-        </div>
-        <div class="wallets-face back">
-          <button onclick="copiarYAnimar(event,'No tiene, no se que tocas')">CBU PPay</button>
-          <button onclick="copiarYAnimar(event,'te ilusionaste no?')">Alias PPay</button>
-        </div>
-      </div>
-    </div>
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <div class="spinner" id="toastSpinner"></div>
+    <div id="toastText">Filtrando...</div>
   </div>
 
-  <!-- Grupo Promo Amigo -->
-  <div class="grupo promo-amigo">
-    <h3>Promo Amigo</h3>
-<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗https://300vip-c02.vercel.app/')">Promo amigo</button>
-<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
-</div>
- <!-- Grupo Mensaje Revin -->
-  <div class="grupo mensaje-revin">
-    <h3 style="display:flex;justify-content:space-between;align-items:center;">
-      Mensaje Revin
-      <div id="modo-slider">
-        <button class="slider-btn" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" id="slider-mix">Mix</button>
-                <button class="slider-btn" id="slider-memo">Memo</button>
-        <button class="slider-btn" id="slider-box">Box</button>
-      </div>
-    </h3>
-    <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
-    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-<button style="flex:1;" onclick="copiarSaludo(event)">Copiar saludo</button>
-<button style="flex:1;background:#27ae60;" onclick="copiarSoloWsp(event)">Copiar WhatsApp</button>
-<button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
-    </div>
-  </div>
+<script>
+/* UI behavior + parsing for two CSV formats: mastr (0) and agente (1) */
 
-  <!-- Historial -->
-  <div id="historial-box">
-    <div id="historial-header">
-      📝 Último copiado <span id="historial-arrow">⌄</span>
-    </div>
-    <div id="historial-content">
-      <span id="historial-text">Nada copiado aún...</span>
-      <button id="historial-copy">Copy</button>
-    </div>
-  </div>
+/* Slider logic */
+const slider = document.getElementById('originSlider');
+const knob = document.getElementById('knob');
+const labelmastr = document.getElementById('labelmastr');
+const labelagente = document.getElementById('labelagente');
+const formatBadge = document.getElementById('formatBadge');
 
-  <div id="toast" class="toast"></div>
+let origin = 0; // 0 = mastr, 1 = agente
 
-  <!-- Panel Banco -->
-  <div id="banco-toggle">Banco</div>
-  <div id="banco-panel">
-    <h3 style="margin-top:0;">Panel Banco</h3>
-    <button onclick="copiarYAnimar(event,'365.ofi.mp')">ALIAS CHIGUAY</button>
+function updateKnobPosition() {
+  const sliderRect = slider.getBoundingClientRect();
+  const knobRect = knob.getBoundingClientRect();
 
-  </div>
-<script src="saludosCH02.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script>
- 
-    function animateButton(button){
-  button.style.transform = "scale(0.95)";
-  setTimeout(()=> button.style.transform = "", 150);
-}
-  
-   // ===== Slider saludos =====
-    let modoSlider = 0;  // 0: Ruleta, 1: Mix, 2: Memo, 3: Box
-    function actualizarSlider() {
-      document.querySelectorAll('.slider-btn').forEach((btn, idx) => {
-        btn.classList.toggle('selected', idx === modoSlider);
-      });
-    }
-    document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); };
-    document.getElementById('slider-mix').onclick    = () => { modoSlider = 1; actualizarSlider(); };
-    document.getElementById('slider-memo').onclick   = () => { modoSlider = 2; actualizarSlider(); };
-    document.getElementById('slider-box').onclick    = () => { modoSlider = 3; actualizarSlider(); };
-    actualizarSlider();
+  // Padding real del slider (el que definimos en CSS)
+  const padding = 4;
 
- function copiarSaludo(event) {
-  const usuario = document.getElementById("usuarioInput").value.trim();
-  if (!usuario) {
-    alert("⚠️ Escribí un usuario primero!");
-    return;
+  // La posición máxima es: (ancho del slider) - (ancho del knob) - (padding doble)
+  const maxLeft = sliderRect.width - knobRect.width - (padding * 2);
+
+  if (origin === 0) {
+    knob.style.left = padding + 'px';
+    knob.textContent = 'mastr';
+  } else {
+    knob.style.left = maxLeft + 'px';
+    knob.textContent = 'agente';
   }
 
-  // Selecciona el array correcto según modoSlider
-  let saludosArr = [];
-  switch (modoSlider) {
-    case 0: saludosArr = window.SALUDOS_CH02?.RULETA || []; break;
-    case 2: saludosArr = window.SALUDOS_CH02?.Memo || []; break;
-    case 3: saludosArr = window.SALUDOS_CH02?.Mistery_box || []; break;
-    case 1: // Mix: todos juntos
-      saludosArr = [
-        ...(window.SALUDOS_CH02?.RULETA || []),
-        ...(window.SALUDOS_CH02?.Memo || []),
-        ...(window.SALUDOS_CH02?.Mistery_box || [])
-      ];
-      break;
-    default:
-      saludosArr = [];
-      break;
-  }
-
-  if (!saludosArr.length) {
-    alert("No hay saludos cargados para este modo.");
-    return;
-  }
-
-  const idx = Math.floor(Math.random() * saludosArr.length);
-  let mensaje = saludosArr[idx]
-    .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
-
-  copyText(mensaje);
-  animateButton(event?.target);
+  slider.setAttribute('aria-checked', origin === 1 ? 'true' : 'false');
+  formatBadge.textContent = origin === 0 ? 'mastr' : 'agente';
 }
 
-function copiarSoloWsp(event){
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  copyText(`https://wa.me/5491155959790?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
-  animateButton(event?.target); // 🔥 feedback visual aquí
+// toggle handlers
+function toggleOrigin() {
+  origin = origin === 0 ? 1 : 0;
+  updateKnobPosition();
+}
+slider.addEventListener('click', (e) => {
+  // avoid toggling if user clicks over label text (we handle label clicks separately)
+  if (e.target === labelmastr || e.target === labelagente) return;
+  toggleOrigin();
+});
+slider.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); toggleOrigin(); }
+});
+labelmastr.addEventListener('click', ()=>{ origin = 0; updateKnobPosition(); });
+labelagente.addEventListener('click', ()=>{ origin = 1; updateKnobPosition(); });
+
+// keep knob responsive on resize
+window.addEventListener('resize', updateKnobPosition);
+updateKnobPosition();
+
+/* Toast helpers */
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toastText');
+let toastTimer = null;
+function showToast(text, duration=2200) {
+  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+  toastText.textContent = text;
+  toast.classList.add('show');
+  toastTimer = setTimeout(()=>{ toast.classList.remove('show'); toastTimer = null; }, duration);
 }
 
-function copiarCodigoAmigo(event){
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c02.vercel.app/`;
-  copyText(mensaje);
-  animateButton(event?.target); // 🔥 feedback visual aquí
-}
-
-  // ======================
-  // HISTORIAL + TOAST
-  // ======================
-  let lastCopied="", historialVisible=false;
-  const histHeader=document.getElementById("historial-header");
-  const histArrow=document.getElementById("historial-arrow");
-  const histContent=document.getElementById("historial-content");
-  const histText=document.getElementById("historial-text");
-  const histCopyBtn=document.getElementById("historial-copy");
-
-  histHeader.onclick=()=>{
-    historialVisible=!historialVisible;
-    histContent.style.display=historialVisible?"block":"none";
-    histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
-  };
-  histCopyBtn.onclick=()=>{if(lastCopied)copyText(lastCopied);};
-
-  function addHistorial(txt){
-    lastCopied=txt;
-    histText.textContent=txt;
-    histContent.style.display="block";
-    histArrow.style.transform="rotate(180deg)";
-    historialVisible=true;
-  }
-
-  function showToast(message){
-    const toast=document.getElementById("toast");
-    toast.textContent="✅ Copiado: "+message;
-   toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
-  }
-
-  function fallbackCopy(txt){
-    const temp=document.createElement("textarea");
-    temp.value=txt;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-    showToast("Texto");
-  }
-
-  // ✅ Copiar texto con toast + historial
-  function copyText(txt) {
-    let tipo = "Texto";
-    const txtLower = txt.toLowerCase();
-    if (txtLower.includes("mistery-box-one")) tipo = "Mistery Box";
-    else if (txtLower.includes("ruleta-bet300")) tipo = "Ruleta";
-          else if (txtLower.includes("memoplay")) tipo = "Memo";
-    else if (txtLower.includes("galvagno.02.mp")) tipo = "Alias Galvagno";
-    else if (txtLower.includes("0000003100069216002637")) tipo = "Cbu Galvagno";
-   else if (txtLower.includes("mrodriguez3.mp")) tipo = "Alias Rodriguez MP";
-    else if (txtLower.includes("0000003100054673879045")) tipo = "Cbu Rodriguez MP";
-        else if (txtLower.includes("0000076500000034820409")) tipo = "Cbu Rodriguez PPay";
-             else if (txtLower.includes("mrodrigue183982.ppay")) tipo = "Alias Rodriguez PPay";
-               else if (txtLower.includes("juan.402.cedas.mp")) tipo = "Alias Juan MP";
-                 else if (txtLower.includes("0000003100094931906564")) tipo = "Cbu Juan MP";
-                       else if (txtLower.includes("nancy.118.dique.mp")) tipo = "Alias Nancy MP";
-                 else if (txtLower.includes("0000003100027653806085")) tipo = "Cbu Nancy MP";
-                                    else if (txtLower.includes("0000003100073049569289")) tipo = "Cbu Juan PX";
-                                                       else if (txtLower.includes("20282615.prex")) tipo = "Alias Juan PX";
-    else if (txtLower.includes("somos bet300vip")) tipo = "Info";
-    else if (txtLower.includes("¡saldo acreditado!")) tipo = "Cargado";
-    else if (txtLower.includes("para hacer el retiro")) tipo = "Retiro";
-    else if (txtLower.includes("cronograma")) tipo = "Enlace Wsp";
-    else if (txtLower.includes("fichas extra al instante")) tipo = "Promo Amigos";
-    else if (txtLower.includes("debe enviar tu código")) tipo = "Info Promo Amigos";
-    else if (txtLower.includes("arellano.banco")) tipo = "Banco, Arellano PP";
-    else if (txtLower.includes("edgardo.928.arado.mp")) tipo = "Banco, Arellano MP";
-    else if (txtLower.includes("365.ofi.mp")) tipo = "banco, Chiguay MP";
-    else if (txtLower.includes("con solo enviarle el enlace ya tienen el whatsApp y el chat")) tipo = "Codigo amigo";
-
-
-   if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
-    } else {
-      fallbackCopy(txt);
-    }
-    addHistorial(txt);
-  }
-
-  // ======================
-  // BANCO PANEL
-  // ======================
-  const bancoToggle=document.getElementById("banco-toggle");
-  const bancoPanel=document.getElementById("banco-panel");
-
-  function cerrarBancoPanel(){
-    bancoPanel.classList.remove("open");
-    bancoToggle.classList.remove("open");
-  }
-
-  bancoToggle.onclick=function(e){
-    e.stopPropagation();
-    if(bancoPanel.classList.contains("open")){
-      cerrarBancoPanel();
-    } else {
-      bancoPanel.classList.add("open");
-      bancoToggle.classList.add("open");
-    }
-  };
-
-  document.addEventListener("click",function(e){
-    if(bancoPanel.classList.contains("open")&&!bancoPanel.contains(e.target)&&!bancoToggle.contains(e.target)){
-      cerrarBancoPanel();
-    }
-  });
-  document.addEventListener("keydown",function(e){
-    if(e.key==="Escape") cerrarBancoPanel();
-  });
-
-  // ======================
-  // FLIP CARDS
-  // ======================
-  document.querySelectorAll(".grupo").forEach(grupo=>{
-    const flipBtn=grupo.querySelector(".flip-btn");
-    const card=grupo.querySelector(".wallets-card");
-    if(flipBtn&&card){
-      flipBtn.addEventListener("click",()=>{
-        card.classList.toggle("flipped");
-      });
-    }
-  });
-
-  // ======================
-  // DRAG & DROP (SortableJS)
-  // ======================
-  new Sortable(document.body,{
-    handle:".drag-handle",
-    animation:150,
-    draggable:".grupo"
-  });
-function animateButton(button){
-  if(!button) return;
-  button.style.transform = "scale(0.92)";
-  button.style.transition = "transform 0.15s ease";
-  setTimeout(()=> button.style.transform = "", 150);
-}
-    function copiarYAnimar(event, texto){
-  copyText(texto);
-  animateButton(event?.target); // reutiliza la animación que ya agregaste
+/* CSV reading and parsing (robust for quoted fields) */
+function readCSV(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = String(e.target.result || '');
+      // split preserving quoted newlines not necessary here: we assume one record per line
+      const lines = text.split(/\r?\n/).map(l => l.replace(/\uFEFF/g,'')).filter(l => l.trim() !== '' );
+      const filtered = lines.filter(l => !l.startsWith('sep='));
+      // if first line looks like header (contains Fecha, Tipo, Alias...) skip it
+      if (filtered.length > 0 && /[Ff]echa|[Tt]ipo|Alias|Cantidad/.test(filtered[0])) {
+        resolve(filtered.slice(1));
+      } else {
+        resolve(filtered);
       }
-  </script>
+    };
+    reader.onerror = reject;
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+      else inQuotes = !inQuotes;
+      continue;
+    }
+    if (ch === ',' && !inQuotes) { result.push(cur); cur = ''; continue; }
+    cur += ch;
+  }
+  result.push(cur);
+  return result;
+}
+
+/* Parser for 'mastr' format
+   Expected columns: Fecha (0), Cantidad (3), Alias agente (5), Alias jugador (6)
+*/
+function parseRowsmastr(lines) {
+  return lines.map(line => {
+    if (!line || !line.trim()) return null;
+    const cols = parseCSVLine(line);
+    const fecha = (cols[0]||'').trim();
+    let montoRaw = (cols[3] !== undefined ? cols[3] : '');
+    montoRaw = String(montoRaw).replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
+    const monto = parseFloat(montoRaw) || 0;
+    let usuario = (cols[6] || cols[5] || '').trim();
+    usuario = usuario ? usuario.toLowerCase().trim() : '';
+    let fechaObj = null;
+    if (fecha) {
+      fechaObj = new Date(fecha.replace(' ', 'T'));
+      if (isNaN(fechaObj.getTime())) fechaObj = new Date(fecha);
+    }
+    return { fecha, fechaObj, monto, usuario };
+  }).filter(r => r && r.usuario);
+}
+
+/* Parser for 'agente' format
+   Usaremos Fecha=0, Cantidad=2, Alias=4
+*/
+function parseRowsagente(lines) {
+  return lines.map(line => {
+    if (!line || !line.trim()) return null;
+    const cols = parseCSVLine(line);
+    const fecha = (cols[0]||'').trim();
+    let montoRaw = (cols[2] !== undefined ? cols[2] : '');
+    montoRaw = String(montoRaw).replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
+    const monto = parseFloat(montoRaw) || 0;
+    let usuario = (cols[4] || cols[3] || '').trim();
+    usuario = usuario ? usuario.toLowerCase().trim() : '';
+    let fechaObj = null;
+    if (fecha) {
+      fechaObj = new Date(fecha.replace(' ', 'T'));
+      if (isNaN(fechaObj.getTime())) fechaObj = new Date(fecha);
+    }
+    return { fecha, fechaObj, monto, usuario };
+  }).filter(r => r && r.usuario);
+}
+
+/* Estado compartido para re-render / copiado */
+let lastDroppedUsers = [];
+let lastTurnos = { TM: [], TT: [], TN: [] };
+let lastLimited = { TM: [], TT: [], TN: [] };
+let lastPrevStats = { totalCargas: 0, totalMonto: 0, uniquePrev: 0 };
+
+/* Sort mode: 'monto' (default) or 'operaciones' (apariciones) */
+let sortMode = 'monto';
+const toggleSortBtn = document.getElementById('toggleSort');
+toggleSortBtn.addEventListener('click', () => {
+  sortMode = sortMode === 'monto' ? 'operaciones' : 'monto';
+  toggleSortBtn.textContent = sortMode === 'monto' ? 'Orden: Monto' : 'Orden: Operaciones';
+  // re-render using lastDroppedUsers
+  if (lastDroppedUsers && lastDroppedUsers.length) {
+    computeTurnosFromDroppedAndRender(lastDroppedUsers);
+  } else {
+    showToast('Procesá archivos primero', 1200);
+  }
+});
+
+/* Main processing flow */
+document.getElementById('processBtn').addEventListener('click', async () => {
+  const prevFile = document.getElementById('filePrev').files[0];
+  const currFile = document.getElementById('fileCurr').files[0];
+  if (!prevFile || !currFile) return showToast('Cargá ambos archivos CSV primero', 2500);
+
+  showToast('Filtrando y comparando…', 8000);
+
+  try {
+    const [prevLines, currLines] = await Promise.all([ readCSV(prevFile), readCSV(currFile) ]);
+
+    // choose parser by slider
+    const parser = origin === 0 ? parseRowsmastr : parseRowsagente;
+
+    const prev = parser(prevLines);
+    const curr = parser(currLines);
+
+    // contar apariciones en prev
+    const prevCount = {};
+    prev.forEach(r => {
+      if (!r.usuario) return;
+      prevCount[r.usuario] = (prevCount[r.usuario] || 0) + 1;
+    });
+
+    const currentUsers = new Set(curr.map(r => r.usuario));
+
+    // agrupar prev por usuario: contar apariciones, sumar montos y tomar la fecha más reciente
+    const prevMap = {};
+    prev.forEach(r => {
+      if (!r.usuario) return;
+      const u = r.usuario;
+      if (!prevMap[u]) prevMap[u] = { usuario: u, count: 0, totalMonto: 0, lastFecha: r.fecha, lastFechaObj: r.fechaObj };
+      prevMap[u].count += 1;
+      prevMap[u].totalMonto += (r.monto || 0);
+
+      // actualizar fecha más reciente
+      const curTime = (r.fechaObj && !isNaN(r.fechaObj.getTime())) ? r.fechaObj.getTime() : (r.fecha ? Date.parse(r.fecha) : NaN);
+      const prevTime = (prevMap[u].lastFechaObj && !isNaN(prevMap[u].lastFechaObj.getTime())) ? prevMap[u].lastFechaObj.getTime() : (prevMap[u].lastFecha ? Date.parse(prevMap[u].lastFecha) : NaN);
+      if (!isNaN(curTime) && (isNaN(prevTime) || curTime > prevTime)) {
+        prevMap[u].lastFecha = r.fecha;
+        prevMap[u].lastFechaObj = r.fechaObj;
+      }
+    });
+
+    // construir lista agregada de usuarios que "dejaron de cargar"
+    let droppedUsers = Object.keys(prevMap)
+      .filter(u => !currentUsers.has(u))
+      .map(u => {
+        const it = prevMap[u];
+        return { fecha: it.lastFecha, fechaObj: it.lastFechaObj, monto: it.totalMonto, usuario: it.usuario, apariciones: it.count };
+      });
+
+    if (document.getElementById('onlySingle').checked) {
+      droppedUsers = droppedUsers.filter(u => u.apariciones === 1);
+    }
+
+    // guardar stats y estado global
+    lastDroppedUsers = droppedUsers;
+    lastPrevStats.totalCargas = prev.length;
+    lastPrevStats.totalMonto = prev.reduce((a, b) => a + (b.monto || 0), 0);
+    lastPrevStats.uniquePrev = Object.keys(prevMap).length;
+
+    // computar turnos y render
+    computeTurnosFromDroppedAndRender(droppedUsers);
+
+    showToast('Listo — resultados actualizados', 1800);
+
+  } catch (err) {
+    console.error(err);
+    showToast('Error procesando archivos', 3200);
+    alert('Error procesando archivos: ' + (err && err.message ? err.message : err));
+  }
+});
+
+/* compute turnos from droppedUsers (applies sortMode and maxRows), then render */
+function computeTurnosFromDroppedAndRender(droppedUsers) {
+  const turnos = { TM: [], TT: [], TN: [] };
+
+  droppedUsers.forEach(r => {
+    let hora = NaN;
+    if (r.fechaObj && !isNaN(r.fechaObj.getTime())) hora = r.fechaObj.getHours();
+    if (isNaN(hora) && r.fecha) {
+      const m = r.fecha.match(/(\d{2}):(\d{2}):(\d{2})$/);
+      if (m) hora = parseInt(m[1], 10);
+    }
+    if (isNaN(hora)) turnos.TN.push(r);
+    else if (hora >= 6 && hora < 14) turnos.TM.push(r);
+    else if (hora >= 14 && hora < 22) turnos.TT.push(r);
+    else turnos.TN.push(r);
+  });
+
+  // ordenar según sortMode
+  const comparator = (a, b) => {
+    if (sortMode === 'operaciones') {
+      return (b.apariciones || 0) - (a.apariciones || 0);
+    }
+    // default: monto
+    return (b.monto || 0) - (a.monto || 0);
+  };
+  Object.keys(turnos).forEach(k => turnos[k].sort(comparator));
+
+  // aplicar límite por turno
+  const maxRows = parseInt(document.getElementById('maxRows').value, 10) || 0;
+  const limited = {};
+  Object.keys(turnos).forEach(k => {
+    limited[k] = (maxRows > 0) ? turnos[k].slice(0, maxRows) : turnos[k].slice();
+  });
+
+  // guardar en global para copiar luego
+  lastTurnos = turnos;
+  lastLimited = limited;
+
+  // render UI
+  renderResults(limited, turnos);
+}
+
+/* render results using limited (what is displayed) and full turnos (for counts) */
+function renderResults(limited, turnos) {
+  // resumen
+  document.getElementById('summaryCount').textContent = `${lastPrevStats.totalCargas} registros · $${lastPrevStats.totalMonto.toLocaleString()}`;
+  document.getElementById('summary').querySelector('.muted').textContent = `Usuarios únicos mes anterior: ${lastPrevStats.uniquePrev}`;
+
+  // construir HTML por turno, incluyendo botón copiar por turno
+  let html = '';
+  for (const turno of ['TM', 'TT', 'TN']) {
+    const datos = limited[turno] || [];
+    const totalDetected = (turnos[turno] || []).length;
+    html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">`;
+    html += `<h3 style="margin:0">Turno ${turno} <span style="font-weight:600;color:var(--muted);font-size:13px">(${totalDetected} detectados, mostrando ${datos.length})</span></h3>`;
+    html += `<div><button class="small-btn copy-turn-btn" data-turn="${turno}">Copiar ${turno}</button></div>`;
+    html += `</div>`;
+
+    if (!datos.length) { html += `<div class="muted">Sin usuarios que dejaron de cargar en este turno.</div>`; continue; }
+    html += `<table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Apariciones mes anterior</th></tr></thead><tbody>`;
+    datos.forEach(r => {
+      html += `<tr><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.usuario)}</td><td>$${(r.monto || 0).toFixed(2)}</td><td>${r.apariciones || 1}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  document.getElementById('results').innerHTML = html;
+
+  // attach copy handlers to copy-turn-btn
+  document.querySelectorAll('.copy-turn-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const turn = btn.getAttribute('data-turn');
+      copyUsersOfTurn(turn);
+    });
+  });
+}
+
+/* Copiar usuarios de un turno (usa lastLimited) en formato con guiones */
+async function copyUsersOfTurn(turn) {
+  const list = (lastLimited && lastLimited[turn]) ? lastLimited[turn] : [];
+  if (!list || list.length === 0) { showToast(`No hay usuarios en ${turn}`, 1400); return; }
+  const lines = list.map(r => `- ${r.usuario}`);
+  const text = lines.join('\n');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text);
+    else {
+      const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    showToast(`Usuarios ${turn} copiados`);
+  } catch (e) {
+    console.error(e);
+    showToast('Error al copiar');
+  }
+}
+
+/* utilities */
+function escapeHtml(s) {
+  if (!s && s !== 0) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+</script>
 </body>
 </html>
-
-
