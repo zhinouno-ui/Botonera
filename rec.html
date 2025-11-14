@@ -184,7 +184,7 @@
     <header>
       <div>
         <h1>Comparador de Cargas Mensuales</h1>
-        <div class="muted">Cargá dos CSV y elegí el origen (alv / chino). El parser se adapta.</div>
+        <div class="muted">Cargá dos CSV y elegí el origen (mastr / agente). El parser se adapta.</div>
       </div>
     </header>
 
@@ -204,9 +204,9 @@
           <div class="sliderWrap">
             <div class="sliderLabel">Origen CSV</div>
             <div class="slider" id="originSlider" role="switch" aria-checked="false" tabindex="0">
-              <span data-val="0" id="labelAlv"> </span>
-              <span data-val="1" id="labelChino"> </span>
-              <div class="knob" id="knob">alv</div>
+              <span data-val="0" id="labelmastr"> </span>
+              <span data-val="1" id="labelagente"> </span>
+              <div class="knob" id="knob">mastr</div>
             </div>
           </div>
         </div>
@@ -229,7 +229,7 @@
         </div>
         <div style="text-align:right">
           <div class="muted">Formato activo:</div>
-          <div id="formatBadge" class="badge">alv</div>
+          <div id="formatBadge" class="badge">mastr</div>
         </div>
       </div>
 
@@ -244,16 +244,16 @@
   </div>
 
 <script>
-/* UI behavior + parsing for two CSV formats: alv (0) and chino (1) */
+/* UI behavior + parsing for two CSV formats: mastr (0) and agente (1) */
 
 /* Slider logic */
 const slider = document.getElementById('originSlider');
 const knob = document.getElementById('knob');
-const labelAlv = document.getElementById('labelAlv');
-const labelChino = document.getElementById('labelChino');
+const labelmastr = document.getElementById('labelmastr');
+const labelagente = document.getElementById('labelagente');
 const formatBadge = document.getElementById('formatBadge');
 
-let origin = 0; // 0 = alv, 1 = chino
+let origin = 0; // 0 = mastr, 1 = agente
 
 function updateKnobPosition() {
   const sliderRect = slider.getBoundingClientRect();
@@ -267,14 +267,14 @@ function updateKnobPosition() {
 
   if (origin === 0) {
     knob.style.left = padding + 'px';
-    knob.textContent = 'alv';
+    knob.textContent = 'mastr';
   } else {
     knob.style.left = maxLeft + 'px';
-    knob.textContent = 'chino';
+    knob.textContent = 'agente';
   }
 
   slider.setAttribute('aria-checked', origin === 1 ? 'true' : 'false');
-  formatBadge.textContent = origin === 0 ? 'alv' : 'chino';
+  formatBadge.textContent = origin === 0 ? 'mastr' : 'agente';
 }
 
 // toggle handlers
@@ -284,14 +284,14 @@ function toggleOrigin() {
 }
 slider.addEventListener('click', (e) => {
   // avoid toggling if user clicks over label text (we handle label clicks separately)
-  if (e.target === labelAlv || e.target === labelChino) return;
+  if (e.target === labelmastr || e.target === labelagente) return;
   toggleOrigin();
 });
 slider.addEventListener('keydown', (e) => {
   if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); toggleOrigin(); }
 });
-labelAlv.addEventListener('click', ()=>{ origin = 0; updateKnobPosition(); });
-labelChino.addEventListener('click', ()=>{ origin = 1; updateKnobPosition(); });
+labelmastr.addEventListener('click', ()=>{ origin = 0; updateKnobPosition(); });
+labelagente.addEventListener('click', ()=>{ origin = 1; updateKnobPosition(); });
 
 // keep knob responsive on resize
 window.addEventListener('resize', updateKnobPosition);
@@ -347,10 +347,10 @@ function parseCSVLine(line) {
   return result;
 }
 
-/* Parser for 'alv' format
+/* Parser for 'mastr' format
    Expected columns: Fecha (0), Cantidad (3), Alias agente (5), Alias jugador (6)
 */
-function parseRowsAlv(lines) {
+function parseRowsmastr(lines) {
   return lines.map(line => {
     if (!line || !line.trim()) return null;
     const cols = parseCSVLine(line);
@@ -369,10 +369,10 @@ function parseRowsAlv(lines) {
   }).filter(r => r && r.usuario);
 }
 
-/* Parser for 'chino' format
+/* Parser for 'agente' format
    Usaremos Fecha=0, Cantidad=2, Alias=4
 */
-function parseRowsChino(lines) {
+function parseRowsagente(lines) {
   return lines.map(line => {
     if (!line || !line.trim()) return null;
     const cols = parseCSVLine(line);
@@ -403,7 +403,7 @@ document.getElementById('processBtn').addEventListener('click', async () => {
     const [prevLines, currLines] = await Promise.all([ readCSV(prevFile), readCSV(currFile) ]);
 
     // choose parser by slider
-    const parser = origin === 0 ? parseRowsAlv : parseRowsChino;
+    const parser = origin === 0 ? parseRowsmastr : parseRowsagente;
 
     const prev = parser(prevLines);
     const curr = parser(currLines);
