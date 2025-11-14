@@ -62,6 +62,18 @@
     }
     .btn:active{ transform: translateY(1px) scale(.997); }
 
+    .small-btn{
+      background:linear-gradient(90deg,#ffffff,#dbefff);
+      color:#042a31;
+      border:none;
+      padding:6px 8px;
+      border-radius:8px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:12px;
+      margin-left:8px;
+    }
+
     .toggle{
       display:flex;
       align-items:center;
@@ -176,6 +188,7 @@
     @media (max-width:760px){
       .controls{ flex-direction:column; align-items:stretch; }
       .slider{ width:120px; }
+      .small-btn{ display:none; }
     }
   </style>
 </head>
@@ -217,8 +230,10 @@
           <input type="number" id="maxRows" value="0" min="0" step="1" style="width:110px;border-radius:8px;padding:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:var(--muted)"/>
         </div>
 
-        <div style="margin-left:auto">
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
           <button id="processBtn" class="btn">Procesar comparación</button>
+          <!-- toggle de orden (monto / operaciones) -->
+          <button id="toggleSort" class="small-btn" title="Alternar orden">Orden: Monto</button>
         </div>
       </div>
 
@@ -227,9 +242,11 @@
           <strong id="summaryCount">Sin procesar</strong>
           <div class="muted">Carga previa: —</div>
         </div>
-        <div style="text-align:right">
-          <div class="muted">Formato activo:</div>
-          <div id="formatBadge" class="badge">mastr</div>
+        <div style="text-align:right;display:flex;align-items:center;gap:8px">
+          <div style="text-align:right">
+            <div class="muted">Formato activo:</div>
+            <div id="formatBadge" class="badge">mastr</div>
+          </div>
         </div>
       </div>
 
@@ -391,6 +408,26 @@ function parseRowsagente(lines) {
   }).filter(r => r && r.usuario);
 }
 
+/* Estado compartido para re-render / copiado */
+let lastDroppedUsers = [];
+let lastTurnos = { TM: [], TT: [], TN: [] };
+let lastLimited = { TM: [], TT: [], TN: [] };
+let lastPrevStats = { totalCargas: 0, totalMonto: 0, uniquePrev: 0 };
+
+/* Sort mode: 'monto' (default) or 'operaciones' (apariciones) */
+let sortMode = 'monto';
+const toggleSortBtn = document.getElementById('toggleSort');
+toggleSortBtn.addEventListener('click', () => {
+  sortMode = sortMode === 'monto' ? 'operaciones' : 'monto';
+  toggleSortBtn.textContent = sortMode === 'monto' ? 'Orden: Monto' : 'Orden: Operaciones';
+  // re-render using lastDroppedUsers
+  if (lastDroppedUsers && lastDroppedUsers.length) {
+    computeTurnosFromDroppedAndRender(lastDroppedUsers);
+  } else {
+    showToast('Procesá archivos primero', 1200);
+  }
+});
+
 /* Main processing flow */
 document.getElementById('processBtn').addEventListener('click', async () => {
   const prevFile = document.getElementById('filePrev').files[0];
@@ -447,50 +484,14 @@ document.getElementById('processBtn').addEventListener('click', async () => {
       droppedUsers = droppedUsers.filter(u => u.apariciones === 1);
     }
 
-    // clasificar por turno (TM 6-14, TT 14-22, TN resto)
-    const turnos = { TM: [], TT: [], TN: [] };
-    droppedUsers.forEach(r => {
-      let hora = NaN;
-      if (r.fechaObj && !isNaN(r.fechaObj.getTime())) hora = r.fechaObj.getHours();
-      if (isNaN(hora) && r.fecha) {
-        const m = r.fecha.match(/(\d{2}):(\d{2}):(\d{2})$/);
-        if (m) hora = parseInt(m[1], 10);
-      }
-      if (isNaN(hora)) turnos.TN.push(r);
-      else if (hora >= 6 && hora < 14) turnos.TM.push(r);
-      else if (hora >= 14 && hora < 22) turnos.TT.push(r);
-      else turnos.TN.push(r);
-    });
+    // guardar stats y estado global
+    lastDroppedUsers = droppedUsers;
+    lastPrevStats.totalCargas = prev.length;
+    lastPrevStats.totalMonto = prev.reduce((a, b) => a + (b.monto || 0), 0);
+    lastPrevStats.uniquePrev = Object.keys(prevMap).length;
 
-    // ordenar por monto descendente dentro de cada turno
-    Object.keys(turnos).forEach(k => turnos[k].sort((a, b) => b.monto - a.monto));
-
-    // aplicar límite por turno
-    const maxRows = parseInt(document.getElementById('maxRows').value, 10) || 0;
-    const limited = {};
-    Object.keys(turnos).forEach(k => {
-      limited[k] = (maxRows > 0) ? turnos[k].slice(0, maxRows) : turnos[k];
-    });
-
-    // resumen
-    const totalCargas = prev.length;
-    const totalMonto = prev.reduce((a, b) => a + (b.monto || 0), 0);
-    document.getElementById('summaryCount').textContent = `${totalCargas} registros · $${totalMonto.toLocaleString()}`;
-    document.getElementById('summary').querySelector('.muted').textContent = `Usuarios únicos mes anterior: ${Object.keys(prevMap).length}`;
-
-    // render resultados
-    let html = '';
-    for (const turno of ['TM', 'TT', 'TN']) {
-      const datos = limited[turno];
-      html += `<h3 style="margin-top:16px;margin-bottom:8px;">Turno ${turno} (${turnos[turno].length} detectados, mostrando ${datos.length})</h3>`;
-      if (!datos.length) { html += `<div class="muted">Sin usuarios que dejaron de cargar en este turno.</div>`; continue; }
-      html += `<table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Apariciones mes anterior</th></tr></thead><tbody>`;
-      datos.forEach(r => {
-        html += `<tr><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.usuario)}</td><td>$${(r.monto || 0).toFixed(2)}</td><td>${r.apariciones || 1}</td></tr>`;
-      });
-      html += `</tbody></table>`;
-    }
-    document.getElementById('results').innerHTML = html;
+    // computar turnos y render
+    computeTurnosFromDroppedAndRender(droppedUsers);
 
     showToast('Listo — resultados actualizados', 1800);
 
@@ -500,6 +501,101 @@ document.getElementById('processBtn').addEventListener('click', async () => {
     alert('Error procesando archivos: ' + (err && err.message ? err.message : err));
   }
 });
+
+/* compute turnos from droppedUsers (applies sortMode and maxRows), then render */
+function computeTurnosFromDroppedAndRender(droppedUsers) {
+  const turnos = { TM: [], TT: [], TN: [] };
+
+  droppedUsers.forEach(r => {
+    let hora = NaN;
+    if (r.fechaObj && !isNaN(r.fechaObj.getTime())) hora = r.fechaObj.getHours();
+    if (isNaN(hora) && r.fecha) {
+      const m = r.fecha.match(/(\d{2}):(\d{2}):(\d{2})$/);
+      if (m) hora = parseInt(m[1], 10);
+    }
+    if (isNaN(hora)) turnos.TN.push(r);
+    else if (hora >= 6 && hora < 14) turnos.TM.push(r);
+    else if (hora >= 14 && hora < 22) turnos.TT.push(r);
+    else turnos.TN.push(r);
+  });
+
+  // ordenar según sortMode
+  const comparator = (a, b) => {
+    if (sortMode === 'operaciones') {
+      return (b.apariciones || 0) - (a.apariciones || 0);
+    }
+    // default: monto
+    return (b.monto || 0) - (a.monto || 0);
+  };
+  Object.keys(turnos).forEach(k => turnos[k].sort(comparator));
+
+  // aplicar límite por turno
+  const maxRows = parseInt(document.getElementById('maxRows').value, 10) || 0;
+  const limited = {};
+  Object.keys(turnos).forEach(k => {
+    limited[k] = (maxRows > 0) ? turnos[k].slice(0, maxRows) : turnos[k].slice();
+  });
+
+  // guardar en global para copiar luego
+  lastTurnos = turnos;
+  lastLimited = limited;
+
+  // render UI
+  renderResults(limited, turnos);
+}
+
+/* render results using limited (what is displayed) and full turnos (for counts) */
+function renderResults(limited, turnos) {
+  // resumen
+  document.getElementById('summaryCount').textContent = `${lastPrevStats.totalCargas} registros · $${lastPrevStats.totalMonto.toLocaleString()}`;
+  document.getElementById('summary').querySelector('.muted').textContent = `Usuarios únicos mes anterior: ${lastPrevStats.uniquePrev}`;
+
+  // construir HTML por turno, incluyendo botón copiar por turno
+  let html = '';
+  for (const turno of ['TM', 'TT', 'TN']) {
+    const datos = limited[turno] || [];
+    const totalDetected = (turnos[turno] || []).length;
+    html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">`;
+    html += `<h3 style="margin:0">Turno ${turno} <span style="font-weight:600;color:var(--muted);font-size:13px">(${totalDetected} detectados, mostrando ${datos.length})</span></h3>`;
+    html += `<div><button class="small-btn copy-turn-btn" data-turn="${turno}">Copiar ${turno}</button></div>`;
+    html += `</div>`;
+
+    if (!datos.length) { html += `<div class="muted">Sin usuarios que dejaron de cargar en este turno.</div>`; continue; }
+    html += `<table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Apariciones mes anterior</th></tr></thead><tbody>`;
+    datos.forEach(r => {
+      html += `<tr><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.usuario)}</td><td>$${(r.monto || 0).toFixed(2)}</td><td>${r.apariciones || 1}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  document.getElementById('results').innerHTML = html;
+
+  // attach copy handlers to copy-turn-btn
+  document.querySelectorAll('.copy-turn-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const turn = btn.getAttribute('data-turn');
+      copyUsersOfTurn(turn);
+    });
+  });
+}
+
+/* Copiar usuarios de un turno (usa lastLimited) en formato con guiones */
+async function copyUsersOfTurn(turn) {
+  const list = (lastLimited && lastLimited[turn]) ? lastLimited[turn] : [];
+  if (!list || list.length === 0) { showToast(`No hay usuarios en ${turn}`, 1400); return; }
+  const lines = list.map(r => `- ${r.usuario}`);
+  const text = lines.join('\n');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text);
+    else {
+      const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    showToast(`Usuarios ${turn} copiados`);
+  } catch (e) {
+    console.error(e);
+    showToast('Error al copiar');
+  }
+}
 
 /* utilities */
 function escapeHtml(s) {
