@@ -256,13 +256,23 @@ const formatBadge = document.getElementById('formatBadge');
 let origin = 0; // 0 = alv, 1 = chino
 
 function updateKnobPosition() {
-  // compute left based on container width so it's responsive
   const sliderRect = slider.getBoundingClientRect();
   const knobRect = knob.getBoundingClientRect();
-  const padding = 6;
-  const maxLeft = Math.max(6, sliderRect.width - knobRect.width - padding);
-  knob.style.left = (origin === 0 ? padding + 'px' : maxLeft + 'px');
-  knob.textContent = origin === 0 ? 'alv' : 'chino';
+
+  // Padding real del slider (el que definimos en CSS)
+  const padding = 4;
+
+  // La posición máxima es: (ancho del slider) - (ancho del knob) - (padding doble)
+  const maxLeft = sliderRect.width - knobRect.width - (padding * 2);
+
+  if (origin === 0) {
+    knob.style.left = padding + 'px';
+    knob.textContent = 'alv';
+  } else {
+    knob.style.left = maxLeft + 'px';
+    knob.textContent = 'chino';
+  }
+
   slider.setAttribute('aria-checked', origin === 1 ? 'true' : 'false');
   formatBadge.textContent = origin === 0 ? 'alv' : 'chino';
 }
