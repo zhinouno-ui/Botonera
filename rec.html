@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -256,29 +254,38 @@ const labelChino = document.getElementById('labelChino');
 const formatBadge = document.getElementById('formatBadge');
 
 let origin = 0; // 0 = alv, 1 = chino
-function updateKnob() {
-  if (origin === 0) {
-    knob.style.left = '6px';
-    knob.textContent = 'alv';
-    slider.setAttribute('aria-checked','false');
-    formatBadge.textContent = 'alv';
-  } else {
-    knob.style.left = '72px';
-    knob.textContent = 'chino';
-    slider.setAttribute('aria-checked','true');
-    formatBadge.textContent = 'chino';
-  }
+
+function updateKnobPosition() {
+  // compute left based on container width so it's responsive
+  const sliderRect = slider.getBoundingClientRect();
+  const knobRect = knob.getBoundingClientRect();
+  const padding = 6;
+  const maxLeft = Math.max(6, sliderRect.width - knobRect.width - padding);
+  knob.style.left = (origin === 0 ? padding + 'px' : maxLeft + 'px');
+  knob.textContent = origin === 0 ? 'alv' : 'chino';
+  slider.setAttribute('aria-checked', origin === 1 ? 'true' : 'false');
+  formatBadge.textContent = origin === 0 ? 'alv' : 'chino';
 }
-slider.addEventListener('click', () => {
+
+// toggle handlers
+function toggleOrigin() {
   origin = origin === 0 ? 1 : 0;
-  updateKnob();
+  updateKnobPosition();
+}
+slider.addEventListener('click', (e) => {
+  // avoid toggling if user clicks over label text (we handle label clicks separately)
+  if (e.target === labelAlv || e.target === labelChino) return;
+  toggleOrigin();
 });
 slider.addEventListener('keydown', (e) => {
-  if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); origin = origin === 0 ? 1 : 0; updateKnob(); }
+  if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); toggleOrigin(); }
 });
-labelAlv.addEventListener('click', ()=>{ origin = 0; updateKnob(); });
-labelChino.addEventListener('click', ()=>{ origin = 1; updateKnob(); });
-updateKnob();
+labelAlv.addEventListener('click', ()=>{ origin = 0; updateKnobPosition(); });
+labelChino.addEventListener('click', ()=>{ origin = 1; updateKnobPosition(); });
+
+// keep knob responsive on resize
+window.addEventListener('resize', updateKnobPosition);
+updateKnobPosition();
 
 /* Toast helpers */
 const toast = document.getElementById('toast');
@@ -297,9 +304,11 @@ function readCSV(file) {
     const reader = new FileReader();
     reader.onload = e => {
       const text = String(e.target.result || '');
+      // split preserving quoted newlines not necessary here: we assume one record per line
       const lines = text.split(/\r?\n/).map(l => l.replace(/\uFEFF/g,'')).filter(l => l.trim() !== '' );
       const filtered = lines.filter(l => !l.startsWith('sep='));
-      if (filtered.length > 0 && /[Ff]echa|[Tt]ipo|Alias/.test(filtered[0])) {
+      // if first line looks like header (contains Fecha, Tipo, Alias...) skip it
+      if (filtered.length > 0 && /[Ff]echa|[Tt]ipo|Alias|Cantidad/.test(filtered[0])) {
         resolve(filtered.slice(1));
       } else {
         resolve(filtered);
@@ -309,6 +318,7 @@ function readCSV(file) {
     reader.readAsText(file, 'utf-8');
   });
 }
+
 function parseCSVLine(line) {
   const result = [];
   let cur = '';
@@ -327,7 +337,7 @@ function parseCSVLine(line) {
   return result;
 }
 
-/* Parser for 'alv' format (compatibility with previous implementation)
+/* Parser for 'alv' format
    Expected columns: Fecha (0), Cantidad (3), Alias agente (5), Alias jugador (6)
 */
 function parseRowsAlv(lines) {
@@ -336,7 +346,7 @@ function parseRowsAlv(lines) {
     const cols = parseCSVLine(line);
     const fecha = (cols[0]||'').trim();
     let montoRaw = (cols[3] !== undefined ? cols[3] : '');
-    montoRaw = montoRaw.replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
+    montoRaw = String(montoRaw).replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
     const monto = parseFloat(montoRaw) || 0;
     let usuario = (cols[6] || cols[5] || '').trim();
     usuario = usuario ? usuario.toLowerCase().trim() : '';
@@ -349,7 +359,7 @@ function parseRowsAlv(lines) {
   }).filter(r => r && r.usuario);
 }
 
-/* Parser for 'chino' format (la imagen sugiere: Fecha (0), Estado (1), Cantidad (2), Tipo (3), Alias (4), Balance (5))
+/* Parser for 'chino' format
    Usaremos Fecha=0, Cantidad=2, Alias=4
 */
 function parseRowsChino(lines) {
@@ -358,9 +368,8 @@ function parseRowsChino(lines) {
     const cols = parseCSVLine(line);
     const fecha = (cols[0]||'').trim();
     let montoRaw = (cols[2] !== undefined ? cols[2] : '');
-    montoRaw = montoRaw.replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
+    montoRaw = String(montoRaw).replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
     const monto = parseFloat(montoRaw) || 0;
-    // alias jugador/cliente aparece en columna 4 según la captura
     let usuario = (cols[4] || cols[3] || '').trim();
     usuario = usuario ? usuario.toLowerCase().trim() : '';
     let fechaObj = null;
@@ -378,18 +387,16 @@ document.getElementById('processBtn').addEventListener('click', async () => {
   const currFile = document.getElementById('fileCurr').files[0];
   if (!prevFile || !currFile) return showToast('Cargá ambos archivos CSV primero', 2500);
 
-  // show filtering toast
   showToast('Filtrando y comparando…', 8000);
 
   try {
     const [prevLines, currLines] = await Promise.all([ readCSV(prevFile), readCSV(currFile) ]);
 
     // choose parser by slider
-    const parserPrev = origin === 0 ? parseRowsAlv : parseRowsChino;
-    const parserCurr = origin === 0 ? parseRowsAlv : parseRowsChino;
+    const parser = origin === 0 ? parseRowsAlv : parseRowsChino;
 
-    const prev = parserPrev(prevLines);
-    const curr = parserCurr(currLines);
+    const prev = parser(prevLines);
+    const curr = parser(currLines);
 
     // contar apariciones en prev
     const prevCount = {};
@@ -400,13 +407,7 @@ document.getElementById('processBtn').addEventListener('click', async () => {
 
     const currentUsers = new Set(curr.map(r => r.usuario));
 
-    let dropped = prev.filter(r => r.usuario && !currentUsers.has(r.usuario));
-
-    if (document.getElementById('onlySingle').checked) {
-      dropped = dropped.filter(r => prevCount[r.usuario] === 1);
-    }
-
-       // agrupar prev por usuario: contar apariciones, sumar montos y tomar la fecha más reciente
+    // agrupar prev por usuario: contar apariciones, sumar montos y tomar la fecha más reciente
     const prevMap = {};
     prev.forEach(r => {
       if (!r.usuario) return;
@@ -415,7 +416,7 @@ document.getElementById('processBtn').addEventListener('click', async () => {
       prevMap[u].count += 1;
       prevMap[u].totalMonto += (r.monto || 0);
 
-      // actualizar fecha más reciente (si está disponible)
+      // actualizar fecha más reciente
       const curTime = (r.fechaObj && !isNaN(r.fechaObj.getTime())) ? r.fechaObj.getTime() : (r.fecha ? Date.parse(r.fecha) : NaN);
       const prevTime = (prevMap[u].lastFechaObj && !isNaN(prevMap[u].lastFechaObj.getTime())) ? prevMap[u].lastFechaObj.getTime() : (prevMap[u].lastFecha ? Date.parse(prevMap[u].lastFecha) : NaN);
       if (!isNaN(curTime) && (isNaN(prevTime) || curTime > prevTime)) {
@@ -423,8 +424,6 @@ document.getElementById('processBtn').addEventListener('click', async () => {
         prevMap[u].lastFechaObj = r.fechaObj;
       }
     });
-
-    const currentUsers = new Set(curr.map(r => r.usuario));
 
     // construir lista agregada de usuarios que "dejaron de cargar"
     let droppedUsers = Object.keys(prevMap)
@@ -453,7 +452,7 @@ document.getElementById('processBtn').addEventListener('click', async () => {
       else turnos.TN.push(r);
     });
 
-    // ordenar por monto descendente
+    // ordenar por monto descendente dentro de cada turno
     Object.keys(turnos).forEach(k => turnos[k].sort((a, b) => b.monto - a.monto));
 
     // aplicar límite por turno
@@ -469,7 +468,7 @@ document.getElementById('processBtn').addEventListener('click', async () => {
     document.getElementById('summaryCount').textContent = `${totalCargas} registros · $${totalMonto.toLocaleString()}`;
     document.getElementById('summary').querySelector('.muted').textContent = `Usuarios únicos mes anterior: ${Object.keys(prevMap).length}`;
 
-    // render resultados (ahora usamos la propiedad 'apariciones' y el monto agregado)
+    // render resultados
     let html = '';
     for (const turno of ['TM', 'TT', 'TN']) {
       const datos = limited[turno];
@@ -478,36 +477,6 @@ document.getElementById('processBtn').addEventListener('click', async () => {
       html += `<table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Apariciones mes anterior</th></tr></thead><tbody>`;
       datos.forEach(r => {
         html += `<tr><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.usuario)}</td><td>$${(r.monto || 0).toFixed(2)}</td><td>${r.apariciones || 1}</td></tr>`;
-      });
-      html += `</tbody></table>`;
-    }
-    document.getElementById('results').innerHTML = html;
-    
-    // ordenar por monto descendente
-    Object.keys(turnos).forEach(k=> turnos[k].sort((a,b)=>b.monto - a.monto));
-
-    // aplicar límite por turno
-    const maxRows = parseInt(document.getElementById('maxRows').value,10) || 0;
-    const limited = {};
-    Object.keys(turnos).forEach(k => {
-      limited[k] = (maxRows>0) ? turnos[k].slice(0,maxRows) : turnos[k];
-    });
-
-    // resumen
-    const totalCargas = prev.length;
-    const totalMonto = prev.reduce((a,b)=>a+(b.monto||0),0);
-    document.getElementById('summaryCount').textContent = `${totalCargas} registros · $${totalMonto.toLocaleString()}`;
-    document.getElementById('summary').querySelector('.muted').textContent = `Usuarios únicos mes anterior: ${Object.keys(prevCount).length}`;
-
-    // render resultados
-    let html = '';
-    for (const turno of ['TM','TT','TN']) {
-      const datos = limited[turno];
-      html += `<h3 style="margin-top:16px;margin-bottom:8px;">Turno ${turno} (${turnos[turno].length} detectados, mostrando ${datos.length})</h3>`;
-      if (!datos.length) { html += `<div class="muted">Sin usuarios que dejaron de cargar en este turno.</div>`; continue; }
-      html += `<table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Apariciones mes anterior</th></tr></thead><tbody>`;
-      datos.forEach(r=>{
-        html += `<tr><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.usuario)}</td><td>$${(r.monto||0).toFixed(2)}</td><td>${prevCount[r.usuario]||1}</td></tr>`;
       });
       html += `</tbody></table>`;
     }
@@ -524,8 +493,8 @@ document.getElementById('processBtn').addEventListener('click', async () => {
 
 /* utilities */
 function escapeHtml(s) {
-  if (!s) return '';
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  if (!s && s !== 0) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 }
 </script>
 </body>
