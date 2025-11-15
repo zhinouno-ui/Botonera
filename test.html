@@ -1,502 +1,573 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Comparador AGENTE ⇄ CHUNIOR — Herramienta</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Comparador Agente ↔ Chunior — Herramienta</title>
 <style>
-  :root{
-    --bg:#071227; --card:#0b1722; --muted:#9fb6c7; --accent:#06b6d4; --ok:#2ecc71; --bad:#e04747;
-    --glass: rgba(255,255,255,0.03);
-    --text:#e6f7fb;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071020,#071827);color:var(--text);padding:18px;}
-  .wrap{max-width:1200px;margin:0 auto}
-  h1{margin:0 0 8px 0;font-size:20px}
-  .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 20px rgba(0,0,0,0.5)}
-  .row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  :root{--bg:#0b1220;--card:#0f1726;--muted:#9fb0c0;--accent:#06b6d4;--ok:#16a34a;--bad:#ef4444}
+  *{box-sizing:border-box;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+  body{margin:0;background:linear-gradient(180deg,#071020,#071827);color:#e6eef6;padding:20px}
+  .wrap{max-width:1100px;margin:0 auto}
+  h1{margin:0 0 12px 0;font-size:20px}
+  .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-  input[type=file]{background:var(--glass);padding:8px;border-radius:8px;border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
-  textarea{width:100%;min-height:140px;background:rgba(255,255,255,0.02);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.03);color:var(--text);resize:vertical}
-  .controls{display:flex;gap:8px;align-items:center}
-  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer}
-  .btn:active{transform:translateY(1px)}
-  .small{padding:8px 10px;font-size:13px}
-  .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
-  select{background:rgba(255,255,255,0.02);border-radius:8px;padding:8px;border:1px solid rgba(255,255,255,0.03);color:var(--text)}
-  .summary{display:flex;gap:12px;align-items:center;margin-top:12px;color:var(--muted);font-size:14px}
-  .table-wrap{margin-top:12px;max-height:520px;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03)}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.02);text-align:left;vertical-align:middle}
-  th{position:sticky;top:0;background:rgba(0,0,0,0.18);z-index:3;color:#dff6fb}
-  tr.ok td{background:rgba(46,204,113,0.04)}
-  tr.miss-agente td{background:rgba(224,71,71,0.04)}
-  tr.miss-chunior td{background:rgba(255,190,60,0.04)}
+  input[type=file], textarea, select, input[type=number]{
+    background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:inherit;padding:8px;border-radius:8px
+  }
+  .file-col{min-width:200px}
+  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+  .muted{color:var(--muted);font-size:13px}
+  textarea{width:100%;min-height:120px;resize:vertical}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;text-align:left;color:#dff6fb}
+  th{background:rgba(0,0,0,0.12);position:sticky;top:0}
+  .controls{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
   .badge{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted)}
-  .state-ok{color:var(--ok);font-weight:700}
-  .state-bad{color:var(--bad);font-weight:800}
-  .controls-vertical{display:flex;flex-direction:column;gap:8px}
-  .notes{margin-top:10px;color:var(--muted);font-size:13px}
-  @media (max-width:920px){ .row{flex-direction:column} .filters{flex-direction:column;align-items:stretch} }
+  .filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .ok{color:var(--ok);font-weight:800}
+  .bad{color:var(--bad);font-weight:800}
+  .summary{display:flex;gap:12px;justify-content:space-between;margin-top:10px;align-items:center}
+  .small{font-size:13px;color:var(--muted)}
+  .actions{display:flex;gap:8px;align-items:center}
+  @media (max-width:900px){ .row{flex-direction:column} table{font-size:12px} }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Comparador AGENTE ⇄ CHUNIOR</h1>
-  <div class="card">
-    <div class="row">
-      <div style="flex:1;min-width:280px">
-        <label>Cargar CSV(s) AGENTE (puedes seleccionar varios)</label>
-        <input id="agentFiles" type="file" accept=".csv" multiple />
-        <div class="notes">Formato esperado: CSV exportado por la plataforma. Se detecta Fecha (col 0), Cantidad (col 3) y Alias del jugador (col 6) cuando existe; si no, se intenta inferir.</div>
-      </div>
+  <div class="wrap">
+    <h1>Comparador Agente ↔ Chunior</h1>
+    <div class="card">
+      <div class="row">
+        <div class="file-col">
+          <label>Archivos Agente / Sub-agente (puedes seleccionar varios)</label>
+          <input id="inputAgentFiles" type="file" accept=".csv" multiple />
+          <div class="small muted">Formato soportado: distintos CSV de agente / sub-agente. Se detectan automáticamente.</div>
+        </div>
 
-      <div style="flex:1;min-width:300px">
-        <label>Pegar texto CHUNIOR (todo el día / turno, varias líneas)</label>
-        <textarea id="chuniorText" placeholder="Pega aquí las líneas copiadas de Chunior..."></textarea>
-        <div class="notes">Ejemplo de línea Chunior: <code>7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628</code></div>
-      </div>
-
-      <div style="width:220px">
-        <label>Acciones</label>
-        <div class="controls-vertical">
-          <button id="processBtn" class="btn small">Procesar y emparejar</button>
-          <button id="exportBtn" class="small btn" style="background:linear-gradient(90deg,#f59e0b,#f97316)">Exportar CSV</button>
-          <button id="copyExcelBtn" class="small btn" style="background:linear-gradient(90deg,#06b6d4,#3dd9f0)">Copiar para Excel</button>
+        <div style="flex:1">
+          <label>Pegar o cargar Chunior (texto) — si pegás, pega todo y luego "Parsear Chunior"</label>
+          <textarea id="chuniorText" placeholder="Pega aquí las líneas de chunior (cada movimiento en una fila) o arrastra un archivo de texto"></textarea>
+          <div class="controls">
+            <input id="chuniorFile" type="file" accept=".txt,.csv" />
+            <button id="btnParseChunior" class="btn">Parsear Chunior</button>
+            <button id="btnParseAgents" class="btn">Parsear Agentes</button>
+            <div style="margin-left:auto" class="muted small">Ejemplo chunior: <code>7048312	15-11-2025 07:50:02	agustinapc02	846 - BENITEZ 02	$ -10.000,00	karpe9427</code></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="filters">
-      <div class="badge">Detectados: <span id="countTotals">0 registros</span></div>
-      <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
-      <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
-      <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div>
-      <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div>
-      <div style="margin-left:auto" class="badge">Paired: <span id="countPaired">0</span> · Missing: <span id="countMissing">0</span></div>
-    </div>
+      <div class="filters">
+        <label>Operador:
+          <select id="filterOperator"><option value="">(todos)</option></select>
+        </label>
+        <label>Billetera:
+          <select id="filterWallet"><option value="">(todas)</option></select>
+        </label>
+        <label>Tipo:
+          <select id="filterType"><option value="both">Ambos</option><option value="in">Ingresos</option><option value="out">Egresos</option></select>
+        </label>
+        <label>Match:
+          <select id="filterMatch"><option value="all">Todos</option><option value="ok">Sólo OK</option><option value="missing">Sin Par</option><option value="diff">Con Diferencia</option></select>
+        </label>
 
-    <div id="tableContainer" class="table-wrap" aria-live="polite" style="margin-top:12px">
-      <table id="resultsTable" role="table">
-        <thead>
-          <tr>
-            <th style="min-width:70px">Turno</th>
-            <th style="min-width:120px">Agente hora</th>
-            <th>Agente usuario</th>
-            <th style="min-width:90px">Agente monto</th>
-            <th style="min-width:120px">Chunior hora</th>
-            <th>Chunior usuario</th>
-            <th style="min-width:90px">Chunior monto</th>
-            <th style="min-width:120px">Operador</th>
-            <th style="min-width:120px">Billetera</th>
-            <th style="min-width:80px">Estado</th>
-          </tr>
-        </thead>
-        <tbody id="resultsBody"></tbody>
-      </table>
-    </div>
+        <div style="margin-left:auto" class="actions">
+          <button id="btnMatch" class="btn">Ejecutar matching</button>
+          <button id="btnExportCSV" class="btn">Exportar CSV</button>
+          <button id="btnCopyForExcel" class="btn">Copiar (col A = usuario, col G = turno)</button>
+        </div>
+      </div>
 
-    <div class="summary" id="summaryBox" style="margin-top:12px">
-      <div class="badge">Registros AGENTE: <span id="totAgent">0</span></div>
-      <div class="badge">Registros CHUNIOR: <span id="totChunior">0</span></div>
-      <div class="badge">Emparejados: <span id="totPaired">0</span></div>
-    </div>
+      <div class="summary">
+        <div>
+          <div><strong id="totalsCount">0 movimientos</strong></div>
+          <div class="small">Agente: <span id="totalAgent">$0</span> · Chunior: <span id="totalChunior">$0</span> · Diferencia: <span id="totalDiff" class="bad">$0</span></div>
+        </div>
+        <div class="small">Detectados: Operadores <span id="detOps">-</span> · Billeteras <span id="detWallets">-</span></div>
+      </div>
 
-    <div class="notes" style="margin-top:12px">
-      • Matching exacto por <strong>usuario normalizado (minúsc)</strong> y <strong>monto</strong> — cualquier diferencia marca discrepancia.<br>
-      • Turnos: Mañana 06:00–14:00, Tarde 14:00–22:00, Noche 22:00–06:00.
+      <div id="resultsArea" style="margin-top:12px"></div>
     </div>
   </div>
-</div>
 
 <script>
-/* UTIL: lectura CSV robusta (returns array of lines without header if detected) */
-function readFileAsText(file){
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = e => res(String(e.target.result || ''));
-    r.onerror = rej;
-    r.readAsText(file, 'utf-8');
-  });
-}
-function splitLines(text){
-  return text.split(/\r?\n/).map(l => l.replace(/\uFEFF/g,'')).filter(l => l.trim() !== '');
-}
-/* parse CSV line with quotes */
+/* ======= Utilidades ======= */
+
 function parseCSVLine(line){
-  const out = [];
-  let cur = '', inQuotes=false;
-  for (let i=0;i<line.length;i++){
-    const ch = line[i];
-    if (ch === '"' ) {
-      if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; }
-      inQuotes = !inQuotes; continue;
-    }
-    if (ch === ',' && !inQuotes){ out.push(cur); cur=''; continue; }
+  const res=[]; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else { inQ=!inQ; } continue; }
+    if(ch===',' && !inQ){ res.push(cur); cur=''; continue; }
     cur += ch;
   }
-  out.push(cur);
-  return out;
+  res.push(cur);
+  return res;
 }
 
-/* CLEAN amount strings:
-   AGENT CSV likely "4000" or "4.000,00" or "4000.00" => normalize to Number (float)
-   CHUNIOR sample: "$ 3.000,00" => remove $, spaces, convert
-*/
-function parseAmountRaw(raw){
-  if(raw === null || raw === undefined) return 0;
+function normalizeUser(u){ if(!u && u!==0) return ''; return String(u).trim().toLowerCase(); }
+
+function parseAmount(raw){
+  if(raw===null||raw===undefined) return NaN;
   let s = String(raw).trim();
-  if(!s) return 0;
-  // remove currency signs
-  s = s.replace(/[^\d\-,\.]/g, '');
-  // detect patterns: if contains both '.' and ',' and ',' appears at end -> treat '.' thousands, ',' decimals
-  // else if contains '.' and no ',' -> assume '.' decimal (en-US)
-  // else if contains ',' and no '.' -> assume ',' decimal (arg style)
-  if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1){
-    // assume '.' thousands, ',' decimals -> remove dots, replace comma with dot
-    s = s.replace(/\./g, '').replace(/,/g, '.');
-  } else if (s.indexOf(',') !== -1 && s.indexOf('.') === -1){
-    // assume comma decimal
+  // Remove currency symbols and spaces
+  s = s.replace(/\u00A0/g,' ').replace(/\s+/g,' ');
+  s = s.replace(/\$/g,'').trim();
+  // Handle negatives sign either before or after $
+  // Remove dots as thousands separator, convert comma decimal to dot
+  // Example: "-10.000,00" => -10000
+  // Example: " -10.000,00" or "- 10.000,00" or "-10.000,00"
+  // Also handle formats like "10000" or "10.000"
+  // Remove non numeric except ., - and ,
+  s = s.replace(/[^0-9\-,\.]/g,'');
+  // Handle case "-10.000,00" or "-10.000" or "10.000,00"
+  const negative = (s.indexOf('-') !== -1);
+  s = s.replace(/-/g,'');
+  // If contains both . and , assume . thousands, , decimals
+  if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1){
     s = s.replace(/\./g,'').replace(/,/g,'.');
-  } else {
-    // pure digits or dot decimal
-    s = s.replace(/,/g,''); // remove stray commas
+  } else if(s.indexOf('.') !== -1 && s.indexOf(',') === -1){
+    // ambiguous: could be decimal or thousands. We'll assume '.' as thousands (since chunior uses '.' thousands)
+    s = s.replace(/\./g,'');
+  } else if(s.indexOf(',') !== -1){
+    // assume comma decimal
+    s = s.replace(/,/g,'.');
   }
-  const n = parseFloat(s);
-  return isNaN(n) ? 0 : n;
+  let num = parseFloat(s);
+  if(isNaN(num)) return NaN;
+  if(negative) num = -Math.abs(num);
+  return num;
 }
 
-/* parse agent CSV rows array (lines)
-   We attempt to detect header. Expected columns:
-   Fecha (0), Tipo?, Estado?, Cantidad (3), Balance, Alias agente, Alias jugador (6)
-*/
-function parseAgentLines(lines){
-  const rows = [];
-  let startIndex = 0;
-  // try detect header row that contains 'Fecha' or 'Cantidad' etc
-  if(lines.length === 0) return rows;
-  if (/fecha/i.test(lines[0]) || /cantidad/i.test(lines[0]) || /alias/i.test(lines[0])){
-    startIndex = 1;
+function parseDateTime(text){
+  if(!text) return null;
+  // Accept formats like "2025-11-10 13:48:38" or "10-11-2025 13:48:45"
+  const t = String(text).trim();
+  // ISO-like?
+  if(/^\d{4}-\d{2}-\d{2}/.test(t)) return new Date(t.replace(' ','T'));
+  // dd-mm-yyyy hh:mm:ss
+  const m = t.match(/^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
+  if(m){
+    const d = `${m[3]}-${m[2]}-${m[1]} ${m[4]}`; return new Date(d.replace(' ','T'));
   }
-  for (let i=startIndex;i<lines.length;i++){
-    const line = lines[i];
-    if(!line.trim()) continue;
-    const cols = parseCSVLine(line);
-    // obtain fecha
-    const fechaRaw = (cols[0]||'').trim();
-    let montoRaw = (cols[3] !== undefined ? cols[3] : cols[2] || '');
-    let usuarioRaw = (cols[6] || cols[5] || cols[4] || '').trim();
-    // if alias maybe in another col, fallback to last column
-    if(!usuarioRaw && cols.length>0) usuarioRaw = cols[cols.length-1].trim();
-    const monto = parseAmountRaw(montoRaw);
-    const usuario = usuarioRaw ? String(usuarioRaw).toLowerCase().trim() : '';
-    // parse fecha to Date object if possible
-    let fechaObj = null;
-    if(fechaRaw){
-      const attempt = new Date(fechaRaw.replace(' ', 'T'));
-      fechaObj = isNaN(attempt.getTime()) ? new Date(fechaRaw) : attempt;
-      if(isNaN(fechaObj.getTime())) fechaObj = null;
-    }
-    rows.push({ origen:'AGENT', fecha: fechaRaw, fechaObj, monto, usuario });
-  }
-  return rows;
+  // fallback
+  const d = new Date(t);
+  return isNaN(d.getTime()) ? null : d;
 }
 
-/* parse chunior pasted text.
-   Example line:
-   7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628
-   We split by tabs or 2+ spaces.
-*/
-function parseChuniorLines(lines){
-  const rows = [];
-  for (let raw of lines){
-    if(!raw.trim()) continue;
-    // split by tab or multiple spaces
-    let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean);
-    if(parts.length < 2){
-      parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
-    }
-    // If first token is numeric ID, drop it
-    if(parts.length >= 6 && /^\d+$/.test(parts[0])) parts.shift();
-    // Now expected: [date-time, operador, billetera-info, monto, usuario]
-    // Some variants: date-time may be split in two tokens like '10-11-2025' and '13:48:45'
-    if(parts.length >= 5 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
-      // merge
-      parts[0] = parts[0] + ' ' + parts[1];
-      parts.splice(1,1);
-    }
-    // now try to assign
-    let fechaRaw = parts[0] || '';
-    let operador = parts[1] || '';
-    let billeteraRaw = parts[2] || '';
-    let montoRaw = parts[3] || '';
-    let usuarioRaw = parts[4] || parts[parts.length-1] || '';
-    // clean billetera (e.g., '682 - LUNA' => 'LUNA')
-    let billetera = billeteraRaw.replace(/.*-\s*/,'').trim();
-    if(!billetera) billetera = billeteraRaw.trim();
-    const monto = parseAmountRaw(montoRaw);
-    const usuario = usuarioRaw ? String(usuarioRaw).toLowerCase().trim() : '';
-    // parse date
-    let fechaObj = null;
-    if(fechaRaw){
-      // try dd-mm-yyyy hh:mm:ss -> convert to yyyy-mm-ddThh:mm:ss
-      const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
-      if(m){
-        fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`);
-      } else {
-        const attempt = new Date(fechaRaw.replace(' ', 'T'));
-        fechaObj = isNaN(attempt.getTime()) ? null : attempt;
-      }
-    }
-    rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: operador.toLowerCase().trim(), billetera: billetera.toUpperCase().trim() });
-  }
-  return rows;
-}
-
-/* turno calculation */
-function getTurnoFromDate(d){
-  if(!d || isNaN(d.getTime())) return 'TN';
-  const h = d.getHours();
-  if(h >= 6 && h < 14) return 'TM';
-  if(h >= 14 && h < 22) return 'TT';
+function computeTurno(date){
+  if(!date) return 'TN';
+  const h = date.getHours();
+  if(h>=6 && h<14) return 'TM';
+  if(h>=14 && h<22) return 'TT';
   return 'TN';
 }
 
-/* MAIN processing */
-document.getElementById('processBtn').addEventListener('click', async ()=>{
-  const inputFiles = document.getElementById('agentFiles').files;
-  const chuniorText = document.getElementById('chuniorText').value || '';
-  const resultsBody = document.getElementById('resultsBody');
-  resultsBody.innerHTML = '';
-
-  // read all agent files
-  let agentLines = [];
-  if(inputFiles && inputFiles.length){
-    try{
-      for(const f of inputFiles){
-        const txt = await readFileAsText(f);
-        const lines = splitLines(txt);
-        agentLines = agentLines.concat(lines);
-      }
-    } catch(e){
-      alert('Error leyendo archivos: ' + (e && e.message ? e.message : e));
-      return;
-    }
-  }
-
-  // parse
-  const agentRows = parseAgentLines(agentLines);
-  const chuniorLines = splitLines(chuniorText);
-  const chuniorRows = parseChuniorLines(chuniorLines);
-
-  // enhance with turno
-  agentRows.forEach(r => {
-    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : 'TN';
-  });
-  chuniorRows.forEach(r => {
-    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : 'TN';
-  });
-
-  // matching exact: for each AGENT record find first unmatched CHUNIOR where usuario==usuario && monto==monto
-  const matchedChuniorIdx = new Set();
-  const pairs = [];
-  for (let i=0;i<agentRows.length;i++){
-    const a = agentRows[i];
-    let matchedIndex = -1;
-    for (let j=0;j<chuniorRows.length;j++){
-      if(matchedChuniorIdx.has(j)) continue;
-      const c = chuniorRows[j];
-      if(!a.usuario || !c.usuario) continue;
-      if(a.usuario === c.usuario && Math.abs((a.monto||0) - (c.monto||0)) === 0){
-        matchedIndex = j; break;
-      }
-    }
-    if(matchedIndex >= 0){
-      matchedChuniorIdx.add(matchedIndex);
-      pairs.push({ agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK' });
-    } else {
-      pairs.push({ agente: a, chunior: null, estado: 'MISSING_CHUNIOR' });
-    }
-  }
-  // any chunior left unmatched -> missing agent
-  for (let j=0;j<chuniorRows.length;j++){
-    if(!matchedChuniorIdx.has(j)){
-      pairs.push({ agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT' });
-    }
-  }
-
-  // populate filter selects: operadores / billeteras
-  const operadores = new Set(), billeteras = new Set();
-  chuniorRows.forEach(r => { if(r.operador) operadores.add(r.operador); if(r.billetera) billeteras.add(r.billetera); });
-
-  const opSel = document.getElementById('filterOperador');
-  opSel.innerHTML = '<option value="__ALL">Todos</option>';
-  Array.from(operadores).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; opSel.appendChild(opt); });
-  const biSel = document.getElementById('filterBilletera');
-  biSel.innerHTML = '<option value="__ALL">Todas</option>';
-  Array.from(billeteras).sort().forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; biSel.appendChild(opt); });
-
-  // store global arrays for filtering/export
-  window.__COMPARE_PAIRS = pairs;
-
-  // render
-  renderTable();
-  // update counts
-  document.getElementById('totAgent').textContent = agentRows.length;
-  document.getElementById('totChunior').textContent = chuniorRows.length;
-  document.getElementById('totPaired').textContent = pairs.filter(p=>p.estado==='OK').length;
-  document.getElementById('countTotals').textContent = `${pairs.length} filas (incluye unmatched)`;
-  document.getElementById('countPaired').textContent = pairs.filter(p=>p.estado==='OK').length;
-  document.getElementById('countMissing').textContent = pairs.filter(p=>p.estado !== 'OK').length;
-});
-
-/* render table with filters */
-function renderTable(){
-  const pairs = window.__COMPARE_PAIRS || [];
-  const tbody = document.getElementById('resultsBody');
-  tbody.innerHTML = '';
-  const opFilter = document.getElementById('filterOperador').value;
-  const biFilter = document.getElementById('filterBilletera').value;
-  const turnoFilter = document.getElementById('filterTurno').value;
-  const estadoFilter = document.getElementById('filterEstado').value;
-
-  let shown = 0;
-  for(const p of pairs){
-    const a = p.agente;
-    const c = p.chunior;
-    // apply filters: operador / billetera / turno / estado
-    if(opFilter !== '__ALL' && (!c || c.operador !== opFilter)) continue;
-    if(biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) continue;
-    if(turnoFilter !== '__ALL'){
-      const t = (a && a.turno) || (c && c.turno) || 'TN';
-      if(t !== turnoFilter) continue;
-    }
-    if(estadoFilter !== '__ALL' && p.estado !== estadoFilter) continue;
-
-    const tr = document.createElement('tr');
-    tr.className = p.estado === 'OK' ? 'ok' : (p.estado === 'MISSING_CHUNIOR' ? 'miss-chunior' : 'miss-agente');
-
-    const turno = (a && a.turno) || (c && c.turno) || '';
-    const agenteHora = a && a.fechaObj ? formatTime(a.fechaObj) : (a && a.fecha) || '';
-    const agenteUsuario = a && a.usuario ? a.usuario : '';
-    const agenteMonto = a ? (a.monto ? a.monto.toFixed(2) : '0.00') : '';
-    const chuniorHora = c && c.fechaObj ? formatTime(c.fechaObj) : (c && c.fecha) || '';
-    const chuniorUsuario = c && c.usuario ? c.usuario : '';
-    const chuniorMonto = c ? (c.monto ? c.monto.toFixed(2) : '0.00') : '';
-    const operador = c && c.operador ? c.operador : '';
-    const billetera = c && c.billetera ? c.billetera : '';
-
-    tr.innerHTML = `
-      <td>${turno}</td>
-      <td>${escapeHtml(agenteHora)}</td>
-      <td>${escapeHtml(agenteUsuario)}</td>
-      <td>$ ${agenteMonto}</td>
-      <td>${escapeHtml(chuniorHora)}</td>
-      <td>${escapeHtml(chuniorUsuario)}</td>
-      <td>$ ${chuniorMonto}</td>
-      <td>${escapeHtml(operador)}</td>
-      <td>${escapeHtml(billetera)}</td>
-      <td>${p.estado === 'OK' ? '<span class="state-ok">✔ OK</span>' : (p.estado === 'MISSING_CHUNIOR' ? '<span class="state-bad">❌ Falta CH</span>' : '<span class="state-bad">❌ Falta AG</span>')}</td>
-    `;
-    tbody.appendChild(tr);
-    shown++;
-  }
-  document.getElementById('countTotals').textContent = `${shown} filas visibles`;
+function fmtMoney(n){
+  if(isNaN(n)) return '$0';
+  return '$' + Number(n).toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 2});
 }
 
-/* helpers */
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-function formatTime(d){ if(!d) return ''; try{ return d.toLocaleString(); }catch(e){return '';} }
+/* ======= Lectura de archivos / parseo ======= */
 
-/* filters change */
-['filterOperador','filterBilletera','filterTurno','filterEstado'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', renderTable);
+let agentRecords = []; // {source, fechaStr, fechaObj, monto, usuario, tipo(in/out), raw}
+let chuniorRecords = []; // {lineIdx, fechaStr, fechaObj, operador, billetera, monto, usuario, tipo, raw}
+
+document.getElementById('chuniorFile').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const txt = await f.text(); document.getElementById('chuniorText').value = txt; showMsg('Archivo chunior cargado en textarea');
 });
 
-/* EXPORT CSV */
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const pairs = window.__COMPARE_PAIRS || [];
-  if(!pairs.length){ alert('No hay datos para exportar.'); return; }
-  // build CSV header
-  const headers = ['AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TURNO'];
-  const rows = [headers.join(',')];
-  for(const p of pairs){
-    const a = p.agente;
-    const c = p.chunior;
-    const agenteHora = a && a.fechaObj ? a.fechaObj.toISOString() : (a && csvSafe(a.fecha)) || '';
-    const agenteUsuario = a && a.usuario ? a.usuario : '';
-    const agenteMonto = a && a.monto ? a.monto.toFixed(2) : '';
-    const chuniorHora = c && c.fechaObj ? c.fechaObj.toISOString() : (c && csvSafe(c.fecha)) || '';
-    const chuniorUsuario = c && c.usuario ? c.usuario : '';
-    const chuniorMonto = c && c.monto ? c.monto.toFixed(2) : '';
-    const operador = c && c.operador ? c.operador : '';
-    const billetera = c && c.billetera ? c.billetera : '';
-    const estado = p.estado;
-    const turno = (a && a.turno) || (c && c.turno) || '';
-    const row = [csvSafe(agenteHora), csvSafe(agenteUsuario), csvSafe(agenteMonto), csvSafe(chuniorHora), csvSafe(chuniorUsuario), csvSafe(chuniorMonto), csvSafe(operador), csvSafe(billetera), csvSafe(estado), csvSafe(turno)].join(',');
+document.getElementById('btnParseAgents').addEventListener('click', ()=> parseAgentFiles());
+document.getElementById('btnParseChunior').addEventListener('click', ()=> parseChuniorFromTextarea());
+
+document.getElementById('inputAgentFiles').addEventListener('change', ()=> { /* leave for manual parse button */ });
+
+async function parseAgentFiles(){
+  agentRecords = [];
+  const files = Array.from(document.getElementById('inputAgentFiles').files || []);
+  if(files.length===0){ alert('Seleccioná al menos un archivo de agente/sub-agente'); return; }
+  for(const f of files){
+    const txt = await f.text();
+    parseAgentText(txt, f.name);
+  }
+  showMsg(`Parsed ${agentRecords.length} movimientos desde ${files.length} archivos de agente.`);
+  renderSummaryDetectors();
+}
+
+function parseAgentText(text, sourceName){
+  // split lines, remove leading "sep=" or headers
+  const lines = text.split(/\r?\n/).map(l=>l.replace(/\uFEFF/g,'')).filter(l=>l.trim() !== '');
+  // drop leading lines until we find a line with a date-like thing
+  let start=0;
+  while(start<lines.length && !/^\d{4}[-/]\d{2}[-/]\d{2}|^\d{4}-\d{2}-\d{2}|^Fecha/i.test(lines[start]) && start<3) start++;
+  // If first line contains "sep=" drop it
+  const cleaned = lines.filter(l=>!/^sep=/i.test(l));
+  // detect header row by presence of "Fecha" or "Cantidad"
+  let idx0 = 0;
+  if(/Fecha/i.test(cleaned[0]) && /Cantidad/i.test(cleaned[0])) idx0=1;
+  for(let i=idx0;i<cleaned.length;i++){
+    const line = cleaned[i].trim();
+    if(!line) continue;
+    const cols = parseCSVLine(line);
+    // Possible formats:
+    // AGENTE: Fecha,Estado,Cantidad,Tipo,Alias,Balance
+    // SUBAGENTE: Fecha,Tipo,Estado,Cantidad,Balance,Alias del agente,Alias del jugador
+    let fecha = cols[0] || '';
+    let montoRaw='';
+    let usuario='';
+    if(cols.length >= 6 && (cols[5] || cols[4])) {
+      // try to detect: if header has "Alias del jugador" or last col looks like user
+      if(cols.length>=7){
+        // subagente likely
+        montoRaw = cols[3];
+        usuario = cols[6] || cols[5] || '';
+      } else {
+        // agent possible
+        // try to detect by checking if second col is number-like or not
+        // We'll attempt both fallbacks
+        if(!isNaN(parseAmount(cols[2])) && cols[4] && !/\d{4}/.test(cols[4])){
+          // agent format maybe Date,Estado,Cantidad,Tipo,Alias,Balance but columns shift sometimes
+          montoRaw = cols[2];
+          usuario = cols[4] || cols[5] || '';
+        } else {
+          // fallback: assume Fecha,Estado,Cantidad,Tipo,Alias,Balance
+          montoRaw = cols[2] || cols[3] || '';
+          usuario = cols[4] || cols[5] || cols[6] || '';
+        }
+      }
+    } else {
+      // fallback: try pick any column that looks like amount and any that looks like username
+      montoRaw = cols.find(c => /[\d\.\,]/.test(c) && /[0-9]/.test(c)) || '';
+      usuario = cols[cols.length-1] || '';
+    }
+    const monto = parseAmount(montoRaw);
+    const fechaObj = parseDateTime(fecha);
+    const usuarioN = normalizeUser(usuario);
+    if(!usuarioN) continue;
+    const tipo = (monto < 0) ? 'out' : 'in';
+    agentRecords.push({ source: sourceName, fechaStr: fecha, fechaObj, monto, usuario: usuarioN, tipo, raw: line });
+  }
+}
+
+/* Parse chunior content from textarea */
+function parseChuniorFromTextarea(){
+  chuniorRecords = [];
+  const raw = document.getElementById('chuniorText').value || '';
+  if(!raw.trim()){ alert('Pega o carga el texto de chunior primero.'); return; }
+  const lines = raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l !== '');
+  for(let i=0;i<lines.length;i++){
+    const line = lines[i];
+    // chunior format: maybe tab separated or multiple spaces. First col ID optional.
+    // We'll split by tabs first, else by 2+ spaces.
+    let parts = line.split(/\t+/).map(p=>p.trim()).filter(p=>p!=='');
+    if(parts.length < 5){
+      parts = line.split(/\s{2,}/).map(p=>p.trim()).filter(p=>p!=='');
+    }
+    if(parts.length < 5){
+      // as fallback, split by space and try to reconstruct date/time
+      parts = line.split(/\s+/).filter(p=>p!=='');
+    }
+    // Typical chunk positions expected: [id, date time, operador, billetera, $ monto, usuario]
+    // Or: [date time, operador, billetera, $ monto, usuario]
+    let idx = 0;
+    if(parts.length >= 6 && /^\d+$/.test(parts[0])) idx = 1; // skip id
+    // Now parts[idx] should contain date/time maybe combined
+    let fechaPart = parts[idx] || '';
+    // If date and time were split we may need to combine
+    if(parts[idx+1] && /^\d{2}:\d{2}:\d{2}$/.test(parts[idx+1])) {
+      fechaPart = `${parts[idx]} ${parts[idx+1]}`;
+      idx++;
+    }
+    const operador = parts[idx+1] || '';
+    const billetera = parts[idx+2] || parts[idx+1] || '';
+    const montoRaw = parts[idx+3] || '';
+    const usuario = parts[idx+4] || parts[parts.length-1] || '';
+    const monto = parseAmount(montoRaw || parts[parts.length-2] || '');
+    const fechaObj = parseDateTime(fechaPart);
+    const usuarioN = normalizeUser(usuario);
+    if(!usuarioN) continue;
+    const tipo = (monto < 0) ? 'out' : 'in';
+    // tidy billetera: extract name after '-' if present
+    let billeteraName = String(billetera).trim();
+    const dash = billeteraName.indexOf('-');
+    if(dash !== -1){
+      billeteraName = billeteraName.slice(dash+1).trim();
+    }
+    chuniorRecords.push({ lineIdx: i, fechaStr: fechaPart, fechaObj, operador: operador.toLowerCase(), billetera: billeteraName, monto, usuario: usuarioN, tipo, raw: line });
+  }
+  showMsg(`Parsed ${chuniorRecords.length} movimientos desde chunior.`);
+  renderSummaryDetectors();
+}
+
+/* ======= Matching ======= */
+
+let matchResults = []; // array of { agent: record|null, chunior: record|null, status: 'ok'|'missingAgent'|'missingChunior'|'diff' }
+
+function runMatching(){
+  matchResults = [];
+  // copy arrays
+  const agents = agentRecords.map((a,i)=> ({...a, _i:i, matched:false}) ).sort((a,b)=>( (a.fechaObj||new Date(0)) - (b.fechaObj||new Date(0)) ));
+  const chs = chuniorRecords.map((c,i)=> ({...c, _i:i, matched:false}) ).sort((a,b)=>( (a.fechaObj||new Date(0)) - (b.fechaObj||new Date(0)) ));
+
+  // greedy match: for each agent record, try find the earliest chunior record with same user and same amount
+  for(const a of agents){
+    let foundIndex = -1;
+    for(let j=0;j<chs.length;j++){
+      const c = chs[j];
+      if(c.matched) continue;
+      if(a.usuario === c.usuario && Number(a.monto) === Number(c.monto)){
+        foundIndex = j; break;
+      }
+    }
+    if(foundIndex !== -1){
+      const c = chs[foundIndex];
+      a.matched = true; c.matched = true;
+      matchResults.push({ agent: a, chunior: c, status: 'ok' });
+    } else {
+      // try to find same user but different amount -> discrepancy
+      let foundIndex2 = -1;
+      for(let j=0;j<chs.length;j++){
+        const c = chs[j];
+        if(c.matched) continue;
+        if(a.usuario === c.usuario){
+          foundIndex2 = j; break;
+        }
+      }
+      if(foundIndex2 !== -1){
+        const c = chs[foundIndex2];
+        a.matched = true; c.matched = true;
+        matchResults.push({ agent: a, chunior: c, status: 'diff' });
+      } else {
+        // agent only
+        a.matched = true;
+        matchResults.push({ agent: a, chunior: null, status: 'missingChunior' });
+      }
+    }
+  }
+
+  // any chunior left unmatched -> missingAgent
+  for(const c of chs){
+    if(!c.matched){
+      matchResults.push({ agent: null, chunior: c, status: 'missingAgent' });
+    }
+  }
+
+  // compute totals
+  const totalAgent = agentRecords.reduce((s,r)=> s + (isNaN(r.monto)?0:r.monto), 0);
+  const totalChunior = chuniorRecords.reduce((s,r)=> s + (isNaN(r.monto)?0:r.monto), 0);
+  document.getElementById('totalAgent').textContent = fmtMoney(totalAgent);
+  document.getElementById('totalChunior').textContent = fmtMoney(totalChunior);
+  const diff = (totalAgent - totalChunior);
+  const diffEl = document.getElementById('totalDiff'); diffEl.textContent = fmtMoney(diff);
+  diffEl.className = (Math.abs(diff) < 0.001) ? 'small' : 'bad';
+  document.getElementById('totalsCount').textContent = `${matchResults.length} filas comparadas`;
+
+  renderResults();
+}
+
+/* ======= Render / filters ======= */
+
+function renderSummaryDetectors(){
+  const ops = new Set(chuniorRecords.map(c=>c.operador).filter(Boolean));
+  const wallets = new Set(chuniorRecords.map(c=>c.billetera).filter(Boolean));
+  const opSel = document.getElementById('filterOperator');
+  const walSel = document.getElementById('filterWallet');
+  // reset
+  opSel.innerHTML = '<option value="">(todos)</option>';
+  walSel.innerHTML = '<option value="">(todas)</option>';
+  ops.forEach(o=> {
+    const opt = document.createElement('option'); opt.value=o; opt.textContent=o; opSel.appendChild(opt);
+  });
+  wallets.forEach(w=> {
+    const opt = document.createElement('option'); opt.value=w; opt.textContent=w; walSel.appendChild(opt);
+  });
+  document.getElementById('detOps').textContent = ops.size || '-';
+  document.getElementById('detWallets').textContent = wallets.size || '-';
+}
+
+function renderResults(){
+  const container = document.getElementById('resultsArea');
+  const opFilter = document.getElementById('filterOperator').value;
+  const walFilter = document.getElementById('filterWallet').value;
+  const typeFilter = document.getElementById('filterType').value;
+  const matchFilter = document.getElementById('filterMatch').value;
+
+  let rows = matchResults.slice();
+
+  rows = rows.filter(row=>{
+    // operator/billetera filter -> if chunior present, check; if not present but agent present, pass (since operator only in chunior)
+    if(opFilter){
+      if(row.chunior && row.chunior.operador !== opFilter) return false;
+      if(!row.chunior) return false;
+    }
+    if(walFilter){
+      if(row.chunior && row.chunior.billetera !== walFilter) return false;
+      if(!row.chunior) return false;
+    }
+    if(typeFilter !== 'both'){
+      // check type: if agent present use its type, else use chunior
+      const t = (row.agent ? row.agent.tipo : (row.chunior ? row.chunior.tipo : 'in'));
+      if(typeFilter === 'in' && t !== 'in') return false;
+      if(typeFilter === 'out' && t !== 'out') return false;
+    }
+    if(matchFilter !== 'all'){
+      if(matchFilter === 'ok' && row.status !== 'ok') return false;
+      if(matchFilter === 'missing' && !(row.status === 'missingAgent' || row.status === 'missingChunior')) return false;
+      if(matchFilter === 'diff' && row.status !== 'diff') return false;
+    }
+    return true;
+  });
+
+  // build HTML table
+  let html = `<table><thead><tr>
+    <th>Agente Fecha</th><th>Agente Usuario</th><th>Agente Monto</th>
+    <th>Chunior Fecha</th><th>Chunior Usuario</th><th>Chunior Monto</th>
+    <th>Operador</th><th>Billetera</th><th>Estado</th>
+    </tr></thead><tbody>`;
+
+  for(const r of rows){
+    const a = r.agent, c = r.chunior;
+    const aDate = a && a.fechaStr ? escapeHtml(a.fechaStr) : '';
+    const aUser = a && a.usuario ? escapeHtml(a.usuario) : '';
+    const aMonto = a && !isNaN(a.monto) ? fmtMoney(a.monto) : '';
+    const cDate = c && c.fechaStr ? escapeHtml(c.fechaStr) : '';
+    const cUser = c && c.usuario ? escapeHtml(c.usuario) : '';
+    const cMonto = c && !isNaN(c.monto) ? fmtMoney(c.monto) : '';
+    const operador = c && c.operador ? escapeHtml(c.operador) : '';
+    const billetera = c && c.billetera ? escapeHtml(c.billetera) : '';
+
+    let estadoLabel = '';
+    if(r.status === 'ok') estadoLabel = `<span class="ok">✔️ OK</span>`;
+    else if(r.status === 'diff') estadoLabel = `<span class="bad">⚠️ Diferencia</span>`;
+    else if(r.status === 'missingChunior') estadoLabel = `<span class="bad">❌ Falta en Chunior</span>`;
+    else if(r.status === 'missingAgent') estadoLabel = `<span class="bad">❌ Falta en Agente</span>`;
+    html += `<tr>
+      <td>${aDate}</td><td>${aUser}</td><td>${aMonto}</td>
+      <td>${cDate}</td><td>${cUser}</td><td>${cMonto}</td>
+      <td>${operador}</td><td>${billetera}</td><td>${estadoLabel}</td>
+      </tr>`;
+  }
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+/* ======= Export / Copy ======= */
+
+function escapeCsvField(s){
+  if(s === null || s === undefined) return '';
+  const str = String(s);
+  if(str.indexOf('"') !== -1 || str.indexOf(',') !== -1 || str.indexOf('\n') !== -1){
+    return `"${str.replace(/"/g,'""')}"`;
+  }
+  return str;
+}
+
+document.getElementById('btnExportCSV').addEventListener('click', ()=>{
+  if(matchResults.length===0) { alert('Ejecutá el matching primero.'); return; }
+  // header:
+  const header = ['AGENTE_FECHA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_FECHA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO'];
+  const rows = [header.join(',')];
+  for(const r of matchResults){
+    const a = r.agent, c = r.chunior;
+    const row = [
+      a ? a.fechaStr : '',
+      a ? a.usuario : '',
+      a ? a.monto : '',
+      c ? c.fechaStr : '',
+      c ? c.usuario : '',
+      c ? c.monto : '',
+      c ? c.operador : '',
+      c ? c.billetera : '',
+      r.status
+    ].map(escapeCsvField).join(',');
     rows.push(row);
   }
-  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([rows.join('\r\n')], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  const a = document.createElement('a'); a.href = url; a.download = 'comparacion_agente_chunior.csv'; document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
+  showMsg('CSV exportado');
 });
 
-function csvSafe(v){
-  if(v === null || v === undefined) return '';
-  let s = String(v).replace(/"/g,'""');
-  if(s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) s = `"${s}"`;
-  return s;
-}
-
-/* Copy for Excel: builds simple two-column-ish paste with AGENTE user in col A and TURNO in col G? 
-   The user requested earlier a specialized copy — here we copy rows as TSV so you can paste into Sheets nicely.
-   We'll export columns: AGENTE_USUARIO (col A), AGENTE_HORA (col B), AGENTE_MONTO (col C), TURNO (col D), CHUNIOR_USUARIO (col E), CHUNIOR_MONTO (col F), OPERADOR (col G), BILLETERA (col H), ESTADO (col I)
-*/
-document.getElementById('copyExcelBtn').addEventListener('click', async ()=>{
-  const pairs = window.__COMPARE_PAIRS || [];
-  if(!pairs.length){ alert('No hay datos para copiar'); return; }
+document.getElementById('btnCopyForExcel').addEventListener('click', ()=>{
+  // We will copy rows so that AGENTE_USUARIO ends up in column A and TURNO ends up in column G (7th col).
+  // To do that we create comma-separated values with empty fields between A and G: "user,,,,,,turno"
+  if(matchResults.length===0){ alert('Ejecutá el matching primero.'); return; }
   const lines = [];
-  // header
-  lines.push(['AGENTE_USUARIO','AGENTE_HORA','AGENTE_MONTO','TURNO','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO'].join('\t'));
-  for(const p of pairs){
-    const a = p.agente, c = p.chunior;
-    const agenteUsuario = a && a.usuario ? a.usuario : '';
-    const agenteHora = a && a.fechaObj ? a.fechaObj.toLocaleString() : (a && a.fecha) || '';
-    const agenteMonto = a && a.monto ? a.monto.toFixed(2) : '';
-    const turno = (a && a.turno) || (c && c.turno) || '';
-    const chuniorUsuario = c && c.usuario ? c.usuario : '';
-    const chuniorMonto = c && c.monto ? c.monto.toFixed(2) : '';
-    const operador = c && c.operador ? c.operador : '';
-    const billetera = c && c.billetera ? c.billetera : '';
-    const estado = p.estado;
-    const row = [agenteUsuario, agenteHora, agenteMonto, turno, chuniorUsuario, chuniorMonto, operador, billetera, estado].join('\t');
+  for(const r of matchResults){
+    // choose record to take usuario and date from agent if available otherwise chunior
+    const a = r.agent, c = r.chunior;
+    const usuario = a ? a.usuario : (c ? c.usuario : '');
+    const fecha = a ? a.fechaObj : (c ? c.fechaObj : null);
+    const turno = computeTurno(fecha);
+    // create a CSV-like line with 7 columns where col A = usuario, col G = turno
+    // That means: usuario, "", "", "", "", "", turno
+    const row = [usuario,'','','','','',turno].map(escapeCsvField).join(',');
     lines.push(row);
   }
-  const tsv = lines.join('\n');
-  try{
-    await navigator.clipboard.writeText(tsv);
-    alert('Copiado al portapapeles como TSV — pegalo en Google Sheets (Archivo > Pegar)');
-  }catch(e){
-    // fallback
-    const ta = document.createElement('textarea');
-    ta.value = tsv;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-    alert('Copiado (fallback). Pega en Sheets.');
+  const text = lines.join('\r\n');
+  navigator.clipboard.writeText(text).then(()=> showMsg('Copiado listo — pegá en Google Sheets (col A = usuario, col G = turno)'));
+});
+
+/* ======= Helpers & UI ======= */
+
+function showMsg(m){
+  // small ephemeral area: use console and toast
+  console.log(m);
+  const toast = document.getElementById('__simple_toast__');
+  if(!toast){
+    const t = document.createElement('div');
+    t.id='__simple_toast__';
+    t.style.position='fixed'; t.style.right='18px'; t.style.bottom='18px';
+    t.style.background='linear-gradient(90deg,#052b32,#073644)'; t.style.color='#dffefe';
+    t.style.padding='10px 12px'; t.style.borderRadius='8px'; t.style.zIndex=9999; t.style.boxShadow='0 10px 30px rgba(2,8,17,0.7)';
+    document.body.appendChild(t);
+  }
+  const el = document.getElementById('__simple_toast__'); el.textContent = m; el.style.opacity = 1;
+  setTimeout(()=> el.style.opacity = 0, 1800);
+}
+
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+/* ======= Entradas rápidas: si arrastran archivo de chunior al textarea, autoparse ====== */
+const chuniorText = document.getElementById('chuniorText');
+chuniorText.addEventListener('paste', (e)=> {
+  // allow paste but not auto parse here
+});
+document.getElementById('inputAgentFiles').addEventListener('drop', (e)=>{
+  // nothing special
+});
+/* Drag & drop for chunior file into textarea */
+document.getElementById('chuniorText').addEventListener('drop', async (e)=>{
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if(f){
+    const txt = await f.text();
+    chuniorText.value = txt;
+    parseChuniorFromTextarea();
   }
 });
 
-/* small utility: re-render when stored pairs updated (if needed) */
-window.reRenderCompare = renderTable;
+/* File -> parse agents on file selection if the user didn't click button */
+document.getElementById('inputAgentFiles').addEventListener('change', ()=> {
+  if(confirm('¿Parsear ahora los archivos de agente seleccionados? (si cancelás deberás presionar "Parsear Agentes" manualmente)')){
+    parseAgentFiles();
+  }
+});
+
+/* Allow pressing "Ejecutar matching" quickly */
+document.getElementById('btnMatch').addEventListener('click', ()=> {
+  if(agentRecords.length===0 && chuniorRecords.length===0){ alert('Parseá agentes y chunior antes de ejecutar matching'); return; }
+  runMatching();
+});
+
+/* keyboard shortcuts: Ctrl+M -> match */
+document.addEventListener('keydown', (e)=> { if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='m'){ e.preventDefault(); runMatching(); } });
+
+/* initial sample placeholders (optional) */
+// nothing
+
 </script>
 </body>
 </html>
