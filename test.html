@@ -3,383 +3,399 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Reconciliador Agente ⇄ Chunior</title>
+<title>Reconciliador Analítico — AGENTE ⇄ CHUNIOR</title>
 <style>
-  body{font-family:Arial,Helvetica,sans-serif;background:#0f1724;color:#e6eef6;padding:18px}
-  .card{background:#0b1220;padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);max-width:1100px;margin:10px auto}
-  textarea,input[type=file]{width:100%;box-sizing:border-box;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:#0d1620;color:inherit}
-  .row{display:flex;gap:12px}
-  .col{flex:1}
-  button{background:#06b6d4;color:#042a31;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
-  table{width:100%;border-collapse:collapse;margin-top:10px}
-  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
-  .muted{color:#9aa9b6;font-size:13px}
-  .small{font-size:13px}
+  :root{--bg:#0b1220;--card:#08101a;--accent:#00c2a8;--muted:#9fb0bd;--ok:#2ecc71;--bad:#ff6b6b}
+  body{background:var(--bg);color:#e6eef6;font-family:Inter,Arial,Helvetica,sans-serif;margin:0;padding:22px}
+  .container{max-width:1200px;margin:0 auto}
+  h1{margin:0 0 10px;font-size:18px}
+  .card{background:linear-gradient(180deg,#071022,#07121a);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  .row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .col{flex:1;min-width:260px}
+  input[type=file], textarea{width:100%;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:inherit}
+  textarea{min-height:140px;resize:vertical}
+  button{background:linear-gradient(90deg,var(--accent),#00a88a);color:#021414;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+  .muted{color:var(--muted);font-size:13px}
   .controls{display:flex;gap:8px;align-items:center;margin-top:8px}
-  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700}
-  .ok{color:#2ecc71}
-  .bad{color:#ff6b6b}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+  th{background:rgba(255,255,255,0.02);position:sticky;top:0}
+  .ok{color:var(--ok);font-weight:700}
+  .bad{color:var(--bad);font-weight:700}
+  .summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+  .pill{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;font-weight:700}
+  .filters{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  @media(max-width:900px){ .row{flex-direction:column} }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Reconciliador: Plataforma (AGENTE) ⇄ Anotaciones (CHUNIOR)</h2>
-    <div class="muted small">Subí el CSV de la plataforma y pegá las anotaciones (todo el texto). La herramienta intentará normalizar y reconciliar automáticamente.</div>
+  <div class="container">
+    <div class="card">
+      <h1>Reconciliador Analítico — AGENTE ⇄ CHUNIOR</h1>
+      <div class="muted">Sube uno o varios CSV de AGENTE (descargas por turno), pega el contenido de CHUNIOR (texto) y presiona "Procesar".</div>
 
-    <div style="margin-top:12px" class="row">
-      <div class="col">
-        <label><strong>1) CSV Plataforma (AGENTE) — subir archivo</strong></label>
-        <input id="fileAgent" type="file" accept=".csv"/>
-        <div class="muted small">Formato esperable: columna con usuario y columna con monto. El parser intenta adivinar.</div>
-      </div>
-      <div class="col">
-        <label><strong>2) Pegar Anotaciones (CHUNIOR)</strong></label>
-        <textarea id="txtChunior" rows="8" placeholder="Pega aquí todo el texto de anotaciones (ej: rosi/500 o rosi - 500)"></textarea>
-        <div class="controls">
-          <label class="muted small">Separador por línea</label>
-          <button id="btnParse">Parsear & Comparar</button>
+      <div class="row" style="margin-top:12px">
+        <div class="col">
+          <label class="muted">1) Subir CSV(s) AGENTE (puedes seleccionar varios archivos)</label><br>
+          <input id="filesAgent" type="file" accept=".csv" multiple />
+          <div class="muted" style="margin-top:6px">Formato esperado (ejemplo): Fecha,Tipo,Estado,Cantidad,Balance,Alias del agente,Alias del jugador</div>
+        </div>
+
+        <div class="col">
+          <label class="muted">2) Pegar texto CHUNIOR</label><br>
+          <textarea id="txtChunior" placeholder="Pega aquí todas las líneas copiadas de CHUNIOR (una línea por movimiento)"></textarea>
+          <div class="controls">
+            <label class="muted">Ventana tiempo (s)</label>
+            <input id="timeWindow" type="number" value="90" min="5" style="width:84px;padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)"/>
+            <button id="btnProcess">Procesar</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="actions">
-      <button id="btnExportCSV">Exportar coincidencias (CSV)</button>
-      <button id="btnExportUnmatched">Exportar NO coincidencias</button>
-      <button id="btnCopyForExcel">Copiar A↦G (formato Excel A/G)</button>
-      <div class="pill" id="stats">Sin procesar</div>
-    </div>
+      <div class="summary" id="summaryArea" style="margin-top:12px">
+        <div class="pill" id="statTotals">Sin procesar</div>
+        <div class="pill" id="statMatches">—</div>
+        <div class="pill" id="statUnmatched">—</div>
+        <div style="margin-left:auto" class="muted">Exportar: <button id="btnExportCSV" style="margin-left:8px">CSV</button></div>
+      </div>
 
-    <div id="resultado" style="margin-top:12px"></div>
+      <div class="filters" style="margin-top:10px">
+        <label class="muted">Mostrar</label>
+        <select id="viewMode">
+          <option value="all">Todo (cronológico)</option>
+          <option value="matched">Solo ✔</option>
+          <option value="unmatched">Solo ❌</option>
+        </select>
+        <label class="muted">Filtro usuario (texto)</label>
+        <input id="filterUser" type="text" placeholder="ej: jossee" style="padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)"/>
+        <button id="btnApplyFilter">Aplicar</button>
+      </div>
+
+      <div id="tableWrap" style="margin-top:12px;overflow:auto;max-height:560px">
+        <!-- tabla generada -->
+      </div>
+
+    </div>
   </div>
 
 <script>
-/* ---------- UTIL: normalización de numeros y usuarios ---------- */
+/* ---------- utilidades ---------- */
 function normalizeUser(u){
   if(!u) return '';
-  return String(u).trim().toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\-\s\.\/]/g,'').replace(/\s+/g,' ');
+  return String(u).trim().toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\-\s\.]/g,'').replace(/\s+/g,' ');
 }
-
-function normalizeNumber(str){
-  if(str === null || str === undefined) return NaN;
-  let s = String(str).trim();
-  if(s === '') return NaN;
-  // detect negative in parentheses
-  const paren = /^\((.*)\)$/.exec(s);
-  if(paren) s = '-' + paren[1];
-
-  // remove currency letters and spaces at start/end
-  s = s.replace(/[^\d,.\-\s]/g,'').trim();
-
-  // heuristics: if comma is decimal (has digits after comma and dot as thousand)
-  // count occurrences
-  const dots = (s.match(/\./g)||[]).length;
-  const commas = (s.match(/,/g)||[]).length;
-
+function normalizeNumber(s){
+  if(s==null) return NaN;
+  let str = String(s).trim();
+  if(str==='') return NaN;
+  const par = /^\((.*)\)$/.exec(str);
+  if(par) str = '-' + par[1];
+  str = str.replace(/\$/g,'').replace(/ARS/gi,'').trim();
+  const dots = (str.match(/\./g)||[]).length;
+  const commas = (str.match(/,/g)||[]).length;
   if(dots && commas){
-    // likely dots are thousands and comma decimal => remove dots, replace comma with dot
-    s = s.replace(/\./g,'').replace(/,/g,'.');
+    str = str.replace(/\./g,'').replace(/,/g,'.');
   } else if(commas && !dots){
-    // ambiguous: could be "1,234" (thousands) or "1234,56" (decimal)
-    // if comma followed by 3 digits and no other commas -> assume thousands
-    if(commas === 1 && /,\d{3}$/.test(s)) {
-      s = s.replace(/,/g,''); // thousands
-    } else {
-      s = s.replace(/,/g,'.'); // decimal
-    }
-  } else {
-    // keep dots (could be decimal) — nothing to change
+    if(commas === 1 && /,\d{3}$/.test(str)) str = str.replace(/,/g,'');
+    else str = str.replace(/,/g,'.');
   }
-
-  // remove spaces
-  s = s.replace(/\s+/g,'');
-
-  // final cleanup: only digits, minus, dot
-  s = s.replace(/[^0-9\-\.\+]/g,'');
-
-  const n = parseFloat(s);
-  return isNaN(n) ? NaN : n;
+  str = str.replace(/\s+/g,'').replace(/[^\d\-\.\+]/g,'');
+  const n = parseFloat(str);
+  return isNaN(n)?NaN:n;
 }
-
-/* ---------- PARSER CSV simple (devuelve array de {usuario,monto,fecha,...}) ---------- */
-function parseCSV(text){
-  const lines = text.split(/\r?\n/).map(l=>l.replace(/\uFEFF/g,'')).filter(l=>l.trim()!='');
-  if(lines.length === 0) return [];
-  // try to detect separator by header
-  const sep = lines[0].includes(';') ? ';' : ',';
-  let startRow = 0;
-  // check if header present: contains 'usuario' or 'alias' or 'monto' words
-  const header = lines[0].toLowerCase();
-  if(/usuario|alias|nick|monto|cantidad|importe|fecha/.test(header)) startRow=1;
-  const rows = [];
-  for(let i=startRow;i<lines.length;i++){
-    const cols = splitCSVLine(lines[i], sep);
-    // heuristics: find column with most numeric-looking values (monto)
-    rows.push(cols);
-  }
-  // try to find user and amount columns by scanning first 10 rows
-  const sample = rows.slice(0, Math.min(12, rows.length));
-  let userCol = null, amountCol = null;
-  const colCount = rows[0] ? rows[0].length : 0;
-  for(let c=0;c<colCount;c++){
-    let numericCount = 0, textCount = 0;
-    for(const r of sample){
-      const v = (r[c]||'').trim();
-      if(v==='') continue;
-      if(/^[\d\$\.\,\-\(\)\s]+$/.test(v)) numericCount++; else textCount++;
-    }
-    if(numericCount > textCount && numericCount >= 1 && amountCol===null) amountCol = c;
-    if(textCount >= 1 && userCol===null) userCol = c;
-  }
-  // fallback guesses
-  if(userCol === null){
-    userCol = 0;
-  }
-  if(amountCol === null){
-    amountCol = Math.max(1, Math.min(2, colCount-1));
-  }
-
-  // build objects
-  const out = [];
-  for(const cols of rows){
-    const rawUser = (cols[userCol] || '').trim();
-    const rawAmt = (cols[amountCol] || '').trim();
-    const user = normalizeUser(rawUser);
-    const monto = normalizeNumber(rawAmt);
-    out.push({ rawUser: rawUser, usuario: user, monto: monto, rawCols: cols });
-  }
-  return out;
+function parseCSVLines(text){
+  const raw = String(text||'').replace(/\uFEFF/g,'').split(/\r?\n/).map(r=>r.trim()).filter(r=>r!=='');
+  // remove lines starting with sep= or header if present
+  const filtered = raw.filter(l=>!l.toLowerCase().startsWith('sep='));
+  // if first line contains header keywords, drop it
+  if(filtered.length>0 && /fecha|tipo|cantidad|alias/i.test(filtered[0])) filtered.shift();
+  return filtered;
 }
-
-function splitCSVLine(line, sep=','){
-  // basic CSV split that supports quoted fields
-  const out = [];
-  let cur = '', inQ = false;
+function splitCSVLine(line){
+  // simple CSV splitting with support for quoted fields
+  const out=[]; let cur=''; let inQ=false;
   for(let i=0;i<line.length;i++){
-    const ch = line[i];
-    if(ch === '"'){
-      if(inQ && line[i+1] === '"'){ cur += '"'; i++; continue; }
-      inQ = !inQ; continue;
-    }
-    if(ch === sep && !inQ){ out.push(cur); cur=''; continue; }
+    const ch=line[i];
+    if(ch === '"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else { inQ=!inQ; } continue; }
+    if(ch === ',' && !inQ){ out.push(cur); cur=''; continue;}
     cur += ch;
   }
   out.push(cur);
   return out;
 }
-
-/* ---------- PARSER CHUNIOR text: sacá pairs user/amount de líneas ---------- */
-function parseChuniorText(text){
-  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=='');
-  const entries = [];
+function parseAgentCSVText(text){
+  // returns array of {ts: Date, usuario, monto, raw}
+  const lines = parseCSVLines(text);
+  const out=[];
   for(const L of lines){
-    // heuristics to extract user and amount
-    // patterns: "user/500", "user - 500", "user 500", "user:500", "500 user"
-    let line = L;
-    // try find amount token (last number-like token)
-    const m = line.match(/(-?\(?[\d\.\, ]+\)?)/g);
-    let amount = NaN;
-    let user = '';
-    if(m && m.length){
-      // pick last numeric token
-      const last = m[m.length-1];
-      amount = normalizeNumber(last);
-      // remove this token from line to get user
-      user = line.replace(last, '').replace(/[:\/\-\|]+$/,'').trim();
-      // if user contains slash etc, keep before slash
-      if(user.includes('/')) user = user.split('/')[0];
-      if(!user) {
-        // maybe format "user/500" where split by slash gives user first
-        const slashParts = L.split('/');
-        if(slashParts.length>=2 && normalizeNumber(slashParts[1])===amount) user = slashParts[0].trim();
-      }
-    } else {
-      // fallback: try split by slash
-      if(line.includes('/')){
-        const p = line.split('/');
-        user = p[0].trim();
-        amount = normalizeNumber(p.slice(1).join('/'));
+    const cols = splitCSVLine(L);
+    // example format: Fecha(0),Tipo(1),Estado(2),Cantidad(3),Balance(4),Alias agente(5),Alias jugador(6)
+    const fecha = cols[0] || '';
+    const cantidad = cols[3] || '';
+    const aliasJugador = cols[6] || cols[5] || '';
+    // parse date (try ISO or fallback)
+    let fechaObj = new Date(fecha.replace(' ','T'));
+    if(isNaN(fechaObj.getTime())) fechaObj = new Date(fecha);
+    out.push({ ts: fechaObj, fechaRaw: fecha, usuario: normalizeUser(aliasJugador), monto: normalizeNumber(cantidad), raw: L });
+  }
+  return out;
+}
+
+/* ---------- parser chunior (texto pegado) ---------- */
+/* sample line:
+7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628
+*/
+function parseChuniorText(text){
+  const lines = String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=='');
+  const out = [];
+  for(const L of lines){
+    // split by multiple spaces/tabs
+    const parts = L.split(/\s{2,}|\t+/).filter(p=>p.trim()!=='');
+    // fallback: split by any whitespace if not many separators
+    if(parts.length < 4) {
+      const alt = L.split(/\s+/).filter(p=>p.trim()!=='');
+      // try reconstruct: id date time operator wallet monto usuario (approx)
+      if(alt.length >= 6){
+        // try combine date+time
+        const date = alt[1];
+        const time = alt[2];
+        const operator = alt[3];
+        const wallet = alt[4];
+        const monto = alt[5];
+        const usuario = alt[6] || alt[alt.length-1];
+        const dt = date + ' ' + time;
+        const ts = new Date(dt.replace(/(\d{2})-(\d{2})-(\d{4})/,'$3-$2-$1').replace(' ','T'));
+        out.push({ ts, fechaRaw: dt, operador: operator, wallet: wallet, billetera: extractWalletName(wallet), monto: normalizeNumber(monto), usuario: normalizeUser(usuario), raw: L });
+        continue;
       } else {
-        // fallback: try last space separated token
-        const parts = line.split(/\s+/);
-        const lastTok = parts[parts.length-1];
-        const n = normalizeNumber(lastTok);
-        if(!isNaN(n)){
-          amount = n; parts.pop(); user = parts.join(' ');
-        } else {
-          // no amount found: maybe line only user, skip
-          user = line;
-          amount = NaN;
+        // couldn't parse
+        out.push({ ts: new Date(), fechaRaw:'', operador:'', wallet:'', billetera:'', monto:NaN, usuario:normalizeUser(L), raw:L });
+        continue;
+      }
+    }
+    // attempt structured parsing:
+    // parts e.g. [ "7007867", "10-11-2025 13:48:45", "fyeivan", "682 - LUNA", "$ 3.000,00", "clau3628" ]
+    let idxDate = 1;
+    let datePart = parts[idxDate] || '';
+    // parse ts
+    let ts = new Date(datePart.replace(/(\d{2})-(\d{2})-(\d{4})/,'$3-$2-$1').replace(' ','T'));
+    if(isNaN(ts.getTime())){
+      // maybe date and time are separated
+      if(parts.length>2 && /\d{2}:\d{2}:\d{2}/.test(parts[2])){
+        datePart = parts[1] + ' ' + parts[2];
+        ts = new Date(datePart.replace(/(\d{2})-(\d{2})-(\d{4})/,'$3-$2-$1').replace(' ','T'));
+      }
+    }
+    const operador = parts[2] || '';
+    const wallet = parts[3] || '';
+    const montoRaw = parts[4] || '';
+    const usuario = parts[5] || parts[parts.length-1] || '';
+    out.push({ ts, fechaRaw: datePart, operador: operador, wallet: wallet, billetera: extractWalletName(wallet), monto: normalizeNumber(montoRaw), usuario: normalizeUser(usuario), raw: L });
+  }
+  return out;
+}
+
+function extractWalletName(walletStr){
+  if(!walletStr) return '';
+  // wallet like "682 - LUNA" -> take part after '-' or last token
+  const m = walletStr.split('-').map(s=>s.trim()).filter(Boolean);
+  if(m.length>1) return m.slice(-1)[0].replace(/[^\w\s\-]/g,'');
+  // else maybe "682 LUNA"
+  const tokens = walletStr.split(/\s+/);
+  return tokens.slice(-1)[0];
+}
+
+/* ---------- combinación y matching ---------- */
+function combineAndSortAgents(agentArrays){
+  // agentArrays is array of arrays; flatten and sort by ts
+  const flat = agentArrays.flat();
+  flat.sort((a,b)=> {
+    const ta = a.ts && a.ts.getTime ? a.ts.getTime() : 0;
+    const tb = b.ts && b.ts.getTime ? b.ts.getTime() : 0;
+    return ta - tb;
+  });
+  return flat;
+}
+
+function matchLists(agentList, chunList, timeWindowSeconds=90){
+  // mark matches: iterate agents, find nearest chunior by usuario + monto equality within time window.
+  const usedChun = new Set();
+  const rows = []; // each row: {agent?, chun?, status: 'match'|'agent-only'|'chun-only'}
+  // for deterministic thread view, build merged timeline of events (all events sorted)
+  const merged = [];
+  agentList.forEach(a=> merged.push({ type:'agent', rec:a, t: a.ts && a.ts.getTime ? a.ts.getTime() : 0 }));
+  chunList.forEach(c=> merged.push({ type:'chun', rec:c, t: c.ts && c.ts.getTime ? c.ts.getTime() : 0 }));
+  merged.sort((x,y)=> x.t - y.t);
+
+  // We'll attempt a greedy pairing: when an agent event appears, look forward/backward for closest chun match not used
+  for(const item of merged){
+    if(item.type === 'agent'){
+      const a = item.rec;
+      // check if already matched (we'll mark agent by adding matched flag)
+      if(a._matched) continue;
+      // find candidate chunior entries not used with same user and same monto
+      let best = null; let bestDt = Infinity;
+      for(let i=0;i<chunList.length;i++){
+        const c = chunList[i];
+        if(usedChun.has(i)) continue;
+        if(!c.usuario || !a.usuario) continue;
+        if(c.usuario !== a.usuario) continue;
+        if(isNaN(c.monto) || isNaN(a.monto)) continue;
+        if(c.monto !== a.monto) continue;
+        const dt = Math.abs( (c.ts?.getTime?.()||0) - (a.ts?.getTime?.()||0) );
+        if(dt/1000 <= timeWindowSeconds && dt < bestDt){
+          best = i; bestDt = dt;
         }
       }
-    }
-    user = normalizeUser(user);
-    entries.push({ raw: L, usuario: user, monto: amount });
-  }
-  return entries;
-}
-
-/* ---------- MATCHING / RECONCILIATION ---------- */
-function reconcile(agentArr, chuniorArr){
-  // copies to mutate
-  const agent = agentArr.map(a=>Object.assign({},a,{_used:false}));
-  const chun = chuniorArr.map(c=>Object.assign({},c,{_used:false}));
-
-  const matches = [];
-  // 1) exact user + exact monto matches
-  for(const a of agent){
-    if(a._used) continue;
-    for(const c of chun){
-      if(c._used) continue;
-      if(a.usuario && c.usuario && a.usuario === c.usuario && !isNaN(a.monto) && !isNaN(c.monto) && a.monto === c.monto){
-        matches.push({usuario:a.usuario, montoAgent:a.monto, montoChun:c.monto, type:'exact', agente:a, chun:c});
-        a._used = c._used = true;
-        break;
+      if(best !== null){
+        // pair them
+        usedChun.add(best);
+        const c = chunList[best];
+        a._matched = true;
+        c._matched = true;
+        rows.push({ agent: a, chun: c, status: 'match', dtMs: bestDt });
+      } else {
+        // no exact match; push as agent-only for now
+        rows.push({ agent: a, chun: null, status: 'agent-only', dtMs: null });
       }
-    }
-  }
-  // 2) match by usuario (aggregate amounts) - we will handle aggregated later
-  // Build maps of remaining
-  const mapA = {};
-  for(const a of agent.filter(x=>!x._used)){
-    if(!mapA[a.usuario]) mapA[a.usuario]=0;
-    mapA[a.usuario] += (isNaN(a.monto)?0:a.monto);
-  }
-  const mapC = {};
-  for(const c of chun.filter(x=>!x._used)){
-    if(!mapC[c.usuario]) mapC[c.usuario]=0;
-    mapC[c.usuario] += (isNaN(c.monto)?0:c.monto);
-  }
-  // 3) aggregate compare per usuario
-  const aggMatches = [];
-  const users = new Set([...Object.keys(mapA), ...Object.keys(mapC)]);
-  for(const u of users){
-    const aTot = mapA[u] || 0;
-    const cTot = mapC[u] || 0;
-    if(aTot === cTot){
-      aggMatches.push({usuario:u, montoAgent:aTot, montoChun:cTot, type:'agg-equal'});
-      // mark related rows as used
-      agent.filter(x=>x.usuario===u).forEach(x=>x._used=true);
-      chun.filter(x=>x.usuario===u).forEach(x=>x._used=true);
-    } else if(aTot !== 0 || cTot !== 0){
-      // partial/unequal
-      // do not mark used - keep for "discrepancies"
+    } else {
+      // chun item: if not used, add as chun-only
+      const c = item.rec;
+      if(c._matched) continue;
+      // check if there's agent with same user+monto already matched? we've done greedy agent-first; if no agent matched it, add chun-only
+      rows.push({ agent: null, chun: c, status: 'chun-only' });
     }
   }
 
-  // 4) remaining unmatched lists
-  const unmatchedAgent = agent.filter(x=>!x._used);
-  const unmatchedChun = chun.filter(x=>!x._used);
+  // As final pass we can try fuzzy pairing: match remaining agent-only with remaining chun-only by usuario regardless of monto (optional)
+  // (skip for now; keep strictness)
 
-  // totals
-  const totalAgent = agentArr.reduce((s,i)=>s + (isNaN(i.monto)?0:i.monto), 0);
-  const totalChun = chuniorArr.reduce((s,i)=>s + (isNaN(i.monto)?0:i.monto), 0);
-
-  return { matches, aggMatches, unmatchedAgent, unmatchedChun, totalAgent, totalChun };
+  return rows;
 }
 
-/* ---------- RENDER & UI ---------- */
-const fileAgent = document.getElementById('fileAgent');
+/* ---------- UI wiring ---------- */
+const filesAgentInput = document.getElementById('filesAgent');
 const txtChunior = document.getElementById('txtChunior');
-const btnParse = document.getElementById('btnParse');
-const resultado = document.getElementById('resultado');
-const stats = document.getElementById('stats');
-let lastAgent = [], lastChun = [], lastReconcile = null;
+const btnProcess = document.getElementById('btnProcess');
+const tableWrap = document.getElementById('tableWrap');
+const statTotals = document.getElementById('statTotals');
+const statMatches = document.getElementById('statMatches');
+const statUnmatched = document.getElementById('statUnmatched');
+const btnExportCSV = document.getElementById('btnExportCSV');
+const viewMode = document.getElementById('viewMode');
+const filterUser = document.getElementById('filterUser');
+const btnApplyFilter = document.getElementById('btnApplyFilter');
 
-fileAgent.addEventListener('change', async (e)=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  const txt = await f.text();
-  lastAgent = parseCSV(txt);
-  stats.textContent = `CSV cargado: ${lastAgent.length} filas (detectadas)`;
+let lastAgentArrays = [];
+let lastChunList = [];
+let lastRows = [];
+
+filesAgentInput.addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files || []);
+  lastAgentArrays = [];
+  for(const f of files){
+    const txt = await f.text();
+    const parsed = parseAgentCSVText(txt);
+    lastAgentArrays.push(parsed);
+  }
+  statTotals.textContent = `CSV(s) cargados: ${files.length} · Registros: ${lastAgentArrays.flat().length}`;
 });
 
-btnParse.addEventListener('click', ()=>{
-  lastChun = parseChuniorText(txtChunior.value || '');
-  if(lastAgent.length === 0) { alert('Cargá primero el CSV de la plataforma.'); return; }
-  const res = reconcile(lastAgent, lastChun);
-  lastReconcile = res;
-  renderResultado(res);
+btnProcess.addEventListener('click', ()=>{
+  const tw = parseInt(document.getElementById('timeWindow').value, 10) || 90;
+  const agentList = combineAndSortAgents(lastAgentArrays);
+  const chunList = parseChuniorText(txtChunior.value || '');
+  lastChunList = chunList;
+  const rows = matchLists(agentList, chunList, tw);
+  lastRows = rows;
+  renderTable(rows);
+  // stats
+  const totalAgent = agentList.length;
+  const totalChun = chunList.length;
+  const matchCount = rows.filter(r=>r.status==='match').length;
+  const aOnly = rows.filter(r=>r.status==='agent-only').length;
+  const cOnly = rows.filter(r=>r.status==='chun-only').length;
+  statTotals.textContent = `Agent ${totalAgent} · Chun ${totalChun}`;
+  statMatches.textContent = `✔ ${matchCount}`;
+  statUnmatched.textContent = `A❌ ${aOnly} · C❌ ${cOnly}`;
 });
 
-function renderResultado(res){
-  const {matches, aggMatches, unmatchedAgent, unmatchedChun, totalAgent, totalChun} = res;
-  stats.textContent = `Agent $${totalAgent.toFixed(2)} · Chun $${totalChun.toFixed(2)} · Matches: ${matches.length} · AggrEq: ${aggMatches.length} · UnmatchedA: ${unmatchedAgent.length} · UnmatchedC: ${unmatchedChun.length}`;
-
-  let html = '';
-  html += `<h3>Totales</h3><div class="muted">Agent: $${totalAgent.toFixed(2)} &nbsp; | &nbsp; Chunior: $${totalChun.toFixed(2)} &nbsp; | &nbsp; Diferencia: <strong ${totalAgent - totalChun === 0 ? 'class="ok"' : 'class="bad"'}>$${(totalAgent - totalChun).toFixed(2)}</strong></div>`;
-
-  html += `<h3 style="margin-top:10px">Matches exactos (usuario+monto)</h3>`;
-  if(matches.length){
-    html += `<table><thead><tr><th>Usuario</th><th>Monto Agent</th><th>Monto Chun</th></tr></thead><tbody>`;
-    matches.forEach(m => html += `<tr><td>${escapeHtml(m.usuario)}</td><td>$${m.montoAgent.toFixed(2)}</td><td>$${m.montoChun.toFixed(2)}</td></tr>`);
-    html += `</tbody></table>`;
-  } else html += `<div class="muted">No hay matches exactos.</div>`;
-
-  html += `<h3 style="margin-top:10px">Matches agregados iguales (suma por usuario)</h3>`;
-  if(aggMatches.length){
-    html += `<table><thead><tr><th>Usuario</th><th>Monto Agent (sum)</th><th>Monto Chun (sum)</th></tr></thead><tbody>`;
-    aggMatches.forEach(m => html += `<tr><td>${escapeHtml(m.usuario)}</td><td>$${m.montoAgent.toFixed(2)}</td><td>$${m.montoChun.toFixed(2)}</td></tr>`);
-    html += `</tbody></table>`;
-  } else html += `<div class="muted">No hay matches agregados iguales.</div>`;
-
-  html += `<h3 style="margin-top:10px">No emparejados - AGENTE</h3>`;
-  if(unmatchedAgent.length){
-    html += `<table><thead><tr><th>Usuario</th><th>Monto</th><th>Origen raw</th></tr></thead><tbody>`;
-    unmatchedAgent.forEach(a => html += `<tr><td>${escapeHtml(a.usuario)}</td><td>$${(isNaN(a.monto)?0:a.monto.toFixed(2))}</td><td>${escapeHtml(a.rawUser)}</td></tr>`);
-    html += `</tbody></table>`;
-  } else html += `<div class="muted">Sin registros no emparejados en AGENTE.</div>`;
-
-  html += `<h3 style="margin-top:10px">No emparejados - CHUNIOR</h3>`;
-  if(unmatchedChun.length){
-    html += `<table><thead><tr><th>Usuario</th><th>Monto</th><th>Raw</th></tr></thead><tbody>`;
-    unmatchedChun.forEach(c => html += `<tr><td>${escapeHtml(c.usuario)}</td><td>$${(isNaN(c.monto)?0:c.monto.toFixed(2))}</td><td>${escapeHtml(c.raw)}</td></tr>`);
-    html += `</tbody></table>`;
-  } else html += `<div class="muted">Sin registros no emparejados en CHUNIOR.</div>`;
-
-  resultado.innerHTML = html;
+function renderTable(rows){
+  const mode = viewMode.value;
+  const filter = (filterUser.value||'').trim().toLowerCase();
+  let html = `<table role="grid"><thead><tr>
+    <th style="width:160px">TS / AGENTE</th>
+    <th style="width:220px">AGENTE — usuario</th>
+    <th style="width:120px">monto</th>
+    <th style="width:160px">TS / CHUNIOR</th>
+    <th style="width:200px">CHUNIOR — usuario</th>
+    <th style="width:140px">monto</th>
+    <th style="width:120px">billetera</th>
+    <th style="width:80px">Estado</th>
+  </tr></thead><tbody>`;
+  for(const r of rows){
+    if(mode === 'matched' && r.status !== 'match') continue;
+    if(mode === 'unmatched' && r.status === 'match') continue;
+    const a = r.agent;
+    const c = r.chun;
+    const aUser = a? a.usuario : '';
+    const cUser = c? c.usuario : '';
+    if(filter && !aUser.includes(filter) && !cUser.includes(filter)) continue;
+    const aTs = a && a.ts ? formatTS(a.ts) : '';
+    const cTs = c && c.ts ? formatTS(c.ts) : '';
+    const aMonto = a && !isNaN(a.monto) ? '$' + a.monto.toFixed(2) : '';
+    const cMonto = c && !isNaN(c.monto) ? '$' + c.monto.toFixed(2) : '';
+    const billetera = c? (c.billetera || c.wallet || '') : '';
+    const estado = r.status === 'match' ? `<span class="ok">✔</span>` : (r.status === 'agent-only' ? `<span class="bad">AG❌</span>` : `<span class="bad">CH❌</span>`);
+    html += `<tr>
+      <td>${escapeHtml(aTs)}</td>
+      <td>${escapeHtml(aUser)}</td>
+      <td>${escapeHtml(aMonto)}</td>
+      <td>${escapeHtml(cTs)}</td>
+      <td>${escapeHtml(cUser)}</td>
+      <td>${escapeHtml(cMonto)}</td>
+      <td>${escapeHtml(billetera)}</td>
+      <td style="text-align:center">${estado}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  tableWrap.innerHTML = html;
 }
 
-/* ---------- EXPORT / COPY ---------- */
-document.getElementById('btnExportCSV').addEventListener('click', ()=>{
-  if(!lastReconcile) return alert('Primero procesá.');
-  const rows = [];
-  rows.push(['usuario','monto_agent','monto_chun','status']);
-  lastReconcile.matches.forEach(m=> rows.push([m.usuario, m.montoAgent, m.montoChun, 'exact']));
-  lastReconcile.aggMatches.forEach(m=> rows.push([m.usuario, m.montoAgent, m.montoChun, 'agg-equal']));
-  // unmatched agent
-  lastReconcile.unmatchedAgent.forEach(a=> rows.push([a.usuario, a.monto, '', 'unmatched-agent']));
-  lastReconcile.unmatchedChun.forEach(c=> rows.push([c.usuario, '', c.monto, 'unmatched-chun']));
-  const csv = rows.map(r=> r.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+btnExportCSV.addEventListener('click', ()=>{
+  if(!lastRows || !lastRows.length) return alert('Nada para exportar.');
+  const out = [];
+  out.push(['ts_agent','usuario_agent','monto_agent','ts_chun','usuario_chun','monto_chun','billetera_chun','estado']);
+  for(const r of lastRows){
+    out.push([
+      r.agent?.fechaRaw || '',
+      r.agent?.usuario || '',
+      isNaN(r.agent?.monto)?'':r.agent?.monto,
+      r.chun?.fechaRaw || '',
+      r.chun?.usuario || '',
+      isNaN(r.chun?.monto)?'':r.chun?.monto,
+      r.chun?.billetera || '',
+      r.status
+    ]);
+  }
+  const csv = out.map(row => row.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download = 'reconciliacion.csv'; a.click();
-  URL.revokeObjectURL(url);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'reconciliacion_analitica.csv'; a.click();
+  URL.revokeObjectURL(a.href);
 });
 
-document.getElementById('btnExportUnmatched').addEventListener('click', ()=>{
-  if(!lastReconcile) return alert('Primero procesá.');
-  const rows = [['tipo','usuario','monto','raw']];
-  lastReconcile.unmatchedAgent.forEach(a=> rows.push(['agent', a.usuario, a.monto, (a.rawUser||'')]));
-  lastReconcile.unmatchedChun.forEach(c=> rows.push(['chunior', c.usuario, c.monto, (c.raw||'')]));
-  const csv = rows.map(r=> r.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download = 'no_emparejados.csv'; a.click();
-  URL.revokeObjectURL(url);
-});
+btnApplyFilter.addEventListener('click', ()=> renderTable(lastRows || []));
 
-document.getElementById('btnCopyForExcel').addEventListener('click', ()=>{
-  if(!lastReconcile) return alert('Primero procesá.');
-  // copiar unmatchedAgent as usuario in A and "TM/TT/TN" as placeholder in G (you can change)
-  const lines = [];
-  lastReconcile.unmatchedAgent.forEach(a => {
-    lines.push(`${a.usuario}\t\t\t\t\t${'TM'}`); // example uses TM. You can derive actual turno.
-  });
-  navigator.clipboard.writeText(lines.join('\n')).then(()=> alert('Copiado al portapapeles (A/G). Pegar en Excel).'));
-});
-
+function formatTS(d){
+  if(!d) return '';
+  try{
+    const dt = new Date(d);
+    if(isNaN(dt.getTime())) return String(d);
+    return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0')+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0')+':'+String(dt.getSeconds()).padStart(2,'0');
+  }catch(e){ return String(d); }
+}
 function escapeHtml(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 </script>
 </body>
 </html>
