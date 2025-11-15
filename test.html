@@ -1,155 +1,385 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Menú Principal</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      text-align: center;
-      padding: 40px;
-      margin: 0;
-    }
-
-    /* 🖼️ Logo centrado */
-    #logo {
-      width: 180px;
-      max-width: 80%;
-      margin-bottom: 30px;
-      animation: fadeInDown 1s ease;
-    }
-
-    h1 {
-      margin-bottom: 30px;
-      font-size: 22px;
-      font-weight: bold;
-      color: #f1c40f; /* amarillo bet */
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .boton {
-      display: block;
-      width: 220px;
-      margin: 15px auto;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.3s, background 0.3s, box-shadow .18s ease;
-      animation: fadeInUp 0.6s ease forwards;
-      opacity: 0;
-    }
-
-    /* Colores diferenciados */
-    .ChinUnion { background-color: #f1c40f; color: #000; }
-    .Epc01     { background-color: #046865; color: #000; }
-    .Fpc01     { background-color: #5C1A1B; color: #000; }
-    .AlvPc     { background-color: #BE024A; color: #000; }
-
-    /* estilo actualizado para el botón "Recu" (clase Recu en el HTML) */
-    .Recu {
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-      padding: 14px 18px;
-      display: inline-block;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-      background: linear-gradient(135deg, rgba(133,86,160,0.95) 0%, rgba(66,30,88,0.95) 50%, rgba(44,20,56,0.95) 100%);
-      border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 10px 26px rgba(10,6,20,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-      backdrop-filter: blur(4px) saturate(120%);
-    }
-
-    /* capa de brillo / difuminado sutil */
-    .Recu::before {
-      content: "";
-      position: absolute;
-      inset: -30% -10% -40% -10%;
-      background:
-        radial-gradient(60% 40% at 20% 10%, rgba(255,255,255,0.08), transparent 18%),
-        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00) 60%);
-      mix-blend-mode: overlay;
-      pointer-events: none;
-      filter: blur(8px) saturate(120%);
-      opacity: 0.95;
-      transform: translateZ(0);
-    }
-
-    /* fina linea brillante arriba */
-    .Recu::after {
-      content: "";
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 6px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
-      opacity: 0.65;
-      pointer-events: none;
-      transform: translateY(-2px);
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
-    }
-
-    .Recu:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 18px 48px rgba(10,6,20,0.78), inset 0 1px 0 rgba(255,255,255,0.03);
-      filter: brightness(1.08);
-    }
-    .Recu:active { transform: translateY(-3px); }
-
-    .boton:hover {
-      transform: scale(1.06);
-      filter: brightness(1.05);
-    }
-
-    /* Animaciones */
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* stagger de animación para cada boton con nth-child (opcional) */
-    .boton:nth-of-type(1){ animation-delay: 0.05s; }
-    .boton:nth-of-type(2){ animation-delay: 0.12s; }
-    .boton:nth-of-type(3){ animation-delay: 0.18s; }
-    .boton:nth-of-type(4){ animation-delay: 0.24s; }
-    .boton:nth-of-type(5){ animation-delay: 0.30s; }
-
-    /* Responsive */
-    @media (max-width: 600px) {
-      .boton {
-        width: 90%;
-        max-width: 300px;
-      }
-      .Recu { width: 90%; display:block; margin: 12px auto; }
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Reconciliador Agente ⇄ Chunior</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;background:#0f1724;color:#e6eef6;padding:18px}
+  .card{background:#0b1220;padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);max-width:1100px;margin:10px auto}
+  textarea,input[type=file]{width:100%;box-sizing:border-box;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:#0d1620;color:inherit}
+  .row{display:flex;gap:12px}
+  .col{flex:1}
+  button{background:#06b6d4;color:#042a31;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+  .muted{color:#9aa9b6;font-size:13px}
+  .small{font-size:13px}
+  .controls{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700}
+  .ok{color:#2ecc71}
+  .bad{color:#ff6b6b}
+</style>
 </head>
 <body>
-  <!-- 🖼️ Espacio para tu logo -->
-  <img src="logo.webp" alt="Logo Bet300" id="logo">
+  <div class="card">
+    <h2>Reconciliador: Plataforma (AGENTE) ⇄ Anotaciones (CHUNIOR)</h2>
+    <div class="muted small">Subí el CSV de la plataforma y pegá las anotaciones (todo el texto). La herramienta intentará normalizar y reconciliar automáticamente.</div>
 
-  <h1>Selecciona tu PC</h1>
+    <div style="margin-top:12px" class="row">
+      <div class="col">
+        <label><strong>1) CSV Plataforma (AGENTE) — subir archivo</strong></label>
+        <input id="fileAgent" type="file" accept=".csv"/>
+        <div class="muted small">Formato esperable: columna con usuario y columna con monto. El parser intenta adivinar.</div>
+      </div>
+      <div class="col">
+        <label><strong>2) Pegar Anotaciones (CHUNIOR)</strong></label>
+        <textarea id="txtChunior" rows="8" placeholder="Pega aquí todo el texto de anotaciones (ej: rosi/500 o rosi - 500)"></textarea>
+        <div class="controls">
+          <label class="muted small">Separador por línea</label>
+          <button id="btnParse">Parsear & Comparar</button>
+        </div>
+      </div>
+    </div>
 
-  <a href="pc01.html" class="boton ChinUnion">ChinUnion</a>
-  <a href="Epc01.html" class="boton Epc01">EPC01</a>
-  <a href="Fpc01.html" class="boton Fpc01">FPC01</a>
-  <a href="alvpc.html" class="boton AlvPc">AlvPc</a>
-  <a href="rec.html" class="boton Recu">Recu</a>
+    <div class="actions">
+      <button id="btnExportCSV">Exportar coincidencias (CSV)</button>
+      <button id="btnExportUnmatched">Exportar NO coincidencias</button>
+      <button id="btnCopyForExcel">Copiar A↦G (formato Excel A/G)</button>
+      <div class="pill" id="stats">Sin procesar</div>
+    </div>
 
+    <div id="resultado" style="margin-top:12px"></div>
+  </div>
+
+<script>
+/* ---------- UTIL: normalización de numeros y usuarios ---------- */
+function normalizeUser(u){
+  if(!u) return '';
+  return String(u).trim().toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\-\s\.\/]/g,'').replace(/\s+/g,' ');
+}
+
+function normalizeNumber(str){
+  if(str === null || str === undefined) return NaN;
+  let s = String(str).trim();
+  if(s === '') return NaN;
+  // detect negative in parentheses
+  const paren = /^\((.*)\)$/.exec(s);
+  if(paren) s = '-' + paren[1];
+
+  // remove currency letters and spaces at start/end
+  s = s.replace(/[^\d,.\-\s]/g,'').trim();
+
+  // heuristics: if comma is decimal (has digits after comma and dot as thousand)
+  // count occurrences
+  const dots = (s.match(/\./g)||[]).length;
+  const commas = (s.match(/,/g)||[]).length;
+
+  if(dots && commas){
+    // likely dots are thousands and comma decimal => remove dots, replace comma with dot
+    s = s.replace(/\./g,'').replace(/,/g,'.');
+  } else if(commas && !dots){
+    // ambiguous: could be "1,234" (thousands) or "1234,56" (decimal)
+    // if comma followed by 3 digits and no other commas -> assume thousands
+    if(commas === 1 && /,\d{3}$/.test(s)) {
+      s = s.replace(/,/g,''); // thousands
+    } else {
+      s = s.replace(/,/g,'.'); // decimal
+    }
+  } else {
+    // keep dots (could be decimal) — nothing to change
+  }
+
+  // remove spaces
+  s = s.replace(/\s+/g,'');
+
+  // final cleanup: only digits, minus, dot
+  s = s.replace(/[^0-9\-\.\+]/g,'');
+
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
+
+/* ---------- PARSER CSV simple (devuelve array de {usuario,monto,fecha,...}) ---------- */
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).map(l=>l.replace(/\uFEFF/g,'')).filter(l=>l.trim()!='');
+  if(lines.length === 0) return [];
+  // try to detect separator by header
+  const sep = lines[0].includes(';') ? ';' : ',';
+  let startRow = 0;
+  // check if header present: contains 'usuario' or 'alias' or 'monto' words
+  const header = lines[0].toLowerCase();
+  if(/usuario|alias|nick|monto|cantidad|importe|fecha/.test(header)) startRow=1;
+  const rows = [];
+  for(let i=startRow;i<lines.length;i++){
+    const cols = splitCSVLine(lines[i], sep);
+    // heuristics: find column with most numeric-looking values (monto)
+    rows.push(cols);
+  }
+  // try to find user and amount columns by scanning first 10 rows
+  const sample = rows.slice(0, Math.min(12, rows.length));
+  let userCol = null, amountCol = null;
+  const colCount = rows[0] ? rows[0].length : 0;
+  for(let c=0;c<colCount;c++){
+    let numericCount = 0, textCount = 0;
+    for(const r of sample){
+      const v = (r[c]||'').trim();
+      if(v==='') continue;
+      if(/^[\d\$\.\,\-\(\)\s]+$/.test(v)) numericCount++; else textCount++;
+    }
+    if(numericCount > textCount && numericCount >= 1 && amountCol===null) amountCol = c;
+    if(textCount >= 1 && userCol===null) userCol = c;
+  }
+  // fallback guesses
+  if(userCol === null){
+    userCol = 0;
+  }
+  if(amountCol === null){
+    amountCol = Math.max(1, Math.min(2, colCount-1));
+  }
+
+  // build objects
+  const out = [];
+  for(const cols of rows){
+    const rawUser = (cols[userCol] || '').trim();
+    const rawAmt = (cols[amountCol] || '').trim();
+    const user = normalizeUser(rawUser);
+    const monto = normalizeNumber(rawAmt);
+    out.push({ rawUser: rawUser, usuario: user, monto: monto, rawCols: cols });
+  }
+  return out;
+}
+
+function splitCSVLine(line, sep=','){
+  // basic CSV split that supports quoted fields
+  const out = [];
+  let cur = '', inQ = false;
+  for(let i=0;i<line.length;i++){
+    const ch = line[i];
+    if(ch === '"'){
+      if(inQ && line[i+1] === '"'){ cur += '"'; i++; continue; }
+      inQ = !inQ; continue;
+    }
+    if(ch === sep && !inQ){ out.push(cur); cur=''; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/* ---------- PARSER CHUNIOR text: sacá pairs user/amount de líneas ---------- */
+function parseChuniorText(text){
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=='');
+  const entries = [];
+  for(const L of lines){
+    // heuristics to extract user and amount
+    // patterns: "user/500", "user - 500", "user 500", "user:500", "500 user"
+    let line = L;
+    // try find amount token (last number-like token)
+    const m = line.match(/(-?\(?[\d\.\, ]+\)?)/g);
+    let amount = NaN;
+    let user = '';
+    if(m && m.length){
+      // pick last numeric token
+      const last = m[m.length-1];
+      amount = normalizeNumber(last);
+      // remove this token from line to get user
+      user = line.replace(last, '').replace(/[:\/\-\|]+$/,'').trim();
+      // if user contains slash etc, keep before slash
+      if(user.includes('/')) user = user.split('/')[0];
+      if(!user) {
+        // maybe format "user/500" where split by slash gives user first
+        const slashParts = L.split('/');
+        if(slashParts.length>=2 && normalizeNumber(slashParts[1])===amount) user = slashParts[0].trim();
+      }
+    } else {
+      // fallback: try split by slash
+      if(line.includes('/')){
+        const p = line.split('/');
+        user = p[0].trim();
+        amount = normalizeNumber(p.slice(1).join('/'));
+      } else {
+        // fallback: try last space separated token
+        const parts = line.split(/\s+/);
+        const lastTok = parts[parts.length-1];
+        const n = normalizeNumber(lastTok);
+        if(!isNaN(n)){
+          amount = n; parts.pop(); user = parts.join(' ');
+        } else {
+          // no amount found: maybe line only user, skip
+          user = line;
+          amount = NaN;
+        }
+      }
+    }
+    user = normalizeUser(user);
+    entries.push({ raw: L, usuario: user, monto: amount });
+  }
+  return entries;
+}
+
+/* ---------- MATCHING / RECONCILIATION ---------- */
+function reconcile(agentArr, chuniorArr){
+  // copies to mutate
+  const agent = agentArr.map(a=>Object.assign({},a,{_used:false}));
+  const chun = chuniorArr.map(c=>Object.assign({},c,{_used:false}));
+
+  const matches = [];
+  // 1) exact user + exact monto matches
+  for(const a of agent){
+    if(a._used) continue;
+    for(const c of chun){
+      if(c._used) continue;
+      if(a.usuario && c.usuario && a.usuario === c.usuario && !isNaN(a.monto) && !isNaN(c.monto) && a.monto === c.monto){
+        matches.push({usuario:a.usuario, montoAgent:a.monto, montoChun:c.monto, type:'exact', agente:a, chun:c});
+        a._used = c._used = true;
+        break;
+      }
+    }
+  }
+  // 2) match by usuario (aggregate amounts) - we will handle aggregated later
+  // Build maps of remaining
+  const mapA = {};
+  for(const a of agent.filter(x=>!x._used)){
+    if(!mapA[a.usuario]) mapA[a.usuario]=0;
+    mapA[a.usuario] += (isNaN(a.monto)?0:a.monto);
+  }
+  const mapC = {};
+  for(const c of chun.filter(x=>!x._used)){
+    if(!mapC[c.usuario]) mapC[c.usuario]=0;
+    mapC[c.usuario] += (isNaN(c.monto)?0:c.monto);
+  }
+  // 3) aggregate compare per usuario
+  const aggMatches = [];
+  const users = new Set([...Object.keys(mapA), ...Object.keys(mapC)]);
+  for(const u of users){
+    const aTot = mapA[u] || 0;
+    const cTot = mapC[u] || 0;
+    if(aTot === cTot){
+      aggMatches.push({usuario:u, montoAgent:aTot, montoChun:cTot, type:'agg-equal'});
+      // mark related rows as used
+      agent.filter(x=>x.usuario===u).forEach(x=>x._used=true);
+      chun.filter(x=>x.usuario===u).forEach(x=>x._used=true);
+    } else if(aTot !== 0 || cTot !== 0){
+      // partial/unequal
+      // do not mark used - keep for "discrepancies"
+    }
+  }
+
+  // 4) remaining unmatched lists
+  const unmatchedAgent = agent.filter(x=>!x._used);
+  const unmatchedChun = chun.filter(x=>!x._used);
+
+  // totals
+  const totalAgent = agentArr.reduce((s,i)=>s + (isNaN(i.monto)?0:i.monto), 0);
+  const totalChun = chuniorArr.reduce((s,i)=>s + (isNaN(i.monto)?0:i.monto), 0);
+
+  return { matches, aggMatches, unmatchedAgent, unmatchedChun, totalAgent, totalChun };
+}
+
+/* ---------- RENDER & UI ---------- */
+const fileAgent = document.getElementById('fileAgent');
+const txtChunior = document.getElementById('txtChunior');
+const btnParse = document.getElementById('btnParse');
+const resultado = document.getElementById('resultado');
+const stats = document.getElementById('stats');
+let lastAgent = [], lastChun = [], lastReconcile = null;
+
+fileAgent.addEventListener('change', async (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const txt = await f.text();
+  lastAgent = parseCSV(txt);
+  stats.textContent = `CSV cargado: ${lastAgent.length} filas (detectadas)`;
+});
+
+btnParse.addEventListener('click', ()=>{
+  lastChun = parseChuniorText(txtChunior.value || '');
+  if(lastAgent.length === 0) { alert('Cargá primero el CSV de la plataforma.'); return; }
+  const res = reconcile(lastAgent, lastChun);
+  lastReconcile = res;
+  renderResultado(res);
+});
+
+function renderResultado(res){
+  const {matches, aggMatches, unmatchedAgent, unmatchedChun, totalAgent, totalChun} = res;
+  stats.textContent = `Agent $${totalAgent.toFixed(2)} · Chun $${totalChun.toFixed(2)} · Matches: ${matches.length} · AggrEq: ${aggMatches.length} · UnmatchedA: ${unmatchedAgent.length} · UnmatchedC: ${unmatchedChun.length}`;
+
+  let html = '';
+  html += `<h3>Totales</h3><div class="muted">Agent: $${totalAgent.toFixed(2)} &nbsp; | &nbsp; Chunior: $${totalChun.toFixed(2)} &nbsp; | &nbsp; Diferencia: <strong ${totalAgent - totalChun === 0 ? 'class="ok"' : 'class="bad"'}>$${(totalAgent - totalChun).toFixed(2)}</strong></div>`;
+
+  html += `<h3 style="margin-top:10px">Matches exactos (usuario+monto)</h3>`;
+  if(matches.length){
+    html += `<table><thead><tr><th>Usuario</th><th>Monto Agent</th><th>Monto Chun</th></tr></thead><tbody>`;
+    matches.forEach(m => html += `<tr><td>${escapeHtml(m.usuario)}</td><td>$${m.montoAgent.toFixed(2)}</td><td>$${m.montoChun.toFixed(2)}</td></tr>`);
+    html += `</tbody></table>`;
+  } else html += `<div class="muted">No hay matches exactos.</div>`;
+
+  html += `<h3 style="margin-top:10px">Matches agregados iguales (suma por usuario)</h3>`;
+  if(aggMatches.length){
+    html += `<table><thead><tr><th>Usuario</th><th>Monto Agent (sum)</th><th>Monto Chun (sum)</th></tr></thead><tbody>`;
+    aggMatches.forEach(m => html += `<tr><td>${escapeHtml(m.usuario)}</td><td>$${m.montoAgent.toFixed(2)}</td><td>$${m.montoChun.toFixed(2)}</td></tr>`);
+    html += `</tbody></table>`;
+  } else html += `<div class="muted">No hay matches agregados iguales.</div>`;
+
+  html += `<h3 style="margin-top:10px">No emparejados - AGENTE</h3>`;
+  if(unmatchedAgent.length){
+    html += `<table><thead><tr><th>Usuario</th><th>Monto</th><th>Origen raw</th></tr></thead><tbody>`;
+    unmatchedAgent.forEach(a => html += `<tr><td>${escapeHtml(a.usuario)}</td><td>$${(isNaN(a.monto)?0:a.monto.toFixed(2))}</td><td>${escapeHtml(a.rawUser)}</td></tr>`);
+    html += `</tbody></table>`;
+  } else html += `<div class="muted">Sin registros no emparejados en AGENTE.</div>`;
+
+  html += `<h3 style="margin-top:10px">No emparejados - CHUNIOR</h3>`;
+  if(unmatchedChun.length){
+    html += `<table><thead><tr><th>Usuario</th><th>Monto</th><th>Raw</th></tr></thead><tbody>`;
+    unmatchedChun.forEach(c => html += `<tr><td>${escapeHtml(c.usuario)}</td><td>$${(isNaN(c.monto)?0:c.monto.toFixed(2))}</td><td>${escapeHtml(c.raw)}</td></tr>`);
+    html += `</tbody></table>`;
+  } else html += `<div class="muted">Sin registros no emparejados en CHUNIOR.</div>`;
+
+  resultado.innerHTML = html;
+}
+
+/* ---------- EXPORT / COPY ---------- */
+document.getElementById('btnExportCSV').addEventListener('click', ()=>{
+  if(!lastReconcile) return alert('Primero procesá.');
+  const rows = [];
+  rows.push(['usuario','monto_agent','monto_chun','status']);
+  lastReconcile.matches.forEach(m=> rows.push([m.usuario, m.montoAgent, m.montoChun, 'exact']));
+  lastReconcile.aggMatches.forEach(m=> rows.push([m.usuario, m.montoAgent, m.montoChun, 'agg-equal']));
+  // unmatched agent
+  lastReconcile.unmatchedAgent.forEach(a=> rows.push([a.usuario, a.monto, '', 'unmatched-agent']));
+  lastReconcile.unmatchedChun.forEach(c=> rows.push([c.usuario, '', c.monto, 'unmatched-chun']));
+  const csv = rows.map(r=> r.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = 'reconciliacion.csv'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnExportUnmatched').addEventListener('click', ()=>{
+  if(!lastReconcile) return alert('Primero procesá.');
+  const rows = [['tipo','usuario','monto','raw']];
+  lastReconcile.unmatchedAgent.forEach(a=> rows.push(['agent', a.usuario, a.monto, (a.rawUser||'')]));
+  lastReconcile.unmatchedChun.forEach(c=> rows.push(['chunior', c.usuario, c.monto, (c.raw||'')]));
+  const csv = rows.map(r=> r.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = 'no_emparejados.csv'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnCopyForExcel').addEventListener('click', ()=>{
+  if(!lastReconcile) return alert('Primero procesá.');
+  // copiar unmatchedAgent as usuario in A and "TM/TT/TN" as placeholder in G (you can change)
+  const lines = [];
+  lastReconcile.unmatchedAgent.forEach(a => {
+    lines.push(`${a.usuario}\t\t\t\t\t${'TM'}`); // example uses TM. You can derive actual turno.
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=> alert('Copiado al portapapeles (A/G). Pegar en Excel).'));
+});
+
+function escapeHtml(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
 </body>
 </html>
