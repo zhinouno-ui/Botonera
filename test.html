@@ -3,399 +3,500 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Reconciliador Analítico — AGENTE ⇄ CHUNIOR</title>
+<title>Comparador AGENTE ⇄ CHUNIOR — Herramienta</title>
 <style>
-  :root{--bg:#0b1220;--card:#08101a;--accent:#00c2a8;--muted:#9fb0bd;--ok:#2ecc71;--bad:#ff6b6b}
-  body{background:var(--bg);color:#e6eef6;font-family:Inter,Arial,Helvetica,sans-serif;margin:0;padding:22px}
-  .container{max-width:1200px;margin:0 auto}
-  h1{margin:0 0 10px;font-size:18px}
-  .card{background:linear-gradient(180deg,#071022,#07121a);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  :root{
+    --bg:#071227; --card:#0b1722; --muted:#9fb6c7; --accent:#06b6d4; --ok:#2ecc71; --bad:#e04747;
+    --glass: rgba(255,255,255,0.03);
+    --text:#e6f7fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071020,#071827);color:var(--text);padding:18px;}
+  .wrap{max-width:1200px;margin:0 auto}
+  h1{margin:0 0 8px 0;font-size:20px}
+  .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 20px rgba(0,0,0,0.5)}
   .row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-  .col{flex:1;min-width:260px}
-  input[type=file], textarea{width:100%;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:inherit}
-  textarea{min-height:140px;resize:vertical}
-  button{background:linear-gradient(90deg,var(--accent),#00a88a);color:#021414;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer}
-  .muted{color:var(--muted);font-size:13px}
-  .controls{display:flex;gap:8px;align-items:center;margin-top:8px}
-  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
-  th{background:rgba(255,255,255,0.02);position:sticky;top:0}
-  .ok{color:var(--ok);font-weight:700}
-  .bad{color:var(--bad);font-weight:700}
-  .summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
-  .pill{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;font-weight:700}
-  .filters{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
-  @media(max-width:900px){ .row{flex-direction:column} }
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type=file]{background:var(--glass);padding:8px;border-radius:8px;border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+  textarea{width:100%;min-height:140px;background:rgba(255,255,255,0.02);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.03);color:var(--text);resize:vertical}
+  .controls{display:flex;gap:8px;align-items:center}
+  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  .small{padding:8px 10px;font-size:13px}
+  .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  select{background:rgba(255,255,255,0.02);border-radius:8px;padding:8px;border:1px solid rgba(255,255,255,0.03);color:var(--text)}
+  .summary{display:flex;gap:12px;align-items:center;margin-top:12px;color:var(--muted);font-size:14px}
+  .table-wrap{margin-top:12px;max-height:520px;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.02);text-align:left;vertical-align:middle}
+  th{position:sticky;top:0;background:rgba(0,0,0,0.18);z-index:3;color:#dff6fb}
+  tr.ok td{background:rgba(46,204,113,0.04)}
+  tr.miss-agente td{background:rgba(224,71,71,0.04)}
+  tr.miss-chunior td{background:rgba(255,190,60,0.04)}
+  .badge{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted)}
+  .state-ok{color:var(--ok);font-weight:700}
+  .state-bad{color:var(--bad);font-weight:800}
+  .controls-vertical{display:flex;flex-direction:column;gap:8px}
+  .notes{margin-top:10px;color:var(--muted);font-size:13px}
+  @media (max-width:920px){ .row{flex-direction:column} .filters{flex-direction:column;align-items:stretch} }
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>Reconciliador Analítico — AGENTE ⇄ CHUNIOR</h1>
-      <div class="muted">Sube uno o varios CSV de AGENTE (descargas por turno), pega el contenido de CHUNIOR (texto) y presiona "Procesar".</div>
+<div class="wrap">
+  <h1>Comparador AGENTE ⇄ CHUNIOR</h1>
+  <div class="card">
+    <div class="row">
+      <div style="flex:1;min-width:280px">
+        <label>Cargar CSV(s) AGENTE (puedes seleccionar varios)</label>
+        <input id="agentFiles" type="file" accept=".csv" multiple />
+        <div class="notes">Formato esperado: CSV exportado por la plataforma. Se detecta Fecha (col 0), Cantidad (col 3) y Alias del jugador (col 6) cuando existe; si no, se intenta inferir.</div>
+      </div>
 
-      <div class="row" style="margin-top:12px">
-        <div class="col">
-          <label class="muted">1) Subir CSV(s) AGENTE (puedes seleccionar varios archivos)</label><br>
-          <input id="filesAgent" type="file" accept=".csv" multiple />
-          <div class="muted" style="margin-top:6px">Formato esperado (ejemplo): Fecha,Tipo,Estado,Cantidad,Balance,Alias del agente,Alias del jugador</div>
+      <div style="flex:1;min-width:300px">
+        <label>Pegar texto CHUNIOR (todo el día / turno, varias líneas)</label>
+        <textarea id="chuniorText" placeholder="Pega aquí las líneas copiadas de Chunior..."></textarea>
+        <div class="notes">Ejemplo de línea Chunior: <code>7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628</code></div>
+      </div>
+
+      <div style="width:220px">
+        <label>Acciones</label>
+        <div class="controls-vertical">
+          <button id="processBtn" class="btn small">Procesar y emparejar</button>
+          <button id="exportBtn" class="small btn" style="background:linear-gradient(90deg,#f59e0b,#f97316)">Exportar CSV</button>
+          <button id="copyExcelBtn" class="small btn" style="background:linear-gradient(90deg,#06b6d4,#3dd9f0)">Copiar para Excel</button>
         </div>
-
-        <div class="col">
-          <label class="muted">2) Pegar texto CHUNIOR</label><br>
-          <textarea id="txtChunior" placeholder="Pega aquí todas las líneas copiadas de CHUNIOR (una línea por movimiento)"></textarea>
-          <div class="controls">
-            <label class="muted">Ventana tiempo (s)</label>
-            <input id="timeWindow" type="number" value="90" min="5" style="width:84px;padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)"/>
-            <button id="btnProcess">Procesar</button>
-          </div>
-        </div>
       </div>
+    </div>
 
-      <div class="summary" id="summaryArea" style="margin-top:12px">
-        <div class="pill" id="statTotals">Sin procesar</div>
-        <div class="pill" id="statMatches">—</div>
-        <div class="pill" id="statUnmatched">—</div>
-        <div style="margin-left:auto" class="muted">Exportar: <button id="btnExportCSV" style="margin-left:8px">CSV</button></div>
-      </div>
+    <div class="filters">
+      <div class="badge">Detectados: <span id="countTotals">0 registros</span></div>
+      <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
+      <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
+      <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div>
+      <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div>
+      <div style="margin-left:auto" class="badge">Paired: <span id="countPaired">0</span> · Missing: <span id="countMissing">0</span></div>
+    </div>
 
-      <div class="filters" style="margin-top:10px">
-        <label class="muted">Mostrar</label>
-        <select id="viewMode">
-          <option value="all">Todo (cronológico)</option>
-          <option value="matched">Solo ✔</option>
-          <option value="unmatched">Solo ❌</option>
-        </select>
-        <label class="muted">Filtro usuario (texto)</label>
-        <input id="filterUser" type="text" placeholder="ej: jossee" style="padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)"/>
-        <button id="btnApplyFilter">Aplicar</button>
-      </div>
+    <div id="tableContainer" class="table-wrap" aria-live="polite" style="margin-top:12px">
+      <table id="resultsTable" role="table">
+        <thead>
+          <tr>
+            <th style="min-width:70px">Turno</th>
+            <th style="min-width:120px">Agente hora</th>
+            <th>Agente usuario</th>
+            <th style="min-width:90px">Agente monto</th>
+            <th style="min-width:120px">Chunior hora</th>
+            <th>Chunior usuario</th>
+            <th style="min-width:90px">Chunior monto</th>
+            <th style="min-width:120px">Operador</th>
+            <th style="min-width:120px">Billetera</th>
+            <th style="min-width:80px">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
 
-      <div id="tableWrap" style="margin-top:12px;overflow:auto;max-height:560px">
-        <!-- tabla generada -->
-      </div>
+    <div class="summary" id="summaryBox" style="margin-top:12px">
+      <div class="badge">Registros AGENTE: <span id="totAgent">0</span></div>
+      <div class="badge">Registros CHUNIOR: <span id="totChunior">0</span></div>
+      <div class="badge">Emparejados: <span id="totPaired">0</span></div>
+    </div>
 
+    <div class="notes" style="margin-top:12px">
+      • Matching exacto por <strong>usuario normalizado (minúsc)</strong> y <strong>monto</strong> — cualquier diferencia marca discrepancia.<br>
+      • Turnos: Mañana 06:00–14:00, Tarde 14:00–22:00, Noche 22:00–06:00.
     </div>
   </div>
+</div>
 
 <script>
-/* ---------- utilidades ---------- */
-function normalizeUser(u){
-  if(!u) return '';
-  return String(u).trim().toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\-\s\.]/g,'').replace(/\s+/g,' ');
+/* UTIL: lectura CSV robusta (returns array of lines without header if detected) */
+function readFileAsText(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(String(e.target.result || ''));
+    r.onerror = rej;
+    r.readAsText(file, 'utf-8');
+  });
 }
-function normalizeNumber(s){
-  if(s==null) return NaN;
-  let str = String(s).trim();
-  if(str==='') return NaN;
-  const par = /^\((.*)\)$/.exec(str);
-  if(par) str = '-' + par[1];
-  str = str.replace(/\$/g,'').replace(/ARS/gi,'').trim();
-  const dots = (str.match(/\./g)||[]).length;
-  const commas = (str.match(/,/g)||[]).length;
-  if(dots && commas){
-    str = str.replace(/\./g,'').replace(/,/g,'.');
-  } else if(commas && !dots){
-    if(commas === 1 && /,\d{3}$/.test(str)) str = str.replace(/,/g,'');
-    else str = str.replace(/,/g,'.');
-  }
-  str = str.replace(/\s+/g,'').replace(/[^\d\-\.\+]/g,'');
-  const n = parseFloat(str);
-  return isNaN(n)?NaN:n;
+function splitLines(text){
+  return text.split(/\r?\n/).map(l => l.replace(/\uFEFF/g,'')).filter(l => l.trim() !== '');
 }
-function parseCSVLines(text){
-  const raw = String(text||'').replace(/\uFEFF/g,'').split(/\r?\n/).map(r=>r.trim()).filter(r=>r!=='');
-  // remove lines starting with sep= or header if present
-  const filtered = raw.filter(l=>!l.toLowerCase().startsWith('sep='));
-  // if first line contains header keywords, drop it
-  if(filtered.length>0 && /fecha|tipo|cantidad|alias/i.test(filtered[0])) filtered.shift();
-  return filtered;
-}
-function splitCSVLine(line){
-  // simple CSV splitting with support for quoted fields
-  const out=[]; let cur=''; let inQ=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
-    if(ch === '"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else { inQ=!inQ; } continue; }
-    if(ch === ',' && !inQ){ out.push(cur); cur=''; continue;}
+/* parse CSV line with quotes */
+function parseCSVLine(line){
+  const out = [];
+  let cur = '', inQuotes=false;
+  for (let i=0;i<line.length;i++){
+    const ch = line[i];
+    if (ch === '"' ) {
+      if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; }
+      inQuotes = !inQuotes; continue;
+    }
+    if (ch === ',' && !inQuotes){ out.push(cur); cur=''; continue; }
     cur += ch;
   }
   out.push(cur);
   return out;
 }
-function parseAgentCSVText(text){
-  // returns array of {ts: Date, usuario, monto, raw}
-  const lines = parseCSVLines(text);
-  const out=[];
-  for(const L of lines){
-    const cols = splitCSVLine(L);
-    // example format: Fecha(0),Tipo(1),Estado(2),Cantidad(3),Balance(4),Alias agente(5),Alias jugador(6)
-    const fecha = cols[0] || '';
-    const cantidad = cols[3] || '';
-    const aliasJugador = cols[6] || cols[5] || '';
-    // parse date (try ISO or fallback)
-    let fechaObj = new Date(fecha.replace(' ','T'));
-    if(isNaN(fechaObj.getTime())) fechaObj = new Date(fecha);
-    out.push({ ts: fechaObj, fechaRaw: fecha, usuario: normalizeUser(aliasJugador), monto: normalizeNumber(cantidad), raw: L });
-  }
-  return out;
-}
 
-/* ---------- parser chunior (texto pegado) ---------- */
-/* sample line:
-7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628
+/* CLEAN amount strings:
+   AGENT CSV likely "4000" or "4.000,00" or "4000.00" => normalize to Number (float)
+   CHUNIOR sample: "$ 3.000,00" => remove $, spaces, convert
 */
-function parseChuniorText(text){
-  const lines = String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=='');
-  const out = [];
-  for(const L of lines){
-    // split by multiple spaces/tabs
-    const parts = L.split(/\s{2,}|\t+/).filter(p=>p.trim()!=='');
-    // fallback: split by any whitespace if not many separators
-    if(parts.length < 4) {
-      const alt = L.split(/\s+/).filter(p=>p.trim()!=='');
-      // try reconstruct: id date time operator wallet monto usuario (approx)
-      if(alt.length >= 6){
-        // try combine date+time
-        const date = alt[1];
-        const time = alt[2];
-        const operator = alt[3];
-        const wallet = alt[4];
-        const monto = alt[5];
-        const usuario = alt[6] || alt[alt.length-1];
-        const dt = date + ' ' + time;
-        const ts = new Date(dt.replace(/(\d{2})-(\d{2})-(\d{4})/,'$3-$2-$1').replace(' ','T'));
-        out.push({ ts, fechaRaw: dt, operador: operator, wallet: wallet, billetera: extractWalletName(wallet), monto: normalizeNumber(monto), usuario: normalizeUser(usuario), raw: L });
-        continue;
-      } else {
-        // couldn't parse
-        out.push({ ts: new Date(), fechaRaw:'', operador:'', wallet:'', billetera:'', monto:NaN, usuario:normalizeUser(L), raw:L });
-        continue;
-      }
-    }
-    // attempt structured parsing:
-    // parts e.g. [ "7007867", "10-11-2025 13:48:45", "fyeivan", "682 - LUNA", "$ 3.000,00", "clau3628" ]
-    let idxDate = 1;
-    let datePart = parts[idxDate] || '';
-    // parse ts
-    let ts = new Date(datePart.replace(/(\d{2})-(\d{2})-(\d{4})/,'$3-$2-$1').replace(' ','T'));
-    if(isNaN(ts.getTime())){
-      // maybe date and time are separated
-      if(parts.length>2 && /\d{2}:\d{2}:\d{2}/.test(parts[2])){
-        datePart = parts[1] + ' ' + parts[2];
-        ts = new Date(datePart.replace(/(\d{2})-(\d{2})-(\d{4})/,'$3-$2-$1').replace(' ','T'));
-      }
-    }
-    const operador = parts[2] || '';
-    const wallet = parts[3] || '';
-    const montoRaw = parts[4] || '';
-    const usuario = parts[5] || parts[parts.length-1] || '';
-    out.push({ ts, fechaRaw: datePart, operador: operador, wallet: wallet, billetera: extractWalletName(wallet), monto: normalizeNumber(montoRaw), usuario: normalizeUser(usuario), raw: L });
+function parseAmountRaw(raw){
+  if(raw === null || raw === undefined) return 0;
+  let s = String(raw).trim();
+  if(!s) return 0;
+  // remove currency signs
+  s = s.replace(/[^\d\-,\.]/g, '');
+  // detect patterns: if contains both '.' and ',' and ',' appears at end -> treat '.' thousands, ',' decimals
+  // else if contains '.' and no ',' -> assume '.' decimal (en-US)
+  // else if contains ',' and no '.' -> assume ',' decimal (arg style)
+  if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1){
+    // assume '.' thousands, ',' decimals -> remove dots, replace comma with dot
+    s = s.replace(/\./g, '').replace(/,/g, '.');
+  } else if (s.indexOf(',') !== -1 && s.indexOf('.') === -1){
+    // assume comma decimal
+    s = s.replace(/\./g,'').replace(/,/g,'.');
+  } else {
+    // pure digits or dot decimal
+    s = s.replace(/,/g,''); // remove stray commas
   }
-  return out;
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
 }
 
-function extractWalletName(walletStr){
-  if(!walletStr) return '';
-  // wallet like "682 - LUNA" -> take part after '-' or last token
-  const m = walletStr.split('-').map(s=>s.trim()).filter(Boolean);
-  if(m.length>1) return m.slice(-1)[0].replace(/[^\w\s\-]/g,'');
-  // else maybe "682 LUNA"
-  const tokens = walletStr.split(/\s+/);
-  return tokens.slice(-1)[0];
-}
-
-/* ---------- combinación y matching ---------- */
-function combineAndSortAgents(agentArrays){
-  // agentArrays is array of arrays; flatten and sort by ts
-  const flat = agentArrays.flat();
-  flat.sort((a,b)=> {
-    const ta = a.ts && a.ts.getTime ? a.ts.getTime() : 0;
-    const tb = b.ts && b.ts.getTime ? b.ts.getTime() : 0;
-    return ta - tb;
-  });
-  return flat;
-}
-
-function matchLists(agentList, chunList, timeWindowSeconds=90){
-  // mark matches: iterate agents, find nearest chunior by usuario + monto equality within time window.
-  const usedChun = new Set();
-  const rows = []; // each row: {agent?, chun?, status: 'match'|'agent-only'|'chun-only'}
-  // for deterministic thread view, build merged timeline of events (all events sorted)
-  const merged = [];
-  agentList.forEach(a=> merged.push({ type:'agent', rec:a, t: a.ts && a.ts.getTime ? a.ts.getTime() : 0 }));
-  chunList.forEach(c=> merged.push({ type:'chun', rec:c, t: c.ts && c.ts.getTime ? c.ts.getTime() : 0 }));
-  merged.sort((x,y)=> x.t - y.t);
-
-  // We'll attempt a greedy pairing: when an agent event appears, look forward/backward for closest chun match not used
-  for(const item of merged){
-    if(item.type === 'agent'){
-      const a = item.rec;
-      // check if already matched (we'll mark agent by adding matched flag)
-      if(a._matched) continue;
-      // find candidate chunior entries not used with same user and same monto
-      let best = null; let bestDt = Infinity;
-      for(let i=0;i<chunList.length;i++){
-        const c = chunList[i];
-        if(usedChun.has(i)) continue;
-        if(!c.usuario || !a.usuario) continue;
-        if(c.usuario !== a.usuario) continue;
-        if(isNaN(c.monto) || isNaN(a.monto)) continue;
-        if(c.monto !== a.monto) continue;
-        const dt = Math.abs( (c.ts?.getTime?.()||0) - (a.ts?.getTime?.()||0) );
-        if(dt/1000 <= timeWindowSeconds && dt < bestDt){
-          best = i; bestDt = dt;
-        }
-      }
-      if(best !== null){
-        // pair them
-        usedChun.add(best);
-        const c = chunList[best];
-        a._matched = true;
-        c._matched = true;
-        rows.push({ agent: a, chun: c, status: 'match', dtMs: bestDt });
-      } else {
-        // no exact match; push as agent-only for now
-        rows.push({ agent: a, chun: null, status: 'agent-only', dtMs: null });
-      }
-    } else {
-      // chun item: if not used, add as chun-only
-      const c = item.rec;
-      if(c._matched) continue;
-      // check if there's agent with same user+monto already matched? we've done greedy agent-first; if no agent matched it, add chun-only
-      rows.push({ agent: null, chun: c, status: 'chun-only' });
-    }
+/* parse agent CSV rows array (lines)
+   We attempt to detect header. Expected columns:
+   Fecha (0), Tipo?, Estado?, Cantidad (3), Balance, Alias agente, Alias jugador (6)
+*/
+function parseAgentLines(lines){
+  const rows = [];
+  let startIndex = 0;
+  // try detect header row that contains 'Fecha' or 'Cantidad' etc
+  if(lines.length === 0) return rows;
+  if (/fecha/i.test(lines[0]) || /cantidad/i.test(lines[0]) || /alias/i.test(lines[0])){
+    startIndex = 1;
   }
-
-  // As final pass we can try fuzzy pairing: match remaining agent-only with remaining chun-only by usuario regardless of monto (optional)
-  // (skip for now; keep strictness)
-
+  for (let i=startIndex;i<lines.length;i++){
+    const line = lines[i];
+    if(!line.trim()) continue;
+    const cols = parseCSVLine(line);
+    // obtain fecha
+    const fechaRaw = (cols[0]||'').trim();
+    let montoRaw = (cols[3] !== undefined ? cols[3] : cols[2] || '');
+    let usuarioRaw = (cols[6] || cols[5] || cols[4] || '').trim();
+    // if alias maybe in another col, fallback to last column
+    if(!usuarioRaw && cols.length>0) usuarioRaw = cols[cols.length-1].trim();
+    const monto = parseAmountRaw(montoRaw);
+    const usuario = usuarioRaw ? String(usuarioRaw).toLowerCase().trim() : '';
+    // parse fecha to Date object if possible
+    let fechaObj = null;
+    if(fechaRaw){
+      const attempt = new Date(fechaRaw.replace(' ', 'T'));
+      fechaObj = isNaN(attempt.getTime()) ? new Date(fechaRaw) : attempt;
+      if(isNaN(fechaObj.getTime())) fechaObj = null;
+    }
+    rows.push({ origen:'AGENT', fecha: fechaRaw, fechaObj, monto, usuario });
+  }
   return rows;
 }
 
-/* ---------- UI wiring ---------- */
-const filesAgentInput = document.getElementById('filesAgent');
-const txtChunior = document.getElementById('txtChunior');
-const btnProcess = document.getElementById('btnProcess');
-const tableWrap = document.getElementById('tableWrap');
-const statTotals = document.getElementById('statTotals');
-const statMatches = document.getElementById('statMatches');
-const statUnmatched = document.getElementById('statUnmatched');
-const btnExportCSV = document.getElementById('btnExportCSV');
-const viewMode = document.getElementById('viewMode');
-const filterUser = document.getElementById('filterUser');
-const btnApplyFilter = document.getElementById('btnApplyFilter');
-
-let lastAgentArrays = [];
-let lastChunList = [];
-let lastRows = [];
-
-filesAgentInput.addEventListener('change', async (e) => {
-  const files = Array.from(e.target.files || []);
-  lastAgentArrays = [];
-  for(const f of files){
-    const txt = await f.text();
-    const parsed = parseAgentCSVText(txt);
-    lastAgentArrays.push(parsed);
+/* parse chunior pasted text.
+   Example line:
+   7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628
+   We split by tabs or 2+ spaces.
+*/
+function parseChuniorLines(lines){
+  const rows = [];
+  for (let raw of lines){
+    if(!raw.trim()) continue;
+    // split by tab or multiple spaces
+    let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean);
+    if(parts.length < 2){
+      parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
+    }
+    // If first token is numeric ID, drop it
+    if(parts.length >= 6 && /^\d+$/.test(parts[0])) parts.shift();
+    // Now expected: [date-time, operador, billetera-info, monto, usuario]
+    // Some variants: date-time may be split in two tokens like '10-11-2025' and '13:48:45'
+    if(parts.length >= 5 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
+      // merge
+      parts[0] = parts[0] + ' ' + parts[1];
+      parts.splice(1,1);
+    }
+    // now try to assign
+    let fechaRaw = parts[0] || '';
+    let operador = parts[1] || '';
+    let billeteraRaw = parts[2] || '';
+    let montoRaw = parts[3] || '';
+    let usuarioRaw = parts[4] || parts[parts.length-1] || '';
+    // clean billetera (e.g., '682 - LUNA' => 'LUNA')
+    let billetera = billeteraRaw.replace(/.*-\s*/,'').trim();
+    if(!billetera) billetera = billeteraRaw.trim();
+    const monto = parseAmountRaw(montoRaw);
+    const usuario = usuarioRaw ? String(usuarioRaw).toLowerCase().trim() : '';
+    // parse date
+    let fechaObj = null;
+    if(fechaRaw){
+      // try dd-mm-yyyy hh:mm:ss -> convert to yyyy-mm-ddThh:mm:ss
+      const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
+      if(m){
+        fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`);
+      } else {
+        const attempt = new Date(fechaRaw.replace(' ', 'T'));
+        fechaObj = isNaN(attempt.getTime()) ? null : attempt;
+      }
+    }
+    rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: operador.toLowerCase().trim(), billetera: billetera.toUpperCase().trim() });
   }
-  statTotals.textContent = `CSV(s) cargados: ${files.length} · Registros: ${lastAgentArrays.flat().length}`;
+  return rows;
+}
+
+/* turno calculation */
+function getTurnoFromDate(d){
+  if(!d || isNaN(d.getTime())) return 'TN';
+  const h = d.getHours();
+  if(h >= 6 && h < 14) return 'TM';
+  if(h >= 14 && h < 22) return 'TT';
+  return 'TN';
+}
+
+/* MAIN processing */
+document.getElementById('processBtn').addEventListener('click', async ()=>{
+  const inputFiles = document.getElementById('agentFiles').files;
+  const chuniorText = document.getElementById('chuniorText').value || '';
+  const resultsBody = document.getElementById('resultsBody');
+  resultsBody.innerHTML = '';
+
+  // read all agent files
+  let agentLines = [];
+  if(inputFiles && inputFiles.length){
+    try{
+      for(const f of inputFiles){
+        const txt = await readFileAsText(f);
+        const lines = splitLines(txt);
+        agentLines = agentLines.concat(lines);
+      }
+    } catch(e){
+      alert('Error leyendo archivos: ' + (e && e.message ? e.message : e));
+      return;
+    }
+  }
+
+  // parse
+  const agentRows = parseAgentLines(agentLines);
+  const chuniorLines = splitLines(chuniorText);
+  const chuniorRows = parseChuniorLines(chuniorLines);
+
+  // enhance with turno
+  agentRows.forEach(r => {
+    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : 'TN';
+  });
+  chuniorRows.forEach(r => {
+    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : 'TN';
+  });
+
+  // matching exact: for each AGENT record find first unmatched CHUNIOR where usuario==usuario && monto==monto
+  const matchedChuniorIdx = new Set();
+  const pairs = [];
+  for (let i=0;i<agentRows.length;i++){
+    const a = agentRows[i];
+    let matchedIndex = -1;
+    for (let j=0;j<chuniorRows.length;j++){
+      if(matchedChuniorIdx.has(j)) continue;
+      const c = chuniorRows[j];
+      if(!a.usuario || !c.usuario) continue;
+      if(a.usuario === c.usuario && Math.abs((a.monto||0) - (c.monto||0)) === 0){
+        matchedIndex = j; break;
+      }
+    }
+    if(matchedIndex >= 0){
+      matchedChuniorIdx.add(matchedIndex);
+      pairs.push({ agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK' });
+    } else {
+      pairs.push({ agente: a, chunior: null, estado: 'MISSING_CHUNIOR' });
+    }
+  }
+  // any chunior left unmatched -> missing agent
+  for (let j=0;j<chuniorRows.length;j++){
+    if(!matchedChuniorIdx.has(j)){
+      pairs.push({ agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT' });
+    }
+  }
+
+  // populate filter selects: operadores / billeteras
+  const operadores = new Set(), billeteras = new Set();
+  chuniorRows.forEach(r => { if(r.operador) operadores.add(r.operador); if(r.billetera) billeteras.add(r.billetera); });
+
+  const opSel = document.getElementById('filterOperador');
+  opSel.innerHTML = '<option value="__ALL">Todos</option>';
+  Array.from(operadores).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; opSel.appendChild(opt); });
+  const biSel = document.getElementById('filterBilletera');
+  biSel.innerHTML = '<option value="__ALL">Todas</option>';
+  Array.from(billeteras).sort().forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; biSel.appendChild(opt); });
+
+  // store global arrays for filtering/export
+  window.__COMPARE_PAIRS = pairs;
+
+  // render
+  renderTable();
+  // update counts
+  document.getElementById('totAgent').textContent = agentRows.length;
+  document.getElementById('totChunior').textContent = chuniorRows.length;
+  document.getElementById('totPaired').textContent = pairs.filter(p=>p.estado==='OK').length;
+  document.getElementById('countTotals').textContent = `${pairs.length} filas (incluye unmatched)`;
+  document.getElementById('countPaired').textContent = pairs.filter(p=>p.estado==='OK').length;
+  document.getElementById('countMissing').textContent = pairs.filter(p=>p.estado !== 'OK').length;
 });
 
-btnProcess.addEventListener('click', ()=>{
-  const tw = parseInt(document.getElementById('timeWindow').value, 10) || 90;
-  const agentList = combineAndSortAgents(lastAgentArrays);
-  const chunList = parseChuniorText(txtChunior.value || '');
-  lastChunList = chunList;
-  const rows = matchLists(agentList, chunList, tw);
-  lastRows = rows;
-  renderTable(rows);
-  // stats
-  const totalAgent = agentList.length;
-  const totalChun = chunList.length;
-  const matchCount = rows.filter(r=>r.status==='match').length;
-  const aOnly = rows.filter(r=>r.status==='agent-only').length;
-  const cOnly = rows.filter(r=>r.status==='chun-only').length;
-  statTotals.textContent = `Agent ${totalAgent} · Chun ${totalChun}`;
-  statMatches.textContent = `✔ ${matchCount}`;
-  statUnmatched.textContent = `A❌ ${aOnly} · C❌ ${cOnly}`;
-});
+/* render table with filters */
+function renderTable(){
+  const pairs = window.__COMPARE_PAIRS || [];
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  const opFilter = document.getElementById('filterOperador').value;
+  const biFilter = document.getElementById('filterBilletera').value;
+  const turnoFilter = document.getElementById('filterTurno').value;
+  const estadoFilter = document.getElementById('filterEstado').value;
 
-function renderTable(rows){
-  const mode = viewMode.value;
-  const filter = (filterUser.value||'').trim().toLowerCase();
-  let html = `<table role="grid"><thead><tr>
-    <th style="width:160px">TS / AGENTE</th>
-    <th style="width:220px">AGENTE — usuario</th>
-    <th style="width:120px">monto</th>
-    <th style="width:160px">TS / CHUNIOR</th>
-    <th style="width:200px">CHUNIOR — usuario</th>
-    <th style="width:140px">monto</th>
-    <th style="width:120px">billetera</th>
-    <th style="width:80px">Estado</th>
-  </tr></thead><tbody>`;
-  for(const r of rows){
-    if(mode === 'matched' && r.status !== 'match') continue;
-    if(mode === 'unmatched' && r.status === 'match') continue;
-    const a = r.agent;
-    const c = r.chun;
-    const aUser = a? a.usuario : '';
-    const cUser = c? c.usuario : '';
-    if(filter && !aUser.includes(filter) && !cUser.includes(filter)) continue;
-    const aTs = a && a.ts ? formatTS(a.ts) : '';
-    const cTs = c && c.ts ? formatTS(c.ts) : '';
-    const aMonto = a && !isNaN(a.monto) ? '$' + a.monto.toFixed(2) : '';
-    const cMonto = c && !isNaN(c.monto) ? '$' + c.monto.toFixed(2) : '';
-    const billetera = c? (c.billetera || c.wallet || '') : '';
-    const estado = r.status === 'match' ? `<span class="ok">✔</span>` : (r.status === 'agent-only' ? `<span class="bad">AG❌</span>` : `<span class="bad">CH❌</span>`);
-    html += `<tr>
-      <td>${escapeHtml(aTs)}</td>
-      <td>${escapeHtml(aUser)}</td>
-      <td>${escapeHtml(aMonto)}</td>
-      <td>${escapeHtml(cTs)}</td>
-      <td>${escapeHtml(cUser)}</td>
-      <td>${escapeHtml(cMonto)}</td>
+  let shown = 0;
+  for(const p of pairs){
+    const a = p.agente;
+    const c = p.chunior;
+    // apply filters: operador / billetera / turno / estado
+    if(opFilter !== '__ALL' && (!c || c.operador !== opFilter)) continue;
+    if(biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) continue;
+    if(turnoFilter !== '__ALL'){
+      const t = (a && a.turno) || (c && c.turno) || 'TN';
+      if(t !== turnoFilter) continue;
+    }
+    if(estadoFilter !== '__ALL' && p.estado !== estadoFilter) continue;
+
+    const tr = document.createElement('tr');
+    tr.className = p.estado === 'OK' ? 'ok' : (p.estado === 'MISSING_CHUNIOR' ? 'miss-chunior' : 'miss-agente');
+
+    const turno = (a && a.turno) || (c && c.turno) || '';
+    const agenteHora = a && a.fechaObj ? formatTime(a.fechaObj) : (a && a.fecha) || '';
+    const agenteUsuario = a && a.usuario ? a.usuario : '';
+    const agenteMonto = a ? (a.monto ? a.monto.toFixed(2) : '0.00') : '';
+    const chuniorHora = c && c.fechaObj ? formatTime(c.fechaObj) : (c && c.fecha) || '';
+    const chuniorUsuario = c && c.usuario ? c.usuario : '';
+    const chuniorMonto = c ? (c.monto ? c.monto.toFixed(2) : '0.00') : '';
+    const operador = c && c.operador ? c.operador : '';
+    const billetera = c && c.billetera ? c.billetera : '';
+
+    tr.innerHTML = `
+      <td>${turno}</td>
+      <td>${escapeHtml(agenteHora)}</td>
+      <td>${escapeHtml(agenteUsuario)}</td>
+      <td>$ ${agenteMonto}</td>
+      <td>${escapeHtml(chuniorHora)}</td>
+      <td>${escapeHtml(chuniorUsuario)}</td>
+      <td>$ ${chuniorMonto}</td>
+      <td>${escapeHtml(operador)}</td>
       <td>${escapeHtml(billetera)}</td>
-      <td style="text-align:center">${estado}</td>
-    </tr>`;
+      <td>${p.estado === 'OK' ? '<span class="state-ok">✔ OK</span>' : (p.estado === 'MISSING_CHUNIOR' ? '<span class="state-bad">❌ Falta CH</span>' : '<span class="state-bad">❌ Falta AG</span>')}</td>
+    `;
+    tbody.appendChild(tr);
+    shown++;
   }
-  html += '</tbody></table>';
-  tableWrap.innerHTML = html;
+  document.getElementById('countTotals').textContent = `${shown} filas visibles`;
 }
 
-btnExportCSV.addEventListener('click', ()=>{
-  if(!lastRows || !lastRows.length) return alert('Nada para exportar.');
-  const out = [];
-  out.push(['ts_agent','usuario_agent','monto_agent','ts_chun','usuario_chun','monto_chun','billetera_chun','estado']);
-  for(const r of lastRows){
-    out.push([
-      r.agent?.fechaRaw || '',
-      r.agent?.usuario || '',
-      isNaN(r.agent?.monto)?'':r.agent?.monto,
-      r.chun?.fechaRaw || '',
-      r.chun?.usuario || '',
-      isNaN(r.chun?.monto)?'':r.chun?.monto,
-      r.chun?.billetera || '',
-      r.status
-    ]);
-  }
-  const csv = out.map(row => row.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'reconciliacion_analitica.csv'; a.click();
-  URL.revokeObjectURL(a.href);
+/* helpers */
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function formatTime(d){ if(!d) return ''; try{ return d.toLocaleString(); }catch(e){return '';} }
+
+/* filters change */
+['filterOperador','filterBilletera','filterTurno','filterEstado'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderTable);
 });
 
-btnApplyFilter.addEventListener('click', ()=> renderTable(lastRows || []));
+/* EXPORT CSV */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const pairs = window.__COMPARE_PAIRS || [];
+  if(!pairs.length){ alert('No hay datos para exportar.'); return; }
+  // build CSV header
+  const headers = ['AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TURNO'];
+  const rows = [headers.join(',')];
+  for(const p of pairs){
+    const a = p.agente;
+    const c = p.chunior;
+    const agenteHora = a && a.fechaObj ? a.fechaObj.toISOString() : (a && csvSafe(a.fecha)) || '';
+    const agenteUsuario = a && a.usuario ? a.usuario : '';
+    const agenteMonto = a && a.monto ? a.monto.toFixed(2) : '';
+    const chuniorHora = c && c.fechaObj ? c.fechaObj.toISOString() : (c && csvSafe(c.fecha)) || '';
+    const chuniorUsuario = c && c.usuario ? c.usuario : '';
+    const chuniorMonto = c && c.monto ? c.monto.toFixed(2) : '';
+    const operador = c && c.operador ? c.operador : '';
+    const billetera = c && c.billetera ? c.billetera : '';
+    const estado = p.estado;
+    const turno = (a && a.turno) || (c && c.turno) || '';
+    const row = [csvSafe(agenteHora), csvSafe(agenteUsuario), csvSafe(agenteMonto), csvSafe(chuniorHora), csvSafe(chuniorUsuario), csvSafe(chuniorMonto), csvSafe(operador), csvSafe(billetera), csvSafe(estado), csvSafe(turno)].join(',');
+    rows.push(row);
+  }
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
 
-function formatTS(d){
-  if(!d) return '';
-  try{
-    const dt = new Date(d);
-    if(isNaN(dt.getTime())) return String(d);
-    return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0')+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0')+':'+String(dt.getSeconds()).padStart(2,'0');
-  }catch(e){ return String(d); }
+function csvSafe(v){
+  if(v === null || v === undefined) return '';
+  let s = String(v).replace(/"/g,'""');
+  if(s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) s = `"${s}"`;
+  return s;
 }
-function escapeHtml(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+/* Copy for Excel: builds simple two-column-ish paste with AGENTE user in col A and TURNO in col G? 
+   The user requested earlier a specialized copy — here we copy rows as TSV so you can paste into Sheets nicely.
+   We'll export columns: AGENTE_USUARIO (col A), AGENTE_HORA (col B), AGENTE_MONTO (col C), TURNO (col D), CHUNIOR_USUARIO (col E), CHUNIOR_MONTO (col F), OPERADOR (col G), BILLETERA (col H), ESTADO (col I)
+*/
+document.getElementById('copyExcelBtn').addEventListener('click', async ()=>{
+  const pairs = window.__COMPARE_PAIRS || [];
+  if(!pairs.length){ alert('No hay datos para copiar'); return; }
+  const lines = [];
+  // header
+  lines.push(['AGENTE_USUARIO','AGENTE_HORA','AGENTE_MONTO','TURNO','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO'].join('\t'));
+  for(const p of pairs){
+    const a = p.agente, c = p.chunior;
+    const agenteUsuario = a && a.usuario ? a.usuario : '';
+    const agenteHora = a && a.fechaObj ? a.fechaObj.toLocaleString() : (a && a.fecha) || '';
+    const agenteMonto = a && a.monto ? a.monto.toFixed(2) : '';
+    const turno = (a && a.turno) || (c && c.turno) || '';
+    const chuniorUsuario = c && c.usuario ? c.usuario : '';
+    const chuniorMonto = c && c.monto ? c.monto.toFixed(2) : '';
+    const operador = c && c.operador ? c.operador : '';
+    const billetera = c && c.billetera ? c.billetera : '';
+    const estado = p.estado;
+    const row = [agenteUsuario, agenteHora, agenteMonto, turno, chuniorUsuario, chuniorMonto, operador, billetera, estado].join('\t');
+    lines.push(row);
+  }
+  const tsv = lines.join('\n');
+  try{
+    await navigator.clipboard.writeText(tsv);
+    alert('Copiado al portapapeles como TSV — pegalo en Google Sheets (Archivo > Pegar)');
+  }catch(e){
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = tsv;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    alert('Copiado (fallback). Pega en Sheets.');
+  }
+});
+
+/* small utility: re-render when stored pairs updated (if needed) */
+window.reRenderCompare = renderTable;
 </script>
 </body>
 </html>
