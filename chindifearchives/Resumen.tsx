@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SummaryData } from '../types';
+import type { SummaryData } from './tipos';
 
 interface SummaryCardProps {
   label: string;
@@ -21,11 +21,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, colorClass = 't
   );
 };
 
-interface SummaryProps {
+interface ResumenProps {
   summary: SummaryData;
 }
 
-export const Summary: React.FC<SummaryProps> = ({ summary }) => {
+export const Resumen: React.FC<ResumenProps> = ({ summary }) => {
   return (
     <div className="summary">
       <SummaryCard label="Total Agente" value={summary.agentTotal} />
