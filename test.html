@@ -43,6 +43,8 @@
   tr.ok td{background:rgba(46,204,113,0.04);border-left:2px solid var(--ok);}
   tr.miss-chunior td{background:rgba(224,71,71,0.04);border-left:2px solid var(--bad);}
   tr.miss-agente td{background:rgba(255,190,60,0.04);border-left:2px solid var(--warn);}
+  tr.ignored { opacity: 0.5; font-style: italic; }
+  tr.ignored td { background: rgba(100,100,100,0.1); }
   .badge{padding:6px 8px;border-radius:8px;background:var(--glass);color:var(--muted);font-size:12px;}
   .state-ok{color:var(--ok);font-weight:700}
   .state-bad{color:var(--bad);font-weight:800}
@@ -50,6 +52,10 @@
   .controls-vertical{display:flex;flex-direction:column;gap:8px}
   .notes{margin-top:10px;color:var(--muted);font-size:13px}
   .flex-col {display:flex; flex-direction:column; gap:4px;}
+  .action-btn { background:none; border:none; cursor:pointer; padding: 4px; display:inline-flex; align-items:center; justify-content:center; border-radius:4px; }
+  .action-btn:hover { background: rgba(255,255,255,0.1); }
+  .action-btn svg { width: 16px; height: 16px; }
+
 
   @media (max-width:920px){ 
     .row{flex-direction:column} 
@@ -135,6 +141,7 @@
             <th style="min-width:100px">Operador</th>
             <th style="min-width:100px">Billetera</th>
             <th style="min-width:80px">Estado</th>
+            <th style="width:50px">Acción</th>
           </tr>
         </thead>
         <tbody id="resultsBody"></tbody>
@@ -309,15 +316,19 @@ function getTurnoFromDate(d){
   return 'TN';
 }
 
+// Global state for ignored discrepancies
+window.__IGNORED_IDS = new Set();
+
 /* MAIN processing */
 async function processData() {
   const processBtn = document.getElementById('processBtn');
   const agentFiles = document.getElementById('agentFiles').files;
   const chuniorText = document.getElementById('chuniorText').value || '';
-  document.getElementById('resultsBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
+  document.getElementById('resultsBody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
   
   processBtn.disabled = true;
   processBtn.textContent = 'Procesando...';
+  window.__IGNORED_IDS.clear(); // Reset ignored IDs on new process
 
   let allAgentRows = [];
   if(agentFiles && agentFiles.length){
@@ -350,36 +361,32 @@ async function processData() {
 
   const matchedChuniorIdx = new Set();
   const pairs = [];
-  const agentRowsToMatch = [];
+  let idCounter = 0;
 
   allAgentRows.forEach(a => {
     if (a.isAdminCharge) {
-        pairs.push({ agente: a, chunior: null, estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+        pairs.push({ id: `admin-${idCounter++}`, agente: a, chunior: null, estado: 'OK', tipoMovimiento: a.tipoMovimiento });
     } else {
-        agentRowsToMatch.push(a);
+        let matchedIndex = -1;
+        for (let j=0; j<chuniorRows.length; j++){
+          if(matchedChuniorIdx.has(j)) continue;
+          const c = chuniorRows[j];
+          if(a.usuario && c.usuario && a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01){
+            matchedIndex = j; break;
+          }
+        }
+        if(matchedIndex >= 0){
+          matchedChuniorIdx.add(matchedIndex);
+          pairs.push({ id: `match-${idCounter++}`, agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+        } else {
+          pairs.push({ id: `agent-miss-${idCounter++}`, agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento });
+        }
     }
   });
-
-  for (const a of agentRowsToMatch){
-    let matchedIndex = -1;
-    for (let j=0; j<chuniorRows.length; j++){
-      if(matchedChuniorIdx.has(j)) continue;
-      const c = chuniorRows[j];
-      if(a.usuario && c.usuario && a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01){
-        matchedIndex = j; break;
-      }
-    }
-    if(matchedIndex >= 0){
-      matchedChuniorIdx.add(matchedIndex);
-      pairs.push({ agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento });
-    } else {
-      pairs.push({ agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento });
-    }
-  }
   
   for (let j=0; j<chuniorRows.length; j++){
     if(!matchedChuniorIdx.has(j)){
-      pairs.push({ agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT', tipoMovimiento: chuniorRows[j].tipoMovimiento });
+      pairs.push({ id: `chunior-miss-${idCounter++}`, agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT', tipoMovimiento: chuniorRows[j].tipoMovimiento });
     }
   }
 
@@ -442,7 +449,7 @@ function getFilteredPairs() {
             if (t !== turnoFilter) return false;
         }
         if (estadoFilter !== '__ALL') {
-            if (a?.isAdminCharge) { // Special case for admin charges
+            if (a?.isAdminCharge) {
                 return estadoFilter === 'OK';
             }
             return p.estado === estadoFilter;
@@ -457,18 +464,24 @@ function renderTable(filteredPairs){
   tbody.innerHTML = '';
   
   if (filteredPairs.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">No hay registros para mostrar con los filtros actuales.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">No hay registros para mostrar.</td></tr>';
     return;
   }
   
+  const iconEye = `<svg fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.816 1.097-2.074 2.157-3.642 2.766C9.646 11.668 8.028 12.5 6 12.5c-2.028 0-3.646-.832-5.008-2.234A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`;
+  const iconEyeSlash = `<svg fill="currentColor" viewBox="0 0 16 16"><path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM11.21 11.21A3.5 3.5 0 0 1 6.79 6.79l-1.615-1.615a3.5 3.5 0 0 1-4.474-4.474L.173 2.065a1 1 0 0 1 1.414-1.414l12.486 12.486a1 1 0 0 1-1.414 1.414L11.21 11.21z"/><path d="M16 8s-3-5.5-8-5.5a7.027 7.027 0 0 0-2.79.588l.607.607A3.5 3.5 0 0 1 8 5.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.816 1.097-2.074 2.157-3.642 2.766C9.646 11.668 8.028 12.5 6 12.5c-.313 0-.62-.014-.924-.04L4.69 14.33A12.64 12.64 0 0 0 8 15c5 0 8-5.5 8-5.5z"/></svg>`;
+
   for(const p of filteredPairs){
     const a = p.agente, c = p.chunior;
+    const isIgnored = window.__IGNORED_IDS.has(p.id);
     const tr = document.createElement('tr');
+    
     let statusClass = '';
     if (a?.isAdminCharge) statusClass = 'ok';
     else if (p.estado === 'OK') statusClass = 'ok';
     else if (p.estado === 'MISSING_CHUNIOR') statusClass = 'miss-chunior';
     else if (p.estado === 'MISSING_AGENT') statusClass = 'miss-agente';
+    if(isIgnored) statusClass += ' ignored';
     tr.className = statusClass;
     
     const agenteName = a?.agente?.toUpperCase() || '';
@@ -488,12 +501,17 @@ function renderTable(filteredPairs){
     else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
     else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
 
+    let actionCell = '<td></td>';
+    if (p.estado !== 'OK' && !a?.isAdminCharge) {
+        actionCell = `<td><button class="action-btn" data-id="${p.id}" title="${isIgnored ? 'Incluir en cálculo' : 'Ignorar en cálculo'}">${isIgnored ? iconEye : iconEyeSlash}</button></td>`;
+    }
+
     tr.innerHTML = `
       <td>${escapeHtml(agenteName)}</td><td>${turno}</td><td>${escapeHtml(agenteHora)}</td>
       <td>${escapeHtml(agenteUsuario)}</td><td>$ ${agenteMonto}</td>
       <td>${escapeHtml(chuniorHora)}</td><td>${escapeHtml(chuniorUsuario)}</td>
       <td>$ ${chuniorMonto}</td><td>${escapeHtml(operador)}</td>
-      <td>${escapeHtml(billetera)}</td><td>${estadoDisplay}</td>
+      <td>${escapeHtml(billetera)}</td><td>${estadoDisplay}</td>${actionCell}
     `;
     tbody.appendChild(tr);
   }
@@ -503,8 +521,10 @@ function updateSummary(filteredPairs){
   let agentTotal = 0, chuniorTotal = 0, agentIncome = 0, chuniorIncome = 0;
   let agentOutcome = 0, chuniorOutcome = 0, adminTotal = 0;
   let pairedCount = 0, missingCount = 0;
+  
+  const relevantPairs = filteredPairs.filter(p => !window.__IGNORED_IDS.has(p.id));
 
-  filteredPairs.forEach(p => {
+  relevantPairs.forEach(p => {
     if (p.agente) {
       if(p.agente.isAdminCharge) {
           adminTotal += p.agente.monto;
@@ -517,11 +537,15 @@ function updateSummary(filteredPairs){
       chuniorTotal += p.chunior.monto;
       p.chunior.monto >= 0 ? chuniorIncome += p.chunior.monto : chuniorOutcome += p.chunior.monto;
     }
+  });
 
-    if (!p.agente?.isAdminCharge) {
-        if(p.estado === 'OK') pairedCount++;
-        else missingCount++;
-    }
+  filteredPairs.forEach(p => { // Count visible discrepancies, even if ignored
+      if (!p.agente?.isAdminCharge && p.estado !== 'OK') {
+          missingCount++;
+      }
+      if (!p.agente?.isAdminCharge && p.estado === 'OK') {
+          pairedCount++;
+      }
   });
   
   const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -562,9 +586,9 @@ function setupActionButtons() {
     const copyBtn = document.getElementById('copyExcelBtn');
 
     const getExportData = () => {
-        const data = getFilteredPairs();
+        const data = getFilteredPairs().filter(p => !window.__IGNORED_IDS.has(p.id));
         if (!data.length) {
-            alert('No hay datos (visibles en la tabla) para exportar.');
+            alert('No hay datos (visibles y no ignorados) para exportar.');
             return null;
         }
         return data;
@@ -660,6 +684,20 @@ document.getElementById('processBtn').addEventListener('click', processData);
 
 document.getElementById('agentFiles').addEventListener('change', updateButtonStates);
 document.getElementById('chuniorText').addEventListener('input', updateButtonStates);
+
+document.getElementById('resultsBody').addEventListener('click', (e) => {
+    const button = e.target.closest('.action-btn');
+    if (button && button.dataset.id) {
+        const id = button.dataset.id;
+        if (window.__IGNORED_IDS.has(id)) {
+            window.__IGNORED_IDS.delete(id);
+        } else {
+            window.__IGNORED_IDS.add(id);
+        }
+        applyFiltersAndRender();
+    }
+});
+
 
 document.addEventListener('DOMContentLoaded', () => {
     setupActionButtons();
