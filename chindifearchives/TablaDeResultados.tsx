@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PairedRecord } from '../types';
+import type { PairedRecord } from './tipos';
 
 interface ResultsTableProps {
   data: PairedRecord[];
@@ -43,7 +43,7 @@ const getRowClass = (status: PairedRecord['status'], isAdmin: boolean, isIgnored
     return className;
 };
 
-export const ResultsTable: React.FC<ResultsTableProps> = ({ data, ignoredIds, onToggleIgnore }) => {
+export const TablaDeResultados: React.FC<ResultsTableProps> = ({ data, ignoredIds, onToggleIgnore }) => {
   return (
     <div className="table-wrap">
       <table role="table">
