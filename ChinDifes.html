@@ -21,21 +21,25 @@
   input[type=file]{background:var(--glass);padding:8px;border-radius:8px;border:1px dashed var(--border-color);color:var(--muted);width:100%;}
   textarea{width:100%;min-height:140px;background:var(--glass);border-radius:8px;padding:10px;border:1px solid var(--border-color);color:var(--text);resize:vertical}
   .controls{display:flex;gap:8px;align-items:center}
-  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer;transition:transform 0.1s ease-out}
+  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer;transition: all 0.2s ease-out;}
   .btn:active{transform:translateY(1px)}
+  .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.6; }
   .small{padding:8px 10px;font-size:13px}
   .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color)}
   select{background:var(--glass);border-radius:8px;padding:8px;border:1px solid var(--border-color);color:var(--text);-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px;}
+  select option { background: var(--card); color: var(--text); }
   .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px;color:var(--muted);font-size:14px;padding-top:10px;border-top:1px solid var(--border-color)}
   .summary .badge {text-align:center; padding:10px; background:var(--glass); border-radius:8px; border:1px solid var(--border-color); display:flex; flex-direction:column; align-items:center; justify-content:center;}
   .summary .badge strong {font-size:1.4em; color:var(--text); margin-top:5px;}
   .summary .badge.diff strong {color:var(--bad);}
   .summary .badge.ok strong {color:var(--ok);}
+  .summary .badge.warn strong {color:var(--warn);}
+  .summary .badge.bad strong {color: var(--bad);}
 
   .table-wrap{margin-top:12px;max-height:520px;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid var(--border-color)}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{padding:8px 10px;border-bottom:1px solid var(--border-color);text-align:left;vertical-align:middle}
-  th{position:sticky;top:0;background:rgba(0,0,0,0.3);z-index:3;color:#dff6fb;font-weight:600}
+  th{position:sticky;top:0;background:rgba(11,23,34,0.7);backdrop-filter: blur(5px); z-index:3;color:#dff6fb;font-weight:600}
   tr.ok td{background:rgba(46,204,113,0.04);border-left:2px solid var(--ok);}
   tr.miss-chunior td{background:rgba(224,71,71,0.04);border-left:2px solid var(--bad);}
   tr.miss-agente td{background:rgba(255,190,60,0.04);border-left:2px solid var(--warn);}
@@ -53,6 +57,15 @@
     .summary{grid-template-columns:1fr;}
   }
 </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -85,6 +98,7 @@
       <div class="badge">Total Agente: <strong id="sumAgentTotal">0.00</strong></div>
       <div class="badge">Total Chunior: <strong id="sumChuniorTotal">0.00</strong></div>
       <div class="badge diff">Diferencia Total: <strong id="sumDifference">0.00</strong></div>
+      <div class="badge warn">Recargas Admin: <strong id="sumAdminTotal">0.00</strong></div>
       <div class="badge ok">Ingresos Agente: <strong id="sumAgentIncome">0.00</strong></div>
       <div class="badge ok">Ingresos Chunior: <strong id="sumChuniorIncome">0.00</strong></div>
       <div class="badge diff">Dif. Ingresos: <strong id="sumDiffIncome">0.00</strong></div>
@@ -96,6 +110,7 @@
 
     <div class="filters">
       <div class="badge">Registros totales: <span id="countTotals">0</span></div>
+      <div><label>Fecha</label><select id="filterFecha"><option value="__ALL">Todos los días</option></select></div>
       <div><label>Agente</label><select id="filterAgente"><option value="__ALL">Todos</option></select></div>
       <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
       <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
@@ -134,7 +149,7 @@
 </div>
 
 <script>
-/* UTIL: lectura CSV robusta (returns array of lines without header if detected) */
+/* UTIL: lectura CSV robusta */
 function readFileAsText(file){
   return new Promise((res, rej) => {
     const r = new FileReader();
@@ -144,10 +159,8 @@ function readFileAsText(file){
   });
 }
 function splitLines(text){
-  // Remove BOM if present, then split
   return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() !== '');
 }
-/* parse CSV line with quotes */
 function parseCSVLine(line, delimiter = ','){
   const out = [];
   let cur = '', inQuotes=false;
@@ -164,171 +177,132 @@ function parseCSVLine(line, delimiter = ','){
   return out;
 }
 
-/* CLEAN amount strings:
-   AGENT CSV likely "4000" or "4.000,00" or "4000.00" => normalize to Number (float)
-   CHUNIOR sample: "$ 3.000,00" => remove $, spaces, convert
-*/
+/* CLEAN amount strings: FIXED VERSION */
 function parseAmountRaw(raw){
   if(raw === null || raw === undefined) return 0;
   let s = String(raw).trim();
   if(!s) return 0;
-  // remove currency signs and non-numeric chars except for comma and dot
-  s = s.replace(/[^\d\-,\.]/g, '');
-
-  // Handle common numeric formats (e.g., "1.000,00" vs "1,000.00" vs "1000,00")
-  // If it contains both '.' and ',' and ',' is last -> assume European (thousands sep '.', decimal ',')
-  if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) {
-    if (s.indexOf(',') > s.indexOf('.')) { // European format: 1.000,00
-      s = s.replace(/\./g, '').replace(/,/g, '.');
-    } else { // US format: 1,000.00
-      s = s.replace(/,/g, '');
-    }
-  } else if (s.indexOf(',') !== -1) { // Only comma, assume European decimal
-    s = s.replace(/,/g, '.');
+  
+  s = s.replace(/[^\d,\.-]/g, ''); // Remove currency symbols, spaces, etc.
+  
+  // Standardize to use '.' as decimal separator, common in ARS format "1.234,56"
+  if (s.includes(',')) {
+    s = s.replace(/\./g, '').replace(',', '.');
   }
-  // Remove any remaining thousands separators (dots that aren't decimals if it was US format)
-  s = s.replace(/(\d)\.(\d{3})/g, '$1$2'); // Remove dots that are clearly thousands separators in numbers like 1.234
-
+  
   const n = parseFloat(s);
   return isNaN(n) ? 0 : n;
 }
 
 
-/* parse agent CSV rows array (lines)
-   We try to detect two formats:
-   1. Sub-agente: Fecha,Tipo,Estado,Cantidad,Balance,Alias del agente,Alias del jugador (Cantidad is col 3)
-   2. Agente principal: Fecha,Estado,Cantidad,Tipo,Alias,Balance (Cantidad is col 2) -> Quantity can be negative here for withdrawals
-   Also detect 'sep=,' line and ignore first header line.
-*/
+/* parse agent CSV rows array (lines) */
 function parseAgentLines(lines, agentName = 'Desconocido'){
   const rows = [];
   let startIndex = 0;
-  let isSubAgentFormat = false; // Flag to determine format
+  let format = null; // null, 'sub', 'main'
 
   if(lines.length === 0) return rows;
-
-  // Check for 'sep=,' and skip it
-  if(lines[0].toLowerCase().startsWith('sep=')){
-    startIndex = 1;
-  }
-  // Try to determine format from header
+  if(lines[0].toLowerCase().startsWith('sep=')) startIndex = 1;
+  
   const headerLine = lines[startIndex];
   if (headerLine){
     const headerCols = parseCSVLine(headerLine);
-    // Check for 'Cantidad' at index 3 (Sub-agente format)
-    if(headerCols[3] && headerCols[3].toLowerCase() === 'cantidad' && headerCols[6] && headerCols[6].toLowerCase() === 'alias del jugador'){
-      isSubAgentFormat = true;
-    } else if (headerCols[2] && headerCols[2].toLowerCase() === 'cantidad' && headerCols[4] && headerCols[4].toLowerCase() === 'alias'){
-      // Agente principal format
-      isSubAgentFormat = false; // Explicitly set false for clarity
+    if(headerCols[3]?.toLowerCase() === 'cantidad' && headerCols[6]?.toLowerCase() === 'alias del jugador'){
+      format = 'sub';
+    } else if (headerCols[2]?.toLowerCase() === 'cantidad' && headerCols[4]?.toLowerCase() === 'alias'){
+      format = 'main';
     } else {
-        // Fallback or guess: check if 'Tipo' is at index 1 for sub-agent (Fecha,Tipo,Estado,...)
-        // or 'Estado' at index 1 for main agent (Fecha,Estado,Cantidad,...)
-        if (headerCols[1] && headerCols[1].toLowerCase() === 'tipo' && headerCols[3] && headerCols[3].toLowerCase() === 'cantidad') {
-            isSubAgentFormat = true;
-        } else if (headerCols[1] && headerCols[1].toLowerCase() === 'estado' && headerCols[2] && headerCols[2].toLowerCase() === 'cantidad') {
-            isSubAgentFormat = false;
-        } else {
-             console.warn('Could not determine CSV format for agent file, assuming sub-agent format as default.');
-             isSubAgentFormat = true; // Default to sub-agent if cannot detect
-        }
+      console.warn(`Could not determine CSV format for ${agentName}, skipping file.`);
+      return rows;
     }
-    startIndex++; // Skip the header line once format is determined
+    startIndex++;
   }
 
-  for (let i=startIndex;i<lines.length;i++){
+  for (let i=startIndex; i<lines.length; i++){
     const line = lines[i];
-    if(!line.trim()) continue;
+    if(!line.trim() || !line.includes(',')) continue; // Skip empty or malformed lines
     const cols = parseCSVLine(line);
+    if(cols.length < 5) continue; // Basic sanity check
 
     const fechaRaw = (cols[0]||'').trim();
-    let montoRaw, usuarioRaw;
+    let montoRaw, usuarioRaw, tipoRaw;
 
-    if(isSubAgentFormat){
-      // Fecha,Tipo,Estado,Cantidad,Balance,Alias del agente,Alias del jugador
-      montoRaw = (cols[3] || '');
-      usuarioRaw = (cols[6] || '').trim();
-    } else {
-      // Fecha,Estado,Cantidad,Tipo,Alias,Balance (Agente principal)
-      montoRaw = (cols[2] || ''); // Cantidad is col 2
-      usuarioRaw = (cols[4] || '').trim(); // Alias is col 4
+    if(format === 'sub'){
+      montoRaw = cols[3];
+      usuarioRaw = cols[6];
+      tipoRaw = cols[1];
+    } else { // 'main'
+      montoRaw = cols[2];
+      usuarioRaw = cols[4];
+      tipoRaw = cols[3];
     }
 
     const monto = parseAmountRaw(montoRaw);
-    const usuario = usuarioRaw ? String(usuarioRaw).toLowerCase().trim() : '';
-
+    const usuario = (usuarioRaw || '').toLowerCase().trim();
+    const isAdminCharge = /te cargaron/i.test(tipoRaw || '');
+    
     let fechaObj = null;
     if(fechaRaw){
-      // Try to parse YYYY-MM-DD HH:MM:SS format
       const attempt = new Date(fechaRaw.replace(' ', 'T'));
       fechaObj = isNaN(attempt.getTime()) ? new Date(fechaRaw) : attempt;
       if(isNaN(fechaObj.getTime())) fechaObj = null;
     }
-    rows.push({ origen:'AGENT', agente: agentName, fecha: fechaRaw, fechaObj, monto, usuario });
+    rows.push({ origen:'AGENT', agente: agentName, fecha: fechaRaw, fechaObj, monto, usuario, isAdminCharge });
   }
   return rows;
 }
 
 
-/* parse chunior pasted text.
-   Example line:
-   7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628
-   We split by tabs or 2+ spaces.
-*/
+/* parse chunior pasted text */
 function parseChuniorLines(lines){
   const rows = [];
   for (let raw of lines){
     if(!raw.trim()) continue;
-    // split by tab or multiple spaces
+    
     let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean);
-    if(parts.length < 2){
+    if(parts.length < 2) {
       parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
     }
-    // If first token is numeric ID, drop it
-    if(parts.length >= 6 && /^\d+$/.test(parts[0])) parts.shift();
-    // Now expected: [date-time, operador, billetera-info, monto, usuario]
-    // Some variants: date-time may be split in two tokens like '10-11-2025' and '13:48:45'
-    if(parts.length >= 5 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
-      // merge date and time
+
+    if (parts.length > 0 && /^\d{7,}$/.test(parts[0])) {
+      parts.shift();
+    }
+    
+    if(parts.length >= 2 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
       parts[0] = parts[0] + ' ' + parts[1];
       parts.splice(1,1);
     }
-    // now try to assign parts to variables
-    // 10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628
-    // Assuming parts are: [fecha, operador, billetera, monto, usuario] after processing date/id
-    let fechaRaw = parts[0] || '';
-    let operador = parts[1] || '';
-    let billeteraRaw = parts[2] || '';
-    let montoRaw = parts[3] || '';
-    let usuarioRaw = parts[4] || ''; // This is often the last part
+    
+    if(parts.length < 4) {
+      console.warn("Skipping malformed Chunior line (not enough parts):", raw);
+      continue;
+    }
+    
+    let [fechaRaw, operador, billeteraRaw, montoRaw, usuarioRaw] = parts;
 
-    // Clean billetera (e.g., '682 - LUNA' => 'LUNA')
-    let billetera = billeteraRaw.replace(/.*-\s*/,'').trim();
-    if(!billetera) billetera = billeteraRaw.trim(); // Fallback if no hyphen
-    
+    let billetera = (billeteraRaw || '').replace(/.*-\s*/,'').trim();
+    if(!billetera) billetera = (billeteraRaw || '').trim();
+
     const monto = parseAmountRaw(montoRaw);
-    const usuario = usuarioRaw ? String(usuarioRaw).toLowerCase().trim() : '';
+    const usuario = (usuarioRaw || '').toLowerCase().trim();
     
-    // Parse date
     let fechaObj = null;
     if(fechaRaw){
-      // Try dd-mm-yyyy hh:mm:ss -> convert to yyyy-mm-ddThh:mm:ss
       const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
-      if(m){
-        fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`);
-      } else {
+      if(m) fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`);
+      else {
         const attempt = new Date(fechaRaw.replace(' ', 'T'));
-        fechaObj = isNaN(attempt.getTime()) ? null : attempt;
+        if(!isNaN(attempt.getTime())) fechaObj = attempt;
       }
     }
-    rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: operador.toLowerCase().trim(), billetera: billetera.toUpperCase().trim() });
+    rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: (operador || '').toLowerCase().trim(), billetera: billetera.toUpperCase().trim() });
   }
   return rows;
 }
 
 /* turno calculation */
 function getTurnoFromDate(d){
-  if(!d || isNaN(d.getTime())) return ''; // Empty string for unknown/invalid date
+  if(!d || isNaN(d.getTime())) return '';
   const h = d.getHours();
   if(h >= 6 && h < 14) return 'TM';
   if(h >= 14 && h < 22) return 'TT';
@@ -336,36 +310,35 @@ function getTurnoFromDate(d){
 }
 
 /* MAIN processing */
-document.getElementById('processBtn').addEventListener('click', async ()=>{
-  const inputFiles = document.getElementById('agentFiles').files;
+async function processData() {
+  const processBtn = document.getElementById('processBtn');
+  const agentFiles = document.getElementById('agentFiles').files;
   const chuniorText = document.getElementById('chuniorText').value || '';
-  const resultsBody = document.getElementById('resultsBody');
-  resultsBody.innerHTML = '';
+  document.getElementById('resultsBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
+  
+  processBtn.disabled = true;
+  processBtn.textContent = 'Procesando...';
 
-  // read all agent files
   let allAgentRows = [];
-  if(inputFiles && inputFiles.length){
+  if(agentFiles && agentFiles.length){
     try{
-      for(const f of inputFiles){
+      for(const f of agentFiles){
         const txt = await readFileAsText(f);
         const lines = splitLines(txt);
-        // Extract agent name from filename (e.g., "agente_chino.csv" -> "chino")
         const agentNameMatch = f.name.match(/(agente|subagente)_?([a-zA-Z0-9]+)/i);
-        const agentName = agentNameMatch && agentNameMatch[2] ? agentNameMatch[2].toLowerCase() : f.name.replace(/\.csv$/i, '');
-        
+        const agentName = agentNameMatch?.[2]?.toLowerCase() || f.name.replace(/\.csv$/i, '');
         allAgentRows = allAgentRows.concat(parseAgentLines(lines, agentName));
       }
     } catch(e){
-      alert('Error leyendo archivos de agente: ' + (e && e.message ? e.message : e));
-      console.error(e);
+      alert('Error leyendo archivos de agente: ' + (e?.message || e));
+      processBtn.disabled = false;
+      processBtn.textContent = 'Procesar y emparejar';
       return;
     }
   }
 
-  const chuniorLines = splitLines(chuniorText);
-  const chuniorRows = parseChuniorLines(chuniorLines);
+  const chuniorRows = parseChuniorLines(splitLines(chuniorText));
 
-  // enhance with turno
   allAgentRows.forEach(r => {
     r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : '';
     r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO';
@@ -375,284 +348,324 @@ document.getElementById('processBtn').addEventListener('click', async ()=>{
     r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO';
   });
 
-  // Sort Chunior rows by date to handle potential out-of-order entries for matching
-  // This is crucial for matching in sequence
-  chuniorRows.sort((a,b) => (a.fechaObj && b.fechaObj) ? a.fechaObj.getTime() - b.fechaObj.getTime() : 0);
-
-  // matching exact: for each AGENT record find first unmatched CHUNIOR where usuario==usuario && monto==monto
   const matchedChuniorIdx = new Set();
   const pairs = [];
-  for (let i=0;i<allAgentRows.length;i++){
-    const a = allAgentRows[i];
+  const agentRowsToMatch = [];
+
+  allAgentRows.forEach(a => {
+    if (a.isAdminCharge) {
+        pairs.push({ agente: a, chunior: null, estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+    } else {
+        agentRowsToMatch.push(a);
+    }
+  });
+
+  for (const a of agentRowsToMatch){
     let matchedIndex = -1;
-    for (let j=0;j<chuniorRows.length;j++){
+    for (let j=0; j<chuniorRows.length; j++){
       if(matchedChuniorIdx.has(j)) continue;
       const c = chuniorRows[j];
-      if(!a.usuario || !c.usuario) continue; // Must have user
-      
-      // Match exactly on user and amount
-      if(a.usuario === c.usuario && Math.abs((a.monto||0) - (c.monto||0)) < 0.01){ // Allow small float deviation
+      if(a.usuario && c.usuario && a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01){
         matchedIndex = j; break;
       }
     }
     if(matchedIndex >= 0){
       matchedChuniorIdx.add(matchedIndex);
-      pairs.push({ agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento || 'UNKNOWN' });
+      pairs.push({ agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento });
     } else {
-      pairs.push({ agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento || 'UNKNOWN' });
+      pairs.push({ agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento });
     }
   }
-  // any chunior left unmatched -> missing agent
-  for (let j=0;j<chuniorRows.length;j++){
-    if(!matchedChuniorIdx.has(j)){
-      const c = chuniorRows[j];
-      pairs.push({ agente: null, chunior: c, estado: 'MISSING_AGENT', tipoMovimiento: c.tipoMovimiento || 'UNKNOWN' });
-    }
-  }
-
-  // populate filter selects: agentes / operadores / billeteras
-  const agentes = new Set(), operadores = new Set(), billeteras = new Set();
-  allAgentRows.forEach(r => { if(r.agente) agentes.add(r.agente); });
-  chuniorRows.forEach(r => { if(r.operador) operadores.add(r.operador); if(r.billetera) billeteras.add(r.billetera); });
-
-  // Agente filter
-  const agSel = document.getElementById('filterAgente');
-  agSel.innerHTML = '<option value="__ALL">Todos</option>';
-  Array.from(agentes).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o.toUpperCase(); agSel.appendChild(opt); });
-
-  // Operador filter
-  const opSel = document.getElementById('filterOperador');
-  opSel.innerHTML = '<option value="__ALL">Todos</option>';
-  Array.from(operadores).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o.toUpperCase(); opSel.appendChild(opt); });
   
-  // Billetera filter
-  const biSel = document.getElementById('filterBilletera');
-  biSel.innerHTML = '<option value="__ALL">Todas</option>';
-  Array.from(billeteras).sort().forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b.toUpperCase(); biSel.appendChild(opt); });
+  for (let j=0; j<chuniorRows.length; j++){
+    if(!matchedChuniorIdx.has(j)){
+      pairs.push({ agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT', tipoMovimiento: chuniorRows[j].tipoMovimiento });
+    }
+  }
 
-  // store global arrays for filtering/export
-  window.__COMPARE_PAIRS = pairs;
+  const dates = new Set(), agentes = new Set(), operadores = new Set(), billeteras = new Set();
+  pairs.forEach(p => {
+    const d = p.agente?.fechaObj || p.chunior?.fechaObj;
+    if(d) dates.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+    if(p.agente?.agente) agentes.add(p.agente.agente);
+    if(p.chunior?.operador) operadores.add(p.chunior.operador);
+    if(p.chunior?.billetera) billeteras.add(p.chunior.billetera);
+  });
+  
+  const populateSelect = (id, options, defaultLabel) => {
+    const select = document.getElementById(id);
+    select.innerHTML = `<option value="__ALL">${defaultLabel}</option>`;
+    Array.from(options).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = String(o).toUpperCase(); select.appendChild(opt); });
+  };
+  populateSelect('filterFecha', dates, 'Todos los días');
+  populateSelect('filterAgente', agentes, 'Todos');
+  populateSelect('filterOperador', operadores, 'Todos');
+  populateSelect('filterBilletera', billeteras, 'Todas');
 
-  // render
-  renderTable();
-  updateSummary();
-});
+  window.__COMPARE_PAIRS = pairs.sort((a, b) => {
+      const dateA = a.agente?.fechaObj || a.chunior?.fechaObj;
+      const dateB = b.agente?.fechaObj || b.chunior?.fechaObj;
+      return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+  });
+  
+  processBtn.textContent = 'Procesar y emparejar';
+  applyFiltersAndRender();
+}
 
-/* render table with filters */
-function renderTable(){
-  const pairs = window.__COMPARE_PAIRS || [];
+function getFilteredPairs() {
+    const pairs = window.__COMPARE_PAIRS || [];
+    const fechaFilter = document.getElementById('filterFecha').value;
+    const agFilter = document.getElementById('filterAgente').value;
+    const opFilter = document.getElementById('filterOperador').value;
+    const biFilter = document.getElementById('filterBilletera').value;
+    const turnoFilter = document.getElementById('filterTurno').value;
+    const estadoFilter = document.getElementById('filterEstado').value;
+    const movimientoFilter = document.getElementById('filterMovimiento').value;
+
+    if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movimientoFilter].every(f => f === '__ALL')) {
+        return pairs;
+    }
+
+    return pairs.filter(p => {
+        const a = p.agente, c = p.chunior;
+        if (fechaFilter !== '__ALL') {
+            const recordDate = a?.fechaObj || c?.fechaObj;
+            if (!recordDate) return false;
+            const recordDateStr = `${recordDate.getFullYear()}-${String(recordDate.getMonth() + 1).padStart(2, '0')}-${String(recordDate.getDate()).padStart(2, '0')}`;
+            if (recordDateStr !== fechaFilter) return false;
+        }
+        if (agFilter !== '__ALL' && (!a || a.agente !== agFilter)) return false;
+        if (opFilter !== '__ALL' && (!c || c.operador !== opFilter)) return false;
+        if (biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) return false;
+        if (turnoFilter !== '__ALL') {
+            const t = a?.turno || c?.turno || '';
+            if (t !== turnoFilter) return false;
+        }
+        if (estadoFilter !== '__ALL') {
+            if (a?.isAdminCharge) { // Special case for admin charges
+                return estadoFilter === 'OK';
+            }
+            return p.estado === estadoFilter;
+        }
+        if (movimientoFilter !== '__ALL' && p.tipoMovimiento !== movimientoFilter) return false;
+        return true;
+    });
+}
+
+function renderTable(filteredPairs){
   const tbody = document.getElementById('resultsBody');
   tbody.innerHTML = '';
   
-  const agFilter = document.getElementById('filterAgente').value;
-  const opFilter = document.getElementById('filterOperador').value;
-  const biFilter = document.getElementById('filterBilletera').value;
-  const turnoFilter = document.getElementById('filterTurno').value;
-  const estadoFilter = document.getElementById('filterEstado').value;
-  const movimientoFilter = document.getElementById('filterMovimiento').value;
-
-  let shown = 0;
-  for(const p of pairs){
-    const a = p.agente;
-    const c = p.chunior;
-    
-    // Apply filters
-    if(agFilter !== '__ALL' && (!a || a.agente !== agFilter)) continue;
-    if(opFilter !== '__ALL' && (!c || c.operador !== opFilter)) continue;
-    if(biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) continue;
-    if(turnoFilter !== '__ALL'){
-      const t = (a && a.turno) || (c && c.turno) || '';
-      if(t !== turnoFilter) continue;
-    }
-    if(estadoFilter !== '__ALL' && p.estado !== estadoFilter) continue;
-    if(movimientoFilter !== '__ALL' && p.tipoMovimiento !== movimientoFilter) continue;
-
-
+  if (filteredPairs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">No hay registros para mostrar con los filtros actuales.</td></tr>';
+    return;
+  }
+  
+  for(const p of filteredPairs){
+    const a = p.agente, c = p.chunior;
     const tr = document.createElement('tr');
     let statusClass = '';
-    if (p.estado === 'OK') statusClass = 'ok';
+    if (a?.isAdminCharge) statusClass = 'ok';
+    else if (p.estado === 'OK') statusClass = 'ok';
     else if (p.estado === 'MISSING_CHUNIOR') statusClass = 'miss-chunior';
     else if (p.estado === 'MISSING_AGENT') statusClass = 'miss-agente';
     tr.className = statusClass;
-
-    const agenteName = a && a.agente ? a.agente.toUpperCase() : '';
-    const turno = (a && a.turno) || (c && c.turno) || '';
-    const agenteHora = a && a.fechaObj ? formatTime(a.fechaObj) : (a && a.fecha) || '';
-    const agenteUsuario = a && a.usuario ? a.usuario : '';
-    const agenteMonto = a ? (a.monto ? a.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00') : '';
-    const chuniorHora = c && c.fechaObj ? formatTime(c.fechaObj) : (c && c.fecha) || '';
-    const chuniorUsuario = c && c.usuario ? c.usuario : '';
-    const chuniorMonto = c ? (c.monto ? c.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00') : '';
-    const operador = c && c.operador ? c.operador.toUpperCase() : '';
-    const billetera = c && c.billetera ? c.billetera : '';
+    
+    const agenteName = a?.agente?.toUpperCase() || '';
+    const turno = a?.turno || c?.turno || '';
+    const agenteHora = a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || '');
+    const agenteUsuario = a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || '');
+    const agenteMonto = a ? a.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
+    const chuniorHora = c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || '');
+    const chuniorUsuario = c?.usuario || '';
+    const chuniorMonto = c ? c.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
+    const operador = c?.operador?.toUpperCase() || '';
+    const billetera = c?.billetera || '';
+    
     let estadoDisplay = '';
-    if (p.estado === 'OK') estadoDisplay = '<span class="state-ok">✔ OK</span>';
+    if (a?.isAdminCharge) estadoDisplay = '<span class="state-ok">✔ ADMIN</span>';
+    else if (p.estado === 'OK') estadoDisplay = '<span class="state-ok">✔ OK</span>';
     else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
     else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
 
-
     tr.innerHTML = `
-      <td>${escapeHtml(agenteName)}</td>
-      <td>${turno}</td>
-      <td>${escapeHtml(agenteHora)}</td>
-      <td>${escapeHtml(agenteUsuario)}</td>
-      <td>$ ${agenteMonto}</td>
-      <td>${escapeHtml(chuniorHora)}</td>
-      <td>${escapeHtml(chuniorUsuario)}</td>
-      <td>$ ${chuniorMonto}</td>
-      <td>${escapeHtml(operador)}</td>
-      <td>${escapeHtml(billetera)}</td>
-      <td>${estadoDisplay}</td>
+      <td>${escapeHtml(agenteName)}</td><td>${turno}</td><td>${escapeHtml(agenteHora)}</td>
+      <td>${escapeHtml(agenteUsuario)}</td><td>$ ${agenteMonto}</td>
+      <td>${escapeHtml(chuniorHora)}</td><td>${escapeHtml(chuniorUsuario)}</td>
+      <td>$ ${chuniorMonto}</td><td>${escapeHtml(operador)}</td>
+      <td>${escapeHtml(billetera)}</td><td>${estadoDisplay}</td>
     `;
     tbody.appendChild(tr);
-    shown++;
   }
-  document.getElementById('countTotals').textContent = `${shown} registros visibles`;
-  document.getElementById('countPaired').textContent = pairs.filter(p=>p.estado==='OK').length;
-  document.getElementById('countMissing').textContent = pairs.filter(p=>p.estado !== 'OK').length;
 }
 
-/* Update Summary Box */
-function updateSummary(){
-  const pairs = window.__COMPARE_PAIRS || [];
-  let agentTotal = 0, chuniorTotal = 0;
-  let agentIncome = 0, chuniorIncome = 0;
-  let agentOutcome = 0, chuniorOutcome = 0;
+function updateSummary(filteredPairs){
+  let agentTotal = 0, chuniorTotal = 0, agentIncome = 0, chuniorIncome = 0;
+  let agentOutcome = 0, chuniorOutcome = 0, adminTotal = 0;
+  let pairedCount = 0, missingCount = 0;
 
-  pairs.forEach(p => {
+  filteredPairs.forEach(p => {
     if (p.agente) {
-      agentTotal += p.agente.monto;
-      if (p.agente.monto >= 0) agentIncome += p.agente.monto;
-      else agentOutcome += p.agente.monto;
+      if(p.agente.isAdminCharge) {
+          adminTotal += p.agente.monto;
+      } else {
+          agentTotal += p.agente.monto;
+          p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto;
+      }
     }
     if (p.chunior) {
       chuniorTotal += p.chunior.monto;
-      if (p.chunior.monto >= 0) chuniorIncome += p.chunior.monto;
-      else chuniorOutcome += p.chunior.monto;
+      p.chunior.monto >= 0 ? chuniorIncome += p.chunior.monto : chuniorOutcome += p.chunior.monto;
+    }
+
+    if (!p.agente?.isAdminCharge) {
+        if(p.estado === 'OK') pairedCount++;
+        else missingCount++;
     }
   });
-
-  const difference = agentTotal - chuniorTotal;
-  const diffIncome = agentIncome - chuniorIncome;
-  const diffOutcome = agentOutcome - chuniorOutcome;
-
-  document.getElementById('sumAgentTotal').textContent = agentTotal.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  document.getElementById('sumChuniorTotal').textContent = chuniorTotal.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  document.getElementById('sumDifference').textContent = difference.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   
-  document.getElementById('sumAgentIncome').textContent = agentIncome.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  document.getElementById('sumChuniorIncome').textContent = chuniorIncome.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  document.getElementById('sumDiffIncome').textContent = diffIncome.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  
+  document.getElementById('sumAgentTotal').textContent = format(agentTotal);
+  document.getElementById('sumChuniorTotal').textContent = format(chuniorTotal);
+  document.getElementById('sumDifference').textContent = format(agentTotal - chuniorTotal);
+  document.getElementById('sumAdminTotal').textContent = format(adminTotal);
+  document.getElementById('sumAgentIncome').textContent = format(agentIncome);
+  document.getElementById('sumChuniorIncome').textContent = format(chuniorIncome);
+  document.getElementById('sumDiffIncome').textContent = format(agentIncome - chuniorIncome);
+  document.getElementById('sumAgentOutcome').textContent = format(agentOutcome);
+  document.getElementById('sumChuniorOutcome').textContent = format(chuniorOutcome);
+  document.getElementById('sumDiffOutcome').textContent = format(agentOutcome - chuniorOutcome);
 
-  document.getElementById('sumAgentOutcome').textContent = agentOutcome.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  document.getElementById('sumChuniorOutcome').textContent = chuniorOutcome.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  document.getElementById('sumDiffOutcome').textContent = diffOutcome.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  document.getElementById('countTotals').textContent = `${filteredPairs.length} visibles`;
+  document.getElementById('countPaired').textContent = pairedCount;
+  document.getElementById('countMissing').textContent = missingCount;
 }
 
+function applyFiltersAndRender() {
+    const filteredPairs = getFilteredPairs();
+    renderTable(filteredPairs);
+    updateSummary(filteredPairs);
+    updateButtonStates(); 
+}
 
 /* helpers */
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 function formatTime(d){ 
-  if(!d || isNaN(d.getTime())) return ''; 
-  // Custom format: DD/MM/YYYY HH:MM:SS
+  if(!d || isNaN(d.getTime())) return '';
   const pad = (num) => num.toString().padStart(2, '0');
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-/* filters change */
-['filterAgente','filterOperador','filterBilletera','filterTurno','filterEstado', 'filterMovimiento'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', renderTable);
-});
+function setupActionButtons() {
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyExcelBtn');
 
-/* EXPORT CSV */
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const pairs = window.__COMPARE_PAIRS || [];
-  if(!pairs.length){ alert('No hay datos para exportar.'); return; }
-  // build CSV header
-  const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
-  const rows = [headers.join(',')];
-  for(const p of pairs){
-    const a = p.agente;
-    const c = p.chunior;
-    const agenteName = a && a.agente ? a.agente.toUpperCase() : '';
-    const turno = (a && a.turno) || (c && c.turno) || '';
-    const agenteHora = a && a.fechaObj ? a.fechaObj.toISOString() : (a && csvSafe(a.fecha)) || '';
-    const agenteUsuario = a && a.usuario ? a.usuario : '';
-    const agenteMonto = a && a.monto ? a.monto.toFixed(2) : '';
-    const chuniorHora = c && c.fechaObj ? c.fechaObj.toISOString() : (c && csvSafe(c.fecha)) || '';
-    const chuniorUsuario = c && c.usuario ? c.usuario : '';
-    const chuniorMonto = c && c.monto ? c.monto.toFixed(2) : '';
-    const operador = c && c.operador ? c.operador.toUpperCase() : '';
-    const billetera = c && c.billetera ? c.billetera : '';
-    const estado = p.estado;
-    const tipoMovimiento = p.tipoMovimiento || '';
-    const row = [csvSafe(agenteName), csvSafe(turno), csvSafe(agenteHora), csvSafe(agenteUsuario), csvSafe(agenteMonto), csvSafe(chuniorHora), csvSafe(chuniorUsuario), csvSafe(chuniorMonto), csvSafe(operador), csvSafe(billetera), csvSafe(estado), csvSafe(tipoMovimiento)].join(',');
-    rows.push(row);
-  }
-  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-});
+    const getExportData = () => {
+        const data = getFilteredPairs();
+        if (!data.length) {
+            alert('No hay datos (visibles en la tabla) para exportar.');
+            return null;
+        }
+        return data;
+    }
 
-function csvSafe(v){
-  if(v === null || v === undefined) return '';
-  let s = String(v).replace(/"/g,'""');
-  // Check if string contains comma, double quote or newline. If so, wrap in quotes.
-  if(s.includes(',') || s.includes('"') || s.includes('\n')) s = `"${s}"`;
-  return s;
+    exportBtn.addEventListener('click', () => {
+        const dataToExport = getExportData();
+        if (!dataToExport) return;
+        
+        const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
+        const rows = [headers.join(',')];
+        for(const p of dataToExport){
+          const a = p.agente, c = p.chunior;
+          const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado;
+          const row = [
+            csvSafe(a?.agente?.toUpperCase()), csvSafe(a?.turno || c?.turno), csvSafe(a?.fechaObj?.toISOString()),
+            csvSafe(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario), csvSafe(a?.monto?.toFixed(2)), csvSafe(c?.fechaObj?.toISOString()),
+            csvSafe(c?.usuario), csvSafe(c?.monto?.toFixed(2)), csvSafe(c?.operador?.toUpperCase()),
+            csvSafe(c?.billetera), csvSafe(estado), csvSafe(p.tipoMovimiento)
+          ].join(',');
+          rows.push(row);
+        }
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+        const dataToCopy = getExportData();
+        if (!dataToCopy) return;
+
+        const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
+        const lines = [headers.join('\t')];
+        for(const p of dataToCopy){
+          const a = p.agente, c = p.chunior;
+          const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado;
+          const row = [
+              a?.agente?.toUpperCase() || '', a?.turno || c?.turno || '',
+              a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || ''),
+              a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || ''),
+              a?.monto ? a.monto.toLocaleString('es-AR', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || ''),
+              c?.usuario || '',
+              c?.monto ? c.monto.toLocaleString('es-AR', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.operador?.toUpperCase() || '', c?.billetera || '',
+              estado, p.tipoMovimiento || ''
+          ].join('\t');
+          lines.push(row);
+        }
+        const tsv = lines.join('\n');
+        try{
+          await navigator.clipboard.writeText(tsv);
+          alert('Copiado al portapapeles como TSV.');
+        }catch(e){
+          alert('Error al copiar.');
+        }
+    });
+
+    function csvSafe(v){
+        if(v === null || v === undefined) return '';
+        let s = String(v).replace(/"/g,'""');
+        if(/[,\\"\n]/.test(s)) s = `"${s}"`;
+        return s;
+    }
 }
 
-/* Copy for Excel: builds simple two-column-ish paste with AGENTE user in col A and TURNO in col G? 
-   The user requested earlier a specialized copy — here we copy rows as TSV so you can paste into Sheets nicely.
-   We'll export columns: AGENTE_NOMBRE, TURNO, AGENTE_HORA, AGENTE_USUARIO, AGENTE_MONTO, CHUNIOR_HORA, CHUNIOR_USUARIO, CHUNIOR_MONTO, OPERADOR, BILLETERA, ESTADO, TIPO_MOVIMIENTO
-*/
-document.getElementById('copyExcelBtn').addEventListener('click', async ()=>{
-  const pairs = window.__COMPARE_PAIRS || [];
-  if(!pairs.length){ alert('No hay datos para copiar'); return; }
-  const lines = [];
-  // header
-  lines.push(['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'].join('\t'));
-  for(const p of pairs){
-    const a = p.agente, c = p.chunior;
-    const agenteName = a && a.agente ? a.agente.toUpperCase() : '';
-    const turno = (a && a.turno) || (c && c.turno) || '';
-    const agenteHora = a && a.fechaObj ? formatTime(a.fechaObj) : (a && a.fecha) || '';
-    const agenteUsuario = a && a.usuario ? a.usuario : '';
-    const agenteMonto = a && a.monto ? a.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
-    const chuniorHora = c && c.fechaObj ? formatTime(c.fechaObj) : (c && c.fecha) || '';
-    const chuniorUsuario = c && c.usuario ? c.usuario : '';
-    const chuniorMonto = c && c.monto ? c.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
-    const operador = c && c.operador ? c.operador.toUpperCase() : '';
-    const billetera = c && c.billetera ? c.billetera : '';
-    const estado = p.estado;
-    const tipoMovimiento = p.tipoMovimiento || '';
-    const row = [agenteName, turno, agenteHora, agenteUsuario, agenteMonto, chuniorHora, chuniorUsuario, chuniorMonto, operador, billetera, estado, tipoMovimiento].join('\t');
-    lines.push(row);
-  }
-  const tsv = lines.join('\n');
-  try{
-    await navigator.clipboard.writeText(tsv);
-    alert('Copiado al portapapeles como TSV — pegalo en Google Sheets o Excel');
-  }catch(e){
-    // fallback
-    const ta = document.createElement('textarea');
-    ta.value = tsv;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-    alert('Copiado (fallback). Pega en Sheets.');
-  }
+function updateButtonStates() {
+    const processBtn = document.getElementById('processBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyExcelBtn');
+    const agentFilesInput = document.getElementById('agentFiles');
+    const chuniorTextInput = document.getElementById('chuniorText');
+
+    const hasInput = agentFilesInput.files.length > 0 || chuniorTextInput.value.trim() !== '';
+    const hasResults = window.__COMPARE_PAIRS && getFilteredPairs().length > 0;
+    
+    processBtn.disabled = !hasInput;
+    
+    exportBtn.disabled = !hasResults;
+    copyBtn.disabled = !hasResults;
+}
+
+// === EVENT LISTENERS ===
+document.getElementById('processBtn').addEventListener('click', processData);
+
+['filterFecha', 'filterAgente','filterOperador','filterBilletera','filterTurno','filterEstado', 'filterMovimiento'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', applyFiltersAndRender);
 });
 
-/* small utility: re-render when stored pairs updated (if needed) */
-window.reRenderCompare = renderTable;
+document.getElementById('agentFiles').addEventListener('change', updateButtonStates);
+document.getElementById('chuniorText').addEventListener('input', updateButtonStates);
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupActionButtons();
+    updateButtonStates();
+});
+
 </script>
 </body>
 </html>
