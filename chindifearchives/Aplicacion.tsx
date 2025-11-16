@@ -1,17 +1,16 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import type { PairedRecord, SummaryData, Filters, AvailableFilters } from './types';
-import { processData, generateCSV, generateStyledExcel } from './services/processingService';
-import { Summary } from './components/Summary';
-import { FilterControls } from './components/FilterControls';
-import { ResultsTable } from './components/ResultsTable';
+import type { PairedRecord, SummaryData, Filters, AvailableFilters } from './tipos';
+import { processData, generateCSV, generateStyledExcel } from './servicioDeProcesamiento';
+import { Resumen } from './Resumen';
+import { ControlesDeFiltro } from './ControlesDeFiltro';
+import { TablaDeResultados } from './TablaDeResultados';
 
-const App: React.FC = () => {
+const Aplicacion: React.FC = () => {
   const [agentFiles, setAgentFiles] = useState<FileList | null>(null);
   const [chuniorText, setChuniorText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const [allPairedData, setAllPairedData] = useState<PairedRecord[]>([]);
-  const [summary, setSummary] = useState<SummaryData | null>(null);
   const [availableFilters, setAvailableFilters] = useState<AvailableFilters>({ dates: [], agents: [], operators: [], wallets: [] });
   const [ignoredIds, setIgnoredIds] = useState<Set<string>>(new Set());
 
@@ -34,7 +33,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setIgnoredIds(new Set()); // Reset ignored IDs on new process
     try {
-      const { pairedData, summaryData, availableFiltersData } = await processData(agentFiles, chuniorText);
+      const { pairedData, availableFiltersData } = await processData(agentFiles, chuniorText);
       setAllPairedData(pairedData);
       
       setAvailableFilters(availableFiltersData);
@@ -208,12 +207,12 @@ const App: React.FC = () => {
         </div>
 
         {/* Summary */}
-        {calculatedSummary && <Summary summary={calculatedSummary} />}
+        {calculatedSummary && <Resumen summary={calculatedSummary} />}
 
         {/* Filters and Table */}
         {allPairedData.length > 0 && (
           <div className="pt-4 border-t border-[var(--border-color)]">
-              <FilterControls 
+              <ControlesDeFiltro 
                 filters={filters} 
                 setFilters={setFilters} 
                 availableFilters={availableFilters} 
@@ -221,7 +220,7 @@ const App: React.FC = () => {
                 pairedCount={calculatedSummary?.pairedCount ?? 0}
                 discrepancyCount={calculatedSummary?.discrepancyCount ?? 0}
               />
-              <ResultsTable 
+              <TablaDeResultados 
                 data={filteredData} 
                 ignoredIds={ignoredIds}
                 onToggleIgnore={toggleIgnore}
@@ -237,4 +236,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Aplicacion;
