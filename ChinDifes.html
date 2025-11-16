@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -6,62 +5,172 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>ChinDife</title>
 <style>
-  :root{
-    --bg:#071227; --card:#0b1722; --muted:#9fb6c7; --accent:#06b6d4; --ok:#2ecc71; --bad:#e04747; --warn:#ffbf3c;
-    --glass: rgba(255,255,255,0.03);
-    --text:#e6f7fb;
-    --border-color: rgba(255,255,255,0.08);
+  /* === ANIMATIONS === */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  @keyframes gradient-border {
+    0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
   }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071020,#071827);color:var(--text);padding:18px;}
-  .wrap{max-width:1200px;margin:0 auto}
-  h1{margin:0 0 8px 0;font-size:20px}
-  .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));padding:12px;border-radius:10px;border:1px solid var(--border-color);box-shadow:0 6px 20px rgba(0,0,0,0.5)}
-  .row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-  input[type=file]{background:var(--glass);padding:8px;border-radius:8px;border:1px dashed var(--border-color);color:var(--muted);width:100%;}
-  textarea{width:100%;min-height:140px;background:var(--glass);border-radius:8px;padding:10px;border:1px solid var(--border-color);color:var(--text);resize:vertical}
-  .controls{display:flex;gap:8px;align-items:center}
-  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer;transition: all 0.2s ease-out;}
-  .btn:active{transform:translateY(1px)}
-  .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.6; }
-  .small{padding:8px 10px;font-size:13px}
-  .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color)}
-  select{background:var(--glass);border-radius:8px;padding:8px;border:1px solid var(--border-color);color:var(--text);-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px;}
+
+  /* === COLOR PALETTE & ROOT VARIABLES === */
+  :root {
+    --bg: #0A0A10;
+    --card: #10101A;
+    --muted: #8899a6;
+    --text: #e6f7fb;
+    --accent: #8A2BE2; /* Vibrant Purple */
+    --accent-light: #9932CC;
+    --accent-glow: rgba(138, 43, 226, 0.4);
+    --ok: #10B981; /* Emerald Green */
+    --bad: #EF4444; /* Red */
+    --warn: #F59E0B; /* Amber */
+    --glass: rgba(255, 255, 255, 0.05);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* === GENERAL STYLES === */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 25px 25px;
+    color: var(--text);
+    padding: 18px;
+    animation: fadeIn 0.8s ease-out;
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; }
+  h1 { 
+    margin: 0 0 12px 0; 
+    font-size: 24px; 
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--text));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: slideInUp 0.5s ease-out;
+  }
+
+  /* === CARD & LAYOUT === */
+  .card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: slideInUp 0.7s ease-out;
+  }
+  .row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  
+  /* === FORMS & BUTTONS === */
+  label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; font-weight: 500; }
+  input[type=file], textarea, select {
+    background: var(--glass);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    color: var(--text);
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+  input[type=file]:hover, textarea:hover, select:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  .btn {
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 5px var(--accent-glow);
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 15px var(--accent-glow); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.7; box-shadow: none; }
+  .btn.btn-loading { animation: pulse 1.5s infinite ease-in-out; }
+  .small { padding: 8px 10px; font-size: 13px; }
+
+  /* === FILTERS & SUMMARY === */
+  .filters {
+    display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; 
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);
+  }
+  .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; flex-grow: 1; }
+  select { 
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 20px;
+  }
   select option { background: var(--card); color: var(--text); }
-  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px;color:var(--muted);font-size:14px;padding-top:10px;border-top:1px solid var(--border-color)}
-  .summary .badge {text-align:center; padding:10px; background:var(--glass); border-radius:8px; border:1px solid var(--border-color); display:flex; flex-direction:column; align-items:center; justify-content:center;}
-  .summary .badge strong {font-size:1.4em; color:var(--text); margin-top:5px;}
-  .summary .badge.diff strong {color:var(--bad);}
-  .summary .badge.ok strong {color:var(--ok);}
-  .summary .badge.warn strong {color:var(--warn);}
-  .summary .badge.bad strong {color: var(--bad);}
+  .summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);
+  }
+  .summary .badge {
+    text-align: center; padding: 12px; background: var(--glass); border-radius: 10px;
+    border: 1px solid var(--border-color); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; transition: all 0.3s ease;
+  }
+  .summary .badge:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .summary .badge strong { font-size: 1.5em; color: var(--text); margin-top: 5px; font-weight: 700; }
+  .summary .badge.diff.positive strong { color: var(--ok); }
+  .summary .badge.diff.negative strong { color: var(--bad); }
+  .summary .badge.ok strong { color: var(--ok); }
+  .summary .badge.warn strong { color: var(--warn); }
+  .summary .badge.bad strong { color: var(--bad); }
 
-  .table-wrap{margin-top:12px;max-height:520px;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid var(--border-color)}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:8px 10px;border-bottom:1px solid var(--border-color);text-align:left;vertical-align:middle}
-  th{position:sticky;top:0;background:rgba(11,23,34,0.7);backdrop-filter: blur(5px); z-index:3;color:#dff6fb;font-weight:600}
-  tr.ok td{background:rgba(46,204,113,0.04);border-left:2px solid var(--ok);}
-  tr.miss-chunior td{background:rgba(224,71,71,0.04);border-left:2px solid var(--bad);}
-  tr.miss-agente td{background:rgba(255,190,60,0.04);border-left:2px solid var(--warn);}
-  tr.ignored { opacity: 0.5; font-style: italic; }
-  tr.ignored td { background: rgba(100,100,100,0.1); }
-  .badge{padding:6px 8px;border-radius:8px;background:var(--glass);color:var(--muted);font-size:12px;}
-  .state-ok{color:var(--ok);font-weight:700}
-  .state-bad{color:var(--bad);font-weight:800}
-  .state-warn{color:var(--warn);font-weight:800}
-  .controls-vertical{display:flex;flex-direction:column;gap:8px}
-  .notes{margin-top:10px;color:var(--muted);font-size:13px}
-  .flex-col {display:flex; flex-direction:column; gap:4px;}
-  .action-btn { background:none; border:none; cursor:pointer; padding: 4px; display:inline-flex; align-items:center; justify-content:center; border-radius:4px; }
-  .action-btn:hover { background: rgba(255,255,255,0.1); }
-  .action-btn svg { width: 16px; height: 16px; }
+  /* === RESULTS TABLE (IMPROVED READABILITY) === */
+  .table-wrap {
+    margin-top: 20px; max-height: 60vh; overflow: auto;
+    border-radius: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: middle; white-space: nowrap; }
+  th {
+    position: sticky; top: 0; background: rgba(16, 16, 26, 0.8);
+    backdrop-filter: blur(8px); z-index: 3; color: var(--text); font-weight: 600;
+  }
+  tr { transition: background-color 0.2s ease; }
+  tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
+  tr:hover td { background-color: var(--accent-glow); }
+  td.amount { text-align: right; font-weight: 600; font-family: 'Consolas', 'Menlo', monospace; }
+  td.amount-pos { color: var(--ok); }
+  td.amount-neg { color: var(--bad); }
+  td.divider { border-left: 2px solid var(--border-color); }
+  tr.ok td {}
+  tr.miss-chunior { border-left: 3px solid var(--bad); }
+  tr.miss-agente { border-left: 3px solid var(--warn); }
+  tr.ignored { opacity: 0.5; font-style: italic; background: rgba(100,100,100,0.1) !important; }
+  
+  /* === MISC & HELPERS === */
+  .badge { padding: 6px 10px; border-radius: 8px; background: var(--glass); color: var(--muted); font-size: 13px; }
+  .state-ok { color: var(--ok); font-weight: 700; }
+  .state-bad { color: var(--bad); font-weight: 800; }
+  .state-warn { color: var(--warn); font-weight: 800; }
+  .controls-vertical { display: flex; flex-direction: column; gap: 8px; }
+  .notes { margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .action-btn { background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s ease; }
+  .action-btn:hover { background: var(--accent-glow); color: white; }
+  .action-btn svg { width: 18px; height: 18px; }
+  .hidden { display: none; }
+  .results-section { animation: slideInUp 0.6s ease-out forwards; }
 
-
-  @media (max-width:920px){ 
-    .row{flex-direction:column} 
-    .filters{flex-direction:column;align-items:stretch} 
-    .summary{grid-template-columns:1fr;}
+  /* === RESPONSIVE DESIGN === */
+  @media (max-width: 920px) {
+    .row, .filters { flex-direction: column; align-items: stretch; }
+    .summary { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .summary { grid-template-columns: 1fr; }
+    h1 { font-size: 20px; }
   }
 </style>
 <script type="importmap">
@@ -80,73 +189,80 @@
   <div class="card">
     <div class="row">
       <div style="flex:1;min-width:280px">
-        <label>Cargar CSV(s) AGENTE (puedes seleccionar varios)</label>
+        <label>1. Cargar CSV(s) AGENTE</label>
         <input id="agentFiles" type="file" accept=".csv" multiple />
-        <div class="notes">Nombra los archivos (ej. `agente_chino.csv`) para identificar la fuente. Se detecta formato principal o sub-agente.</div>
+        <div class="notes">Puedes seleccionar varios. Nombra los archivos (ej. `agente_chino.csv`) para identificar la fuente.</div>
       </div>
 
       <div style="flex:1;min-width:300px">
-        <label>Pegar texto CHUNIOR (todo el día / turno, varias líneas)</label>
+        <label>2. Pegar texto CHUNIOR</label>
         <textarea id="chuniorText" placeholder="Pega aquí las líneas copiadas de Chunior..."></textarea>
-        <div class="notes">Ejemplo: <code>7007867    10-11-2025 13:48:45    fyeivan    682 - LUNA    $ 3.000,00    clau3628</code></div>
+        <div class="notes">Ejemplo: <code>... fyeivan ... $ 3.000,00 clau3628</code></div>
       </div>
 
       <div style="width:220px">
-        <label>Acciones</label>
+        <label>3. Acciones</label>
         <div class="controls-vertical">
-          <button id="processBtn" class="btn small">Procesar y emparejar</button>
-          <button id="exportBtn" class="small btn" style="background:linear-gradient(90deg,#f59e0b,#f97316)">Exportar CSV</button>
-          <button id="copyExcelBtn" class="small btn" style="background:linear-gradient(90deg,#06b6d4,#3dd9f0)">Copiar para Excel</button>
+          <button id="processBtn" class="btn">Procesar y Emparejar</button>
+          <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#f59e0b,#f97316)">Exportar CSV</button>
+          <button id="copyExcelBtn" class="btn" style="background:linear-gradient(90deg,#06b6d4,#3dd9f0)">Copiar para Excel</button>
         </div>
       </div>
     </div>
+    
+    <div id="resultsSection" class="hidden">
+      <div class="summary" id="summaryBox">
+        <div class="badge ok">Total Agente: <strong id="sumAgentTotal">0.00</strong></div>
+        <div class="badge ok">Total Chunior: <strong id="sumChuniorTotal">0.00</strong></div>
+        <div class="badge diff">Diferencia Total: <strong id="sumDifference">0.00</strong></div>
+        <div class="badge ok">Ingresos Agente: <strong id="sumAgentIncome">0.00</strong></div>
+        <div class="badge ok">Ingresos Chunior: <strong id="sumChuniorIncome">0.00</strong></div>
+        <div class="badge diff">Dif. Ingresos: <strong id="sumDiffIncome">0.00</strong></div>
+        <div class="badge bad">Egresos Agente: <strong id="sumAgentOutcome">0.00</strong></div>
+        <div class="badge bad">Egresos Chunior: <strong id="sumChuniorOutcome">0.00</strong></div>
+        <div class="badge diff">Dif. Egresos: <strong id="sumDiffOutcome">0.00</strong></div>
+        <div class="badge warn">Recargas Admin: <strong id="sumAdminTotal">0.00</strong></div>
+      </div>
 
-    <div class="summary" id="summaryBox">
-      <div class="badge">Total Agente: <strong id="sumAgentTotal">0.00</strong></div>
-      <div class="badge">Total Chunior: <strong id="sumChuniorTotal">0.00</strong></div>
-      <div class="badge diff">Diferencia Total: <strong id="sumDifference">0.00</strong></div>
-      <div class="badge warn">Recargas Admin: <strong id="sumAdminTotal">0.00</strong></div>
-      <div class="badge ok">Ingresos Agente: <strong id="sumAgentIncome">0.00</strong></div>
-      <div class="badge ok">Ingresos Chunior: <strong id="sumChuniorIncome">0.00</strong></div>
-      <div class="badge diff">Dif. Ingresos: <strong id="sumDiffIncome">0.00</strong></div>
-      <div class="badge bad">Egresos Agente: <strong id="sumAgentOutcome">0.00</strong></div>
-      <div class="badge bad">Egresos Chunior: <strong id="sumChuniorOutcome">0.00</strong></div>
-      <div class="badge diff">Dif. Egresos: <strong id="sumDiffOutcome">0.00</strong></div>
-    </div>
 
+      <div class="filters">
+        <div class="filter-grid">
+          <div><label>Fecha</label><select id="filterFecha"><option value="__ALL">Todos los días</option></select></div>
+          <div><label>Agente</label><select id="filterAgente"><option value="__ALL">Todos</option></select></div>
+          <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
+          <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
+          <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div>
+          <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div>
+          <div><label>Tipo Mov.</label><select id="filterMovimiento"><option value="__ALL">Todos</option><option value="INGRESO">Ingresos</option><option value="EGRESO">Egresos</option></select></div>
+        </div>
+        <div class="badge" style="text-align:right">
+          <div>Visibles: <span id="countTotals">0</span></div>
+          <div>Emparejados: <strong id="countPaired" style="color:var(--ok)">0</strong></div>
+          <div>Discrepancias: <strong id="countMissing" style="color:var(--bad)">0</strong></div>
+        </div>
+      </div>
 
-    <div class="filters">
-      <div class="badge">Registros totales: <span id="countTotals">0</span></div>
-      <div><label>Fecha</label><select id="filterFecha"><option value="__ALL">Todos los días</option></select></div>
-      <div><label>Agente</label><select id="filterAgente"><option value="__ALL">Todos</option></select></div>
-      <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
-      <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
-      <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div>
-      <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div>
-      <div><label>Tipo Mov.</label><select id="filterMovimiento"><option value="__ALL">Todos</option><option value="INGRESO">Ingresos</option><option value="EGRESO">Egresos</option></select></div>
-      <div style="margin-left:auto" class="badge">Emparejados: <span id="countPaired">0</span> · Discrepancias: <span id="countMissing">0</span></div>
-    </div>
-
-    <div id="tableContainer" class="table-wrap" aria-live="polite" style="margin-top:12px">
-      <table id="resultsTable" role="table">
-        <thead>
-          <tr>
-            <th style="min-width:50px">Agente</th>
-            <th style="min-width:60px">Turno</th>
-            <th style="min-width:100px">Agente hora</th>
-            <th style="min-width:120px">Agente usuario</th>
-            <th style="min-width:90px">Agente monto</th>
-            <th style="min-width:100px">Chunior hora</th>
-            <th style="min-width:120px">Chunior usuario</th>
-            <th style="min-width:90px">Chunior monto</th>
-            <th style="min-width:100px">Operador</th>
-            <th style="min-width:100px">Billetera</th>
-            <th style="min-width:80px">Estado</th>
-            <th style="width:50px">Acción</th>
-          </tr>
-        </thead>
-        <tbody id="resultsBody"></tbody>
-      </table>
+      <div id="tableContainer" class="table-wrap" aria-live="polite">
+        <table id="resultsTable" role="table">
+          <thead>
+            <tr>
+              <th>Agente</th>
+              <th>Turno</th>
+              <th>Agente Hora</th>
+              <th>Agente Usuario</th>
+              <th style="text-align:right">Agente Monto</th>
+              <th class="divider">Chunior Hora</th>
+              <th>Chunior Usuario</th>
+              <th style="text-align:right">Chunior Monto</th>
+              <th>Operador</th>
+              <th>Billetera</th>
+              <th>Estado</th>
+              <th style="width:50px; text-align:center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="notes" style="margin-top:12px">
@@ -185,19 +301,15 @@ function parseCSVLine(line, delimiter = ','){
   return out;
 }
 
-/* CLEAN amount strings: FIXED VERSION */
+/* CLEAN amount strings */
 function parseAmountRaw(raw){
   if(raw === null || raw === undefined) return 0;
   let s = String(raw).trim();
   if(!s) return 0;
-  
-  s = s.replace(/[^\d,\.-]/g, ''); // Remove currency symbols, spaces, etc.
-  
-  // Standardize to use '.' as decimal separator, common in ARS format "1.234,56"
+  s = s.replace(/[^\d,\.-]/g, '');
   if (s.includes(',')) {
     s = s.replace(/\./g, '').replace(',', '.');
   }
-  
   const n = parseFloat(s);
   return isNaN(n) ? 0 : n;
 }
@@ -207,11 +319,9 @@ function parseAmountRaw(raw){
 function parseAgentLines(lines, agentName = 'Desconocido'){
   const rows = [];
   let startIndex = 0;
-  let format = null; // null, 'sub', 'main'
-
+  let format = null;
   if(lines.length === 0) return rows;
   if(lines[0].toLowerCase().startsWith('sep=')) startIndex = 1;
-  
   const headerLine = lines[startIndex];
   if (headerLine){
     const headerCols = parseCSVLine(headerLine);
@@ -228,9 +338,9 @@ function parseAgentLines(lines, agentName = 'Desconocido'){
 
   for (let i=startIndex; i<lines.length; i++){
     const line = lines[i];
-    if(!line.trim() || !line.includes(',')) continue; // Skip empty or malformed lines
+    if(!line.trim() || !line.includes(',')) continue;
     const cols = parseCSVLine(line);
-    if(cols.length < 5) continue; // Basic sanity check
+    if(cols.length < 5) continue;
 
     const fechaRaw = (cols[0]||'').trim();
     let montoRaw, usuarioRaw, tipoRaw;
@@ -266,34 +376,24 @@ function parseChuniorLines(lines){
   const rows = [];
   for (let raw of lines){
     if(!raw.trim()) continue;
-    
     let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean);
     if(parts.length < 2) {
       parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
     }
-
-    if (parts.length > 0 && /^\d{7,}$/.test(parts[0])) {
-      parts.shift();
-    }
-    
+    if (parts.length > 0 && /^\d{7,}$/.test(parts[0])) { parts.shift(); }
     if(parts.length >= 2 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
       parts[0] = parts[0] + ' ' + parts[1];
       parts.splice(1,1);
     }
-    
     if(parts.length < 4) {
-      console.warn("Skipping malformed Chunior line (not enough parts):", raw);
+      console.warn("Skipping malformed Chunior line:", raw);
       continue;
     }
-    
     let [fechaRaw, operador, billeteraRaw, montoRaw, usuarioRaw] = parts;
-
     let billetera = (billeteraRaw || '').replace(/.*-\s*/,'').trim();
     if(!billetera) billetera = (billeteraRaw || '').trim();
-
     const monto = parseAmountRaw(montoRaw);
     const usuario = (usuarioRaw || '').toLowerCase().trim();
-    
     let fechaObj = null;
     if(fechaRaw){
       const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
@@ -317,7 +417,6 @@ function getTurnoFromDate(d){
   return 'TN';
 }
 
-// Global state for ignored discrepancies
 window.__IGNORED_IDS = new Set();
 
 /* MAIN processing */
@@ -325,15 +424,20 @@ async function processData() {
   const processBtn = document.getElementById('processBtn');
   const agentFiles = document.getElementById('agentFiles').files;
   const chuniorText = document.getElementById('chuniorText').value || '';
-  document.getElementById('resultsBody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
+  const resultsBody = document.getElementById('resultsBody');
+  const resultsSection = document.getElementById('resultsSection');
+  
+  resultsBody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
+  resultsSection.classList.remove('hidden', 'results-section');
   
   processBtn.disabled = true;
+  processBtn.classList.add('btn-loading');
   processBtn.textContent = 'Procesando...';
-  window.__IGNORED_IDS.clear(); // Reset ignored IDs on new process
+  window.__IGNORED_IDS.clear();
 
   let allAgentRows = [];
-  if(agentFiles && agentFiles.length){
-    try{
+  try{
+    if(agentFiles && agentFiles.length){
       for(const f of agentFiles){
         const txt = await readFileAsText(f);
         const lines = splitLines(txt);
@@ -341,12 +445,13 @@ async function processData() {
         const agentName = agentNameMatch?.[2]?.toLowerCase() || f.name.replace(/\.csv$/i, '');
         allAgentRows = allAgentRows.concat(parseAgentLines(lines, agentName));
       }
-    } catch(e){
-      alert('Error leyendo archivos de agente: ' + (e?.message || e));
-      processBtn.disabled = false;
-      processBtn.textContent = 'Procesar y emparejar';
-      return;
     }
+  } catch(e){
+    alert('Error leyendo archivos de agente: ' + (e?.message || e));
+    processBtn.disabled = false;
+    processBtn.classList.remove('btn-loading');
+    processBtn.textContent = 'Procesar y Emparejar';
+    return;
   }
 
   const chuniorRows = parseChuniorLines(splitLines(chuniorText));
@@ -416,7 +521,12 @@ async function processData() {
       return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
   });
   
-  processBtn.textContent = 'Procesar y emparejar';
+  processBtn.textContent = 'Procesar y Emparejar';
+  processBtn.classList.remove('btn-loading');
+
+  // Trigger animation for the results section
+  resultsSection.classList.add('results-section');
+  
   applyFiltersAndRender();
 }
 
@@ -445,14 +555,9 @@ function getFilteredPairs() {
         if (agFilter !== '__ALL' && (!a || a.agente !== agFilter)) return false;
         if (opFilter !== '__ALL' && (!c || c.operador !== opFilter)) return false;
         if (biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) return false;
-        if (turnoFilter !== '__ALL') {
-            const t = a?.turno || c?.turno || '';
-            if (t !== turnoFilter) return false;
-        }
+        if (turnoFilter !== '__ALL' && (a?.turno || c?.turno || '') !== turnoFilter) return false;
         if (estadoFilter !== '__ALL') {
-            if (a?.isAdminCharge) {
-                return estadoFilter === 'OK';
-            }
+            if (a?.isAdminCharge) { return estadoFilter === 'OK'; }
             return p.estado === estadoFilter;
         }
         if (movimientoFilter !== '__ALL' && p.tipoMovimiento !== movimientoFilter) return false;
@@ -485,16 +590,9 @@ function renderTable(filteredPairs){
     if(isIgnored) statusClass += ' ignored';
     tr.className = statusClass;
     
-    const agenteName = a?.agente?.toUpperCase() || '';
-    const turno = a?.turno || c?.turno || '';
-    const agenteHora = a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || '');
-    const agenteUsuario = a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || '');
-    const agenteMonto = a ? a.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
-    const chuniorHora = c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || '');
-    const chuniorUsuario = c?.usuario || '';
-    const chuniorMonto = c ? c.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
-    const operador = c?.operador?.toUpperCase() || '';
-    const billetera = c?.billetera || '';
+    const fNum = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const agenteMonto = a ? fNum(a.monto) : '';
+    const chuniorMonto = c ? fNum(c.monto) : '';
     
     let estadoDisplay = '';
     if (a?.isAdminCharge) estadoDisplay = '<span class="state-ok">✔ ADMIN</span>';
@@ -502,17 +600,19 @@ function renderTable(filteredPairs){
     else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
     else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
 
-    let actionCell = '<td></td>';
+    let actionCell = '<td style="text-align:center;"></td>';
     if (p.estado !== 'OK' && !a?.isAdminCharge) {
-        actionCell = `<td><button class="action-btn" data-id="${p.id}" title="${isIgnored ? 'Incluir en cálculo' : 'Ignorar en cálculo'}">${isIgnored ? iconEye : iconEyeSlash}</button></td>`;
+        actionCell = `<td style="text-align:center;"><button class="action-btn" data-id="${p.id}" title="${isIgnored ? 'Incluir' : 'Ignorar'}">${isIgnored ? iconEye : iconEyeSlash}</button></td>`;
     }
 
     tr.innerHTML = `
-      <td>${escapeHtml(agenteName)}</td><td>${turno}</td><td>${escapeHtml(agenteHora)}</td>
-      <td>${escapeHtml(agenteUsuario)}</td><td>$ ${agenteMonto}</td>
-      <td>${escapeHtml(chuniorHora)}</td><td>${escapeHtml(chuniorUsuario)}</td>
-      <td>$ ${chuniorMonto}</td><td>${escapeHtml(operador)}</td>
-      <td>${escapeHtml(billetera)}</td><td>${estadoDisplay}</td>${actionCell}
+      <td>${escapeHtml(a?.agente?.toUpperCase())}</td><td>${a?.turno || c?.turno || ''}</td><td>${formatTime(a?.fechaObj)}</td>
+      <td>${escapeHtml(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario)}</td>
+      <td class="amount ${a && a.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${agenteMonto}</td>
+      <td class="divider">${formatTime(c?.fechaObj)}</td><td>${escapeHtml(c?.usuario)}</td>
+      <td class="amount ${c && c.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${chuniorMonto}</td>
+      <td>${escapeHtml(c?.operador?.toUpperCase())}</td><td>${escapeHtml(c?.billetera)}</td>
+      <td>${estadoDisplay}</td>${actionCell}
     `;
     tbody.appendChild(tr);
   }
@@ -527,11 +627,10 @@ function updateSummary(filteredPairs){
 
   relevantPairs.forEach(p => {
     if (p.agente) {
-      if(p.agente.isAdminCharge) {
-          adminTotal += p.agente.monto;
-      } else {
-          agentTotal += p.agente.monto;
-          p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto;
+      if(p.agente.isAdminCharge) { adminTotal += p.agente.monto; } 
+      else {
+        agentTotal += p.agente.monto;
+        p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto;
       }
     }
     if (p.chunior) {
@@ -540,29 +639,35 @@ function updateSummary(filteredPairs){
     }
   });
 
-  filteredPairs.forEach(p => { // Count visible discrepancies, even if ignored
-      if (!p.agente?.isAdminCharge && p.estado !== 'OK') {
-          missingCount++;
-      }
-      if (!p.agente?.isAdminCharge && p.estado === 'OK') {
-          pairedCount++;
-      }
+  filteredPairs.forEach(p => {
+      if (!p.agente?.isAdminCharge && p.estado !== 'OK') { missingCount++; }
+      if (!p.agente?.isAdminCharge && p.estado === 'OK') { pairedCount++; }
   });
   
   const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  
-  document.getElementById('sumAgentTotal').textContent = format(agentTotal);
-  document.getElementById('sumChuniorTotal').textContent = format(chuniorTotal);
-  document.getElementById('sumDifference').textContent = format(agentTotal - chuniorTotal);
-  document.getElementById('sumAdminTotal').textContent = format(adminTotal);
-  document.getElementById('sumAgentIncome').textContent = format(agentIncome);
-  document.getElementById('sumChuniorIncome').textContent = format(chuniorIncome);
-  document.getElementById('sumDiffIncome').textContent = format(agentIncome - chuniorIncome);
-  document.getElementById('sumAgentOutcome').textContent = format(agentOutcome);
-  document.getElementById('sumChuniorOutcome').textContent = format(chuniorOutcome);
-  document.getElementById('sumDiffOutcome').textContent = format(agentOutcome - chuniorOutcome);
+  const setContent = (id, value) => { document.getElementById(id).textContent = format(value); };
+  const setBadgeClass = (id, value) => {
+    const badge = document.getElementById(id).parentElement;
+    badge.classList.remove('positive', 'negative');
+    if (value >= 0) badge.classList.add('positive');
+    else badge.classList.add('negative');
+  };
 
-  document.getElementById('countTotals').textContent = `${filteredPairs.length} visibles`;
+  setContent('sumAgentTotal', agentTotal);
+  setContent('sumChuniorTotal', chuniorTotal);
+  setContent('sumDifference', agentTotal - chuniorTotal);
+  setBadgeClass('sumDifference', agentTotal - chuniorTotal);
+  setContent('sumAdminTotal', adminTotal);
+  setContent('sumAgentIncome', agentIncome);
+  setContent('sumChuniorIncome', chuniorIncome);
+  setContent('sumDiffIncome', agentIncome - chuniorIncome);
+  setBadgeClass('sumDiffIncome', agentIncome - chuniorIncome);
+  setContent('sumAgentOutcome', agentOutcome);
+  setContent('sumChuniorOutcome', chuniorOutcome);
+  setContent('sumDiffOutcome', agentOutcome - chuniorOutcome);
+  setBadgeClass('sumDiffOutcome', agentOutcome - chuniorOutcome);
+
+  document.getElementById('countTotals').textContent = `${filteredPairs.length}`;
   document.getElementById('countPaired').textContent = pairedCount;
   document.getElementById('countMissing').textContent = missingCount;
 }
@@ -624,7 +729,6 @@ function setupActionButtons() {
     copyBtn.addEventListener('click', async () => {
         const dataToCopy = getExportData();
         if (!dataToCopy) return;
-
         const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
         const lines = [headers.join('\t')];
         for(const p of dataToCopy){
@@ -634,10 +738,10 @@ function setupActionButtons() {
               a?.agente?.toUpperCase() || '', a?.turno || c?.turno || '',
               a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || ''),
               a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || ''),
-              a?.monto ? a.monto.toLocaleString('es-AR', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              a?.monto ? a.monto.toLocaleString('en-US', {useGrouping: false, minimumFractionDigits: 2}) : '',
               c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || ''),
               c?.usuario || '',
-              c?.monto ? c.monto.toLocaleString('es-AR', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.monto ? c.monto.toLocaleString('en-US', {useGrouping: false, minimumFractionDigits: 2}) : '',
               c?.operador?.toUpperCase() || '', c?.billetera || '',
               estado, p.tipoMovimiento || ''
           ].join('\t');
@@ -666,26 +770,20 @@ function updateButtonStates() {
     const copyBtn = document.getElementById('copyExcelBtn');
     const agentFilesInput = document.getElementById('agentFiles');
     const chuniorTextInput = document.getElementById('chuniorText');
-
     const hasInput = agentFilesInput.files.length > 0 || chuniorTextInput.value.trim() !== '';
     const hasResults = window.__COMPARE_PAIRS && getFilteredPairs().length > 0;
-    
     processBtn.disabled = !hasInput;
-    
     exportBtn.disabled = !hasResults;
     copyBtn.disabled = !hasResults;
 }
 
 // === EVENT LISTENERS ===
 document.getElementById('processBtn').addEventListener('click', processData);
-
 ['filterFecha', 'filterAgente','filterOperador','filterBilletera','filterTurno','filterEstado', 'filterMovimiento'].forEach(id=>{
   document.getElementById(id).addEventListener('change', applyFiltersAndRender);
 });
-
 document.getElementById('agentFiles').addEventListener('change', updateButtonStates);
 document.getElementById('chuniorText').addEventListener('input', updateButtonStates);
-
 document.getElementById('resultsBody').addEventListener('click', (e) => {
     const button = e.target.closest('.action-btn');
     if (button && button.dataset.id) {
@@ -698,8 +796,6 @@ document.getElementById('resultsBody').addEventListener('click', (e) => {
         applyFiltersAndRender();
     }
 });
-
-
 document.addEventListener('DOMContentLoaded', () => {
     setupActionButtons();
     updateButtonStates();
