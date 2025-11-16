@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Filters, AvailableFilters } from '../types';
+import type { Filters, AvailableFilters } from './tipos';
 
 interface FilterControlsProps {
   filters: Filters;
@@ -25,7 +25,7 @@ const FilterSelect: React.FC<{ label: string; name: keyof Filters; value: string
   </div>
 );
 
-export const FilterControls: React.FC<FilterControlsProps> = ({ filters, setFilters, availableFilters, totalRecords, pairedCount, discrepancyCount }) => {
+export const ControlesDeFiltro: React.FC<FilterControlsProps> = ({ filters, setFilters, availableFilters, totalRecords, pairedCount, discrepancyCount }) => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
