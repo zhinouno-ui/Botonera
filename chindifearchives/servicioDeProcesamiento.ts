@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
-import type { AgentRecord, ChuniorRecord, PairedRecord, SummaryData, AvailableFilters, Turno } from '../types';
-import { headerStyle, statusStyles, currencyFormat } from '../utils/excelStyles';
+import type { AgentRecord, ChuniorRecord, PairedRecord, SummaryData, AvailableFilters, Turno } from './tipos';
+import { headerStyle, statusStyles, currencyFormat } from './excelStyles';
 
 
 // --- UTILITY FUNCTIONS ---
