@@ -21,11 +21,13 @@
   input[type=file]{background:var(--glass);padding:8px;border-radius:8px;border:1px dashed var(--border-color);color:var(--muted);width:100%;}
   textarea{width:100%;min-height:140px;background:var(--glass);border-radius:8px;padding:10px;border:1px solid var(--border-color);color:var(--text);resize:vertical}
   .controls{display:flex;gap:8px;align-items:center}
-  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer;transition:transform 0.1s ease-out}
+  .btn{background:linear-gradient(90deg,var(--accent),#3dd9f0);color:#042a31;border:none;padding:10px 12px;border-radius:8px;font-weight:700;cursor:pointer;transition: all 0.2s ease-out;}
   .btn:active{transform:translateY(1px)}
+  .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.6; }
   .small{padding:8px 10px;font-size:13px}
   .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color)}
   select{background:var(--glass);border-radius:8px;padding:8px;border:1px solid var(--border-color);color:var(--text);-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px;}
+  select option { background: var(--card); color: var(--text); }
   .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px;color:var(--muted);font-size:14px;padding-top:10px;border-top:1px solid var(--border-color)}
   .summary .badge {text-align:center; padding:10px; background:var(--glass); border-radius:8px; border:1px solid var(--border-color); display:flex; flex-direction:column; align-items:center; justify-content:center;}
   .summary .badge strong {font-size:1.4em; color:var(--text); margin-top:5px;}
@@ -34,11 +36,10 @@
   .summary .badge.warn strong {color:var(--warn);}
   .summary .badge.bad strong {color: var(--bad);}
 
-
   .table-wrap{margin-top:12px;max-height:520px;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid var(--border-color)}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{padding:8px 10px;border-bottom:1px solid var(--border-color);text-align:left;vertical-align:middle}
-  th{position:sticky;top:0;background:rgba(0,0,0,0.3);z-index:3;color:#dff6fb;font-weight:600}
+  th{position:sticky;top:0;background:rgba(11,23,34,0.7);backdrop-filter: blur(5px); z-index:3;color:#dff6fb;font-weight:600}
   tr.ok td{background:rgba(46,204,113,0.04);border-left:2px solid var(--ok);}
   tr.miss-chunior td{background:rgba(224,71,71,0.04);border-left:2px solid var(--bad);}
   tr.miss-agente td{background:rgba(255,190,60,0.04);border-left:2px solid var(--warn);}
@@ -49,12 +50,6 @@
   .controls-vertical{display:flex;flex-direction:column;gap:8px}
   .notes{margin-top:10px;color:var(--muted);font-size:13px}
   .flex-col {display:flex; flex-direction:column; gap:4px;}
-  .user-missing-indicator {
-    color: var(--warn);
-    cursor: help;
-    font-weight: bold;
-    margin-left: 4px;
-  }
 
   @media (max-width:920px){ 
     .row{flex-direction:column} 
@@ -120,4 +115,557 @@
       <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
       <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
       <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div>
-      <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option
+      <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div>
+      <div><label>Tipo Mov.</label><select id="filterMovimiento"><option value="__ALL">Todos</option><option value="INGRESO">Ingresos</option><option value="EGRESO">Egresos</option></select></div>
+      <div style="margin-left:auto" class="badge">Emparejados: <span id="countPaired">0</span> · Discrepancias: <span id="countMissing">0</span></div>
+    </div>
+
+    <div id="tableContainer" class="table-wrap" aria-live="polite" style="margin-top:12px">
+      <table id="resultsTable" role="table">
+        <thead>
+          <tr>
+            <th style="min-width:50px">Agente</th>
+            <th style="min-width:60px">Turno</th>
+            <th style="min-width:100px">Agente hora</th>
+            <th style="min-width:120px">Agente usuario</th>
+            <th style="min-width:90px">Agente monto</th>
+            <th style="min-width:100px">Chunior hora</th>
+            <th style="min-width:120px">Chunior usuario</th>
+            <th style="min-width:90px">Chunior monto</th>
+            <th style="min-width:100px">Operador</th>
+            <th style="min-width:100px">Billetera</th>
+            <th style="min-width:80px">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="notes" style="margin-top:12px">
+      • Matching exacto por <strong>usuario normalizado (minúsc)</strong> y <strong>monto</strong> — cualquier diferencia marca discrepancia.<br>
+      • Turnos: Mañana 06:00–14:00, Tarde 14:00–22:00, Noche 22:00–06:00.
+    </div>
+  </div>
+</div>
+
+<script>
+/* UTIL: lectura CSV robusta */
+function readFileAsText(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(String(e.target.result || ''));
+    r.onerror = rej;
+    r.readAsText(file, 'utf-8');
+  });
+}
+function splitLines(text){
+  return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() !== '');
+}
+function parseCSVLine(line, delimiter = ','){
+  const out = [];
+  let cur = '', inQuotes=false;
+  for (let i=0;i<line.length;i++){
+    const ch = line[i];
+    if (ch === '"' ) {
+      if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; }
+      inQuotes = !inQuotes; continue;
+    }
+    if (ch === delimiter && !inQuotes){ out.push(cur); cur=''; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/* CLEAN amount strings: FIXED VERSION */
+function parseAmountRaw(raw){
+  if(raw === null || raw === undefined) return 0;
+  let s = String(raw).trim();
+  if(!s) return 0;
+  
+  s = s.replace(/[^\d,\.-]/g, ''); // Remove currency symbols, spaces, etc.
+  
+  // Standardize to use '.' as decimal separator, common in ARS format "1.234,56"
+  if (s.includes(',')) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  }
+  
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+
+/* parse agent CSV rows array (lines) */
+function parseAgentLines(lines, agentName = 'Desconocido'){
+  const rows = [];
+  let startIndex = 0;
+  let format = null; // null, 'sub', 'main'
+
+  if(lines.length === 0) return rows;
+  if(lines[0].toLowerCase().startsWith('sep=')) startIndex = 1;
+  
+  const headerLine = lines[startIndex];
+  if (headerLine){
+    const headerCols = parseCSVLine(headerLine);
+    if(headerCols[3]?.toLowerCase() === 'cantidad' && headerCols[6]?.toLowerCase() === 'alias del jugador'){
+      format = 'sub';
+    } else if (headerCols[2]?.toLowerCase() === 'cantidad' && headerCols[4]?.toLowerCase() === 'alias'){
+      format = 'main';
+    } else {
+      console.warn(`Could not determine CSV format for ${agentName}, skipping file.`);
+      return rows;
+    }
+    startIndex++;
+  }
+
+  for (let i=startIndex; i<lines.length; i++){
+    const line = lines[i];
+    if(!line.trim() || !line.includes(',')) continue; // Skip empty or malformed lines
+    const cols = parseCSVLine(line);
+    if(cols.length < 5) continue; // Basic sanity check
+
+    const fechaRaw = (cols[0]||'').trim();
+    let montoRaw, usuarioRaw, tipoRaw;
+
+    if(format === 'sub'){
+      montoRaw = cols[3];
+      usuarioRaw = cols[6];
+      tipoRaw = cols[1];
+    } else { // 'main'
+      montoRaw = cols[2];
+      usuarioRaw = cols[4];
+      tipoRaw = cols[3];
+    }
+
+    const monto = parseAmountRaw(montoRaw);
+    const usuario = (usuarioRaw || '').toLowerCase().trim();
+    const isAdminCharge = /te cargaron/i.test(tipoRaw || '');
+    
+    let fechaObj = null;
+    if(fechaRaw){
+      const attempt = new Date(fechaRaw.replace(' ', 'T'));
+      fechaObj = isNaN(attempt.getTime()) ? new Date(fechaRaw) : attempt;
+      if(isNaN(fechaObj.getTime())) fechaObj = null;
+    }
+    rows.push({ origen:'AGENT', agente: agentName, fecha: fechaRaw, fechaObj, monto, usuario, isAdminCharge });
+  }
+  return rows;
+}
+
+
+/* parse chunior pasted text */
+function parseChuniorLines(lines){
+  const rows = [];
+  for (let raw of lines){
+    if(!raw.trim()) continue;
+    
+    let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean);
+    if(parts.length < 2) {
+      parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
+    }
+
+    if (parts.length > 0 && /^\d{7,}$/.test(parts[0])) {
+      parts.shift();
+    }
+    
+    if(parts.length >= 2 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
+      parts[0] = parts[0] + ' ' + parts[1];
+      parts.splice(1,1);
+    }
+    
+    if(parts.length < 4) {
+      console.warn("Skipping malformed Chunior line (not enough parts):", raw);
+      continue;
+    }
+    
+    let [fechaRaw, operador, billeteraRaw, montoRaw, usuarioRaw] = parts;
+
+    let billetera = (billeteraRaw || '').replace(/.*-\s*/,'').trim();
+    if(!billetera) billetera = (billeteraRaw || '').trim();
+
+    const monto = parseAmountRaw(montoRaw);
+    const usuario = (usuarioRaw || '').toLowerCase().trim();
+    
+    let fechaObj = null;
+    if(fechaRaw){
+      const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
+      if(m) fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`);
+      else {
+        const attempt = new Date(fechaRaw.replace(' ', 'T'));
+        if(!isNaN(attempt.getTime())) fechaObj = attempt;
+      }
+    }
+    rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: (operador || '').toLowerCase().trim(), billetera: billetera.toUpperCase().trim() });
+  }
+  return rows;
+}
+
+/* turno calculation */
+function getTurnoFromDate(d){
+  if(!d || isNaN(d.getTime())) return '';
+  const h = d.getHours();
+  if(h >= 6 && h < 14) return 'TM';
+  if(h >= 14 && h < 22) return 'TT';
+  return 'TN';
+}
+
+/* MAIN processing */
+async function processData() {
+  const processBtn = document.getElementById('processBtn');
+  const agentFiles = document.getElementById('agentFiles').files;
+  const chuniorText = document.getElementById('chuniorText').value || '';
+  document.getElementById('resultsBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
+  
+  processBtn.disabled = true;
+  processBtn.textContent = 'Procesando...';
+
+  let allAgentRows = [];
+  if(agentFiles && agentFiles.length){
+    try{
+      for(const f of agentFiles){
+        const txt = await readFileAsText(f);
+        const lines = splitLines(txt);
+        const agentNameMatch = f.name.match(/(agente|subagente)_?([a-zA-Z0-9]+)/i);
+        const agentName = agentNameMatch?.[2]?.toLowerCase() || f.name.replace(/\.csv$/i, '');
+        allAgentRows = allAgentRows.concat(parseAgentLines(lines, agentName));
+      }
+    } catch(e){
+      alert('Error leyendo archivos de agente: ' + (e?.message || e));
+      processBtn.disabled = false;
+      processBtn.textContent = 'Procesar y emparejar';
+      return;
+    }
+  }
+
+  const chuniorRows = parseChuniorLines(splitLines(chuniorText));
+
+  allAgentRows.forEach(r => {
+    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : '';
+    r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO';
+  });
+  chuniorRows.forEach(r => {
+    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : '';
+    r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO';
+  });
+
+  const matchedChuniorIdx = new Set();
+  const pairs = [];
+  const agentRowsToMatch = [];
+
+  allAgentRows.forEach(a => {
+    if (a.isAdminCharge) {
+        pairs.push({ agente: a, chunior: null, estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+    } else {
+        agentRowsToMatch.push(a);
+    }
+  });
+
+  for (const a of agentRowsToMatch){
+    let matchedIndex = -1;
+    for (let j=0; j<chuniorRows.length; j++){
+      if(matchedChuniorIdx.has(j)) continue;
+      const c = chuniorRows[j];
+      if(a.usuario && c.usuario && a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01){
+        matchedIndex = j; break;
+      }
+    }
+    if(matchedIndex >= 0){
+      matchedChuniorIdx.add(matchedIndex);
+      pairs.push({ agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+    } else {
+      pairs.push({ agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento });
+    }
+  }
+  
+  for (let j=0; j<chuniorRows.length; j++){
+    if(!matchedChuniorIdx.has(j)){
+      pairs.push({ agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT', tipoMovimiento: chuniorRows[j].tipoMovimiento });
+    }
+  }
+
+  const dates = new Set(), agentes = new Set(), operadores = new Set(), billeteras = new Set();
+  pairs.forEach(p => {
+    const d = p.agente?.fechaObj || p.chunior?.fechaObj;
+    if(d) dates.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+    if(p.agente?.agente) agentes.add(p.agente.agente);
+    if(p.chunior?.operador) operadores.add(p.chunior.operador);
+    if(p.chunior?.billetera) billeteras.add(p.chunior.billetera);
+  });
+  
+  const populateSelect = (id, options, defaultLabel) => {
+    const select = document.getElementById(id);
+    select.innerHTML = `<option value="__ALL">${defaultLabel}</option>`;
+    Array.from(options).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = String(o).toUpperCase(); select.appendChild(opt); });
+  };
+  populateSelect('filterFecha', dates, 'Todos los días');
+  populateSelect('filterAgente', agentes, 'Todos');
+  populateSelect('filterOperador', operadores, 'Todos');
+  populateSelect('filterBilletera', billeteras, 'Todas');
+
+  window.__COMPARE_PAIRS = pairs.sort((a, b) => {
+      const dateA = a.agente?.fechaObj || a.chunior?.fechaObj;
+      const dateB = b.agente?.fechaObj || b.chunior?.fechaObj;
+      return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+  });
+  
+  processBtn.textContent = 'Procesar y emparejar';
+  applyFiltersAndRender();
+}
+
+function getFilteredPairs() {
+    const pairs = window.__COMPARE_PAIRS || [];
+    const fechaFilter = document.getElementById('filterFecha').value;
+    const agFilter = document.getElementById('filterAgente').value;
+    const opFilter = document.getElementById('filterOperador').value;
+    const biFilter = document.getElementById('filterBilletera').value;
+    const turnoFilter = document.getElementById('filterTurno').value;
+    const estadoFilter = document.getElementById('filterEstado').value;
+    const movimientoFilter = document.getElementById('filterMovimiento').value;
+
+    if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movimientoFilter].every(f => f === '__ALL')) {
+        return pairs;
+    }
+
+    return pairs.filter(p => {
+        const a = p.agente, c = p.chunior;
+        if (fechaFilter !== '__ALL') {
+            const recordDate = a?.fechaObj || c?.fechaObj;
+            if (!recordDate) return false;
+            const recordDateStr = `${recordDate.getFullYear()}-${String(recordDate.getMonth() + 1).padStart(2, '0')}-${String(recordDate.getDate()).padStart(2, '0')}`;
+            if (recordDateStr !== fechaFilter) return false;
+        }
+        if (agFilter !== '__ALL' && (!a || a.agente !== agFilter)) return false;
+        if (opFilter !== '__ALL' && (!c || c.operador !== opFilter)) return false;
+        if (biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) return false;
+        if (turnoFilter !== '__ALL') {
+            const t = a?.turno || c?.turno || '';
+            if (t !== turnoFilter) return false;
+        }
+        if (estadoFilter !== '__ALL') {
+            if (a?.isAdminCharge) { // Special case for admin charges
+                return estadoFilter === 'OK';
+            }
+            return p.estado === estadoFilter;
+        }
+        if (movimientoFilter !== '__ALL' && p.tipoMovimiento !== movimientoFilter) return false;
+        return true;
+    });
+}
+
+function renderTable(filteredPairs){
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  
+  if (filteredPairs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;">No hay registros para mostrar con los filtros actuales.</td></tr>';
+    return;
+  }
+  
+  for(const p of filteredPairs){
+    const a = p.agente, c = p.chunior;
+    const tr = document.createElement('tr');
+    let statusClass = '';
+    if (a?.isAdminCharge) statusClass = 'ok';
+    else if (p.estado === 'OK') statusClass = 'ok';
+    else if (p.estado === 'MISSING_CHUNIOR') statusClass = 'miss-chunior';
+    else if (p.estado === 'MISSING_AGENT') statusClass = 'miss-agente';
+    tr.className = statusClass;
+    
+    const agenteName = a?.agente?.toUpperCase() || '';
+    const turno = a?.turno || c?.turno || '';
+    const agenteHora = a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || '');
+    const agenteUsuario = a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || '');
+    const agenteMonto = a ? a.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
+    const chuniorHora = c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || '');
+    const chuniorUsuario = c?.usuario || '';
+    const chuniorMonto = c ? c.monto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '';
+    const operador = c?.operador?.toUpperCase() || '';
+    const billetera = c?.billetera || '';
+    
+    let estadoDisplay = '';
+    if (a?.isAdminCharge) estadoDisplay = '<span class="state-ok">✔ ADMIN</span>';
+    else if (p.estado === 'OK') estadoDisplay = '<span class="state-ok">✔ OK</span>';
+    else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
+    else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
+
+    tr.innerHTML = `
+      <td>${escapeHtml(agenteName)}</td><td>${turno}</td><td>${escapeHtml(agenteHora)}</td>
+      <td>${escapeHtml(agenteUsuario)}</td><td>$ ${agenteMonto}</td>
+      <td>${escapeHtml(chuniorHora)}</td><td>${escapeHtml(chuniorUsuario)}</td>
+      <td>$ ${chuniorMonto}</td><td>${escapeHtml(operador)}</td>
+      <td>${escapeHtml(billetera)}</td><td>${estadoDisplay}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function updateSummary(filteredPairs){
+  let agentTotal = 0, chuniorTotal = 0, agentIncome = 0, chuniorIncome = 0;
+  let agentOutcome = 0, chuniorOutcome = 0, adminTotal = 0;
+  let pairedCount = 0, missingCount = 0;
+
+  filteredPairs.forEach(p => {
+    if (p.agente) {
+      if(p.agente.isAdminCharge) {
+          adminTotal += p.agente.monto;
+      } else {
+          agentTotal += p.agente.monto;
+          p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto;
+      }
+    }
+    if (p.chunior) {
+      chuniorTotal += p.chunior.monto;
+      p.chunior.monto >= 0 ? chuniorIncome += p.chunior.monto : chuniorOutcome += p.chunior.monto;
+    }
+
+    if (!p.agente?.isAdminCharge) {
+        if(p.estado === 'OK') pairedCount++;
+        else missingCount++;
+    }
+  });
+  
+  const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  
+  document.getElementById('sumAgentTotal').textContent = format(agentTotal);
+  document.getElementById('sumChuniorTotal').textContent = format(chuniorTotal);
+  document.getElementById('sumDifference').textContent = format(agentTotal - chuniorTotal);
+  document.getElementById('sumAdminTotal').textContent = format(adminTotal);
+  document.getElementById('sumAgentIncome').textContent = format(agentIncome);
+  document.getElementById('sumChuniorIncome').textContent = format(chuniorIncome);
+  document.getElementById('sumDiffIncome').textContent = format(agentIncome - chuniorIncome);
+  document.getElementById('sumAgentOutcome').textContent = format(agentOutcome);
+  document.getElementById('sumChuniorOutcome').textContent = format(chuniorOutcome);
+  document.getElementById('sumDiffOutcome').textContent = format(agentOutcome - chuniorOutcome);
+
+  document.getElementById('countTotals').textContent = `${filteredPairs.length} visibles`;
+  document.getElementById('countPaired').textContent = pairedCount;
+  document.getElementById('countMissing').textContent = missingCount;
+}
+
+function applyFiltersAndRender() {
+    const filteredPairs = getFilteredPairs();
+    renderTable(filteredPairs);
+    updateSummary(filteredPairs);
+    updateButtonStates(); 
+}
+
+/* helpers */
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function formatTime(d){ 
+  if(!d || isNaN(d.getTime())) return '';
+  const pad = (num) => num.toString().padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function setupActionButtons() {
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyExcelBtn');
+
+    const getExportData = () => {
+        const data = getFilteredPairs();
+        if (!data.length) {
+            alert('No hay datos (visibles en la tabla) para exportar.');
+            return null;
+        }
+        return data;
+    }
+
+    exportBtn.addEventListener('click', () => {
+        const dataToExport = getExportData();
+        if (!dataToExport) return;
+        
+        const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
+        const rows = [headers.join(',')];
+        for(const p of dataToExport){
+          const a = p.agente, c = p.chunior;
+          const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado;
+          const row = [
+            csvSafe(a?.agente?.toUpperCase()), csvSafe(a?.turno || c?.turno), csvSafe(a?.fechaObj?.toISOString()),
+            csvSafe(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario), csvSafe(a?.monto?.toFixed(2)), csvSafe(c?.fechaObj?.toISOString()),
+            csvSafe(c?.usuario), csvSafe(c?.monto?.toFixed(2)), csvSafe(c?.operador?.toUpperCase()),
+            csvSafe(c?.billetera), csvSafe(estado), csvSafe(p.tipoMovimiento)
+          ].join(',');
+          rows.push(row);
+        }
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+        const dataToCopy = getExportData();
+        if (!dataToCopy) return;
+
+        const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
+        const lines = [headers.join('\t')];
+        for(const p of dataToCopy){
+          const a = p.agente, c = p.chunior;
+          const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado;
+          const row = [
+              a?.agente?.toUpperCase() || '', a?.turno || c?.turno || '',
+              a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || ''),
+              a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || ''),
+              a?.monto ? a.monto.toLocaleString('es-AR', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || ''),
+              c?.usuario || '',
+              c?.monto ? c.monto.toLocaleString('es-AR', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.operador?.toUpperCase() || '', c?.billetera || '',
+              estado, p.tipoMovimiento || ''
+          ].join('\t');
+          lines.push(row);
+        }
+        const tsv = lines.join('\n');
+        try{
+          await navigator.clipboard.writeText(tsv);
+          alert('Copiado al portapapeles como TSV.');
+        }catch(e){
+          alert('Error al copiar.');
+        }
+    });
+
+    function csvSafe(v){
+        if(v === null || v === undefined) return '';
+        let s = String(v).replace(/"/g,'""');
+        if(/[,\\"\n]/.test(s)) s = `"${s}"`;
+        return s;
+    }
+}
+
+function updateButtonStates() {
+    const processBtn = document.getElementById('processBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyExcelBtn');
+    const agentFilesInput = document.getElementById('agentFiles');
+    const chuniorTextInput = document.getElementById('chuniorText');
+
+    const hasInput = agentFilesInput.files.length > 0 || chuniorTextInput.value.trim() !== '';
+    const hasResults = window.__COMPARE_PAIRS && getFilteredPairs().length > 0;
+    
+    processBtn.disabled = !hasInput;
+    
+    exportBtn.disabled = !hasResults;
+    copyBtn.disabled = !hasResults;
+}
+
+// === EVENT LISTENERS ===
+document.getElementById('processBtn').addEventListener('click', processData);
+
+['filterFecha', 'filterAgente','filterOperador','filterBilletera','filterTurno','filterEstado', 'filterMovimiento'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', applyFiltersAndRender);
+});
+
+document.getElementById('agentFiles').addEventListener('change', updateButtonStates);
+document.getElementById('chuniorText').addEventListener('input', updateButtonStates);
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupActionButtons();
+    updateButtonStates();
+});
+
+</script>
+</body>
+</html>
