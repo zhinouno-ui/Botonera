@@ -1,0 +1,276 @@
+
+import React, { useState, useMemo, useRef, useCallback } from 'react';
+import type { PairedEntry, FilterState, FilterOptions, SummaryData } from './types';
+import { processAndPairData, exportToCsv, copyForExcel } from './services/dataProcessor';
+import { formatCurrency, formatDateTime, formatDisplayDate, formatDateForFilter } from './utils/formatters';
+
+// --- UI Components (defined outside App to prevent re-creation on re-renders) ---
+
+interface SummaryCardProps {
+  label: string;
+  value: number;
+  colorClass?: string;
+}
+const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, colorClass = 'text-slate-200' }) => (
+  <div className="text-center p-3 bg-slate-800/50 rounded-lg border border-slate-700 flex flex-col items-center justify-center">
+    <span className="text-sm text-slate-400">{label}</span>
+    <strong className={`text-xl font-bold mt-1 ${colorClass}`}>
+      {formatCurrency(value)}
+    </strong>
+  </div>
+);
+
+interface FilterSelectProps {
+    label: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    options: { value: string; label: string }[];
+    name: string;
+}
+const FilterSelect: React.FC<FilterSelectProps> = ({ label, value, onChange, options, name }) => (
+    <div>
+        <label htmlFor={name} className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
+        <select
+            id={name}
+            name={name}
+            value={value}
+            onChange={onChange}
+            className="w-full bg-slate-800 border border-slate-700 rounded-md py-2 px-3 text-sm text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none bg-no-repeat bg-right pr-8"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")` }}
+        >
+            {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+    </div>
+);
+
+
+// --- Main App Component ---
+
+const App: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [pairedData, setPairedData] = useState<PairedEntry[]>([]);
+  const agentFilesRef = useRef<HTMLInputElement>(null);
+  const chuniorTextRef = useRef<HTMLTextAreaElement>(null);
+
+  const [filters, setFilters] = useState<FilterState>({
+    agente: 'ALL',
+    operador: 'ALL',
+    billetera: 'ALL',
+    turno: 'ALL',
+    estado: 'ALL',
+    movimiento: 'ALL',
+    fecha: 'ALL',
+  });
+
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    agentes: [],
+    operadores: [],
+    billeteras: [],
+    fechas: [],
+  });
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleProcess = useCallback(async () => {
+    const agentFiles = agentFilesRef.current?.files;
+    const chuniorText = chuniorTextRef.current?.value || '';
+
+    if ((!agentFiles || agentFiles.length === 0) && !chuniorText) {
+      alert('Por favor, carga al menos un archivo de agente o pega texto de Chunior.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { pairedData: processedData, filterOptions: newFilterOptions } = await processAndPairData(agentFiles || new FileList(), chuniorText);
+      setPairedData(processedData);
+      setFilterOptions(newFilterOptions);
+    } catch (error) {
+      console.error("Error processing data:", error);
+      alert(`Ocurrió un error al procesar los datos: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const filteredData = useMemo(() => {
+    return pairedData.filter(p => {
+      const a = p.agente;
+      const c = p.chunior;
+      const entryDate = a?.fechaObj || c?.fechaObj || null;
+
+      if (filters.agente !== 'ALL' && (!a || a.agente !== filters.agente)) return false;
+      if (filters.operador !== 'ALL' && (!c || c.operador !== filters.operador)) return false;
+      if (filters.billetera !== 'ALL' && (!c || c.billetera !== filters.billetera)) return false;
+      if (filters.turno !== 'ALL' && (a?.turno || c?.turno) !== filters.turno) return false;
+      if (filters.estado !== 'ALL' && p.estado !== filters.estado) return false;
+      if (filters.movimiento !== 'ALL' && p.tipoMovimiento !== filters.movimiento) return false;
+      if (filters.fecha !== 'ALL' && formatDateForFilter(entryDate) !== filters.fecha) return false;
+
+      return true;
+    });
+  }, [pairedData, filters]);
+
+  const summaryData = useMemo<SummaryData>(() => {
+    const summary: SummaryData = {
+        agentTotal: 0, chuniorTotal: 0, difference: 0,
+        agentIncome: 0, chuniorIncome: 0, diffIncome: 0,
+        agentOutcome: 0, chuniorOutcome: 0, diffOutcome: 0,
+        adminTotal: 0,
+    };
+    
+    for (const p of filteredData) {
+        const isAdm = p.agente?.isAdministrative || p.chunior?.isAdministrative;
+        if(isAdm) {
+            if(p.agente) summary.adminTotal += p.agente.monto;
+            // To avoid double counting on matched admin entries, we only count agent's side.
+            // If only chunior exists, count it.
+            else if(p.chunior) summary.adminTotal += p.chunior.monto;
+            continue; // Skip admin charges from main totals
+        }
+
+        if (p.agente) {
+            summary.agentTotal += p.agente.monto;
+            if (p.agente.monto >= 0) summary.agentIncome += p.agente.monto;
+            else summary.agentOutcome += p.agente.monto;
+        }
+        if (p.chunior) {
+            summary.chuniorTotal += p.chunior.monto;
+            if (p.chunior.monto >= 0) summary.chuniorIncome += p.chunior.monto;
+            else summary.chuniorOutcome += p.chunior.monto;
+        }
+    }
+    
+    summary.difference = summary.agentTotal - summary.chuniorTotal;
+    summary.diffIncome = summary.agentIncome - summary.chuniorIncome;
+    summary.diffOutcome = summary.agentOutcome - summary.chuniorOutcome;
+
+    return summary;
+  }, [filteredData]);
+
+  const getStatusClass = (status: PairedEntry['estado']) => {
+    switch (status) {
+        case 'OK': return 'bg-green-500/10 border-l-2 border-green-500';
+        case 'MISSING_CHUNIOR': return 'bg-red-500/10 border-l-2 border-red-500';
+        case 'MISSING_AGENT': return 'bg-yellow-500/10 border-l-2 border-yellow-500';
+        default: return '';
+    }
+  };
+
+
+  return (
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 font-sans">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-100">Comparador AGENTE ⇄ CHUNIOR</h1>
+        <p className="text-cyan-400 text-sm">ChinDiferencia Pro</p>
+      </header>
+
+      <main className="flex flex-col gap-6">
+        <div className="bg-slate-800/60 p-4 sm:p-6 rounded-xl border border-slate-700 shadow-lg">
+          {/* Controls */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[2fr,2fr,1fr] gap-6 items-start">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Cargar CSV(s) AGENTE</label>
+              <input ref={agentFilesRef} type="file" accept=".csv" multiple className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-slate-900 hover:file:bg-cyan-400 transition-colors cursor-pointer"/>
+              <p className="mt-2 text-xs text-slate-500">Puedes seleccionar varios archivos. Nómbralos para identificar la fuente (ej. `agente_chino.csv`).</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Pegar texto CHUNIOR</label>
+              <textarea ref={chuniorTextRef} rows={4} className="w-full bg-slate-900/50 border-slate-700 rounded-md p-3 text-sm placeholder-slate-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-y" placeholder="Pega aquí las líneas copiadas de Chunior..."></textarea>
+            </div>
+            <div className="flex flex-col gap-3">
+               <label className="block text-sm font-medium text-slate-300 mb-2">Acciones</label>
+               <button onClick={handleProcess} disabled={isLoading} className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-2 px-4 rounded-md transition-all disabled:bg-slate-600 disabled:cursor-not-allowed">
+                {isLoading ? 'Procesando...' : 'Procesar y Emparejar'}
+              </button>
+              <button onClick={() => exportToCsv(filteredData)} disabled={pairedData.length === 0} className="w-full bg-orange-500 hover:bg-orange-400 text-slate-900 font-bold py-2 px-4 rounded-md transition-all disabled:bg-slate-600 disabled:cursor-not-allowed">Exportar CSV</button>
+              <button onClick={() => copyForExcel(filteredData)} disabled={pairedData.length === 0} className="w-full bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold py-2 px-4 rounded-md transition-all disabled:bg-slate-600 disabled:cursor-not-allowed">Copiar para Excel</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Summary & Filters */}
+        {pairedData.length > 0 && (
+          <div className="bg-slate-800/60 p-4 sm:p-6 rounded-xl border border-slate-700 shadow-lg">
+            {/* Summary */}
+            <h2 className="text-lg font-semibold mb-4 text-slate-200">Resumen de Totales (filtrado)</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+                <SummaryCard label="Total Agente" value={summaryData.agentTotal} />
+                <SummaryCard label="Total Chunior" value={summaryData.chuniorTotal} />
+                <SummaryCard label="Diferencia" value={summaryData.difference} colorClass={summaryData.difference !== 0 ? 'text-red-400' : 'text-green-400'}/>
+                <SummaryCard label="Recargas Admin." value={summaryData.adminTotal} colorClass="text-yellow-400" />
+                <div className="col-span-2 md:col-span-3 lg:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t border-slate-700">
+                    <SummaryCard label="Ingresos Agente" value={summaryData.agentIncome} colorClass="text-green-400"/>
+                    <SummaryCard label="Ingresos Chunior" value={summaryData.chuniorIncome} colorClass="text-green-400"/>
+                    <SummaryCard label="Dif. Ingresos" value={summaryData.diffIncome} colorClass={summaryData.diffIncome !== 0 ? 'text-red-400' : 'text-green-400'}/>
+                    <SummaryCard label="Egresos Agente" value={summaryData.agentOutcome} colorClass="text-red-400"/>
+                    <SummaryCard label="Egresos Chunior" value={summaryData.chuniorOutcome} colorClass="text-red-400"/>
+                    <SummaryCard label="Dif. Egresos" value={summaryData.diffOutcome} colorClass={summaryData.diffOutcome !== 0 ? 'text-red-400' : 'text-green-400'}/>
+                </div>
+            </div>
+
+            {/* Filters */}
+             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-center pt-4 border-t border-slate-700">
+                <FilterSelect label="Fecha" name="fecha" value={filters.fecha} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todos los días'}, ...filterOptions.fechas.map(f => ({value: f, label: formatDisplayDate(f)}))]} />
+                <FilterSelect label="Agente" name="agente" value={filters.agente} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todos'}, ...filterOptions.agentes.map(a => ({value: a, label: a.toUpperCase()}))]} />
+                <FilterSelect label="Operador" name="operador" value={filters.operador} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todos'}, ...filterOptions.operadores.map(o => ({value: o, label: o.toUpperCase()}))]} />
+                <FilterSelect label="Billetera" name="billetera" value={filters.billetera} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todas'}, ...filterOptions.billeteras.map(b => ({value: b, label: b.toUpperCase()}))]} />
+                <FilterSelect label="Turno" name="turno" value={filters.turno} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todos'}, {value: 'TM', label: 'Mañana (TM)'}, {value: 'TT', label: 'Tarde (TT)'}, {value: 'TN', label: 'Noche (TN)'}]} />
+                <FilterSelect label="Estado" name="estado" value={filters.estado} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todos'}, {value: 'OK', label: 'OK'}, {value: 'MISSING_CHUNIOR', label: 'Falta en Chunior'}, {value: 'MISSING_AGENT', label: 'Falta en Agente'}]} />
+                <FilterSelect label="Tipo Mov." name="movimiento" value={filters.movimiento} onChange={handleFilterChange} options={[{value: 'ALL', label: 'Todos'}, {value: 'INGRESO', label: 'Ingresos'}, {value: 'EGRESO', label: 'Egresos'}]} />
+             </div>
+          </div>
+        )}
+        
+        {/* Results Table */}
+        {pairedData.length > 0 && (
+          <div className="overflow-x-auto bg-slate-800/60 rounded-xl border border-slate-700 shadow-lg">
+            <div className="p-4 border-b border-slate-700 text-sm text-slate-400">
+              Mostrando <strong>{filteredData.length}</strong> de <strong>{pairedData.length}</strong> registros totales.
+            </div>
+            <table className="w-full text-sm text-left text-slate-300">
+              <thead className="text-xs text-slate-300 uppercase bg-slate-900/50 sticky top-0">
+                <tr>
+                  {['Agente', 'Turno', 'Hora Agente', 'Usuario Agente', 'Monto Agente', 'Hora Chunior', 'Usuario Chunior', 'Monto Chunior', 'Operador', 'Billetera', 'Estado'].map(h => (
+                    <th key={h} scope="col" className="px-4 py-3 whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map(p => (
+                  <tr key={p.key} className={`border-b border-slate-800 hover:bg-slate-700/50 transition-colors ${getStatusClass(p.estado)}`}>
+                    <td className="px-4 py-2 font-medium whitespace-nowrap">{p.agente?.agente.toUpperCase()}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{p.agente?.turno || p.chunior?.turno}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatDateTime(p.agente?.fechaObj)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap font-mono">{p.agente?.usuario}</td>
+                    <td className={`px-4 py-2 whitespace-nowrap text-right font-mono ${p.agente && p.agente.monto < 0 ? 'text-red-400' : 'text-green-400'}`}>${formatCurrency(p.agente?.monto)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatDateTime(p.chunior?.fechaObj)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap font-mono">{p.chunior?.usuario}{p.chunior?.userMissing && <span className="text-red-400" title="Usuario no encontrado en la línea"> (?)</span>}</td>
+                    <td className={`px-4 py-2 whitespace-nowrap text-right font-mono ${p.chunior && p.chunior.monto < 0 ? 'text-red-400' : 'text-green-400'}`}>${formatCurrency(p.chunior?.monto)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{p.chunior?.operador.toUpperCase()}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{p.chunior?.billetera}</td>
+                    <td className="px-4 py-2 whitespace-nowrap font-bold">
+                        {p.estado === 'OK' && <span className="text-green-400">✔ OK</span>}
+                        {p.estado === 'MISSING_CHUNIOR' && <span className="text-red-400">❌ Falta CH</span>}
+                        {p.estado === 'MISSING_AGENT' && <span className="text-yellow-400">❌ Falta AG</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {filteredData.length === 0 && (
+                <div className="p-8 text-center text-slate-500">
+                    No hay registros que coincidan con los filtros seleccionados.
+                </div>
+            )}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default App;
