@@ -1,379 +1,218 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <title>Menú Principal</title>
-
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <style>
-
-    body {
-
-      font-family: Arial, sans-serif;
-
-      background: #121212;
-
-      color: #fff;
-
-      text-align: center;
-
-      padding: 40px;
-
-      margin: 0;
-
-    }
-
-
-
-    #logo {
-
-      width: 180px;
-
-      max-width: 80%;
-
-      margin-bottom: 30px;
-
-      animation: fadeInDown 1s ease;
-
-    }
-
-
-
-    h1 {
-
-      margin-bottom: 30px;
-
-      font-size: 22px;
-
-      font-weight: bold;
-
-      color: #f1c40f;
-
-      text-transform: uppercase;
-
-      letter-spacing: 2px;
-
-    }
-
-
-
-    /* ANIMACIÓN GLOBAL de entrada para TODOS */
-
-    .boton {
-
-      display: block;
-
-      width: 220px;
-
-      margin: 15px auto;
-
-      padding: 15px;
-
-      font-size: 18px;
-
-      font-weight: bold;
-
-      border: none;
-
-      border-radius: 10px;
-
-      cursor: pointer;
-
-      text-decoration: none;
-
-      opacity: 0;
-
-      animation: fadeInUp .55s ease forwards;
-
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-
-    }
-
-
-
-    /* Brillo general para todos */
-
-    .boton::after {
-
-      content: "";
-
-      position: absolute;
-
-      inset: 0;
-
-      border-radius: inherit;
-
-      background: rgba(255,255,255,0.06);
-
-      opacity: 0;
-
-      transition: opacity .25s ease;
-
-      pointer-events: none;
-
-    }
-
-
-
-    .boton:hover::after {
-
-      opacity: .25;
-
-    }
-
-
-
-    /* Hover general */
-
-    .boton:hover {
-
-      transform: translateY(-6px);
-
-      filter: brightness(1.08);
-
-      box-shadow: 0 14px 32px rgba(255,255,255,0.12);
-
-    }
-
-
-
-    /* TAP general (animación leve) */
-
-    .boton:active {
-
-      animation: tapFlash .12s ease-out;
-
-    }
-
-
-
-    /* Colores básicos */
-
-    .ChinUnion { background-color: #f1c40f; color: #000; position: relative; }
-
-    .Epc01     { background-color: #046865; color: #000; position: relative; }
-
-    .Fpc01     { background-color: #5C1A1B; color: #000; position: relative; }
-
-    .AlvPc     { background-color: #BE024A; color: #000; position: relative; }
-
-
-
-    /* ----------------------- */
-
-    /* ESTILO RECU premium */
-
-    /* ----------------------- */
-
-    .Recu {
-
-      position: relative;
-
-      overflow: hidden;
-
-      color: #fff;
-
-      border-radius: 12px;
-
-      background: linear-gradient(135deg, rgba(133,86,160,0.95) 0%, rgba(66,30,88,0.95) 50%, rgba(44,20,56,0.95) 100%);
-
-      border: 1px solid rgba(255,255,255,0.04);
-
-      box-shadow: 0 10px 26px rgba(10,6,20,0.6);
-
-    }
-
-
-
-    .Recu::before {
-
-      content: "";
-
-      position: absolute;
-
-      inset: -30% -10% -40% -10%;
-
-      background:
-
+<meta charset="UTF-8">
+<title>Menú Principal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #fff;
+    text-align: center;
+    padding: 40px;
+    margin: 0;
+}
+
+#logo {
+    width: 180px;
+    max-width: 80%;
+    margin-bottom: 30px;
+    animation: fadeInDown 1s ease;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #f1c40f;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ---------------------- */
+/* BOTONES BASE + ANIMACIÓN */
+/* ---------------------- */
+.boton {
+    display: block;
+    width: 220px;
+    margin: 15px auto;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    opacity: 0;
+    animation: fadeInUp .55s ease forwards;
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    position: relative;
+}
+
+/* Brillo superior general */
+.boton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(255,255,255,0.06);
+    opacity: 0;
+    transition: opacity .25s ease;
+    pointer-events: none;
+}
+
+.boton:hover::after {
+    opacity: .25;
+}
+
+/* Hover */
+.boton:hover {
+    transform: translateY(-6px);
+    filter: brightness(1.08);
+    box-shadow: 0 14px 32px rgba(255,255,255,0.12);
+}
+
+/* Tap suave */
+.boton:active {
+    animation: tapFlash .12s ease-out;
+}
+
+/* ---------------------- */
+/* ESTILOS INDIVIDUALES */
+/* ---------------------- */
+.ChinUnion { background-color: #f1c40f; color: #000; }
+.Epc01     { background-color: #046865; color: #000; }
+.Fpc01     { background-color: #5C1A1B; color: #000; }
+.AlvPc     { background-color: #BE024A; color: #000; }
+
+/* ---------- */
+/* MARDEL NUEVO */
+/* ---------- */
+.Mardel {
+    color: #fff;
+    border-radius: 12px;
+    background: linear-gradient(135deg,
+        rgba(0,140,255,0.95) 0%,
+        rgba(0,105,190,0.95) 45%,
+        rgba(0,70,135,0.95) 100%
+    );
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 12px 28px rgba(0,140,255,0.35);
+    overflow: hidden;
+}
+
+.Mardel::before {
+    content: "";
+    position: absolute;
+    inset: -25% -15% -35% -15%;
+    background:
+        radial-gradient(60% 40% at 20% 10%, rgba(255,255,255,0.18), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0));
+    opacity: .9;
+    filter: blur(12px);
+    pointer-events: none;
+}
+
+/* ----------- */
+/* PREMIUM RECU */
+/* ----------- */
+.Recu {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(133,86,160,0.95) 0%, rgba(66,30,88,0.95) 50%, rgba(44,20,56,0.95) 100%);
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 10px 26px rgba(10,6,20,0.6);
+}
+
+.Recu::before {
+    content: "";
+    position: absolute;
+    inset: -30% -10% -40% -10%;
+    background:
         radial-gradient(60% 40% at 20% 10%, rgba(255,255,255,0.10), transparent 18%),
-
         linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00) 60%);
+    opacity: .9;
+    filter: blur(10px);
+}
 
-      opacity: .9;
-
-      filter: blur(10px);
-
-      pointer-events: none;
-
-    }
-
-
-
-    /* ----------------------- */
-
-    /* ESTILO COMPARADOR dorado */
-
-    /* ----------------------- */
-
-    .Comparador {
-
-      position: relative;
-
-      overflow: hidden;
-
-      color: #000;
-
-      border-radius: 12px;
-
-
-
-      background: linear-gradient(135deg,
-
+/* -------------- */
+/* COMPARADOR GOLD */
+/* -------------- */
+.Comparador {
+    position: relative;
+    overflow: hidden;
+    color: #000;
+    border-radius: 12px;
+    background: linear-gradient(135deg,
         rgba(255,215,75,0.95) 0%,
-
         rgba(210,160,20,0.95) 45%,
-
         rgba(145,110,0,0.92) 100%
+    );
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 12px 28px rgba(255,200,0,0.40);
+}
 
-      );
-
-
-
-      border: 1px solid rgba(255,255,255,0.10);
-
-      box-shadow: 0 12px 28px rgba(255,200,0,0.40);
-
-    }
-
-
-
-    .Comparador::before {
-
-      content: "";
-
-      position: absolute;
-
-      inset: -25% -15% -35% -15%;
-
-      background:
-
+.Comparador::before {
+    content: "";
+    position: absolute;
+    inset: -25% -15% -35% -15%;
+    background:
         radial-gradient(60% 40% at 20% 10%, rgba(255,255,255,0.24), transparent 28%),
-
         linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+    opacity: .9;
+    filter: blur(12px);
+}
 
-      opacity: .9;
+/* Animaciones */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-      filter: blur(12px);
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-      pointer-events: none;
+@keyframes tapFlash {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(0.96); filter: brightness(1.20); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
 
-    }
+/* Stagger */
+.boton:nth-of-type(1){ animation-delay: 0.05s; }
+.boton:nth-of-type(2){ animation-delay: 0.12s; }
+.boton:nth-of-type(3){ animation-delay: 0.18s; }
+.boton:nth-of-type(4){ animation-delay: 0.24s; }
+.boton:nth-of-type(5){ animation-delay: 0.30s; }
+.boton:nth-of-type(6){ animation-delay: 0.36s; }
+.boton:nth-of-type(7){ animation-delay: 0.42s; }
 
-
-
-    /* Animaciones globales */
-
-    @keyframes fadeInDown {
-
-      from { opacity: 0; transform: translateY(-30px); }
-
-      to   { opacity: 1; transform: translateY(0); }
-
-    }
-
-
-
-    @keyframes fadeInUp {
-
-      from { opacity: 0; transform: translateY(20px); }
-
-      to   { opacity: 1; transform: translateY(0); }
-
-    }
-
-
-
-    @keyframes tapFlash {
-
-      0%   { transform: scale(1);     filter: brightness(1); }
-
-      50%  { transform: scale(0.96);  filter: brightness(1.20); }
-
-      100% { transform: scale(1);     filter: brightness(1); }
-
-    }
-
-
-
-    /* Stagger */
-
-    .boton:nth-of-type(1){ animation-delay: 0.05s; }
-
-    .boton:nth-of-type(2){ animation-delay: 0.12s; }
-
-    .boton:nth-of-type(3){ animation-delay: 0.18s; }
-
-    .boton:nth-of-type(4){ animation-delay: 0.24s; }
-
-    .boton:nth-of-type(5){ animation-delay: 0.30s; }
-
-    .boton:nth-of-type(6){ animation-delay: 0.36s; }
-
-
-
-    @media (max-width: 600px) {
-
-      .boton {
-
+@media (max-width: 600px) {
+    .boton {
         width: 90%;
-
         max-width: 300px;
-
-      }
-
     }
-
-
-
-  </style>
-
+}
+</style>
 </head>
 
-
-
 <body>
+<img src="logo.webp" alt="Logo Bet300" id="logo">
+<h1>Selecciona tu PC</h1>
 
-
-
-  <img src="logo.webp" alt="Logo Bet300" id="logo">
-
-
-
-  <h1>Selecciona tu PC</h1>
-
-
-
-  <a href="pc01.html" class="boton ChinUnion">ChinUnion</a>
-
-  <a href="Epc01.html" class="boton Epc01">EPC01</a>
-
-  <a href="Fpc01.html" class="boton Fpc01">FPC01</a>
-
-  <a href="alvpc.html" class="boton AlvPc">AlvPc</a>
-
-  <a href="mardel.html" class="boton Mardel">Mardel</a>
-
-  <a href="rec.html" class="boton Recu">Recu</a>
-
-  <a href="ChinDifes.html" class="boton Comparador">Comparador</a>
-
-
+<a href="pc01.html" class="boton ChinUnion">ChinUnion</a>
+<a href="Epc01.html" class="boton Epc01">EPC01</a>
+<a href="Fpc01.html" class="boton Fpc01">FPC01</a>
+<a href="alvpc.html" class="boton AlvPc">AlvPc</a>
+<a href="mardel.html" class="boton Mardel">Mardel</a>
+<a href="rec.html" class="boton Recu">Recu</a>
+<a href="ChinDifes.html" class="boton Comparador">Comparador</a>
 
 </body>
-
 </html>
