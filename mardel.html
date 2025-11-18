@@ -290,6 +290,29 @@ button:hover {
       </div>
     </div>
   </div>
+
+    <!-- Grupo Rodriguez -->
+  <div class="grupo Rodriguez" draggable="false">
+    <div class="header">
+      <div class="titulo">Rodriguez</div>
+      <div class="controls">
+
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100089153966098')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'Nahuel.882.caseta.mp \nTitular Nahuel Nicolas Rodriguez *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'0000076500000044733436')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'mrodrigue183982.ppay \nTitular Nahuel Nicolas Rodriguez *PPay*')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <!-- Grupo Meza -->
   <div class="grupo meza" draggable="true">
@@ -393,6 +416,10 @@ button:hover {
     else if (txtLower.includes("0000003100038708992000")) tipo = "Cbu Gonzales";
     else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
     else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
+          else if(txtLower.includes("0000003100089153966098")) tipo="Cbu Rodriguez MP";
+    else if(txtLower.includes("Rodriguez.882.caseta.mp")) tipo="Alias Rodriguez MP";  
+                        else if(txtLower.includes("mrodrigue183982.ppay")) tipo="Alias Rodriguez PPay";
+                      else if(txtLower.includes("0000076500000034820409")) tipo="Cbu Rodriguez PPay";
     else if(txtLower.includes("somos bet300vip")) tipo="Info";
     else if(txtLower.includes("¡saldo acreditado!")) tipo="Cargado";
     else if(txtLower.includes("para hacer el retiro")) tipo="Retiro";
