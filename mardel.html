@@ -1,123 +1,447 @@
+
 <!DOCTYPE html>
-width: 100%;
-padding: 8px;
-border-radius: 4px;
-border: none;
-font-size: 13px;
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ChinBotones</title>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    margin: 10px;
+    padding: 10px;
+  color: #fff;
 }
+.grupo {
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.titulo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+button:hover {
+  background: rgba(0,0,0,0.4);
+}
+.flip-btn, .drag-handle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  margin-left: 2px;
+  transition: background 0.1s;
+}
+.flip-btn:hover, .drag-handle:hover { background: #444; }
+.drag-handle:active {
+  cursor: grabbing;
+}
+/* Colores personalizados según billetera */
+.promo-amigo { background: #2ecc71; }
+.meza { background: #3498db; }
+.Gonzales  { background: #992000; }
+.utilidad { background: #e67e22; }
 
-
-/* Flip Cards */
-.wallets-container { perspective: 1200px; width: 100%; }
-.wallets-card { width: 100%; min-height: 96px; position: relative; transition: transform 0.45s; transform-style: preserve-3d; border-radius: 8px; background: rgba(255,255,255,0.04); }
-.wallets-face { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 12px 8px; backface-visibility: hidden; }
-.wallets-face.front { transform: rotateY(0deg); }
-.wallets-face.back { transform: rotateY(180deg); }
-.wallets-card.flipped { transform: rotateY(180deg); }
-
-
-/* Toast */
+/* 🔔 Estilos del toast */
 .toast {
-position: fixed;
-bottom: 20px;
-left: 50%;
-transform: translateX(-50%);
-background: rgba(0,0,0,0.8);
-padding: 12px 18px;
-border-radius: 8px;
-opacity: 0;
-transition: opacity 0.5s, bottom 0.5s;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, bottom 0.5s ease;
+  z-index: 9999;
 }
-.toast.show { opacity: 1; bottom: 40px; }
-</style>
+.toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+/* Caja historial */
+#historial-box {
+  margin-top: 15px;
+  background: #34495e;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+#historial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+#historial-arrow {
+  transition: transform 0.3s ease;
+  display: inline-block;
+  font-size: 14px;
+}
+#historial-content {
+  margin-top: 8px;
+  display: none;
+  background: rgba(255,255,255,0.1);
+  padding: 8px;
+  border-radius: 4px;
+}
+#historial-text {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+#historial-copy {
+  background: rgba(0,0,0,0.4);
+  border: none;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+#historial-copy:hover {
+  background: rgba(0,0,0,0.6);
+}
+/* FLIP CARD */
+.wallets-container {
+  perspective: 1200px;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+.wallets-card {
+  width: 100%;
+  min-height: 96px;
+  position: relative;
+  transition: transform 0.45s cubic-bezier(.2,.9,.3,1);
+  transform-style: preserve-3d;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.wallets-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+  padding: 12px 8px;
+  box-sizing: border-box;
+}
+.wallets-face.front { transform: rotateY(0deg); z-index: 2; }
+.wallets-face.back { transform: rotateY(180deg); z-index: 1; }
+.wallets-card.flipped { transform: rotateY(180deg); }
+.wallets-face button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 0;
+  box-shadow: 0 1px 4px #0001;
+  transition: background 0.18s;
+}
+.wallets-face button:hover { background: rgba(0,0,0,0.35);}
+
+
+     /* ===== ENLACE ===== */
+.link-switch-container {
+  width: var(--width);
+  max-width: 100%;
+  margin: 0 auto 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  text-align: center;
+}
+
+.link-display h2 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.link-display p {
+  margin: 0 0 16px;
+  color: #ccc;
+  font-size: 1rem;
+  word-break: break-all;
+}
+
+.copy-link-btn {
+  width: 100%;
+  border: none;
+  background: linear-gradient(180deg, #25d366, #19b856);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.copy-link-btn:hover {
+  background: linear-gradient(180deg, #2ce676, #20c164);
+}
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "sortablejs": "https://aistudiocdn.com/sortablejs@^1.15.6"
+  }
+}
+</script>
 </head>
 <body>
-
-
-<!-- 🔗 Enlace único (MAS 1) -->
+  <!-- 🔘 Enlace Único -->
 <div class="link-switch-container">
-<div id="link-display">
-<h2>🌐 Enlace Landing</h2>
-<p id="link-url">https://bet300.site/</p>
+  <div class="link-display" id="link-display">
+    <h2 id="link-title">🌐 Enlace Landing</h2>
+    <p id="link-url">https://bet300.site/</p>
+  </div>
+  <button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
 </div>
-<button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
+  
+  <!-- Grupo Info Útil -->
+  <div class="grupo utilidad">
+    <h3>Utilidad</h3>
+    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨\n\nDisfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮\n\n📲 ¿Listo para disfrutar al máximo? 🚀\n\nPara añadir saldo, lo haces mediante CBU. 🧾\n‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️\n📩 Envianos el comprobante y empezá a jugar. 🚀\n\n📍 C4RG4 MÍNIMA: $2000\n📍 RET1R0 MÍNIMO: $5000\nSin Monto Maximo!!\nUn retiro cada 24hs exactas!\n\n🕐 Atención personalizada las 24hs los 365 dias del año!!!!')">Info</button>
+    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!\nTu cuenta ya está lista para girar y ganar 🎰\n🍀 ¡Éxitos en cada tirada!\nSi no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado en nuestro estado de perfil! \n🎰 TAMBIEN PODES CARGARTE POR TU CUENTA!\n ACA EN https://bet300.site/\n tu mismo usuario, tu misma clave.\n 12345a\n avisame si queres mas info')">Cargado</button>
+    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
+   </div>
+   
+   <!-- Grupo Gonzales -->
+  <div class="grupo Gonzales" draggable="true">
+    <div class="header">
+      <div class="titulo">Gonzales</div>
+      <div class="controls">
+        <button type="button" class="flip-btn">🔄</button>
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp\nTitular Sebastian Leonardo Gabriel Gonzalez *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'SIN PPAY')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'SIN PPAY')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Grupo Meza -->
+  <div class="grupo meza" draggable="true">
+    <div class="header">
+      <div class="titulo">Meza</div>
+      <div class="controls">
+        <button type="button" class="flip-btn">🔄</button>
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000076500000043003428')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'ymeza44.ppay \nTitular yamila gisella meza *PPay*')">Alias PPay</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'sin mp')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'sin mp')">Alias Mercado Pago</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grupo Promo Amigo -->
+  <div class="grupo promo-amigo">
+    <h3>Promo Amigo</h3>
+<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://https://alvge.bet300vip.com//')">Promo amigo</button>
+<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
+  <!-- Historial -->
+  <div id="historial-box">
+    <div id="historial-header">
+      📝 Último copiado <span id="historial-arrow">⌄</span>
+    </div>
+    <div id="historial-content">
+      <span id="historial-text">Nada copiado aún...</span>
+      <button id="historial-copy">Copy</button>
+    </div>
+  </div>
 
-<!-- Grupo Info -->
-<div class="grupo utilidad">
-<h3>Utilidad</h3>
-<button onclick="copiarYAnimar(event,'Texto genérico')">Info</button>
-</div>
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script>
+ 
+    function animateButton(button){
+      if(!button) return;
+      button.style.transform = "scale(0.95)";
+      setTimeout(()=> button.style.transform = "", 150);
+    }
+  
+  // ======================
+  // HISTORIAL + TOAST
+  // ======================
+  let lastCopied="", historialVisible=false;
+  const histHeader=document.getElementById("historial-header");
+  const histArrow=document.getElementById("historial-arrow");
+  const histContent=document.getElementById("historial-content");
+  const histText=document.getElementById("historial-text");
+  const histCopyBtn=document.getElementById("historial-copy");
+
+  histHeader.onclick=()=>{
+    historialVisible=!historialVisible;
+    histContent.style.display=historialVisible?"block":"none";
+    histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
+  };
+  histCopyBtn.onclick=()=>{if(lastCopied)copyText(lastCopied);};
+
+  function addHistorial(txt){
+    lastCopied=txt;
+    histText.textContent=txt;
+    histContent.style.display="block";
+    histArrow.style.transform="rotate(180deg)";
+    historialVisible=true;
+  }
+
+  function showToast(message){
+    const toast=document.getElementById("toast");
+    toast.textContent="✅ Copiado: "+message;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+
+  function fallbackCopy(txt){
+    const temp=document.createElement("textarea");
+    temp.value=txt;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+    showToast("Texto");
+  }
+
+  function copyText(txt){
+    let tipo="Texto";
+    const txtLower=txt.toLowerCase();
+    
+    if (txtLower.includes("gonzalez.088.rulo.mp")) tipo = "Alias Gonzales";
+    else if (txtLower.includes("0000003100038708992000")) tipo = "Cbu Gonzales";
+    else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
+    else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
+    else if(txtLower.includes("somos bet300vip")) tipo="Info";
+    else if(txtLower.includes("¡saldo acreditado!")) tipo="Cargado";
+    else if(txtLower.includes("para hacer el retiro")) tipo="Retiro";
+    else if(txtLower.includes("fichas extra al instante")) tipo="Promo Amigos";
+    else if(txtLower.includes("debe enviar tu código")) tipo="Info Promo Amigos";
+    else if(txtLower.includes("bet300.site")) tipo="Enlace Landing";
 
 
-<!-- SOLO MEZA Y GONZALES -->
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
+    } else {
+      fallbackCopy(txt);
+    }
+    addHistorial(txt);
+  }
 
-
-<!-- Meza -->
-<div class="grupo meza">
-<div class="header"><div class="titulo">Meza</div><div class="controls"><button class="drag-handle">☰</button></div></div>
-<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front"><button onclick="copiarYAnimar(event,'0000076500000043003428')">CBU PPay</button><button onclick="copiarYAnimar(event,'ymeza44.ppay')">Alias PPay</button></div><div class="wallets-face back"><button onclick="copiarYAnimar(event,'SIN MP')">CBU MP</button><button onclick="copiarYAnimar(event,'SIN MP')">Alias MP</button></div></div></div>
-</div>
-
-
-<!-- Gonzales -->
-<div class="grupo Gonzales">
-<div class="header"><div class="titulo">Gonzales</div><div class="controls"><button class="drag-handle">☰</button></div></div>
-<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front"><button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU MP</button><button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp')">Alias MP</button></div><div class="wallets-face back"><button onclick="copiarYAnimar(event,'SIN PPAY')">CBU PPay</button><button onclick="copiarYAnimar(event,'SIN PPAY')">Alias PPay</button></div></div></div>
-</div>
-
-
-<!-- Historial -->
-<div id="historial-box"><div id="historial-header">📝 Último copiado <span id="historial-arrow">⌄</span></div><div id="historial-content" style="display:none;"><span id="historial-text">Nada copiado...</span><button id="historial-copy">Copy</button></div></div>
-
-
-<div id="toast" class="toast"></div>
-
-
-<script>
-/* =========================
-HISTORIAL + TOAST (MANTENIDO)
-========================= */
-let lastCopied="", historialVisible=false;
-const histHeader=document.getElementById("historial-header");
-const histArrow=document.getElementById("historial-arrow");
-const histContent=document.getElementById("historial-content");
-const histText=document.getElementById("historial-text");
-const histCopyBtn=document.getElementById("historial-copy");
-
-
-histHeader.onclick=()=>{
-historialVisible=!historialVisible;
-histContent.style.display=historialVisible?"block":"none";
-histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
-};
-histCopyBtn.onclick=()=>{ if(lastCopied) copyText(lastCopied); };
-function addHistorial(txt){ lastCopied=txt; histText.textContent=txt; histContent.style.display="block"; histArrow.style.transform="rotate(180deg)"; historialVisible=true; }
-function showToast(message){ const t=document.getElementById("toast"); t.textContent="✅ Copiado: "+message; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2000); }
-function fallbackCopy(txt){ const temp=document.createElement("textarea"); temp.value=txt; document.body.appendChild(temp); temp.select(); document.execCommand("copy"); temp.remove(); showToast("Texto"); }
-
-
-function copyText(txt){ navigator.clipboard?.writeText(txt).then(()=>showToast("Texto")).catch(()=>fallbackCopy(txt)); addHistorial(txt); }
-
-
-/* =========================
-ENLACE ÚNICO (SIN MÁSCARA)
-========================= */
-document.getElementById("btn-copy-link").onclick=()=>copyText("https://bet300.site/");
-
-
-/* =========================
-FLIP CARDS (NO TOCADO)
-========================= */
-document.querySelectorAll(".grupo").forEach(g=>{
-const flip=g.querySelector(".flip-btn");
-const card=g.querySelector(".wallets-card");
-if(flip&&card) flip.onclick=()=>card.classList.toggle("flipped");
+// === ENLACE ÚNICO ===
+document.getElementById('btn-copy-link').addEventListener('click', () => {
+    const url = document.getElementById('link-url').textContent;
+    copyText(url);
+    animateButton(document.getElementById('btn-copy-link'));
 });
+    
+  // ======================
+  // FLIP CARDS
+  // ======================
+  document.querySelectorAll(".grupo").forEach(grupo=>{
+    const flipBtn=grupo.querySelector(".flip-btn");
+    const card=grupo.querySelector(".wallets-card");
+    if(flipBtn&&card){
+      flipBtn.addEventListener("click",()=>{
+        card.classList.toggle("flipped");
+      });
+    }
+  });
 
+  // ======================
+  // DRAG & DROP (SortableJS)
+  // ======================
+  new Sortable(document.body,{
+    handle:".drag-handle",
+    animation:150,
+    draggable:".grupo"
+  });
 
-/* =========================
-DRAG AND DROP (NO TOCADO)
-========================= */
-new Sortable(document.body,{ handle: ".
+function copiarYAnimar(event, texto){
+  copyText(texto);
+  animateButton(event?.target);
+}
+  </script>
+</body>
+</html>
