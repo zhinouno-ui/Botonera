@@ -1,79 +1,123 @@
+<!DOCTYPE html>
+width: 100%;
+padding: 8px;
+border-radius: 4px;
+border: none;
+font-size: 13px;
+}
+
+
+/* Flip Cards */
+.wallets-container { perspective: 1200px; width: 100%; }
+.wallets-card { width: 100%; min-height: 96px; position: relative; transition: transform 0.45s; transform-style: preserve-3d; border-radius: 8px; background: rgba(255,255,255,0.04); }
+.wallets-face { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 12px 8px; backface-visibility: hidden; }
+.wallets-face.front { transform: rotateY(0deg); }
+.wallets-face.back { transform: rotateY(180deg); }
+.wallets-card.flipped { transform: rotateY(180deg); }
+
+
+/* Toast */
+.toast {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+background: rgba(0,0,0,0.8);
+padding: 12px 18px;
+border-radius: 8px;
+opacity: 0;
+transition: opacity 0.5s, bottom 0.5s;
+}
+.toast.show { opacity: 1; bottom: 40px; }
+</style>
+</head>
 <body>
 
-  <!-- CONTENEDOR DEL ENLACE (VERSIÓN SIMPLE) -->
-  <div class="link-switch-container">
-    <div class="link-display">
-      <h2>🔗 Enlace Máscara</h2>
-      <p style="color:#ccc">https://alvge.bet300vip.com/</p>
-    </div>
 
-    <div class="link-switch">
-      <button class="switch-btn active" id="landing-btn">Landing</button>
-    </div>
-
-    <button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
-  </div>
+<!-- 🔗 Enlace único (MAS 1) -->
+<div class="link-switch-container">
+<div id="link-display">
+<h2>🌐 Enlace Landing</h2>
+<p id="link-url">https://bet300.site/</p>
+</div>
+<button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
+</div>
 
 
-  <!-- UTILIDAD -->
-  <div class="grupo utilidad">
-    <h3>Utilidad</h3>
-
-    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨...')">Info</button>
-    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!...')">Cargado</button>
-    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro...')">Retiro</button>
-  </div>
+<!-- Grupo Info -->
+<div class="grupo utilidad">
+<h3>Utilidad</h3>
+<button onclick="copiarYAnimar(event,'Texto genérico')">Info</button>
+</div>
 
 
-  <!-- GONZALES -->
-  <div class="grupo Gonzales" draggable="false">
-
-    <div class="header">
-      <div class="titulo">Gonzales</div>
-      <button type="button" class="drag-handle">☰</button>
-    </div>
-
-    <button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU Mercado Pago</button>
-    <button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp ...')">Alias Mercado Pago</button>
-
-  </div>
+<!-- SOLO MEZA Y GONZALES -->
 
 
-  <!-- MEZA -->
-  <div class="grupo meza" draggable="false">
-
-    <div class="header">
-      <div class="titulo">Meza</div>
-      <button type="button" class="drag-handle">☰</button>
-    </div>
-
-    <button onclick="copiarYAnimar(event,'0000076500000043003428')">CBU PPay</button>
-    <button onclick="copiarYAnimar(event,'ymeza44.ppay ...')">Alias PPay</button>
-
-  </div>
+<!-- Meza -->
+<div class="grupo meza">
+<div class="header"><div class="titulo">Meza</div><div class="controls"><button class="drag-handle">☰</button></div></div>
+<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front"><button onclick="copiarYAnimar(event,'0000076500000043003428')">CBU PPay</button><button onclick="copiarYAnimar(event,'ymeza44.ppay')">Alias PPay</button></div><div class="wallets-face back"><button onclick="copiarYAnimar(event,'SIN MP')">CBU MP</button><button onclick="copiarYAnimar(event,'SIN MP')">Alias MP</button></div></div></div>
+</div>
 
 
-  <!-- PROMO AMIGO -->
-  <div class="grupo promo-amigo">
-    <h3>Promo Amigo</h3>
-
-    <button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉...')">Promo amigo</button>
-    <button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?...')">Info promo amigo</button>
-  </div>
+<!-- Gonzales -->
+<div class="grupo Gonzales">
+<div class="header"><div class="titulo">Gonzales</div><div class="controls"><button class="drag-handle">☰</button></div></div>
+<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front"><button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU MP</button><button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp')">Alias MP</button></div><div class="wallets-face back"><button onclick="copiarYAnimar(event,'SIN PPAY')">CBU PPay</button><button onclick="copiarYAnimar(event,'SIN PPAY')">Alias PPay</button></div></div></div>
+</div>
 
 
-  <!-- HISTORIAL -->
-  <div id="historial-box">
-    <div id="historial-header">
-      📝 Último copiado <span id="historial-arrow">⌄</span>
-    </div>
+<!-- Historial -->
+<div id="historial-box"><div id="historial-header">📝 Último copiado <span id="historial-arrow">⌄</span></div><div id="historial-content" style="display:none;"><span id="historial-text">Nada copiado...</span><button id="historial-copy">Copy</button></div></div>
 
-    <div id="historial-content">
-      <span id="historial-text">Nada copiado aún...</span>
-      <button id="historial-copy">Copy</button>
-    </div>
-  </div>
 
-  <div id="toast" class="toast"></div>
+<div id="toast" class="toast"></div>
 
-</body>
+
+<script>
+/* =========================
+HISTORIAL + TOAST (MANTENIDO)
+========================= */
+let lastCopied="", historialVisible=false;
+const histHeader=document.getElementById("historial-header");
+const histArrow=document.getElementById("historial-arrow");
+const histContent=document.getElementById("historial-content");
+const histText=document.getElementById("historial-text");
+const histCopyBtn=document.getElementById("historial-copy");
+
+
+histHeader.onclick=()=>{
+historialVisible=!historialVisible;
+histContent.style.display=historialVisible?"block":"none";
+histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
+};
+histCopyBtn.onclick=()=>{ if(lastCopied) copyText(lastCopied); };
+function addHistorial(txt){ lastCopied=txt; histText.textContent=txt; histContent.style.display="block"; histArrow.style.transform="rotate(180deg)"; historialVisible=true; }
+function showToast(message){ const t=document.getElementById("toast"); t.textContent="✅ Copiado: "+message; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2000); }
+function fallbackCopy(txt){ const temp=document.createElement("textarea"); temp.value=txt; document.body.appendChild(temp); temp.select(); document.execCommand("copy"); temp.remove(); showToast("Texto"); }
+
+
+function copyText(txt){ navigator.clipboard?.writeText(txt).then(()=>showToast("Texto")).catch(()=>fallbackCopy(txt)); addHistorial(txt); }
+
+
+/* =========================
+ENLACE ÚNICO (SIN MÁSCARA)
+========================= */
+document.getElementById("btn-copy-link").onclick=()=>copyText("https://bet300.site/");
+
+
+/* =========================
+FLIP CARDS (NO TOCADO)
+========================= */
+document.querySelectorAll(".grupo").forEach(g=>{
+const flip=g.querySelector(".flip-btn");
+const card=g.querySelector(".wallets-card");
+if(flip&&card) flip.onclick=()=>card.classList.toggle("flipped");
+});
+
+
+/* =========================
+DRAG AND DROP (NO TOCADO)
+========================= */
+new Sortable(document.body,{ handle: ".
