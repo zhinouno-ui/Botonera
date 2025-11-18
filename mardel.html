@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ChinBotones</title>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    margin: 10px;
+    padding: 10px;
+  color: #fff;
+}
+.grupo {
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.titulo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+button:hover {
+  background: rgba(0,0,0,0.4);
+}
+.flip-btn, .drag-handle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  margin-left: 2px;
+  transition: background 0.1s;
+}
+.flip-btn:hover, .drag-handle:hover { background: #444; }
+.drag-handle:active {
+  cursor: grabbing;
+}
+/* Colores personalizados según billetera */
+.promo-amigo { background: #2ecc71; }
+.meza { background: #3498db; }
+.toledo { background: #9b59b6; }
+.acuña  { background: #012498; } 
+    .Gonzales  { background: #992000; } 
+      .Rodriguez { background: #791125; }    
+      .Nores { background: #495692; }
+     .Benitez { background: #310727; }
+  .Gonzales { background: #500102; }
+.luna { background: #BE024A; }
+.utilidad { background: #e67e22; }
+.mensaje-revin { background: #C93C20; }
+
+.input-usuario {
+  width: 100%;
+  margin: 4px 1cm 5px 0;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  font-size: 13px;
+}
+    /* Contenedor horizontal */
+#modo-slider {
+  display: flex;
+  gap: 6px;
+  background: #2a2a2a; /* Fondo oscuro detrás del grupo */
+  padding: 4px;
+  border-radius: 20px;
+}
+.slider-btn {
+  background: #3a3a3a;
+  color: #ccc;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+}
+
+.slider-btn:active {
+  transform: scale(0.88);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+}
+
+.slider-btn.selected {
+  background: #111;
+  color: #C93C20;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(201,60,32,0.5), inset 0 0 4px rgba(201,60,32,0.3);
+  transform: scale(1.05);
+}
+#modo-slider {
+  display: flex;
+  gap: 6px;
+}
+#modo-slider .slider-btn {
+  flex: 1; /* opcional, para que todos midan lo mismo */
+}
+/* 🔔 Estilos del toast */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, bottom 0.5s ease;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+/* Caja historial */
+#historial-box {
+  margin-top: 15px;
+  background: #34495e;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+#historial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+#historial-arrow {
+  transition: transform 0.3s ease;
+  display: inline-block;
+  font-size: 14px;
+}
+#historial-content {
+  margin-top: 8px;
+  display: none;
+  background: rgba(255,255,255,0.1);
+  padding: 8px;
+  border-radius: 4px;
+}
+#historial-text {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+#historial-copy {
+  background: rgba(0,0,0,0.4);
+  border: none;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+#historial-copy:hover {
+  background: rgba(0,0,0,0.6);
+}
+
+/* FLIP CARD */
+.wallets-container {
+  perspective: 1200px;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+.wallets-card {
+  width: 100%;
+  min-height: 96px;
+  position: relative;
+  transition: transform 0.45s cubic-bezier(.2,.9,.3,1);
+  transform-style: preserve-3d;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+}
+.wallets-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+  padding: 12px 8px;
+  box-sizing: border-box;
+}
+.wallets-face.front { transform: rotateY(0deg); z-index: 2; }
+.wallets-face.back { transform: rotateY(180deg); z-index: 1; }
+.wallets-card.flipped { transform: rotateY(180deg); }
+.wallets-face button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 0;
+  box-shadow: 0 1px 4px #0001;
+  transition: background 0.18s;
+}
+.wallets-face button:hover { background: rgba(0,0,0,0.35);}
+
+
+     /* ===== SWITCH DE ENLACES ===== */
+.link-switch-container {
+  width: var(--width);
+  max-width: 100%;
+  margin: 0 auto 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  text-align: center;
+}
+
+.link-display h2 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.link-display p {
+  margin: 0 0 16px;
+  color: #ccc;
+  font-size: 1rem;
+  word-break: break-all;
+}
+
+.link-switch {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.switch-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  color: #bbb;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.switch-btn.active {
+  background: linear-gradient(180deg, #6f42c1, #5a2da1);
+  color: #fff;
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 6px 18px rgba(111,66,193,0.3);
+}
+
+.switch-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.copy-link-btn {
+  width: 100%;
+  border: none;
+  background: linear-gradient(180deg, #25d366, #19b856);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.copy-link-btn:hover {
+  background: linear-gradient(180deg, #2ce676, #20c164);
+}
+
+    
+  </style>
+</head>
+<body>
+  <div class="link-switch-container">
+  <div class="link-display" id="link-display">
+    <h2 id="link-title">🔗 Enlace Máscara</h2>
+  </div>
+
+  <div class="link-switch">
+    <button class="switch-btn" id="landing-btn">Landing</button>
+  </div>
+
+  <button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
+</div>
+  
+    <div class="grupo utilidad">
+    <h3>Utilidad</h3>
+    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨\n\nDisfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮\n\n📲 ¿Listo para disfrutar al máximo? 🚀\n\nPara añadir saldo, lo haces mediante CBU. 🧾\n‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️\n📩 Envianos el comprobante y empezá a jugar. 🚀\n\n📍 C4RG4 MÍNIMA: $2000\n📍 RET1R0 MÍNIMO: $5000\nSin Monto Maximo!!\nUn retiro cada 24hs exactas!\n\n🕐 Atención personalizada las 24hs los 365 dias del año!!!!')">Info</button>
+
+    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!\nTu cuenta ya está lista para girar y ganar 🎰\n🍀 ¡Éxitos en cada tirada!\nSi no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado en nuestro estado de perfil! \n🎰 TAMBIEN PODES CARGARTE POR TU CUENTA!\n ACA EN https://bet300.site/\n tu mismo usuario, tu misma clave.\n 12345a\n avisame si queres mas info')">Cargado</button>
+    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
+   </div>
+
+
+
+
+
+     <div class="grupo Gonzales" draggable="false">
+    <div class="header">
+      <div class="titulo">Gonzales</div>
+      <div class="controls">
+
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp\nTitular Sebastian Leonardo Gabriel Gonzalez *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'SIN PPAY')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'SIN PPAY')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+  
+    <div class="grupo meza" draggable="false">
+    <div class="header">
+      <div class="titulo">Meza</div>
+      <div class="controls">
+
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000076500000043003428')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'ymeza44.ppay \nTitular yamila gisella meza *PPay*')">Alias PPay</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'sin mp')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'sin mp')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="grupo promo-amigo">
+    <h3>Promo Amigo</h3>
+<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://bet300.site')">Promo amigo</button>
+<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
+</div>
+
+    <div id="historial-box">
+    <div id="historial-header">
+      📝 Último copiado <span id="historial-arrow">⌄</span>
+    </div>
+    <div id="historial-content">
+      <span id="historial-text">Nada copiado aún...</span>
+      <button id="historial-copy">Copy</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js de saludos"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script>
+ 
+    function animateButton(button){
+  button.style.transform = "scale(0.95)";
+  setTimeout(()=> button.style.transform = "", 150);
+}
+  
+  // ======================
+  // SLIDER SALUDOS
+  // ======================
+  let modoSlider = 0;
+  function actualizarSlider() {
+    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
+      btn.classList.toggle('selected',i===modoSlider);
+    });
+  }
+  document.getElementById('slider-PC01').onclick=()=>{modoSlider=0;actualizarSlider();}
+  document.getElementById('slider-PC02').onclick=()=>{modoSlider=1;actualizarSlider();}
+  document.getElementById('slider-PC03').onclick=()=>{modoSlider=2;actualizarSlider();}
+  document.getElementById('slider-PC04').onclick=()=>{modoSlider=3;actualizarSlider();}
+  actualizarSlider();
+
+// 🔄 Obtiene un saludo aleatorio según PC o mezcla general
+function obtenerSaludoAleatorio(usuario, tipo = "MIX") {
+  const grupos = window.SALUDOS || {};
+  let pool = [];
+
+  if (tipo && grupos[tipo]) {
+    pool = grupos[tipo];
+  } else if (tipo === "MIX" || !tipo) {
+    // mezcla todos los saludos de todas las PCs
+    pool = Object.values(grupos).flat();
+  }
+
+  if (pool.length === 0) return "⚠️ No hay saludos disponibles.";
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  return saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+}
+
+// 📋 Copia el saludo según el tipo actual (por ejemplo slider)
+function copiarSaludo(event, tipo = "PC01") {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const mensaje = obtenerSaludoAleatorio(usuario, tipo);
+  copyText(mensaje);
+  animateButton(event?.target);
+}
+
+
+function copiarSaludo(event) {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const mapSlider = ["PC01", "PC02", "PC03", "PC04"];
+  const tipo = mapSlider[modoSlider] || "PC01";
+  const grupos = window.SALUDOS || {};
+
+  let pool = grupos[tipo] || [];
+  if (pool.length === 0) {
+    alert("No hay saludos cargados para " + tipo);
+    return;
+  }
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  const mensaje = saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+
+  copyText(mensaje);
+  animateButton(event?.target);
+}
+
+
+function copiarSoloWsp(event){
+  const usuario=document.getElementById("usuarioInput").value.trim();
+  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
+  copyText(`https://wa.me/5491135854862?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
+  animateButton(event?.target); // 🔥 feedback visual aquí
+}
+
+function copiarCodigoAmigo(event){
+  const usuario=document.getElementById("usuarioInput").value.trim();
+  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
+  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://alvge.bet300vip.com//`;
+  copyText(mensaje);
+  animateButton(event?.target); // 🔥 feedback visual aquí
+}
+
+  // ======================
+  // HISTORIAL + TOAST
+  // ======================
+  let lastCopied="", historialVisible=false;
+  const histHeader=document.getElementById("historial-header");
+  const histArrow=document.getElementById("historial-arrow");
+  const histContent=document.getElementById("historial-content");
+  const histText=document.getElementById("historial-text");
+  const histCopyBtn=document.getElementById("historial-copy");
+
+  histHeader.onclick=()=>{
+    historialVisible=!historialVisible;
+    histContent.style.display=historialVisible?"block":"none";
+    histArrow.style.transform=historialVisible?"rotate(180deg)":"rotate(0deg)";
+  };
+  histCopyBtn.onclick=()=>{if(lastCopied)copyText(lastCopied);};
+
+  function addHistorial(txt){
+    lastCopied=txt;
+    histText.textContent=txt;
+    histContent.style.display="block";
+    histArrow.style.transform="rotate(180deg)";
+    historialVisible=true;
+  }
+
+  function showToast(message){
+    const toast=document.getElementById("toast");
+    toast.textContent="✅ Copiado: "+message;
+   toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+
+  function fallbackCopy(txt){
+    const temp=document.createElement("textarea");
+    temp.value=txt;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+    showToast("Texto");
+  }
+
+  function copyText(txt){
+    let tipo="Texto";
+    const txtLower=txt.toLowerCase();
+    if(txtLower.includes("mistery-box-one")) tipo="Mistery Box";
+    else if(txtLower.includes("?pc=1")) tipo="Ruleta PC01";
+          else if(txtLower.includes("?pc=2")) tipo="Ruleta PC02";
+                else if(txtLower.includes("?pc=3")) tipo="Ruleta PC03";
+                      else if(txtLower.includes("?pc=4")) tipo="Ruleta PC04";
+                            else if (txtLower.includes("acuna.03.mp")) tipo = "Alias Acuña";
+    else if (txtLower.includes("0000003100099477012498")) tipo = "Cbu Acuña";
+          else if (txtLower.includes("gonzalez.088.rulo.mp")) tipo = "Alias Gonzales";
+    else if (txtLower.includes("0000003100038708992000")) tipo = "Cbu Gonzales";
+    else if(txtLower.includes("meza01.mp")) tipo="Alias Meza MP";
+          else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
+    else if(txtLower.includes("0000003100073049569289")) tipo="Cbu Meza MP";
+      else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
+    else if(txtLower.includes("sgonzalez.bru.5269")) tipo="Alias Gonzales Bru";
+          else if(txtLower.includes("gonzalez.088.rulo.mp")) tipo="Alias Gonzales MP";
+    else if(txtLower.includes("1430001713045000150010")) tipo="Cbu Gonzales Bru"
+        else if(txtLower.includes("hector.052.causen.mp")) tipo="Alias Benitez MP";
+    else if(txtLower.includes("0000003100038177310727")) tipo="Cbu Benitez MP";
+      else if(txtLower.includes("0000003100038708992000")) tipo="Cbu Gonzales MP";
+    else if(txtLower.includes("luna011.mp")) tipo="Alias Luna MP"
+      else if(txtLower.includes("0000003100089153966098")) tipo="Cbu Rodriguez MP";
+    else if(txtLower.includes("Rodriguez.882.caseta.mp")) tipo="Alias Rodriguez MP";   
+          else if(txtLower.includes("jluna192320.ppay")) tipo="Alias Luna PPay";
+    else if(txtLower.includes("0000003100057182382088")) tipo="Cbu Luna MP";
+      else if(txtLower.includes("0000076500000042994646")) tipo="Cbu Luna PPay";
+                  else if(txtLower.includes("mrodrigue183982.ppay")) tipo="Alias Rodriguez PPay";
+                      else if(txtLower.includes("0000076500000034820409")) tipo="Cbu Rodriguez PPay";
+    else if(txtLower.includes("toledo001.mp")) tipo="Alias Toledo MP";
+          else if(txtLower.includes("snores6.ppay")) tipo="Alias Nores PPay";
+    else if(txtLower.includes("0000003100027653806085")) tipo="Cbu Nores MP";
+      else if(txtLower.includes("0000076500000044710091")) tipo="Cbu Nores PPay";
+    else if(txtLower.includes("nancy.118.dique.mp")) tipo="Alias Nores MP";
+      else if(txtLower.includes("MTOLEDO3561.NX.ARS")) tipo="Alias Toledo NX";
+    else if(txtLower.includes("0000003100042476697612")) tipo="Cbu Toledo MP";
+      else if(txtLower.includes("4530000800018010604187")) tipo="Cbu Toledo NX";
+      else if(txtLower.includes("mtoledo3561.nx.ars")) tipo="Alias Toledo NX";
+    else if(txtLower.includes("arellano.banco")) tipo="Banco, Arellano PP";
+    else if(txtLower.includes("edgardo.928.arado.mp")) tipo="Banco, Arellano MP";
+    else if(txtLower.includes("365.ofi.mp")) tipo="Banco, Chiguay MP";
+    else if(txtLower.includes("somos bet300vip")) tipo="Info";
+    else if(txtLower.includes("¡saldo acreditado!")) tipo="Cargado";
+    else if(txtLower.includes("para hacer el retiro")) tipo="Retiro";
+    else if(txtLower.includes("cronograma")) tipo="Enlace Wsp";
+    else if(txtLower.includes("fichas extra al instante")) tipo="Promo Amigos";
+    else if(txtLower.includes("debe enviar tu código")) tipo="Info Promo Amigos";
+    else if(txtLower.includes("con solo enviarle el enlace ya tienen el whatsapp")) tipo="Codigo amigo";
+
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(()=>{showToast(tipo);}).catch(()=>fallbackCopy(txt));
+    } else {
+      fallbackCopy(txt);
+    }
+    addHistorial(txt);
+  }
+
+// === SWITCH DE ENLACES ===
+const linkDisplay = document.getElementById('link-display');
+const linkTitle = document.getElementById('link-title');
+const linkUrl = document.getElementById('link-url');
+// const btnMask = document.getElementById('mask-btn'); // Eliminado: Ya no existe en HTML.
+const btnLanding = document.getElementById('landing-btn');
+const btnCopyLink = document.getElementById('btn-copy-link');
+
+let currentLink = {
+  title: "🔗 Enlace Máscara",
+  url: "https://alvge.bet300vip.com/"
+};
+
+// No hay botón "Mask" ya que no existe en HTML, se deja como default.
+
+btnLanding.addEventListener('click', () => {
+  btnLanding.classList.add('active');
+  // No hay btnMask, así que no se remueve la clase de él.
+  currentLink = {
+    title: "🌐 Enlace Landing",
+    url: "https://bet300.site/"
+  };
+  updateLinkDisplay();
+});
+
+function updateLinkDisplay() {
+  linkTitle.textContent = currentLink.title;
+  // Como solo queda el botón "Landing" y no se puede alternar con "Mask", no es necesario actualizar el contenido.
+  // Se asume que el contenedor link-display contendrá un <p id="link-url"> que fue eliminado en el HTML proporcionado.
+  // Si el <p> fue eliminado del HTML original, esta función no hace mucho.
+  // Dejaremos el código limpio asumiendo el HTML final sin ese p.
+}
+
+// Inicializar el enlace default (Enlace Máscara) y el botón Landing sin 'active' ya que el 'Mask' ya no existe para alternar.
+// Además, se corrige la inicialización de `linkUrl` en JS ya que el elemento no existe en el HTML.
+// Ya que el HTML original no tiene un botón 'mask-btn' ni un elemento con id 'link-url', se simplifica el JS.
+
+// El HTML original solo tenía un botón `landing-btn` en el switch.
+// Se reajusta el JS para reflejar que solo hay 1 botón.
+btnLanding.classList.add('active'); // Se inicia con Landing seleccionado si es el único.
+currentLink = {
+  title: "🌐 Enlace Landing",
+  url: "https://bet300.site/"
+};
+
+btnLanding.addEventListener('click', () => {
+  // Si solo hay un botón, solo se asegura que esté activo y que el link sea el correcto.
+  btnLanding.classList.add('active');
+  currentLink = {
+    title: "🌐 Enlace Landing",
+    url: "https://bet300.site/"
+  };
+  linkTitle.textContent = currentLink.title;
+});
+
+
+btnCopyLink.addEventListener('click', async (event) => {
+  animateButton(event.target);
+  try {
+    await navigator.clipboard.writeText(currentLink.url);
+    showToast('Enlace ' + currentLink.title.replace(/[^a-zA-Z]/g, '') + ' copiado');
+    addHistorial(currentLink.url);
+  } catch {
+    showToast('Error al copiar enlace');
+  }
+});
+
+  // ======================
+  // BANCO PANEL
+  // ======================
+  // Código eliminado
+  // Se elimina la función para copiar el alias CHIGUAY también:
+  // function copiarChiguay(event){ copyText('365.ofi.mp'); animateButton(event?.target); }
+
+  document.addEventListener("click",function(e){
+    // Código eliminado que dependía de bancoPanel
+  });
+  document.addEventListener("keydown",function(e){
+    // Código eliminado que dependía de bancoPanel
+  });
+
+  // ======================
+  // FLIP CARDS
+  // ======================
+  document.querySelectorAll(".grupo").forEach(grupo=>{
+    const flipBtn=grupo.querySelector(".flip-btn");
+    const card=grupo.querySelector(".wallets-card");
+    if(flipBtn&&card){
+      flipBtn.addEventListener("click",()=>{
+        card.classList.toggle("flipped");
+      });
+    }
+  });
+
+  // ======================
+  // DRAG & DROP (SortableJS)
+  // ======================
+  new Sortable(document.body,{
+    handle:".drag-handle",
+    animation:150,
+    draggable:".grupo"
+  });
+function animateButton(button){
+  if(!button) return;
+  button.style.transform = "scale(0.92)";
+  button.style.transition = "transform 0.15s ease";
+  setTimeout(()=> button.style.transform = "", 150);
+}
+    function copiarYAnimar(event, texto){
+  copyText(texto);
+  animateButton(event?.target); // reutiliza la animación que ya agregaste
+      }
+  </script>
+</body>
+</html>
