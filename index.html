@@ -45,6 +45,8 @@
       opacity: 0;
       animation: fadeInUp .55s ease forwards;
       transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      position: relative; /* Asegura que ::after se posicione correctamente */
+      overflow: hidden; /* Para que el brillo no se desborde */
     }
 
     /* Brillo general para todos */
@@ -76,18 +78,17 @@
     }
 
     /* Colores básicos */
-    .ChinUnion { background-color: #f1c40f; color: #000; position: relative; }
-    .Epc01     { background-color: #046865; color: #fff; position: relative; } /* Cambiado a blanco para mejor contraste */
-    .Fpc01     { background-color: #5C1A1B; color: #fff; position: relative; } /* Cambiado a blanco para mejor contraste */
-    .AlvPc     { background-color: #BE024A; color: #fff; position: relative; } /* Cambiado a blanco para mejor contraste */
-    .Mardel    { background-color: #3498db; color: #fff; position: relative; } /* Estilo para Mardel */
+    .ChinUnion { background-color: #f1c40f; color: #000; }
+    .Epc01     { background-color: #046865; color: #fff; }
+    .Fpc01     { background-color: #5C1A1B; color: #fff; }
+    .AlvPc     { background-color: #BE024A; color: #fff; }
+    .Mardel    { background-color: #3498db; color: #fff; } /* Estilo para Mardel */
 
     /* ----------------------- */
     /* ESTILO RECU premium */
     /* ----------------------- */
     .Recu {
-      position: relative;
-      overflow: hidden;
+      /* Ya tiene position: relative y overflow: hidden de .boton */
       color: #fff;
       border-radius: 12px;
       background: linear-gradient(135deg, rgba(133,86,160,0.95) 0%, rgba(66,30,88,0.95) 50%, rgba(44,20,56,0.95) 100%);
@@ -111,8 +112,7 @@
     /* ESTILO COMPARADOR dorado */
     /* ----------------------- */
     .Comparador {
-      position: relative;
-      overflow: hidden;
+      /* Ya tiene position: relative y overflow: hidden de .boton */
       color: #000;
       border-radius: 12px;
 
@@ -156,14 +156,14 @@
     }
 
     /* Stagger */
-    /* Actualizado para incluir el nuevo botón Mardel (6to) */
+    /* Actualizado para incluir el nuevo botón Mardel (5to en el orden visual de los <a>) */
     .boton:nth-of-type(1){ animation-delay: 0.05s; } /* ChinUnion */
     .boton:nth-of-type(2){ animation-delay: 0.12s; } /* Epc01 */
     .boton:nth-of-type(3){ animation-delay: 0.18s; } /* Fpc01 */
     .boton:nth-of-type(4){ animation-delay: 0.24s; } /* AlvPc */
     .boton:nth-of-type(5){ animation-delay: 0.30s; } /* Mardel (Nuevo) */
     .boton:nth-of-type(6){ animation-delay: 0.36s; } /* Recu */
-    .boton:nth-of-type(7){ animation-delay: 0.42s; } /* Comparador (Ahora 7mo) */
+    .boton:nth-of-type(7){ animation-delay: 0.42s; } /* Comparador */
 
 
     @media (max-width: 600px) {
