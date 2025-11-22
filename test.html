@@ -1,1 +1,1048 @@
-<!doctype html> <html lang="es"> <head> <meta charset="utf-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>ChinDife</title> <style> /* === ANIMATIONS === */ @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } } @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } } @keyframes gradient-border { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } } /* === COLOR PALETTE & ROOT VARIABLES === */ :root { --bg: #0A0A10; --card: #10101A; --muted: #8899a6; --text: #e6f7fb; --accent: #8A2BE2; /* Vibrant Purple */ --accent-light: #9932CC; --accent-glow: rgba(138, 43, 226, 0.4); --ok: #10B981; /* Emerald Green */ --bad: #EF4444; /* Red */ --warn: #F59E0B; /* Amber */ --glass: rgba(255, 255, 255, 0.05); --border-color: rgba(255, 255, 255, 0.1); --edited-color: rgba(255, 255, 0, 0.15); /* Light yellow for edited rows */ } /* === GENERAL STYLES === */ * { box-sizing: border-box; } body { margin: 0; min-height: 100vh; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background-color: var(--bg); background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 25px 25px; color: var(--text); padding: 18px; animation: fadeIn 0.8s ease-out; } .wrap { max-width: 1400px; margin: 0 auto; } h1 { margin: 0 0 12px 0; font-size: 24px; font-weight: 700; background: linear-gradient(90deg, var(--accent), var(--text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: slideInUp 0.5s ease-out; } /* === CARD & LAYOUT === */ .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); animation: slideInUp 0.7s ease-out; } .row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; } /* === FORMS & BUTTONS === */ label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; font-weight: 500; } input[type=file], textarea, select { background: var(--glass); border-radius: 8px; padding: 10px; border: 1px solid var(--border-color); color: var(--text); width: 100%; transition: all 0.2s ease; } input[type=file]:hover, textarea:hover, select:hover { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); } textarea { min-height: 140px; resize: vertical; } .btn { background: linear-gradient(90deg, var(--accent), var(--accent-light)); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease-out; box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 5px var(--accent-glow); } .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 15px var(--accent-glow); } .btn:active:not(:disabled) { transform: translateY(0); } .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.7; box-shadow: none; } .btn.btn-loading { animation: pulse 1.5s infinite ease-in-out; } .small { padding: 8px 10px; font-size: 13px; } /* === FILTERS & SUMMARY === */ .filters { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); } .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; flex-grow: 1; } select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; } select option { background: var(--card); color: var(--text); } .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); } .summary .badge { text-align: center; padding: 12px; background: var(--glass); border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s ease; } .summary .badge:hover { transform: translateY(-3px); border-color: var(--accent); } .summary .badge strong { font-size: 1.5em; color: var(--text); margin-top: 5px; font-weight: 700; } .summary .badge.diff.positive strong { color: var(--ok); } .summary .badge.diff.negative strong { color: var(--bad); } .summary .badge.ok strong { color: var(--ok); } .summary .badge.warn strong { color: var(--warn); } .summary .badge.bad strong { color: var(--bad); } /* === RESULTS TABLE (IMPROVED READABILITY) === */ .table-wrap { margin-top: 20px; max-height: 60vh; overflow: auto; border-radius: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); box-shadow: inset 0 2px 10px rgba(0,0,0,0.4); } table { width: 100%; border-collapse: collapse; font-size: 14px; } th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: middle; white-space: nowrap; } th { position: sticky; top: 0; background: rgba(16, 16, 26, 0.8); backdrop-filter: blur(8px); z-index: 3; color: var(--text); font-weight: 600; } tr { transition: background-color 0.2s ease; } tr:nth-child(even) { background-color: rgba(255,255,255,0.02); } tr:hover td { background-color: var(--accent-glow); } td.amount { text-align: right; font-weight: 600; font-family: 'Consolas', 'Menlo', monospace; } td.amount-pos { color: var(--ok); } td.amount-neg { color: var(--bad); } td.divider { border-left: 2px solid var(--border-color); } tr.ok td {} tr.miss-chunior { border-left: 3px solid var(--bad); } tr.miss-agente { border-left: 3px solid var(--warn); } tr.ignored { opacity: 0.5; font-style: italic; background: rgba(100,100,100,0.1) !important; } tr.edited-row { background-color: var(--edited-color) !important; } /* === MISC & HELPERS === */ .badge { padding: 6px 10px; border-radius: 8px; background: var(--glass); color: var(--muted); font-size: 13px; } .state-ok { color: var(--ok); font-weight: 700; } .state-bad { color: var(--bad); font-weight: 800; } .state-warn { color: var(--warn); font-weight: 800; } .controls-vertical { display: flex; flex-direction: column; gap: 8px; } .notes { margin-top: 10px; color: var(--muted); font-size: 13px; } .action-btn { background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s ease; } .action-btn:hover { background: var(--accent-glow); color: white; } .action-btn svg { width: 18px; height: 18px; } .hidden { display: none; } .results-section { animation: slideInUp 0.6s ease-out forwards; } /* Botón ocultar más visible */ .action-btn.hide-btn { background: rgba(255,0,0,0.15); border: 1px solid rgba(255,0,0,0.4); } .action-btn.hide-btn:hover { background: rgba(255,0,0,0.35); } /* Botón editar */ .action-btn.edit-btn { background: rgba(0,150,255,0.15); border: 1px solid rgba(0,150,255,0.4); } .action-btn.edit-btn:hover { background: rgba(0,150,255,0.35); } /* Celda editable */ .cell-editing { padding: 2px; border-radius: 4px; } .cell-editing input { width: 95%; background: #00000033; border: 1px solid #666; border-radius: 4px; padding: 3px 4px; color: white; } /* Fullscreen styles */ .fullscreen-table-wrap { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--bg); z-index: 1000; overflow: auto; border-radius: 0; } .fullscreen-table-wrap table { font-size: 16px; } .fullscreen-table-wrap th, .fullscreen-table-wrap td { padding: 12px 15px; } .fullscreen-table-wrap .exit-fullscreen-btn { position: sticky; top: 10px; right: 20px; z-index: 1001; background: var(--bad); color: white; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); } .fullscreen-table-wrap .exit-fullscreen-btn:hover { background: #DC2626; } /* === RESPONSIVE DESIGN === */ @media (max-width: 920px) { .row, .filters { flex-direction: column; align-items: stretch; } .summary { grid-template-columns: 1fr 1fr; } } @media (max-width: 600px) { .summary { grid-template-columns: 1fr; } h1 { font-size: 20px; } } </style> <script type="importmap"> { "imports": { "react": "https://aistudiocdn.com/react@^19.2.0", "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/", "react/": "https://aistudiocdn.com/react@^19.2.0/" } } </script> </head> <body> <div class="wrap"> <h1>Comparador AGENTE ⇄ CHUNIOR - ChinDiferencia</h1> <div class="card"> <div class="row"> <div style="flex:1;min-width:280px"> <label>1. Cargar CSV(s) AGENTE</label> <input id="agentFiles" type="file" accept=".csv" multiple /> <div class="notes">Puedes seleccionar varios. Nombra los archivos (ej. agente_chino.csv) para identificar la fuente.</div> </div> <div style="flex:1;min-width:300px"> <label>2. Pegar texto CHUNIOR</label> <textarea id="chuniorText" placeholder="Pega aquí las líneas copiadas de Chunior..."></textarea> <div class="notes">Ejemplo: <code>... fyeivan ... $ 3.000,00 clau3628</code></div> </div> <div style="width:220px"> <label>3. Acciones</label> <div class="controls-vertical"> <button id="processBtn" class="btn">Procesar y Emparejar</button> <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#f59e0b,#f97316)">Exportar CSV</button> <button id="copyExcelBtn" class="btn" style="background:linear-gradient(90deg,#06b6d4,#3dd9f0)">Copiar para Excel</button> </div> </div> </div> <div id="resultsSection" class="hidden"> <div class="summary" id="summaryBox"> <div class="badge ok">Total Agente: <strong id="sumAgentTotal">0.00</strong></div> <div class="badge ok">Total Chunior: <strong id="sumChuniorTotal">0.00</strong></div> <div class="badge diff">Diferencia Total: <strong id="sumDifference">0.00</strong></div> <div class="badge ok">Ingresos Agente: <strong id="sumAgentIncome">0.00</strong></div> <div class="badge ok">Ingresos Chunior: <strong id="sumChuniorIncome">0.00</strong></div> <div class="badge diff">Dif. Ingresos: <strong id="sumDiffIncome">0.00</strong></div> <div class="badge bad">Egresos Agente: <strong id="sumAgentOutcome">0.00</strong></div> <div class="badge bad">Egresos Chunior: <strong id="sumChuniorOutcome">0.00</strong></div> <div class="badge diff">Dif. Egresos: <strong id="sumDiffOutcome">0.00</strong></div> <div class="badge warn">Recargas Admin: <strong id="sumAdminTotal">0.00</strong></div> </div> <div class="filters"> <div class="filter-grid"> <div><label>Fecha</label><select id="filterFecha"><option value="__ALL">Todos los días</option></select></div> <div><label>Agente</label><select id="filterAgente"><option value="__ALL">Todos</option></select></div> <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div> <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div> <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div> <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div> <div><label>Tipo Mov.</label><select id="filterMovimiento"><option value="__ALL">Todos</option><option value="INGRESO">Ingresos</option><option value="EGRESO">Egresos</option></select></div> </div> <div class="badge" style="text-align:right"> <div>Visibles: <span id="countTotals">0</span></div> <div>Emparejados: <strong id="countPaired" style="color:var(--ok)">0</strong></div> <div>Discrepancias: <strong id="countMissing" style="color:var(--bad)">0</strong></div> </div> </div> <div id="tableContainer" class="table-wrap" aria-live="polite"> <table id="resultsTable" role="table"> <thead> <tr> <th>Agente <button id="fullscreenToggle" class="action-btn" title="Pantalla Completa"> <svg fill="currentColor" viewBox="0 0 16 16"> <path d="M1.5 1A.5.5 0 0 0 1 1.5v3.293a.5.5 0 0 0 .854.353l2.06-2.06A.5.5 0 0 0 4.793 2.15L2.15 4.793A.5.5 0 0 0 1.854 4.5H1.5zM14.5 1a.5.5 0 0 1 .5.5v3.293a.5.5 0 0 1-.854.353l-2.06-2.06a.5.5 0 0 1-.707-.707l2.06-2.06A.5.5 0 0 1 14.5 1zM1.5 15a.5.5 0 0 1-.5-.5v-3.293a.5.5 0 0 1 .854-.353l2.06 2.06a.5.5 0 0 1 .707.707l-2.06 2.06A.5.5 0 0 1 1.5 15zM14.5 15a.5.5 0 0 0 .5-.5v-3.293a.5.5 0 0 0-.854-.353l-2.06 2.06a.5.5 0 0 0 .707.707l2.06-2.06A.5.5 0 0 0 14.5 15z"/> </svg> </button> </th> <th>Turno</th> <th>Agente Hora</th> <th>Agente Usuario</th> <th style="text-align:right">Agente Monto</th> <th class="divider">Chunior Hora</th> <th>Chunior Usuario</th> <th style="text-align:right">Chunior Monto</th> <th>Operador</th> <th>Billetera</th> <th>Estado</th> <th style="width:50px; text-align:center;">Acción</th> </tr> </thead> <tbody id="resultsBody"></tbody> </table> </div> </div> <div class="notes" style="margin-top:12px"> • Matching exacto por <strong>usuario normalizado (minúsc)</strong> y <strong>monto</strong> — cualquier diferencia marca discrepancia.<br> • Turnos: Mañana 06:00–14:00, Tarde 14:00–22:00, Noche 22:00–06:00. </div> </div> </div> <script> /* UTIL: lectura CSV robusta */ function readFileAsText(file){ return new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(String(e.target.result || '')); r.onerror = rej; r.readAsText(file, 'utf-8'); }); } function splitLines(text){ return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() !== ''); } function parseCSVLine(line, delimiter = ','){ const out = []; let cur = '', inQuotes=false; for (let i=0;i<line.length;i++){ const ch = line[i]; if (ch === '"' ) { if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; } inQuotes = !inQuotes; continue; } if (ch === delimiter && !inQuotes){ out.push(cur); cur=''; continue; } cur += ch; } out.push(cur); return out; } /* CLEAN amount strings */ function parseAmountRaw(raw){ if(raw === null || raw === undefined) return 0; let s = String(raw).trim(); if(!s) return 0; s = s.replace(/[^\d,\.-]/g, ''); if (s.includes(',')) { s = s.replace(/\./g, '').replace(',', '.'); } const n = parseFloat(s); return isNaN(n) ? 0 : n; } /* parse agent CSV rows array (lines) */ function parseAgentLines(lines, agentName = 'Desconocido'){ const rows = []; let startIndex = 0; let format = null; if(lines.length === 0) return rows; if(lines[0].toLowerCase().startsWith('sep=')) startIndex = 1; const headerLine = lines[startIndex]; if (headerLine){ const headerCols = parseCSVLine(headerLine); if(headerCols[3]?.toLowerCase() === 'cantidad' && headerCols[6]?.toLowerCase() === 'alias del jugador'){ format = 'sub'; } else if (headerCols[2]?.toLowerCase() === 'cantidad' && headerCols[4]?.toLowerCase() === 'alias'){ format = 'main'; } else { console.warn(`Could not determine CSV format for ${agentName}, skipping file.`); return rows; } startIndex++; } for (let i=startIndex; i<lines.length; i++){ const line = lines[i]; if(!line.trim() || !line.includes(',')) continue; const cols = parseCSVLine(line); if(cols.length < 5) continue; const fechaRaw = (cols[0]||'').trim(); let montoRaw, usuarioRaw, tipoRaw; if(format === 'sub'){ montoRaw = cols[3]; usuarioRaw = cols[6]; tipoRaw = cols[1]; } else { // 'main' montoRaw = cols[2]; usuarioRaw = cols[4]; tipoRaw = cols[3]; } const monto = parseAmountRaw(montoRaw); const usuario = (usuarioRaw || '').toLowerCase().trim(); const isAdminCharge = /te cargaron/i.test(tipoRaw || ''); let fechaObj = null; if(fechaRaw){ const attempt = new Date(fechaRaw.replace(' ', 'T')); fechaObj = isNaN(attempt.getTime()) ? new Date(fechaRaw) : attempt; if(isNaN(fechaObj.getTime())) fechaObj = null; } rows.push({ origen:'AGENT', agente: agentName, fecha: fechaRaw, fechaObj, monto, usuario, isAdminCharge }); } return rows; } /* parse chunior pasted text */ function parseChuniorLines(lines){ const rows = []; for (let raw of lines){ if(!raw.trim()) continue; let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean); if(parts.length < 2) { parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean); } if (parts.length > 0 && /^\d{7,}$/.test(parts[0])) { parts.shift(); } if(parts.length >= 2 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){ parts[0] = parts[0] + ' ' + parts[1]; parts.splice(1,1); } if(parts.length < 4) { console.warn("Skipping malformed Chunior line:", raw); continue; } let [fechaRaw, operador, billeteraRaw, montoRaw, usuarioRaw] = parts; let billetera = (billeteraRaw || '').replace(/.*-\s*/,'').trim(); if(!billetera) billetera = (billeteraRaw || '').trim(); const monto = parseAmountRaw(montoRaw); const usuario = (usuarioRaw || '').toLowerCase().trim(); let fechaObj = null; if(fechaRaw){ const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/); if(m) fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`); else { const attempt = new Date(fechaRaw.replace(' ', 'T')); if(!isNaN(attempt.getTime())) fechaObj = attempt; } } rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: (operador || '').toLowerCase().trim(), billetera: billetera.toUpperCase().trim() }); } return rows; } /* turno calculation */ function getTurnoFromDate(d){ if(!d || isNaN(d.getTime())) return ''; const h = d.getHours(); if(h >= 6 && h < 14) return 'TM'; if(h >= 14 && h < 22) return 'TT'; return 'TN'; } window.__IGNORED_IDS = new Set(); window.__EDITED_IDS = new Set(); /* MAIN processing */ async function processData() { const processBtn = document.getElementById('processBtn'); const agentFiles = document.getElementById('agentFiles').files; const chuniorText = document.getElementById('chuniorText').value || ''; const resultsBody = document.getElementById('resultsBody'); const resultsSection = document.getElementById('resultsSection'); resultsBody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">Procesando datos...</td></tr>'; resultsSection.classList.remove('hidden', 'results-section'); processBtn.disabled = true; processBtn.classList.add('btn-loading'); processBtn.textContent = 'Procesando...'; window.__IGNORED_IDS.clear(); window.__EDITED_IDS.clear(); let allAgentRows = []; try{ if(agentFiles && agentFiles.length){ for(const f of agentFiles){ const txt = await readFileAsText(f); const lines = splitLines(txt); const agentNameMatch = f.name.match(/(agente|subagente)_?([a-zA-Z0-9]+)/i); const agentName = agentNameMatch?.[2]?.toLowerCase() || f.name.replace(/\.csv$/i, ''); allAgentRows = allAgentRows.concat(parseAgentLines(lines, agentName)); } } } catch(e){ alert('Error leyendo archivos de agente: ' + (e?.message || e)); processBtn.disabled = false; processBtn.classList.remove('btn-loading'); processBtn.textContent = 'Procesar y Emparejar'; return; } const chuniorRows = parseChuniorLines(splitLines(chuniorText)); allAgentRows.forEach(r => { r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : ''; r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO'; }); chuniorRows.forEach(r => { r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : ''; r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO'; }); const matchedChuniorIdx = new Set(); const pairs = []; let idCounter = 0; allAgentRows.forEach(a => { if (a.isAdminCharge) { pairs.push({ id: `admin-${idCounter++}`, agente: a, chunior: null, estado: 'OK', tipoMovimiento: a.tipoMovimiento, edited: false }); } else { let matchedIndex = -1; for (let j=0; j<chuniorRows.length; j++){ if(matchedChuniorIdx.has(j)) continue; const c = chuniorRows[j]; if(a.usuario && c.usuario && a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01){ matchedIndex = j; break; } } if(matchedIndex >= 0){ matchedChuniorIdx.add(matchedIndex); pairs.push({ id: `match-${idCounter++}`, agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento, edited: false }); } else { pairs.push({ id: `agent-miss-${idCounter++}`, agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento, edited: false }); } } }); for (let j=0; j<chuniorRows.length; j++){ if(!matchedChuniorIdx.has(j)){ pairs.push({ id: `chunior-miss-${idCounter++}`, agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT', tipoMovimiento: chuniorRows[j].tipoMovimiento, edited: false }); } } const dates = new Set(), agentes = new Set(), operadores = new Set(), billeteras = new Set(); pairs.forEach(p => { const d = p.agente?.fechaObj || p.chunior?.fechaObj; if(d) dates.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`); if(p.agente?.agente) agentes.add(p.agente.agente); if(p.chunior?.operador) operadores.add(p.chunior.operador); if(p.chunior?.billetera) billeteras.add(p.chunior.billetera); }); const populateSelect = (id, options, defaultLabel) => { const select = document.getElementById(id); select.innerHTML = `<option value="__ALL">${defaultLabel}</option>`; Array.from(options).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = String(o).toUpperCase(); select.appendChild(opt); }); }; populateSelect('filterFecha', dates, 'Todos los días'); populateSelect('filterAgente', agentes, 'Todos'); populateSelect('filterOperador', operadores, 'Todos'); populateSelect('filterBilletera', billeteras, 'Todas'); window.__COMPARE_PAIRS = pairs.sort((a, b) => { const dateA = a.agente?.fechaObj || a.chunior?.fechaObj; const dateB = b.agente?.fechaObj || b.chunior?.fechaObj; return (dateA?.getTime() || 0) - (dateB?.getTime() || 0); }); processBtn.textContent = 'Procesar y Emparejar'; processBtn.classList.remove('btn-loading'); // Trigger animation for the results section resultsSection.classList.add('results-section'); applyFiltersAndRender(); } function getFilteredPairs() { const pairs = window.__COMPARE_PAIRS || []; const fechaFilter = document.getElementById('filterFecha').value; const agFilter = document.getElementById('filterAgente').value; const opFilter = document.getElementById('filterOperador').value; const biFilter = document.getElementById('filterBilletera').value; const turnoFilter = document.getElementById('filterTurno').value; const estadoFilter = document.getElementById('filterEstado').value; const movimientoFilter = document.getElementById('filterMovimiento').value; if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movimientoFilter].every(f => f === '__ALL')) { return pairs; } return pairs.filter(p => { const a = p.agente, c = p.chunior; if (fechaFilter !== '__ALL') { const recordDate = a?.fechaObj || c?.fechaObj; if (!recordDate) return false; const recordDateStr = `${recordDate.getFullYear()}-${String(recordDate.getMonth() + 1).padStart(2, '0')}-${String(recordDate.getDate()).padStart(2, '0')}`; if (recordDateStr !== fechaFilter) return false; } if (agFilter !== '__ALL' && (!a || a.agente !== agFilter)) return false; if (opFilter !== '__ALL' && (!c || c.operador !== opFilter)) return false; if (biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) return false; if (turnoFilter !== '__ALL' && (a?.turno || c?.turno || '') !== turnoFilter) return false; if (estadoFilter !== '__ALL') { if (a?.isAdminCharge) { return estadoFilter === 'OK'; } return p.estado === estadoFilter; } if (movimientoFilter !== '__ALL' && p.tipoMovimiento !== movimientoFilter) return false; return true; }); } function renderTable(filteredPairs){ const tbody = document.getElementById('resultsBody'); tbody.innerHTML = ''; if (filteredPairs.length === 0) { tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">No hay registros para mostrar.</td></tr>'; return; } const iconEye = `<svg fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.816 1.097-2.074 2.157-3.642 2.766C9.646 11.668 8.028 12.5 6 12.5c-2.028 0-3.646-.832-5.008-2.234A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`; const iconEyeSlash = `<svg fill="currentColor" viewBox="0 0 16 16"><path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM11.21 11.21A3.5 3.5 0 0 1 6.79 6.79l-1.615-1.615a3.5 3.5 0 0 1-4.474-4.474L.173 2.065a1 1 0 0 1 1.414-1.414l12.486 12.486a1 1 0 0 1-1.414 1.414L11.21 11.21z"/><path d="M16 8s-3-5.5-8-5.5a7.027 7.027 0 0 0-2.79.588l.607.607A3.5 3.5 0 0 1 8 5.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.816 1.097-2.074 2.157-3.642 2.766C9.646 11.668 8.028 12.5 6 12.5c-.313 0-.62-.014-.924-.04L4.69 14.33A12.64 12.64 0 0 0 8 15c5 0 8-5.5 8-5.5z"/></svg>`; for(const p of filteredPairs){ const a = p.agente, c = p.chunior; const isIgnored = window.__IGNORED_IDS.has(p.id); const isEdited = window.__EDITED_IDS.has(p.id); const tr = document.createElement('tr'); let statusClass = ''; if (a?.isAdminCharge) statusClass = 'ok'; else if (p.estado === 'OK') statusClass = 'ok'; else if (p.estado === 'MISSING_CHUNIOR') statusClass = 'miss-chunior'; else if (p.estado === 'MISSING_AGENT') statusClass = 'miss-agente'; if(isIgnored) statusClass += ' ignored'; if(isEdited) statusClass += ' edited-row'; tr.className = statusClass; const fNum = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); const agenteMonto = a ? fNum(a.monto) : ''; const chuniorMonto = c ? fNum(c.monto) : ''; let estadoDisplay = ''; if (a?.isAdminCharge) estadoDisplay = '<span class="state-ok">✔ ADMIN</span>'; else if (p.estado === 'OK') estadoDisplay = '<span class="state-ok">✔ OK</span>'; else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>'; else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>'; let actionCell = `<td style="text-align:center;"> <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button> <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button> <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button> </td>`; if (p.estado === 'OK' || a?.isAdminCharge) { actionCell = `<td style="text-align:center;"> <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button> </td>`; } tr.innerHTML = `<td>${escapeHtml(a?.agente?.toUpperCase() || '')}</td><td>${a?.turno || c?.turno || ''}</td><td>${formatTime(a?.fechaObj)}</td> <td>${escapeHtml(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario || '')}</td> <td class="amount ${a && a.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${agenteMonto}</td> <td class="divider">${formatTime(c?.fechaObj)}</td><td>${escapeHtml(c?.usuario || '')}</td> <td class="amount ${c && c.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${chuniorMonto}</td> <td>${escapeHtml(c?.operador?.toUpperCase() || '')}</td><td>${escapeHtml(c?.billetera || '')}</td> <td>${estadoDisplay}</td>${actionCell}`; tbody.appendChild(tr); } } function updateSummary(filteredPairs){ let agentTotal = 0, chuniorTotal = 0, agentIncome = 0, chuniorIncome = 0; let agentOutcome = 0, chuniorOutcome = 0, adminTotal = 0; let pairedCount = 0, missingCount = 0; const relevantPairs = filteredPairs.filter(p => !window.__IGNORED_IDS.has(p.id)); relevantPairs.forEach(p => { if (p.agente) { if(p.agente.isAdminCharge) { adminTotal += p.agente.monto; } else { agentTotal += p.agente.monto; p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto; } } if (p.chunior) { chuniorTotal += p.chunior.monto; p.chunior.monto >= 0 ? chuniorIncome += p.chunior.monto : chuniorOutcome += p.chunior.monto; } }); filteredPairs.forEach(p => { if (!p.agente?.isAdminCharge && p.estado !== 'OK') { missingCount++; } if (!p.agente?.isAdminCharge && p.estado === 'OK') { pairedCount++; } }); const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); const setContent = (id, value) => { document.getElementById(id).textContent = format(value); }; const setBadgeClass = (id, value) => { const badge = document.getElementById(id).parentElement; badge.classList.remove('positive', 'negative'); if (value >= 0) badge.classList.add('positive'); else badge.classList.add('negative'); }; setContent('sumAgentTotal', agentTotal); setContent('sumChuniorTotal', chuniorTotal); setContent('sumDifference', agentTotal - chuniorTotal); setBadgeClass('sumDifference', agentTotal - chuniorTotal); setContent('sumAdminTotal', adminTotal); setContent('sumAgentIncome', agentIncome); setContent('sumChuniorIncome', chuniorIncome); setContent('sumDiffIncome', agentIncome - chuniorIncome); setBadgeClass('sumDiffIncome', agentIncome - chuniorIncome); setContent('sumAgentOutcome', agentOutcome); setContent('sumChuniorOutcome', chuniorOutcome); setContent('sumDiffOutcome', agentOutcome - chuniorOutcome); setBadgeClass('sumDiffOutcome', agentOutcome - chuniorOutcome); document.getElementById('countTotals').textContent = `${filteredPairs.length}`; document.getElementById('countPaired').textContent = pairedCount; document.getElementById('countMissing').textContent = missingCount; } function applyFiltersAndRender() { const filteredPairs = getFilteredPairs(); renderTable(filteredPairs); updateSummary(filteredPairs); updateButtonStates(); } /* helpers */ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); } function formatTime(d){ if(!d || isNaN(d.getTime())) return ''; const pad = (num) => num.toString().padStart(2, '0'); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; } function setupActionButtons() { const exportBtn = document.getElementById('exportBtn'); const copyBtn = document.getElementById('copyExcelBtn'); const getExportData = () => { const data = getFilteredPairs().filter(p => !window.__IGNORED_IDS.has(p.id)); if (!data.length) { alert('No hay datos (visibles y no ignorados) para exportar.'); return null; } return data; } exportBtn.addEventListener('click', () => { const dataToExport = getExportData(); if (!dataToExport) return; const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO','EDITADO']; const rows = [headers.join(',')]; for(const p of dataToExport){ const a = p.agente, c = p.chunior; const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado; const row = [ csvSafe(a?.agente?.toUpperCase()), csvSafe(a?.turno || c?.turno), csvSafe(a?.fechaObj?.toISOString()), csvSafe(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario), csvSafe(a?.monto?.toFixed(2)), csvSafe(c?.fechaObj?.toISOString()), csvSafe(c?.usuario), csvSafe(c?.monto?.toFixed(2)), csvSafe(c?.operador?.toUpperCase()), csvSafe(c?.billetera), csvSafe(estado), csvSafe(p.tipoMovimiento), csvSafe(p.edited ? 'SI' : 'NO') ].join(','); rows.push(row); } const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`; a.click(); URL.revokeObjectURL(url); }); copyBtn.addEventListener('click', async () => { const dataToCopy = getExportData(); if (!dataToCopy) return; const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO','EDITADO']; const lines = [headers.join('\t')]; for(const p of dataToCopy){ const a = p.agente, c = p.chunior; const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado; const row = [ a?.agente?.toUpperCase() || '', a?.turno || c?.turno || '', a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || ''), a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || ''), a?.monto ? a.monto.toLocaleString('en-US', {useGrouping: false, minimumFractionDigits: 2}) : '', c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || ''), c?.usuario || '', c?.monto ? c.monto.toLocaleString('en-US', {useGrouping: false, minimumFractionDigits: 2}) : '', c?.operador?.toUpperCase() || '', c?.billetera || '', estado, p.tipoMovimiento || '', p.edited ? 'SI' : 'NO' ].join('\t'); lines.push(row); } const tsv = lines.join('\n'); try{ await navigator.clipboard.writeText(tsv); alert('Copiado al portapapeles como TSV.'); }catch(e){ alert('Error al copiar.'); } }); function csvSafe(v){ if(v === null || v === undefined) return ''; let s = String(v).replace(/"/g,'""'); if(/[,\\"\n]/.test(s)) s = `"${s}"`; return s; } } function updateButtonStates() { const processBtn = document.getElementById('processBtn'); const exportBtn = document.getElementById('exportBtn'); const copyBtn = document.getElementById('copyExcelBtn'); const agentFilesInput = document.getElementById('agentFiles'); const chuniorTextInput = document.getElementById('chuniorText'); const hasInput = agentFilesInput.files.length > 0 || chuniorTextInput.value.trim() !== ''; const hasResults = window.__COMPARE_PAIRS && getFilteredPairs().length > 0; processBtn.disabled = !hasInput; exportBtn.disabled = !hasResults; copyBtn.disabled = !hasResults; } // === EVENT LISTENERS === document.getElementById('processBtn').addEventListener('click', processData); ['filterFecha', 'filterAgente','filterOperador','filterBilletera','filterTurno','filterEstado', 'filterMovimiento'].forEach(id=>{ document.getElementById(id).addEventListener('change', applyFiltersAndRender); }); document.getElementById('agentFiles').addEventListener('change', updateButtonStates); document.getElementById('chuniorText').addEventListener('input', updateButtonStates); document.getElementById('resultsBody').addEventListener('click', (e) => { const button = e.target.closest('.action-btn'); if (button && button.dataset.hide) { const id = button.dataset.hide; if (window.__IGNORED_IDS.has(id)) { window.__IGNORED_IDS.delete(id); } else { window.__IGNORED_IDS.add(id); } applyFiltersAndRender(); return; // Important: prevent further processing for this click } // The rest of the click handlers for edit/link buttons if (button && button.dataset.edit) { const id = button.dataset.edit; startInlineEdit(id); return; } if (button && button.dataset.link) { const id = button.dataset.link; manuallyLink(id); return; } }); function startInlineEdit(id) { const pairs = window.__COMPARE_PAIRS; const p = pairs.find(x => x.id === id); if (!p) return; // buscar la <tr> const row = [...document.querySelectorAll("#resultsBody tr")] .find(r => r.querySelector(`[data-edit="${id}"]`)); if (!row) return; // columnas editable: usuario + monto de ambos lados const editableFields = []; if (p.agente) { editableFields.push({ key: "agenteUsuario", idx: 3, originalValue: p.agente.usuario }); editableFields.push({ key: "agenteMonto", idx: 4, originalValue: p.agente.monto.toFixed(2) }); } if (p.chunior) { editableFields.push({ key: "chuniorUsuario", idx: 6, originalValue: p.chunior.usuario }); editableFields.push({ key: "chuniorMonto", idx: 7, originalValue: p.chunior.monto.toFixed(2) }); } let inputsCreated = []; editableFields.forEach(({key, idx, originalValue})=> { const cell = row.children[idx]; cell.classList.add("cell-editing"); const input = document.createElement("input"); input.dataset.field = key; input.value = originalValue; cell.innerHTML = ''; // Clear cell content cell.appendChild(input); inputsCreated.push(input); }); // Focus the first input if (inputsCreated.length > 0) { inputsCreated[0].focus(); } // Guardar al salir - Attach a single event listener to the row for blur events let activeEdits = inputsCreated.length; row.querySelectorAll("input[data-field]").forEach(input => { input.addEventListener("blur", () => { activeEdits--; if (activeEdits === 0) { // All editable inputs have lost focus saveInlineEdit(id, row); } }); }); } function saveInlineEdit(id, row) { const pairs = window.__COMPARE_PAIRS; const p = pairs.find(x => x.id === id); if (!p) return; let changesMade = false; const inputs = row.querySelectorAll("input[data-field]"); inputs.forEach(inp=>{ const val = inp.value.trim(); // No need to compare with originals here, just set the value // The 'edited' flag is set if ANY change happens for this pair switch(inp.dataset.field){ case "agenteUsuario": if (p.agente && p.agente.usuario !== val.toLowerCase()) { p.agente.usuario = val.toLowerCase(); changesMade = true; } break; case "agenteMonto": const newAgentMonto = parseAmountRaw(val); if (p.agente && Math.abs(p.agente.monto - newAgentMonto) > 0.01) { p.agente.monto = newAgentMonto; changesMade = true; } break; case "chuniorUsuario": if (p.chunior && p.chunior.usuario !== val.toLowerCase()) { p.chunior.usuario = val.toLowerCase(); changesMade = true; } break; case "chuniorMonto": const newChuniorMonto = parseAmountRaw(val); if (p.chunior && Math.abs(p.chunior.monto - newChuniorMonto) > 0.01) { p.chunior.monto = newChuniorMonto; changesMade = true; } break; } }); if (changesMade) { p.edited = true; window.__EDITED_IDS.add(p.id); } rematchAll(); applyFiltersAndRender(); } function rematchAll() { const allPairs = window.__COMPARE_PAIRS; // Create separate lists for agent and chunior records, keeping track of their original indices const agentRecordsForRematch = []; const chuniorRecordsForRematch = []; // Reset the 'matched' state for all pairs for a fresh matching pass allPairs.forEach(p => { if (!p.agente?.isAdminCharge) { p.chunior = null; p.estado = 'MISSING_CHUNIOR'; // Temporarily set as missing chunior until a match is found } }); // Populate agent and chunior records for the rematch allPairs.forEach(p => { if (p.agente && !p.agente.isAdminCharge) { agentRecordsForRematch.push(p); // These are the 'containers' for agent data } if (p.chunior) { // Only add if a chunior record exists. We'll use these to try and match to agentRecordsForRematch chuniorRecordsForRematch.push(p.chunior); p.chunior.isMatched = false; // Reset matching flag for chunior records } }); const matchedChuniorIndices = new Set(); // To track which chunior records have been used // First pass: match existing agent records to chunior records agentRecordsForRematch.forEach(agentPair => { const a = agentPair.agente; let matchedChunior = null; let matchedChuniorIdx = -1; for (let i = 0; i < chuniorRecordsForRematch.length; i++) { if (matchedChuniorIndices.has(i)) continue; // Skip if already matched const c = chuniorRecordsForRematch[i]; if (a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01) { matchedChunior = c; matchedChuniorIdx = i; break; } } if (matchedChunior) { agentPair.chunior = matchedChunior; agentPair.estado = "OK"; matchedChuniorIndices.add(matchedChuniorIdx); matchedChunior.isMatched = true; } }); // Second pass: identify remaining unmatched chunior records as 'MISSING_AGENT' // We need to check the original allPairs to see if a chunior record already exists within an 'MISSING_AGENT' entry // If not, we create a new entry. const newMissingChuniorPairs = []; for (let i = 0; i < chuniorRecordsForRematch.length; i++) { const c = chuniorRecordsForRematch[i]; if (!c.isMatched) { // This chunior record was not matched to any agent check if it's already represented as a MISSING_AGENT entry in allPairs let foundExistingMissingAgentPair = false; for (const p of allPairs) { // Check if this specific chunior record is already linked in a MISSING_AGENT pair if (p.estado === 'MISSING_AGENT' && p.chunior && p.chunior === c) { foundExistingMissingAgentPair = true; break; } } if (!foundExistingMissingAgentPair) { // If not explicitly represented, add it as a new MISSING_AGENT entry newMissingChuniorPairs.push({ id: `chunior-miss-new-${Math.random().toString(36).substr(2, 9)}`, agente: null, chunior: c, estado: 'MISSING_AGENT', tipoMovimiento: c.tipoMovimiento, edited: false // New records are not edited }); } } } // Filter out any old 'MISSING_AGENT' entries that might have been reassigned or are duplicates // and combine with newly formed ones window.__COMPARE_PAIRS = allPairs.filter(p => { // Keep OK matches and admin charges return (p.estado === 'OK' || p.agente?.isAdminCharge || // Keep MISSING_CHUNIOR records if they still truly are missing (no chunior assigned after rematch) (p.estado === 'MISSING_CHUNIOR' && !p.chunior) || // Keep MISSING_AGENT records that still have their original chunior and weren't matched elsewhere (p.estado === 'MISSING_AGENT' && p.chunior && !p.chunior.isMatched) ); }).concat(newMissingChuniorPairs); // Re-sort for consistency window.__COMPARE_PAIRS.sort((a, b) => { const dateA = a.agente?.fechaObj || a.chunior?.fechaObj; const dateB = b.agente?.fechaObj || b.chunior?.fechaObj; return (dateA?.getTime() || 0) - (dateB?.getTime() || 0); }); } function manuallyLink(id){ const pairs = window.__COMPARE_PAIRS; const agentPair = pairs.find(x => x.id === id); if (!agentPair || !agentPair.agente) { alert('Selecciona un movimiento de AGENTE (Falta CHUNIOR) para vincular.'); return; } if (agentPair.estado === 'OK') { alert('Este movimiento ya está emparejado.'); return; } // Find a MISSING_AGENT chunior record to link to let chuniorToLinkPair = null; // Prioritize one already selected or visually distinct for easier linking const selectedChuniorId = prompt('Introduce el ID de la fila CHUNIOR (Falta AGENTE) para vincular (ej. chunior-miss-123):'); if (selectedChuniorId) { chuniorToLinkPair = pairs.find(p => p.id === selectedChuniorId && p.estado === 'MISSING_AGENT' && p.chunior); } if (!chuniorToLinkPair) { // Fallback: find any available MISSING_AGENT chunior pair chuniorToLinkPair = pairs.find(p => p.estado === 'MISSING_AGENT' && p.chunior); if (!chuniorToLinkPair) { alert('No hay un registro de Chunior (Falta AGENTE) disponible para vincular manualmente.'); return; } } // Perform the linking agentPair.chunior = chuniorToLinkPair.chunior; agentPair.estado = 'OK'; agentPair.edited = true; window.__EDITED_IDS.add(agentPair.id); // Remove the chuniorToLinkPair from the main list as it's now part of agentPair window.__COMPARE_PAIRS = window.__COMPARE_PAIRS.filter(p => p.id !== chuniorToLinkPair.id); rematchAll(); // Recalculate all matches to ensure consistency applyFiltersAndRender(); } // Fullscreen functionality const toggleFullscreen = () => { const tableContainer = document.getElementById('tableContainer'); if (document.fullscreenElement) { document.exitFullscreen(); } else { tableContainer.requestFullscreen(); } }; document.getElementById('fullscreenToggle').addEventListener('click', toggleFullscreen); document.addEventListener('fullscreenchange', () => { const tableContainer = document.getElementById('tableContainer'); if (document.fullscreenElement) { tableContainer.classList.add('fullscreen-table-wrap'); // Create an exit button document.body.insertAdjacentHTML('beforeend', '<button id="exitFullscreenBtn" class="exit-fullscreen-btn">Salir de Pantalla Completa</button>'); document.getElementById('exitFullscreenBtn').addEventListener('click', () => { document.exitFullscreen(); }); } else { tableContainer.classList.remove('fullscreen-table-wrap'); const exitBtn = document.getElementById('exitFullscreenBtn'); if (exitBtn) exitBtn.remove(); } }); document.addEventListener('DOMContentLoaded', () => { setupActionButtons(); updateButtonStates(); }); </script> </body> </html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ChinDife</title>
+<style>
+  /* === ANIMATIONS === */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  @keyframes gradient-border {
+    0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+  }
+
+  /* === COLOR PALETTE & ROOT VARIABLES === */
+  :root {
+    --bg: #0A0A10;
+    --card: #10101A;
+    --muted: #8899a6;
+    --text: #e6f7fb;
+    --accent: #8A2BE2; /* Vibrant Purple */
+    --accent-light: #9932CC;
+    --accent-glow: rgba(138, 43, 226, 0.4);
+    --ok: #10B981; /* Emerald Green */
+    --bad: #EF4444; /* Red */
+    --warn: #F59E0B; /* Amber */
+    --glass: rgba(255, 255, 255, 0.05);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* === GENERAL STYLES === */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 25px 25px;
+    color: var(--text);
+    padding: 18px;
+    animation: fadeIn 0.8s ease-out;
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; }
+  h1 { 
+    margin: 0 0 12px 0; 
+    font-size: 24px; 
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--text));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: slideInUp 0.5s ease-out;
+  }
+
+  /* === CARD & LAYOUT === */
+  .card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: slideInUp 0.7s ease-out;
+  }
+  .row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  
+  /* === FORMS & BUTTONS === */
+  label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; font-weight: 500; }
+  input[type=file], textarea, select {
+    background: var(--glass);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    color: var(--text);
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+  input[type=file]:hover, textarea:hover, select:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  .btn {
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 5px var(--accent-glow);
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 15px var(--accent-glow); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.7; box-shadow: none; }
+  .btn.btn-loading { animation: pulse 1.5s infinite ease-in-out; }
+  .small { padding: 8px 10px; font-size: 13px; }
+
+  /* === FILTERS & SUMMARY === */
+  .filters {
+    display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; 
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);
+  }
+  .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; flex-grow: 1; }
+  select { 
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239fb6c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 20px;
+  }
+  select option { background: var(--card); color: var(--text); }
+  .summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);
+  }
+  .summary .badge {
+    text-align: center; padding: 12px; background: var(--glass); border-radius: 10px;
+    border: 1px solid var(--border-color); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; transition: all 0.3s ease;
+  }
+  .summary .badge:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .summary .badge strong { font-size: 1.5em; color: var(--text); margin-top: 5px; font-weight: 700; }
+  .summary .badge.diff.positive strong { color: var(--ok); }
+  .summary .badge.diff.negative strong { color: var(--bad); }
+  .summary .badge.ok strong { color: var(--ok); }
+  .summary .badge.warn strong { color: var(--warn); }
+  .summary .badge.bad strong { color: var(--bad); }
+
+  /* === RESULTS TABLE (IMPROVED READABILITY) === */
+  .table-wrap {
+    margin-top: 20px; max-height: 60vh; overflow: auto;
+    border-radius: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: middle; white-space: nowrap; }
+  th {
+    position: sticky; top: 0; background: rgba(16, 16, 26, 0.8);
+    backdrop-filter: blur(8px); z-index: 3; color: var(--text); font-weight: 600;
+  }
+  tr { transition: background-color 0.2s ease; }
+  tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
+  tr:hover td { background-color: var(--accent-glow); }
+  td.amount { text-align: right; font-weight: 600; font-family: 'Consolas', 'Menlo', monospace; }
+  td.amount-pos { color: var(--ok); }
+  td.amount-neg { color: var(--bad); }
+  td.divider { border-left: 2px solid var(--border-color); }
+  tr.ok td {}
+  tr.miss-chunior { border-left: 3px solid var(--bad); }
+  tr.miss-agente { border-left: 3px solid var(--warn); }
+  tr.ignored { opacity: 0.5; font-style: italic; background: rgba(100,100,100,0.1) !important; }
+  
+  /* === MISC & HELPERS === */
+  .badge { padding: 6px 10px; border-radius: 8px; background: var(--glass); color: var(--muted); font-size: 13px; }
+  .state-ok { color: var(--ok); font-weight: 700; }
+  .state-bad { color: var(--bad); font-weight: 800; }
+  .state-warn { color: var(--warn); font-weight: 800; }
+  .controls-vertical { display: flex; flex-direction: column; gap: 8px; }
+  .notes { margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .action-btn { background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s ease; }
+  .action-btn:hover { background: var(--accent-glow); color: white; }
+  .action-btn svg { width: 18px; height: 18px; }
+  .hidden { display: none; }
+  .results-section { animation: slideInUp 0.6s ease-out forwards; }
+
+  /* Botón ocultar más visible */
+  .action-btn.hide-btn {
+    background: rgba(255,0,0,0.15);
+    border: 1px solid rgba(255,0,0,0.4);
+  }
+  .action-btn.hide-btn:hover {
+    background: rgba(255,0,0,0.35);
+  }
+
+  /* Botón editar */
+  .action-btn.edit-btn {
+    background: rgba(0,150,255,0.15);
+    border: 1px solid rgba(0,150,255,0.4);
+  }
+  .action-btn.edit-btn:hover {
+    background: rgba(0,150,255,0.35);
+  }
+
+  /* Celda editable */
+  .cell-editing {
+    padding: 2px;
+    border-radius: 4px;
+  }
+
+  .cell-editing input {
+    width: 95%;
+    background: #00000033;
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 3px 4px;
+    color: white;
+  }
+
+  /* === RESPONSIVE DESIGN === */
+  @media (max-width: 920px) {
+    .row, .filters { flex-direction: column; align-items: stretch; }
+    .summary { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .summary { grid-template-columns: 1fr; }
+    h1 { font-size: 20px; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>Comparador AGENTE ⇄ CHUNIOR - ChinDiferencia</h1>
+  <div class="card">
+    <div class="row">
+      <div style="flex:1;min-width:280px">
+        <label>1. Cargar CSV(s) AGENTE</label>
+        <input id="agentFiles" type="file" accept=".csv" multiple />
+        <div class="notes">Puedes seleccionar varios. Nombra los archivos (ej. `agente_chino.csv`) para identificar la fuente.</div>
+      </div>
+
+      <div style="flex:1;min-width:300px">
+        <label>2. Pegar texto CHUNIOR</label>
+        <textarea id="chuniorText" placeholder="Pega aquí las líneas copiadas de Chunior..."></textarea>
+        <div class="notes">Ejemplo: <code>... fyeivan ... $ 3.000,00 clau3628</code></div>
+      </div>
+
+      <div style="width:220px">
+        <label>3. Acciones</label>
+        <div class="controls-vertical">
+          <button id="processBtn" class="btn">Procesar y Emparejar</button>
+          <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#f59e0b,#f97316)">Exportar CSV</button>
+          <button id="copyExcelBtn" class="btn" style="background:linear-gradient(90deg,#06b6d4,#3dd9f0)">Copiar para Excel</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="resultsSection" class="hidden">
+      <div class="summary" id="summaryBox">
+        <div class="badge ok">Total Agente: <strong id="sumAgentTotal">0.00</strong></div>
+        <div class="badge ok">Total Chunior: <strong id="sumChuniorTotal">0.00</strong></div>
+        <div class="badge diff">Diferencia Total: <strong id="sumDifference">0.00</strong></div>
+        <div class="badge ok">Ingresos Agente: <strong id="sumAgentIncome">0.00</strong></div>
+        <div class="badge ok">Ingresos Chunior: <strong id="sumChuniorIncome">0.00</strong></div>
+        <div class="badge diff">Dif. Ingresos: <strong id="sumDiffIncome">0.00</strong></div>
+        <div class="badge bad">Egresos Agente: <strong id="sumAgentOutcome">0.00</strong></div>
+        <div class="badge bad">Egresos Chunior: <strong id="sumChuniorOutcome">0.00</strong></div>
+        <div class="badge diff">Dif. Egresos: <strong id="sumDiffOutcome">0.00</strong></div>
+        <div class="badge warn">Recargas Admin: <strong id="sumAdminTotal">0.00</strong></div>
+      </div>
+
+
+      <div class="filters">
+        <div class="filter-grid">
+          <div><label>Fecha</label><select id="filterFecha"><option value="__ALL">Todos los días</option></select></div>
+          <div><label>Agente</label><select id="filterAgente"><option value="__ALL">Todos</option></select></div>
+          <div><label>Operador</label><select id="filterOperador"><option value="__ALL">Todos</option></select></div>
+          <div><label>Billetera</label><select id="filterBilletera"><option value="__ALL">Todas</option></select></div>
+          <div><label>Turno</label><select id="filterTurno"><option value="__ALL">Todos</option><option value="TM">Mañana (06-14)</option><option value="TT">Tarde (14-22)</option><option value="TN">Noche (22-06)</option></select></div>
+          <div><label>Estado</label><select id="filterEstado"><option value="__ALL">Todos</option><option value="OK">OK</option><option value="MISSING_CHUNIOR">Falta en CHUNIOR</option><option value="MISSING_AGENT">Falta en AGENTE</option></select></div>
+          <div><label>Tipo Mov.</label><select id="filterMovimiento"><option value="__ALL">Todos</option><option value="INGRESO">Ingresos</option><option value="EGRESO">Egresos</option></select></div>
+        </div>
+        <div class="badge" style="text-align:right">
+          <div>Visibles: <span id="countTotals">0</span></div>
+          <div>Emparejados: <strong id="countPaired" style="color:var(--ok)">0</strong></div>
+          <div>Discrepancias: <strong id="countMissing" style="color:var(--bad)">0</strong></div>
+        </div>
+      </div>
+
+      <div id="tableContainer" class="table-wrap" aria-live="polite">
+        <table id="resultsTable" role="table">
+          <thead>
+            <tr>
+              <th>Agente</th>
+              <th>Turno</th>
+              <th>Agente Hora</th>
+              <th>Agente Usuario</th>
+              <th style="text-align:right">Agente Monto</th>
+              <th class="divider">Chunior Hora</th>
+              <th>Chunior Usuario</th>
+              <th style="text-align:right">Chunior Monto</th>
+              <th>Operador</th>
+              <th>Billetera</th>
+              <th>Estado</th>
+              <th style="width:50px; text-align:center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="notes" style="margin-top:12px">
+      • Matching exacto por <strong>usuario normalizado (minúsc)</strong> y <strong>monto</strong> — cualquier diferencia marca discrepancia.<br>
+      • Turnos: Mañana 06:00–14:00, Tarde 14:00–22:00, Noche 22:00–06:00.
+    </div>
+  </div>
+</div>
+
+<script>
+/* UTIL: lectura CSV robusta */
+function readFileAsText(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(String(e.target.result || ''));
+    r.onerror = rej;
+    r.readAsText(file, 'utf-8');
+  });
+}
+function splitLines(text){
+  return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() !== '');
+}
+function parseCSVLine(line, delimiter = ','){
+  const out = [];
+  let cur = '', inQuotes=false;
+  for (let i=0;i<line.length;i++){
+    const ch = line[i];
+    if (ch === '"' ) {
+      if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; }
+      inQuotes = !inQuotes; continue;
+    }
+    if (ch === delimiter && !inQuotes){ out.push(cur); cur=''; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/* CLEAN amount strings */
+function parseAmountRaw(raw){
+  if(raw === null || raw === undefined) return 0;
+  let s = String(raw).trim();
+  if(!s) return 0;
+  s = s.replace(/[^\d,\.-]/g, '');
+  if (s.includes(',')) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+
+/* parse agent CSV rows array (lines) */
+function parseAgentLines(lines, agentName = 'Desconocido'){
+  const rows = [];
+  let startIndex = 0;
+  let format = null;
+  if(lines.length === 0) return rows;
+  if(lines[0].toLowerCase().startsWith('sep=')) startIndex = 1;
+  const headerLine = lines[startIndex];
+  if (headerLine){
+    const headerCols = parseCSVLine(headerLine);
+    if(headerCols[3]?.toLowerCase() === 'cantidad' && headerCols[6]?.toLowerCase() === 'alias del jugador'){
+      format = 'sub';
+    } else if (headerCols[2]?.toLowerCase() === 'cantidad' && headerCols[4]?.toLowerCase() === 'alias'){
+      format = 'main';
+    } else {
+      console.warn(`Could not determine CSV format for ${agentName}, skipping file.`);
+      return rows;
+    }
+    startIndex++;
+  }
+
+  for (let i=startIndex; i<lines.length; i++){
+    const line = lines[i];
+    if(!line.trim() || !line.includes(',')) continue;
+    const cols = parseCSVLine(line);
+    if(cols.length < 5) continue;
+
+    const fechaRaw = (cols[0]||'').trim();
+    let montoRaw, usuarioRaw, tipoRaw;
+
+    if(format === 'sub'){
+      montoRaw = cols[3];
+      usuarioRaw = cols[6];
+      tipoRaw = cols[1];
+    } else { // 'main'
+      montoRaw = cols[2];
+      usuarioRaw = cols[4];
+      tipoRaw = cols[3];
+    }
+
+    const monto = parseAmountRaw(montoRaw);
+    const usuario = (usuarioRaw || '').toLowerCase().trim();
+    const isAdminCharge = /te cargaron/i.test(tipoRaw || '');
+    
+    let fechaObj = null;
+    if(fechaRaw){
+      const attempt = new Date(fechaRaw.replace(' ', 'T'));
+      fechaObj = isNaN(attempt.getTime()) ? new Date(fechaRaw) : attempt;
+      if(isNaN(fechaObj.getTime())) fechaObj = null;
+    }
+    rows.push({ origen:'AGENT', agente: agentName, fecha: fechaRaw, fechaObj, monto, usuario, isAdminCharge });
+  }
+  return rows;
+}
+
+
+/* parse chunior pasted text */
+function parseChuniorLines(lines){
+  const rows = [];
+  for (let raw of lines){
+    if(!raw.trim()) continue;
+    let parts = raw.split(/\t+/).map(p => p.trim()).filter(Boolean);
+    if(parts.length < 2) {
+      parts = raw.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
+    }
+    if (parts.length > 0 && /^\d{7,}$/.test(parts[0])) { parts.shift(); }
+    if(parts.length >= 2 && /^\d{2}-\d{2}-\d{4}$/.test(parts[0]) && /^\d{2}:\d{2}:\d{2}$/.test(parts[1])){
+      parts[0] = parts[0] + ' ' + parts[1];
+      parts.splice(1,1);
+    }
+    if(parts.length < 4) {
+      console.warn("Skipping malformed Chunior line:", raw);
+      continue;
+    }
+    let [fechaRaw, operador, billeteraRaw, montoRaw, usuarioRaw] = parts;
+    let billetera = (billeteraRaw || '').replace(/.*-\s*/,'').trim();
+    if(!billetera) billetera = (billeteraRaw || '').trim();
+    const monto = parseAmountRaw(montoRaw);
+    const usuario = (usuarioRaw || '').toLowerCase().trim();
+    let fechaObj = null;
+    if(fechaRaw){
+      const m = fechaRaw.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}:\d{2}:\d{2})/);
+      if(m) fechaObj = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}`);
+      else {
+        const attempt = new Date(fechaRaw.replace(' ', 'T'));
+        if(!isNaN(attempt.getTime())) fechaObj = attempt;
+      }
+    }
+    rows.push({ origen:'CHUNIOR', fecha: fechaRaw, fechaObj, monto, usuario, operador: (operador || '').toLowerCase().trim(), billetera: billetera.toUpperCase().trim() });
+  }
+  return rows;
+}
+
+/* turno calculation */
+function getTurnoFromDate(d){
+  if(!d || isNaN(d.getTime())) return '';
+  const h = d.getHours();
+  if(h >= 6 && h < 14) return 'TM';
+  if(h >= 14 && h < 22) return 'TT';
+  return 'TN';
+}
+
+window.__IGNORED_IDS = new Set();
+
+/* MAIN processing */
+async function processData() {
+  const processBtn = document.getElementById('processBtn');
+  const agentFiles = document.getElementById('agentFiles').files;
+  const chuniorText = document.getElementById('chuniorText').value || '';
+  const resultsBody = document.getElementById('resultsBody');
+  const resultsSection = document.getElementById('resultsSection');
+  
+  resultsBody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">Procesando datos...</td></tr>';
+  resultsSection.classList.remove('hidden', 'results-section');
+  
+  processBtn.disabled = true;
+  processBtn.classList.add('btn-loading');
+  processBtn.textContent = 'Procesando...';
+  window.__IGNORED_IDS.clear();
+
+  let allAgentRows = [];
+  try{
+    if(agentFiles && agentFiles.length){
+      for(const f of agentFiles){
+        const txt = await readFileAsText(f);
+        const lines = splitLines(txt);
+        const agentNameMatch = f.name.match(/(agente|subagente)_?([a-zA-Z0-9]+)/i);
+        const agentName = agentNameMatch?.[2]?.toLowerCase() || f.name.replace(/\.csv$/i, '');
+        allAgentRows = allAgentRows.concat(parseAgentLines(lines, agentName));
+      }
+    }
+  } catch(e){
+    alert('Error leyendo archivos de agente: ' + (e?.message || e));
+    processBtn.disabled = false;
+    processBtn.classList.remove('btn-loading');
+    processBtn.textContent = 'Procesar y Emparejar';
+    return;
+  }
+
+  const chuniorRows = parseChuniorLines(splitLines(chuniorText));
+
+  allAgentRows.forEach(r => {
+    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : '';
+    r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO';
+  });
+  chuniorRows.forEach(r => {
+    r.turno = r.fechaObj ? getTurnoFromDate(r.fechaObj) : '';
+    r.tipoMovimiento = r.monto < 0 ? 'EGRESO' : 'INGRESO';
+  });
+
+  const matchedChuniorIdx = new Set();
+  const pairs = [];
+  let idCounter = 0;
+
+  allAgentRows.forEach(a => {
+    if (a.isAdminCharge) {
+        pairs.push({ id: `admin-${idCounter++}`, agente: a, chunior: null, estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+    } else {
+        let matchedIndex = -1;
+        for (let j=0; j<chuniorRows.length; j++){
+          if(matchedChuniorIdx.has(j)) continue;
+          const c = chuniorRows[j];
+          if(a.usuario && c.usuario && a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01){
+            matchedIndex = j; break;
+          }
+        }
+        if(matchedIndex >= 0){
+          matchedChuniorIdx.add(matchedIndex);
+          pairs.push({ id: `match-${idCounter++}`, agente: a, chunior: chuniorRows[matchedIndex], estado: 'OK', tipoMovimiento: a.tipoMovimiento });
+        } else {
+          pairs.push({ id: `agent-miss-${idCounter++}`, agente: a, chunior: null, estado: 'MISSING_CHUNIOR', tipoMovimiento: a.tipoMovimiento });
+        }
+    }
+  });
+  
+  for (let j=0; j<chuniorRows.length; j++){
+    if(!matchedChuniorIdx.has(j)){
+      pairs.push({ id: `chunior-miss-${idCounter++}`, agente: null, chunior: chuniorRows[j], estado: 'MISSING_AGENT', tipoMovimiento: chuniorRows[j].tipoMovimiento });
+    }
+  }
+
+  const dates = new Set(), agentes = new Set(), operadores = new Set(), billeteras = new Set();
+  pairs.forEach(p => {
+    const d = p.agente?.fechaObj || p.chunior?.fechaObj;
+    if(d) dates.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+    if(p.agente?.agente) agentes.add(p.agente.agente);
+    if(p.chunior?.operador) operadores.add(p.chunior.operador);
+    if(p.chunior?.billetera) billeteras.add(p.chunior.billetera);
+  });
+  
+  const populateSelect = (id, options, defaultLabel) => {
+    const select = document.getElementById(id);
+    select.innerHTML = `<option value="__ALL">${defaultLabel}</option>`;
+    Array.from(options).sort().forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = String(o).toUpperCase(); select.appendChild(opt); });
+  };
+  populateSelect('filterFecha', dates, 'Todos los días');
+  populateSelect('filterAgente', agentes, 'Todos');
+  populateSelect('filterOperador', operadores, 'Todos');
+  populateSelect('filterBilletera', billeteras, 'Todas');
+
+  window.__COMPARE_PAIRS = pairs.sort((a, b) => {
+      const dateA = a.agente?.fechaObj || a.chunior?.fechaObj;
+      const dateB = b.agente?.fechaObj || b.chunior?.fechaObj;
+      return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+  });
+  
+  processBtn.textContent = 'Procesar y Emparejar';
+  processBtn.classList.remove('btn-loading');
+
+  // Trigger animation for the results section
+  resultsSection.classList.add('results-section');
+  
+  applyFiltersAndRender();
+}
+
+function getFilteredPairs() {
+    const pairs = window.__COMPARE_PAIRS || [];
+    const fechaFilter = document.getElementById('filterFecha').value;
+    const agFilter = document.getElementById('filterAgente').value;
+    const opFilter = document.getElementById('filterOperador').value;
+    const biFilter = document.getElementById('filterBilletera').value;
+    const turnoFilter = document.getElementById('filterTurno').value;
+    const estadoFilter = document.getElementById('filterEstado').value;
+    const movimientoFilter = document.getElementById('filterMovimiento').value;
+
+    if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movimientoFilter].every(f => f === '__ALL')) {
+        return pairs;
+    }
+
+    return pairs.filter(p => {
+        const a = p.agente, c = p.chunior;
+        if (fechaFilter !== '__ALL') {
+            const recordDate = a?.fechaObj || c?.fechaObj;
+            if (!recordDate) return false;
+            const recordDateStr = `${recordDate.getFullYear()}-${String(recordDate.getMonth() + 1).padStart(2, '0')}-${String(recordDate.getDate()).padStart(2, '0')}`;
+            if (recordDateStr !== fechaFilter) return false;
+        }
+        if (agFilter !== '__ALL' && (!a || a.agente !== agFilter)) return false;
+        if (opFilter !== '__ALL' && (!c || c.operador !== opFilter)) return false;
+        if (biFilter !== '__ALL' && (!c || c.billetera !== biFilter)) return false;
+        if (turnoFilter !== '__ALL' && (a?.turno || c?.turno || '') !== turnoFilter) return false;
+        if (estadoFilter !== '__ALL') {
+            if (a?.isAdminCharge) { return estadoFilter === 'OK'; }
+            return p.estado === estadoFilter;
+        }
+        if (movimientoFilter !== '__ALL' && p.tipoMovimiento !== movimientoFilter) return false;
+        return true;
+    });
+}
+
+function renderTable(filteredPairs){
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  
+  if (filteredPairs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;">No hay registros para mostrar.</td></tr>';
+    return;
+  }
+  
+  const iconEye = `<svg fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.816 1.097-2.074 2.157-3.642 2.766C9.646 11.668 8.028 12.5 6 12.5c-2.028 0-3.646-.832-5.008-2.234A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`;
+  const iconEyeSlash = `<svg fill="currentColor" viewBox="0 0 16 16"><path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM11.21 11.21A3.5 3.5 0 0 1 6.79 6.79l-1.615-1.615a3.5 3.5 0 0 1-4.474-4.474L.173 2.065a1 1 0 0 1 1.414-1.414l12.486 12.486a1 1 0 0 1-1.414 1.414L11.21 11.21z"/><path d="M16 8s-3-5.5-8-5.5a7.027 7.027 0 0 0-2.79.588l.607.607A3.5 3.5 0 0 1 8 5.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.816 1.097-2.074 2.157-3.642 2.766C9.646 11.668 8.028 12.5 6 12.5c-.313 0-.62-.014-.924-.04L4.69 14.33A12.64 12.64 0 0 0 8 15c5 0 8-5.5 8-5.5z"/></svg>`;
+
+  for(const p of filteredPairs){
+    const a = p.agente, c = p.chunior;
+    const isIgnored = window.__IGNORED_IDS.has(p.id);
+    const tr = document.createElement('tr');
+    
+    let statusClass = '';
+    if (a?.isAdminCharge) statusClass = 'ok';
+    else if (p.estado === 'OK') statusClass = 'ok';
+    else if (p.estado === 'MISSING_CHUNIOR') statusClass = 'miss-chunior';
+    else if (p.estado === 'MISSING_AGENT') statusClass = 'miss-agente';
+    if(isIgnored) statusClass += ' ignored';
+    tr.className = statusClass;
+    
+    const fNum = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const agenteMonto = a ? fNum(a.monto) : '';
+    const chuniorMonto = c ? fNum(c.monto) : '';
+    
+    let estadoDisplay = '';
+    if (a?.isAdminCharge) estadoDisplay = '<span class="state-ok">✔ ADMIN</span>';
+    else if (p.estado === 'OK') estadoDisplay = '<span class="state-ok">✔ OK</span>';
+    else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
+    else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
+
+    let actionCell = `
+    <td style="text-align:center;">
+       <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button>
+       <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button>
+       <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button>
+    </td>`;
+
+    if (p.estado === 'OK' || a?.isAdminCharge) {
+       actionCell = `<td style="text-align:center;">
+         <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button>
+       </td>`;
+    }
+
+    tr.innerHTML = `
+      <td>${escapeHtml(a?.agente?.toUpperCase() || '')}</td><td>${a?.turno || c?.turno || ''}</td><td>${formatTime(a?.fechaObj)}</td>
+      <td>${escapeHtml(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario || '')}</td>
+      <td class="amount ${a && a.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${agenteMonto}</td>
+      <td class="divider">${formatTime(c?.fechaObj)}</td><td>${escapeHtml(c?.usuario || '')}</td>
+      <td class="amount ${c && c.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${chuniorMonto}</td>
+      <td>${escapeHtml(c?.operador?.toUpperCase() || '')}</td><td>${escapeHtml(c?.billetera || '')}</td>
+      <td>${estadoDisplay}</td>${actionCell}
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function updateSummary(filteredPairs){
+  let agentTotal = 0, chuniorTotal = 0, agentIncome = 0, chuniorIncome = 0;
+  let agentOutcome = 0, chuniorOutcome = 0, adminTotal = 0;
+  let pairedCount = 0, missingCount = 0;
+  
+  const relevantPairs = filteredPairs.filter(p => !window.__IGNORED_IDS.has(p.id));
+
+  relevantPairs.forEach(p => {
+    if (p.agente) {
+      if(p.agente.isAdminCharge) { adminTotal += p.agente.monto; } 
+      else {
+        agentTotal += p.agente.monto;
+        p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto;
+      }
+    }
+    if (p.chunior) {
+      chuniorTotal += p.chunior.monto;
+      p.chunior.monto >= 0 ? chuniorIncome += p.chunior.monto : chuniorOutcome += p.chunior.monto;
+    }
+  });
+
+  filteredPairs.forEach(p => {
+      if (!p.agente?.isAdminCharge && p.estado !== 'OK') { missingCount++; }
+      if (!p.agente?.isAdminCharge && p.estado === 'OK') { pairedCount++; }
+  });
+  
+  const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  const setContent = (id, value) => { document.getElementById(id).textContent = format(value); };
+  const setBadgeClass = (id, value) => {
+    const badge = document.getElementById(id).parentElement;
+    badge.classList.remove('positive', 'negative');
+    if (value >= 0) badge.classList.add('positive');
+    else badge.classList.add('negative');
+  };
+
+  setContent('sumAgentTotal', agentTotal);
+  setContent('sumChuniorTotal', chuniorTotal);
+  setContent('sumDifference', agentTotal - chuniorTotal);
+  setBadgeClass('sumDifference', agentTotal - chuniorTotal);
+  setContent('sumAdminTotal', adminTotal);
+  setContent('sumAgentIncome', agentIncome);
+  setContent('sumChuniorIncome', chuniorIncome);
+  setContent('sumDiffIncome', agentIncome - chuniorIncome);
+  setBadgeClass('sumDiffIncome', agentIncome - chuniorIncome);
+  setContent('sumAgentOutcome', agentOutcome);
+  setContent('sumChuniorOutcome', chuniorOutcome);
+  setContent('sumDiffOutcome', agentOutcome - chuniorOutcome);
+  setBadgeClass('sumDiffOutcome', agentOutcome - chuniorOutcome);
+
+  document.getElementById('countTotals').textContent = `${filteredPairs.length}`;
+  document.getElementById('countPaired').textContent = pairedCount;
+  document.getElementById('countMissing').textContent = missingCount;
+}
+
+function applyFiltersAndRender() {
+    const filteredPairs = getFilteredPairs();
+    renderTable(filteredPairs);
+    updateSummary(filteredPairs);
+    updateButtonStates(); 
+}
+
+/* helpers */
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function formatTime(d){ 
+  if(!d || isNaN(d.getTime())) return '';
+  const pad = (num) => num.toString().padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function setupActionButtons() {
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyExcelBtn');
+
+    const getExportData = () => {
+        const data = getFilteredPairs().filter(p => !window.__IGNORED_IDS.has(p.id));
+        if (!data.length) {
+            alert('No hay datos (visibles y no ignorados) para exportar.');
+            return null;
+        }
+        return data;
+    }
+
+    exportBtn.addEventListener('click', () => {
+        const dataToExport = getExportData();
+        if (!dataToExport) return;
+        
+        const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
+        const rows = [headers.join(',')];
+        for(const p of dataToExport){
+          const a = p.agente, c = p.chunior;
+          const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado;
+          const row = [
+            csvSafe(a?.agente?.toUpperCase()), csvSafe(a?.turno || c?.turno), csvSafe(a?.fechaObj?.toISOString()),
+            csvSafe(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario), csvSafe(a?.monto?.toFixed(2)), csvSafe(c?.fechaObj?.toISOString()),
+            csvSafe(c?.usuario), csvSafe(c?.monto?.toFixed(2)), csvSafe(c?.operador?.toUpperCase()),
+            csvSafe(c?.billetera), csvSafe(estado), csvSafe(p.tipoMovimiento)
+          ].join(',');
+          rows.push(row);
+        }
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `comparacion_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+        const dataToCopy = getExportData();
+        if (!dataToCopy) return;
+        const headers = ['AGENTE_NOMBRE','TURNO','AGENTE_HORA','AGENTE_USUARIO','AGENTE_MONTO','CHUNIOR_HORA','CHUNIOR_USUARIO','CHUNIOR_MONTO','OPERADOR','BILLETERA','ESTADO','TIPO_MOVIMIENTO'];
+        const lines = [headers.join('\t')];
+        for(const p of dataToCopy){
+          const a = p.agente, c = p.chunior;
+          const estado = a?.isAdminCharge ? 'ADMIN_CHARGE' : p.estado;
+          const row = [
+              a?.agente?.toUpperCase() || '', a?.turno || c?.turno || '',
+              a?.fechaObj ? formatTime(a.fechaObj) : (a?.fecha || ''),
+              a?.isAdminCharge ? 'CARGA ADMIN' : (a?.usuario || ''),
+              a?.monto ? a.monto.toLocaleString('en-US', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.fechaObj ? formatTime(c.fechaObj) : (c?.fecha || ''),
+              c?.usuario || '',
+              c?.monto ? c.monto.toLocaleString('en-US', {useGrouping: false, minimumFractionDigits: 2}) : '',
+              c?.operador?.toUpperCase() || '', c?.billetera || '',
+              estado, p.tipoMovimiento || ''
+          ].join('\t');
+          lines.push(row);
+        }
+        const tsv = lines.join('\n');
+        try{
+          await navigator.clipboard.writeText(tsv);
+          alert('Copiado al portapapeles como TSV.');
+        }catch(e){
+          alert('Error al copiar.');
+        }
+    });
+
+    function csvSafe(v){
+        if(v === null || v === undefined) return '';
+        let s = String(v).replace(/"/g,'""');
+        if(/[,\\"\n]/.test(s)) s = `"${s}"`;
+        return s;
+    }
+}
+
+function updateButtonStates() {
+    const processBtn = document.getElementById('processBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyExcelBtn');
+    const agentFilesInput = document.getElementById('agentFiles');
+    const chuniorTextInput = document.getElementById('chuniorText');
+    const hasInput = agentFilesInput.files.length > 0 || chuniorTextInput.value.trim() !== '';
+    const hasResults = window.__COMPARE_PAIRS && getFilteredPairs().length > 0;
+    processBtn.disabled = !hasInput;
+    exportBtn.disabled = !hasResults;
+    copyBtn.disabled = !hasResults;
+}
+
+// === EVENT LISTENERS ===
+document.getElementById('processBtn').addEventListener('click', processData);
+['filterFecha', 'filterAgente','filterOperador','filterBilletera','filterTurno','filterEstado', 'filterMovimiento'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', applyFiltersAndRender);
+});
+document.getElementById('agentFiles').addEventListener('change', updateButtonStates);
+document.getElementById('chuniorText').addEventListener('input', updateButtonStates);
+document.getElementById('resultsBody').addEventListener('click', (e) => {
+    const button = e.target.closest('.action-btn');
+    if (button && button.dataset.id) {
+        const id = button.dataset.id;
+        if (window.__IGNORED_IDS.has(id)) {
+            window.__IGNORED_IDS.delete(id);
+        } else {
+            window.__IGNORED_IDS.add(id);
+        }
+        applyFiltersAndRender();
+    }
+});
+
+document.getElementById("resultsBody").addEventListener("click", (e)=>{
+    const hideBtn = e.target.closest("[data-hide]");
+    const editBtn = e.target.closest("[data-edit]");
+    const linkBtn = e.target.closest("[data-link]");
+
+    if (hideBtn) {
+        const id = hideBtn.dataset.hide;
+        window.__IGNORED_IDS.add(id);
+        applyFiltersAndRender();
+        return;
+    }
+
+    if (editBtn) {
+        const id = editBtn.dataset.edit;
+        startInlineEdit(id);
+        return;
+    }
+
+    if (linkBtn) {
+        const id = linkBtn.dataset.link;
+        manuallyLink(id);
+        return;
+    }
+});
+
+function startInlineEdit(id) {
+    const pairs = window.__COMPARE_PAIRS;
+    const p = pairs.find(x => x.id === id);
+    if (!p) return;
+
+    // buscar la <tr>
+    const row = [...document.querySelectorAll("#resultsBody tr")]
+                     .find(r => r.querySelector(`[data-edit="${id}"]`));
+
+    if (!row) return;
+
+    // columnas editable: usuario + monto de ambos lados
+    const editableIndexes = {
+        agenteUsuario: 3,
+        agenteMonto: 4,
+        chuniorUsuario: 6,
+        chuniorMonto: 7
+    };
+
+    Object.entries(editableIndexes).forEach(([key, idx])=> {
+        const cell = row.children[idx];
+        const original = cell.textContent.replace('$', '').trim();
+
+        cell.classList.add("cell-editing");
+        cell.innerHTML = `<input data-field="${key}" value="${original}">`;
+    });
+
+    // Guardar al salir
+    row.addEventListener("focusout", (e)=>{
+        if (!e.target.dataset.field) return;
+        saveInlineEdit(id, row);
+    }, { once:true });
+}
+
+function saveInlineEdit(id, row) {
+    const pairs = window.__COMPARE_PAIRS;
+    const p = pairs.find(x => x.id === id);
+    if (!p) return;
+
+    const inputs = row.querySelectorAll("input[data-field]");
+    inputs.forEach(inp=>{
+        const val = inp.value.trim();
+        switch(inp.dataset.field){
+            case "agenteUsuario": 
+                if (p.agente) p.agente.usuario = val.toLowerCase();
+                break;
+            case "agenteMonto":
+                if (p.agente) p.agente.monto = parseAmountRaw(val);
+                break;
+            case "chuniorUsuario":
+                if (p.chunior) p.chunior.usuario = val.toLowerCase();
+                break;
+            case "chuniorMonto":
+                if (p.chunior) p.chunior.monto = parseAmountRaw(val);
+                break;
+        }
+    });
+
+    rematchAll();
+    applyFiltersAndRender();
+}
+
+function rematchAll() {
+    const allPairs = window.__COMPARE_PAIRS;
+    const agentRows = [];
+    const chuniorRows = [];
+
+    // Separate agents (excluding admin charges) and chunior records
+    allPairs.forEach(p=>{
+        if (p.agente && !p.agente.isAdminCharge) agentRows.push(p.agente);
+        // We need all chunior rows initially, to try and match them
+        if (p.chunior) chuniorRows.push(p.chunior);
+    });
+
+    // Reset matching for all pairs for a fresh matching pass
+    allPairs.forEach(p => {
+        if (!p.agente?.isAdminCharge) { // Keep admin charges as they are
+            p.chunior = null;
+            p.estado = 'MISSING_CHUNIOR';
+        }
+    });
+
+    const matchedChuniorIndices = new Set(); // To track which chunior records have been used
+
+    // First pass: match existing agent records to chunior records
+    allPairs.forEach(p => {
+        if (p.agente && !p.agente.isAdminCharge) {
+            const a = p.agente;
+            let matchedIndex = -1;
+            for (let i = 0; i < chuniorRows.length; i++) {
+                if (matchedChuniorIndices.has(i)) continue; // Skip if already matched
+
+                const c = chuniorRows[i];
+                if (a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01) {
+                    matchedIndex = i;
+                    break;
+                }
+            }
+
+            if (matchedIndex >= 0) {
+                p.chunior = chuniorRows[matchedIndex];
+                p.estado = "OK";
+                matchedChuniorIndices.add(matchedIndex);
+            }
+        }
+    });
+
+    // Second pass: add any remaining unmatched chunior records as 'MISSING_AGENT'
+    for (let i = 0; i < chuniorRows.length; i++) {
+        if (!matchedChuniorIndices.has(i)) {
+            const c = chuniorRows[i];
+            // Look for an existing pair that's missing chunior data and assign it
+            let foundExistingMissingAgent = false;
+            for (const p of allPairs) {
+                if (p.estado === 'MISSING_CHUNIOR' && !p.agente?.isAdminCharge) { // Only assign to records that were missing CHUNIOR
+                    p.chunior = c;
+                    p.estado = 'MISSING_AGENT'; // This record now represents a CHUNIOR entry missing from AGENT
+                    foundExistingMissingAgent = true;
+                    break;
+                }
+            }
+            if (!foundExistingMissingAgent) {
+                // If no existing placeholder, create a new one (though this shouldn't happen if all initial chunior records are accounted for)
+                allPairs.push({ id: `chunior-miss-new-${Math.random()}`, agente: null, chunior: c, estado: 'MISSING_AGENT', tipoMovimiento: c.tipoMovimiento });
+            }
+        }
+    }
+    
+    // Clean up any remaining MISSING_CHUNIOR that didn't get a match and also don't have an original agent record
+    // This part ensures that if a CHUNIOR record was matched, the original AGENT-MISS record it filled is gone
+    // Or if an AGENT record was successfully matched, its MISSING_CHUNIOR status changes to OK.
+    
+    // Re-index IDs and sort for consistency after potential additions/removals (optional but good for stable UIs)
+    window.__COMPARE_PAIRS = allPairs.sort((a, b) => {
+        const dateA = a.agente?.fechaObj || a.chunior?.fechaObj;
+        const dateB = b.agente?.fechaObj || b.chunior?.fechaObj;
+        return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+    });
+}
+
+function manuallyLink(id){
+    const pairs = window.__COMPARE_PAIRS;
+    const p = pairs.find(x=>x.id===id);
+    if (!p || !p.agente) return; // Only link if there's an agent record to link FROM
+
+    // Find an unmatched Chunior record (prioritize the one in this row if it's there but unmatched)
+    let chuniorToLink = p.chunior;
+    if (!chuniorToLink || p.estado === 'MISSING_CHUNIOR') {
+        // If this record is missing chunior, or its chunior is "empty", try to find a suitable chunior record that is currently MISSING_AGENT
+        const availableChunior = pairs.find(cp => cp.estado === 'MISSING_AGENT' && cp.chunior && !cp.chunior.isMatched);
+        if (availableChunior) {
+            chuniorToLink = availableChunior.chunior;
+            availableChunior.agente = null; // Mark the original holder of this chunior as now missing its agent
+            availableChunior.estado = 'MISSING_AGENT'; // Keep its state but it's now 'detached'
+        } else {
+            alert('No hay un registro de Chunior disponible para vincular manualmente.');
+            return;
+        }
+    }
+
+    if (chuniorToLink) {
+        // Force manual link
+        p.chunior = chuniorToLink;
+        p.chunior.usuario = p.agente.usuario; // Apply agent's user to chunior
+        p.chunior.monto = p.agente.monto;     // Apply agent's amount to chunior
+        p.estado = 'OK';
+        p.chunior.isMatched = true; // Custom flag to prevent it from being picked by auto-matching again easily
+    }
+
+    rematchAll(); // Re-run rematch to settle other records and clean up
+    applyFiltersAndRender();
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupActionButtons();
+    updateButtonStates();
+});
+
+</script>
+</body>
+</html>
+
