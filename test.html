@@ -964,16 +964,8 @@ function toggleIgnore(id){
 document.addEventListener('DOMContentLoaded', () => {
     setupActionButtons();
     updateButtonStates();
-    const fsBtn = document.getElementById("fullscreenBtn");
-    fsBtn?.addEventListener("click", () => {
-      const tableContainer = document.getElementById("tableContainer");
-      if (!document.fullscreenElement) {
-        tableContainer.requestFullscreen().catch(err => alert("Error al entrar en pantalla completa: " + err));
-      } else {
-        document.exitFullscreen();
-      }
-    });
 });
+
 </script>
 </body>
 </html>
