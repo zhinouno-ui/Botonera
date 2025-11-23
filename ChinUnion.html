@@ -618,10 +618,23 @@ function copiarSaludo(event) {
 
 
 function copiarSoloWsp(event){
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  copyText(`https://wa.me/5491135854862?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
-  animateButton(event?.target); // 🔥 feedback visual aquí
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const numeros = [
+    "5491138601132", // PC01
+    "5491151622581", // PC02
+    "5491157736200"  // PC03
+  ];
+
+  const numero = numeros[modoSlider] || numeros[0];
+  const mensaje = `https://wa.me/${numero}?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`;
+
+  copyText(mensaje);
+  animateButton(event?.target);
 }
 
 function copiarCodigoAmigo(event){
@@ -761,6 +774,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
