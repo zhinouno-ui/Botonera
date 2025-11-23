@@ -487,7 +487,7 @@ button:hover {
   <!-- Grupo Promo Amigo -->
   <div class="grupo promo-amigo">
     <h3>Promo Amigo</h3>
-<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://https://300vip-c01.vercel.app/')">Promo amigo</button>
+<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://bet300.site')">Promo amigo</button>
 <button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
 </div>
 
@@ -496,10 +496,9 @@ button:hover {
     <h3 style="display:flex;justify-content:space-between;align-items:center;">
       Mensaje Revin
       <div id="modo-slider">
-        <button class="slider-btn" id="slider-ruleta">Ruleta</button>
-        <button class="slider-btn" id="slider-mix">Mix</button>
-                <button class="slider-btn" id="slider-memo">Memo</button>
-        <button class="slider-btn" id="slider-box">Box</button>
+        <button class="slider-btn" id="slider-PC01">PC01</button>
+        <button class="slider-btn" id="slider-PC02">PC02</button>
+        <button class="slider-btn" id="slider-PC03">PC03</button>
       </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
@@ -509,6 +508,8 @@ button:hover {
 <button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
     </div>
   </div>
+
+
 
   <!-- Historial -->
   <div id="historial-box">
@@ -523,11 +524,6 @@ button:hover {
 
   <div id="toast" class="toast"></div>
 
-  <!-- Panel Banco -->
-  <div id="banco-toggle">Banco</div>
-  <div id="banco-panel">
-    <h3 style="margin-top:0;">Panel Banco</h3>
-    <button onclick="copiarYAnimar(event,'365.ofi.mp')">ALIAS CHIGUAY</button>
 
   </div>
 <script src="saludosCH01.js"></script>
@@ -539,69 +535,102 @@ button:hover {
   setTimeout(()=> button.style.transform = "", 150);
 }
   
-   // ===== Slider saludos =====
-    let modoSlider = 0;  // 0: Ruleta, 1: Mix, 2: Memo, 3: Box
-    function actualizarSlider() {
-      document.querySelectorAll('.slider-btn').forEach((btn, idx) => {
-        btn.classList.toggle('selected', idx === modoSlider);
-      });
-    }
-    document.getElementById('slider-ruleta').onclick = () => { modoSlider = 0; actualizarSlider(); };
-    document.getElementById('slider-mix').onclick    = () => { modoSlider = 1; actualizarSlider(); };
-    document.getElementById('slider-memo').onclick   = () => { modoSlider = 2; actualizarSlider(); };
-    document.getElementById('slider-box').onclick    = () => { modoSlider = 3; actualizarSlider(); };
-    actualizarSlider();
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script>
+ 
+    function animateButton(button){
+  button.style.transform = "scale(0.95)";
+  setTimeout(()=> button.style.transform = "", 150);
+}
+  
+  // ======================
+  // SLIDER SALUDOS
+  // ======================
+  let modoSlider = 0;
+  function actualizarSlider() {
+    document.querySelectorAll('.slider-btn').forEach((btn,i)=>{
+      btn.classList.toggle('selected',i===modoSlider);
+    });
+  }
+  document.getElementById('slider-PC01').onclick=()=>{modoSlider=0;actualizarSlider();}
+  document.getElementById('slider-PC02').onclick=()=>{modoSlider=1;actualizarSlider();}
+  document.getElementById('slider-PC03').onclick=()=>{modoSlider=2;actualizarSlider();}
+  actualizarSlider();
 
- function copiarSaludo(event) {
+// 🔄 Obtiene un saludo aleatorio según PC o mezcla general
+function obtenerSaludoAleatorio(usuario, tipo = "MIX") {
+  const grupos = window.SALUDOS || {};
+  let pool = [];
+
+  if (tipo && grupos[tipo]) {
+    pool = grupos[tipo];
+  } else if (tipo === "MIX" || !tipo) {
+    // mezcla todos los saludos de todas las PCs
+    pool = Object.values(grupos).flat();
+  }
+
+  if (pool.length === 0) return "⚠️ No hay saludos disponibles.";
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  return saludo
+    .replaceAll("{usuario}", usuario)
+    .replaceAll("{usuarioENC}", usuarioENC);
+}
+
+// 📋 Copia el saludo según el tipo actual (por ejemplo slider)
+function copiarSaludo(event, tipo = "PC01") {
   const usuario = document.getElementById("usuarioInput").value.trim();
   if (!usuario) {
     alert("⚠️ Escribí un usuario primero!");
     return;
   }
 
-  // Selecciona el array correcto según modoSlider
-  let saludosArr = [];
-  switch (modoSlider) {
-    case 0: saludosArr = window.SALUDOS_CH01?.RULETA || []; break;
-    case 2: saludosArr = window.SALUDOS_CH01?.Memo || []; break;
-    case 3: saludosArr = window.SALUDOS_CH01?.Mistery_box || []; break;
-    case 1: // Mix: todos juntos
-      saludosArr = [
-        ...(window.SALUDOS_CH01?.RULETA || []),
-        ...(window.SALUDOS_CH01?.Memo || []),
-        ...(window.SALUDOS_CH01?.Mistery_box || [])
-      ];
-      break;
-    default:
-      saludosArr = [];
-      break;
-  }
+  const mensaje = obtenerSaludoAleatorio(usuario, tipo);
+  copyText(mensaje);
+  animateButton(event?.target);
+}
 
-  if (!saludosArr.length) {
-    alert("No hay saludos cargados para este modo.");
+
+function copiarSaludo(event) {
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
     return;
   }
 
-  const idx = Math.floor(Math.random() * saludosArr.length);
-  let mensaje = saludosArr[idx]
+  const mapSlider = ["PC01", "PC02", "PC03"];
+  const tipo = mapSlider[modoSlider] || "PC01";
+  const grupos = window.SALUDOS || {};
+
+  let pool = grupos[tipo] || [];
+  if (pool.length === 0) {
+    alert("No hay saludos cargados para " + tipo);
+    return;
+  }
+
+  const usuarioENC = encodeURIComponent(usuario);
+  const saludo = pool[Math.floor(Math.random() * pool.length)];
+  const mensaje = saludo
     .replaceAll("{usuario}", usuario)
-    .replaceAll("{usuarioENC}", encodeURIComponent(usuario));
+    .replaceAll("{usuarioENC}", usuarioENC);
 
   copyText(mensaje);
   animateButton(event?.target);
 }
 
+
 function copiarSoloWsp(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  copyText(`https://wa.me/5491138601132?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
+  copyText(`https://wa.me/5491135854862?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`);
   animateButton(event?.target); // 🔥 feedback visual aquí
 }
 
 function copiarCodigoAmigo(event){
   const usuario=document.getElementById("usuarioInput").value.trim();
   if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya tienen el WhatsApp y el chat!\nhttps://300vip-c01.vercel.app/`;
+  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar!\nhttps://bet300.site`;
   copyText(mensaje);
   animateButton(event?.target); // 🔥 feedback visual aquí
 }
@@ -765,6 +794,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
