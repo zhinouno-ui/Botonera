@@ -623,32 +623,34 @@ function renderTable(filteredPairs){
   }
 
   
-function updateSummary(filteredPairs){
-  let agentTotal = 0, chuniorTotal = 0, agentIncome = 0, chuniorIncome = 0;
-  let agentOutcome = 0, chuniorOutcome = 0, adminTotal = 0;
+function updateSummaryFromTable() {
+  let agentTotal = 0, chuniorTotal = 0;
+  let agentIncome = 0, chuniorIncome = 0;
+  let agentOutcome = 0, chuniorOutcome = 0;
+  let adminTotal = 0;
   let pairedCount = 0, missingCount = 0;
-  
-  const relevantPairs = filteredPairs.filter(p => !window.__IGNORED_IDS.has(p.id));
 
-  relevantPairs.forEach(p => {
-    if (p.agente) {
-      if(p.agente.isAdminCharge) { adminTotal += p.agente.monto; } 
-      else {
-        agentTotal += p.agente.monto;
-        p.agente.monto >= 0 ? agentIncome += p.agente.monto : agentOutcome += p.agente.monto;
-      }
-    }
-    if (p.chunior) {
-      chuniorTotal += p.chunior.monto;
-      p.chunior.monto >= 0 ? chuniorIncome += p.chunior.monto : chuniorOutcome += p.chunior.monto;
+  const rows = document.querySelectorAll("#resultsBody tr:not(.ignored)");
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll("td");
+    const agenteMonto = parseAmountRaw(cells[4]?.textContent);
+    const chuniorMonto = parseAmountRaw(cells[7]?.textContent);
+    const estado = cells[10]?.textContent || '';
+
+    if (estado.includes("ADMIN")) {
+      adminTotal += agenteMonto;
+    } else {
+      agentTotal += agenteMonto;
+      chuniorTotal += chuniorMonto;
+      agenteMonto >= 0 ? agentIncome += agenteMonto : agentOutcome += agenteMonto;
+      chuniorMonto >= 0 ? chuniorIncome += chuniorMonto : chuniorOutcome += chuniorMonto;
+
+      if (estado.includes("OK")) pairedCount++;
+      else missingCount++;
     }
   });
 
-  filteredPairs.forEach(p => {
-      if (!p.agente?.isAdminCharge && p.estado !== 'OK') { missingCount++; }
-      if (!p.agente?.isAdminCharge && p.estado === 'OK') { pairedCount++; }
-  });
-  
   const format = (num) => num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   const setContent = (id, value) => { document.getElementById(id).textContent = format(value); };
   const setBadgeClass = (id, value) => {
@@ -672,15 +674,16 @@ function updateSummary(filteredPairs){
   setContent('sumDiffOutcome', agentOutcome - chuniorOutcome);
   setBadgeClass('sumDiffOutcome', agentOutcome - chuniorOutcome);
 
-  document.getElementById('countTotals').textContent = `${filteredPairs.length}`;
-  document.getElementById('countPaired').textContent = pairedCount;
-  document.getElementById('countMissing').textContent = missingCount;
+  document.getElementById('countTotals').textContent = `${rows.length}`;
+  document.getElementById('countPaired').textContent = `${pairedCount}`;
+  document.getElementById('countMissing').textContent = `${missingCount}`;
 }
+
 
 function applyFiltersAndRender() {
     const filteredPairs = getFilteredPairs();
     renderTable(filteredPairs);
-    updateSummary(filteredPairs);
+    updateSummaryFromTable();
     updateButtonStates(); 
 }
 
