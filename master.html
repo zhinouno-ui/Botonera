@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestor de Billeteras Demo</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --accent: #C93C20;
+      --text: #fff;
+      --muted: #aaa;
+    }
+    body { background: var(--bg); color: var(--text); font-family: Arial, sans-serif; margin:0; padding:20px; }
+    h1 { margin-bottom:10px; }
+    .grupo { background: var(--card); padding:10px; border-radius:8px; margin-bottom:10px; }
+    .header { display:flex; justify-content:space-between; align-items:center; }
+    .titulo { font-weight:bold; }
+    .controls { display:flex; gap:6px; }
+    .drag-handle, .flip-btn { cursor:pointer; background:#333; color:#fff; border:none; border-radius:6px; padding:4px 8px; }
+    .wallets-container { margin-top:8px; }
+    button { cursor:pointer; border:none; border-radius:6px; padding:8px; margin:4px 0; width:100%; }
+    button:hover { background:#333; }
+    #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#000; color:#fff; padding:10px 16px; border-radius:6px; opacity:0; transition:opacity 0.3s; }
+    #toast.show { opacity:1; }
+    #historial-box { background:#222; padding:10px; border-radius:8px; margin-top:20px; }
+    #control-maestro { background:#222; padding:10px; border-radius:8px; margin-bottom:20px; }
+    input, select { width:100%; padding:6px; margin:4px 0; border-radius:4px; border:none; }
+  </style>
+</head>
+<body>
+  <h1>Gestor de Billeteras Demo</h1>
+
+  <!-- Control Maestro -->
+  <div id="control-maestro">
+    <h3>Nuevo Grupo</h3>
+    <input id="perfilNombre" placeholder="Perfil (ej. PC1)">
+    <input id="nombreGrupo" placeholder="Nombre del grupo (ej. Torres)">
+    <input id="cbu" placeholder="CBU">
+    <input id="alias" placeholder="Alias">
+    <input id="titular" placeholder="Titular">
+    <select id="billetera">
+      <option value="Mercado Pago">Mercado Pago</option>
+      <option value="PPay">PPay</option>
+      <option value="Ripio">Ripio</option>
+      <option value="Prex">Prex</option>
+      <option value="Brubank">Brubank</option>
+      <option value="Ualá">Ualá</option>
+    </select>
+    <button onclick="guardarBilletera()">Guardar</button>
+    <button onclick="exportarPerfil()">Exportar Perfil</button>
+    <input type="file" id="importFile" onchange="importarPerfil(this.files[0])">
+  </div>
+
+  <select id="perfilSelector" onchange="cambiarPerfil(this.value)">
+    <option value="default">Default</option>
+  </select>
+
+  <div id="gruposContainer"></div>
+
+  <!-- Historial -->
+  <div id="historial-box">
+    📝 Último copiado: <span id="historial-text">Nada aún...</span>
+    <button onclick="copyText(lastCopied)">Copiar de nuevo</button>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+let lastCopied="", modoSlider=0;
+
+function showToast(msg){
+  const toast=document.getElementById("toast");
+  toast.textContent="✅ "+msg;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"),2000);
+}
+function copyText(txt){
+  if(!txt) return;
+  navigator.clipboard.writeText(txt).then(()=>{
+    showToast("Copiado: "+txt.slice(0,20)+"...");
+    lastCopied=txt;
+    document.getElementById("historial-text").textContent=txt;
+  });
+}
+function guardarBilletera(){
+  const perfil=document.getElementById("perfilNombre").value.trim()||"default";
+  const grupo={
+    nombre:document.getElementById("nombreGrupo").value.trim(),
+    cbu:document.getElementById("cbu").value.trim(),
+    alias:document.getElementById("alias").value.trim(),
+    titular:document.getElementById("titular").value.trim(),
+    billetera:document.getElementById("billetera").value
+  };
+  const data=JSON.parse(localStorage.getItem(perfil)||"[]");
+  data.push(grupo);
+  localStorage.setItem(perfil,JSON.stringify(data));
+  if(![...document.getElementById("perfilSelector").options].some(opt=>opt.value===perfil)){
+    const opt=document.createElement("option");opt.value=perfil;opt.textContent=perfil;
+    document.getElementById("perfilSelector").appendChild(opt);
+  }
+  renderBilleteras(perfil);
+}
+function renderBilleteras(perfil){
+  const data=JSON.parse(localStorage.getItem(perfil)||"[]");
+  const cont=document.getElementById("gruposContainer");
+  cont.innerHTML="";
+  data.forEach(g=>{
+    cont.innerHTML+=`
+    <div class="grupo">
+      <div class="header"><div class="titulo">${g.nombre}</div>
+        <div class="controls"><button class="drag-handle">☰</button><button class="flip-btn">🔄</button></div>
+      </div>
+      <div class="wallets-container">
+        <button onclick="copyText('${g.cbu}')">CBU ${g.billetera}</button>
+        <button onclick="copyText('${g.alias}\\nTitular ${g.titular} *${g.billetera}*')">Alias ${g.billetera}</button>
+      </div>
+    </div>`;
+  });
+}
+function cambiarPerfil(nombre){ renderBilleteras(nombre); }
+function exportarPerfil(){
+  const perfil=document.getElementById("perfilNombre").value.trim()||"default";
+  const data=localStorage.getItem(perfil);
+  const blob=new Blob([data],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=perfil+".json";a.click();
+}
+function importarPerfil(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const perfil=document.getElementById("perfilNombre").value.trim()||"default";
+    localStorage.setItem(perfil,e.target.result);
+    renderBilleteras(perfil);
+  };
+  reader.readAsText(file);
+}
+</script>
+</body>
+</html>
