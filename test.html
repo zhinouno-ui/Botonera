@@ -678,8 +678,9 @@ function updateSummaryFromTable() {
   document.getElementById('countPaired').textContent = `${pairedCount}`;
   document.getElementById('countMissing').textContent = `${missingCount}`;
 }
+</script>
 
-
+  <script>
 function applyFiltersAndRender() {
     const filteredPairs = getFilteredPairs();
     renderTable(filteredPairs);
