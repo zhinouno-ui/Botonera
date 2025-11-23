@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -64,6 +63,11 @@
     animation: slideInUp 0.7s ease-out;
   }
   .row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  .fila-oculta {
+  opacity: 0.25;
+  filter: blur(1px);
+  transition: opacity .3s ease, filter .3s ease;
+}
   
   /* === FORMS & BUTTONS === */
   label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; font-weight: 500; }
@@ -149,7 +153,12 @@
   tr.ok td {}
   tr.miss-chunior { border-left: 3px solid var(--bad); }
   tr.miss-agente { border-left: 3px solid var(--warn); }
-  tr.ignored { opacity: 0.5; font-style: italic; background: rgba(100,100,100,0.1) !important; }
+  tr.ignored { 
+  opacity: 0.35; 
+  filter: grayscale(40%); 
+  background: rgba(80,80,80,0.06) !important; 
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
   tr.edited td { background-color: rgba(0,150,255,0.15) !important; border-left: 3px solid #0096ff;}
 
   /* === MISC & HELPERS === */
@@ -646,14 +655,22 @@ function renderTable(filteredPairs){
     else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
     else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
 
-    const hideBtnIcon = isIgnored ? iconEye : iconEyeSlash;
+    // Choose hide icon based on ignored state so user can toggle back
+    const hideIcon = isIgnored ? iconEye : iconEyeSlash;
+    const hideTitle = isIgnored ? 'Mostrar fila' : 'Ocultar fila';
 
     let actionCell = `
       <td style="text-align:center;">
-        <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${hideBtnIcon}</button>
-        <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button>
-        <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button>
+         <button class="action-btn hide-btn" data-hide="${p.id}" title="${hideTitle}">${hideIcon}</button>
+         <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button>
+         <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button>
       </td>`;
+
+    if (p.estado === 'OK' || a?.isAdminCharge) {
+       actionCell = `<td style="text-align:center;">
+         <button class="action-btn hide-btn" data-hide="${p.id}" title="${hideTitle}">${hideIcon}</button>
+       </td>`;
+    }
 
     tr.innerHTML = `
       <td>${escapeHtml(a?.agente?.toUpperCase() || '')}</td>
@@ -856,9 +873,7 @@ document.getElementById('resultsBody').addEventListener('click', (e) => {
 
   if (hideBtn) {
     const id = hideBtn.dataset.hide;
-    if (window.__IGNORED_IDS.has(id)) window.__IGNORED_IDS.delete(id);
-    else window.__IGNORED_IDS.add(id);
-    applyFiltersAndRender();
+    toggleIgnore(id);
     return;
   }
 
@@ -937,6 +952,13 @@ document.getElementById('resultsBody').addEventListener('click', (e) => {
     return;
   }
 });
+
+// Toggle ignore state: mantiene la fila en la tabla pero la marca como 'ignored'
+function toggleIgnore(id){
+  if (window.__IGNORED_IDS.has(id)) window.__IGNORED_IDS.delete(id);
+  else window.__IGNORED_IDS.add(id);
+  applyFiltersAndRender();
+}
 
 /* Fullscreen button y setup inicial */
 document.addEventListener('DOMContentLoaded', () => {
