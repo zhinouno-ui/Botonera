@@ -1065,24 +1065,11 @@ function manuallyLink(id){
     applyFiltersAndRender();
 }
 
-  document.addEventListener("DOMContentLoaded", () => {
-  const fsBtn = document.getElementById("fullscreenBtn");
-  fsBtn?.addEventListener("click", () => {
-    const tableContainer = document.getElementById("tableContainer");
-    if (!document.fullscreenElement) tableContainer.requestFullscreen();
-    else document.exitFullscreen();
-  });
-});
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     setupActionButtons();
     updateButtonStates();
 });
 
-
-<script>
 document.addEventListener("DOMContentLoaded", () => {
   const fsBtn = document.getElementById("fullscreenBtn");
   fsBtn?.addEventListener("click", () => {
