@@ -1111,33 +1111,7 @@ document.addEventListener("click", (e) => {
                             <button class="action-btn hide-btn" data-cancel="${id}">❌</button>`;
   }
 
-  if (e.target.closest("[data-save]")) {
-    const id = e.target.closest("[data-save]").dataset.save;
-    const row = [...document.querySelectorAll("#resultsBody tr")].find(tr => tr.querySelector(`[data-save="${id}"]`));
-    if (!row) return;
-    const inputs = row.querySelectorAll("input");
-    const [agenteUsuario, agenteMonto, chuniorUsuario, chuniorMonto] = [...inputs].map(i => i.value.trim());
-    const cells = row.querySelectorAll("td");
-    cells[3].textContent = agenteUsuario;
-    cells[4].textContent = "$ " + parseFloat(agenteMonto).toFixed(2);
-    cells[6].textContent = chuniorUsuario;
-    cells[7].textContent = "$ " + parseFloat(chuniorMonto).toFixed(2);
-    row.classList.add("edited");
-    const actionCell = cells[cells.length-1];
-    actionCell.innerHTML = `<button class="action-btn hide-btn" data-hide="${id}">🙈</button>
-                            <button class="action-btn edit-btn" data-edit="${id}">✏️</button>`;
-  }
-
-  if (e.target.closest("[data-cancel]")) {
-    applyFiltersAndRender(); // restaura la tabla original
-  }
-
-  if (e.target.closest("[data-hide]")) {
-    const id = e.target.closest("[data-hide]").dataset.hide;
-    window.__IGNORED_IDS.add(id);
-    applyFiltersAndRender();
-  }
-});
+ 
 
 
   
