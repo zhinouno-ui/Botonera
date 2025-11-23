@@ -638,11 +638,18 @@ function copiarSoloWsp(event){
 }
 
 function copiarCodigoAmigo(event){
-  const usuario=document.getElementById("usuarioInput").value.trim();
-  if(!usuario){alert("⚠️ Escribí un usuario primero!");return;}
-  const mensaje=`TU CODIGO AMIGO\nR${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar!\nhttps://bet300.site`;
+  const usuario = document.getElementById("usuarioInput").value.trim();
+  if (!usuario) {
+    alert("⚠️ Escribí un usuario primero!");
+    return;
+  }
+
+  const codigos = ["R1", "R2", "R3"];
+  const prefijo = codigos[modoSlider] || "R1";
+  const mensaje = `TU CODIGO AMIGO\n${prefijo}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar!\nhttps://bet300.site`;
+
   copyText(mensaje);
-  animateButton(event?.target); // 🔥 feedback visual aquí
+  animateButton(event?.target);
 }
 
   // ======================
@@ -774,6 +781,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
