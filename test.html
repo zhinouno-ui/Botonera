@@ -608,7 +608,7 @@ function renderTable(filteredPairs){
     <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button>
     <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button>
   </td>`;
-    }
+    
 
     tr.innerHTML = `
       <td>${escapeHtml(a?.agente?.toUpperCase())}</td><td>${a?.turno || c?.turno || ''}</td><td>${formatTime(a?.fechaObj)}</td>
