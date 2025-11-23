@@ -587,7 +587,7 @@ if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movim
 
   
     return pairs.filter(p => {
-        if(window.__IGNORED_IDS.has(p.id)) return false;
+      // NO filtrar — solo marcar visualmente luego
         const a = p.agente, c = p.chunior;
         if (fechaFilter !== '__ALL') {
             const recordDate = a?.fechaObj || c?.fechaObj;
@@ -632,7 +632,7 @@ function renderTable(filteredPairs){
     else if (p.estado === 'OK') statusClass = 'ok';
     else if (p.estado === 'MISSING_CHUNIOR') statusClass = 'miss-chunior';
     else if (p.estado === 'MISSING_AGENT') statusClass = 'miss-agente';
-    if(isIgnored) statusClass += ' ignored';
+    if(isIgnored) statusClass += ' fila-oculta';
     if(p.edited) statusClass += ' edited';
     tr.className = statusClass.trim();
     
@@ -899,12 +899,25 @@ document.getElementById('resultsBody').addEventListener('click', (e) => {
     const pairs = window.__COMPARE_PAIRS || [];
     const pair = pairs.find(p => p.id === id);
     if(pair) {
-      // si existe agente, actualizar sus campos
-      if(pair.agente) {
-        if(agenteUsuario !== '') pair.agente.usuario = normalizeUser(agenteUsuario);
-        const parsedA = parseAmountRaw(agenteMonto);
-        if(!isNaN(parsedA)) pair.agente.monto = parsedA;
-      }
+ if(!pair.agente && (agenteUsuario !== '' || agenteMonto !== '')){
+    pair.agente = {
+        usuario: normalizeUser(agenteUsuario),
+        monto: parseAmountRaw(agenteMonto),
+        fechaObj: null,
+        fecha: '',
+        agente: 'MANUAL',
+        isAdminCharge: false,
+        turno: '',
+        tipoMovimiento: parseAmountRaw(agenteMonto) >= 0 ? 'INGRESO' : 'EGRESO'
+    };
+}
+
+// actualizar agente existente o recién creado
+if(pair.agente){
+    if(agenteUsuario !== '') pair.agente.usuario = normalizeUser(agenteUsuario);
+    const parsedA = parseAmountRaw(agenteMonto);
+    if(!isNaN(parsedA)) pair.agente.monto = parsedA;
+}
       if(pair.chunior) {
         if(chuniorUsuario !== '') pair.chunior.usuario = normalizeUser(chuniorUsuario);
         const parsedC = parseAmountRaw(chuniorMonto);
