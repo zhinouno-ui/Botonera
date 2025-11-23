@@ -76,8 +76,10 @@ button:hover {
 /* Colores personalizados según billetera */
 .promo-amigo { background: #2ecc71; }
 .meza { background: #3498db; }
-.Gonzales  { background: #992000; }
-          .Rodriguez { background: #791125; }    
+.Giordano  { background: #992000; }
+          .Lemes { background: #791125; }   
+    .Perez  { background: #696902; }
+      .Velazques  { background: #212179; }
 .utilidad { background: #e67e22; }
 
 /* 🔔 Estilos del toast */
@@ -269,20 +271,43 @@ button:hover {
     <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌')">Retiro</button>
    </div>
    
-   <!-- Grupo Gonzales -->
-  <div class="grupo Gonzales" draggable="true">
+   <!-- Grupo Giordano -->
+  <div class="grupo Giordano" draggable="true">
     <div class="header">
-      <div class="titulo">Gonzales</div>
+      <div class="titulo">Giordano</div>
       <div class="controls">
- 
+   <button type="button" class="flip-btn">🔄</button>
         <button type="button" class="drag-handle">☰</button>
       </div>
     </div>
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100038708992000')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'gonzalez.088.rulo.mp\nTitular Sebastian Leonardo Gabriel Gonzalez *Mercado Pago*')">Alias Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'0000003100083186380803')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'pablo.910.bujes.mp\nTitular PABLO LIONEL GIORDANO *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'1430001713039240140012')">CBU Bru</button>
+          <button onclick="copiarYAnimar(event,'lio.gio.br\nTitular PABLO LIONEL GIORDANO *Brubank*')">Alias Bru</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+     <!-- Grupo Lemes -->
+  <div class="grupo Lemes" draggable="true">
+    <div class="header">
+      <div class="titulo">Lemes</div>
+      <div class="controls">
+    <!--   <button type="button" class="flip-btn">🔄</button>    -->
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100013162905609')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'jonatan.075.delta.mp\nTitular JONATAN LAIRIHOY LEMES *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
           <button onclick="copiarYAnimar(event,'SIN PPAY')">CBU PPay</button>
@@ -292,31 +317,54 @@ button:hover {
     </div>
   </div>
 
-    <!-- Grupo Rodriguez -->
-  <div class="grupo Rodriguez" draggable="false">
+     <!-- Grupo Velazquez -->
+  <div class="grupo Velazquez" draggable="true">
     <div class="header">
-      <div class="titulo">Rodriguez</div>
+      <div class="titulo">Velazquez</div>
       <div class="controls">
-    <button type="button" class="flip-btn">🔄</button>  
+   <!--   <button type="button" class="flip-btn">🔄</button>    --> 
         <button type="button" class="drag-handle">☰</button>
       </div>
     </div>
     <div class="wallets-container">
       <div class="wallets-card">
         <div class="wallets-face front">
-          <button onclick="copiarYAnimar(event,'0000003100089153966098')">CBU Mercado Pago</button>
-          <button onclick="copiarYAnimar(event,'Nahuel.882.caseta.mp \nTitular Nahuel Nicolas Rodriguez *Mercado Pago*')">Alias Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'0000003100000101212179')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'nilda.997.cocina.mp\nTitular Nilda Aurora Velazquez *Mercado Pago*')">Alias Mercado Pago</button>
         </div>
         <div class="wallets-face back">
-          <button onclick="copiarYAnimar(event,'0000076500000044733436')">CBU PPay</button>
-          <button onclick="copiarYAnimar(event,'mrodrigue183982.ppay \nTitular Nahuel Nicolas Rodriguez *PPay*')">Alias PPay</button>
+          <button onclick="copiarYAnimar(event,'SIN PPAY')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'SIN PPAY')">Alias PPay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+    <!-- Grupo PEREZ -->
+  <div class="grupo PEREZ" draggable="false">
+    <div class="header">
+      <div class="titulo">PEREZ</div>
+      <div class="controls">
+   <!--   <button type="button" class="flip-btn">🔄</button>    -->
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100069598769690')">CBU Mercado Pago</button>
+          <button onclick="copiarYAnimar(event,'irinea.530.candas.mp \nTitular IRINEA DESIDERIA PEREZ *Mercado Pago*')">Alias Mercado Pago</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'sin cbu')">CBU PPay</button>
+          <button onclick="copiarYAnimar(event,'sin alias')">Alias PPay</button>
         </div>
       </div>
     </div>
   </div>
   
   <!-- Grupo Meza -->
-  <div class="grupo meza" draggable="true">
+  <div class="grupo Meza" draggable="true">
     <div class="header">
       <div class="titulo">Meza</div>
       <div class="controls">
@@ -413,14 +461,18 @@ button:hover {
     let tipo="Texto";
     const txtLower=txt.toLowerCase();
     
-    if (txtLower.includes("gonzalez.088.rulo.mp")) tipo = "Alias Gonzales";
-    else if (txtLower.includes("0000003100038708992000")) tipo = "Cbu Gonzales";
+    if (txtLower.includes("pablo.910.bujes.mp")) tipo = "Alias Giordano";
+    else if (txtLower.includes("0000003100083186380803")) tipo = "Cbu Giordano";
+    else  if (txtLower.includes("lio.gio.br")) tipo = "Alias Giordano Bru";
+    else if (txtLower.includes("1430001713039240140012")) tipo = "Cbu Giordano Bru";
     else if(txtLower.includes("ymeza44.ppay")) tipo="Alias Meza PPay";
     else if(txtLower.includes("0000076500000043003428")) tipo="Cbu Meza PPay";
-          else if(txtLower.includes("0000003100089153966098")) tipo="Cbu Rodriguez MP";
-    else if(txtLower.includes("Rodriguez.882.caseta.mp")) tipo="Alias Rodriguez MP";  
-                        else if(txtLower.includes("mrodrigue183982.ppay")) tipo="Alias Rodriguez PPay";
-                      else if(txtLower.includes("0000076500000034820409")) tipo="Cbu Rodriguez PPay";
+          else if(txtLower.includes("0000003100069598769690")) tipo="Cbu Perez MP";
+    else if(txtLower.includes("irinea.530.candas.mp")) tipo="Alias Perez MP";  
+          else if(txtLower.includes("0000003100013162905609")) tipo="Cbu Lemes MP";
+            else if(txtLower.includes("jonatan.075.delta.mp")) tipo="Alias Lemes MP";  
+                        else if(txtLower.includes("nilda.997.cocina.mp")) tipo="Alias Velazques MP";
+                      else if(txtLower.includes("0000003100000101212179")) tipo="Cbu Velazques MP";
     else if(txtLower.includes("somos bet300vip")) tipo="Info";
     else if(txtLower.includes("¡saldo acreditado!")) tipo="Cargado";
     else if(txtLower.includes("para hacer el retiro")) tipo="Retiro";
