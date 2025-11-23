@@ -218,7 +218,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Comparador AGENTE ⇄ CHUNIOR - ChinDiferencia</h1>
+  <h1>Comparador AGENTE ⇄ CHUNIOR - ChinDiferencia V2</h1>
   <div class="card">
     <div class="row">
       <div style="flex:1;min-width:280px">
@@ -1082,7 +1082,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-  /* Pantalla completa */
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   const fsBtn = document.getElementById("fullscreenBtn");
   fsBtn?.addEventListener("click", () => {
@@ -1095,7 +1095,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-/* Edición de filas */
 document.addEventListener("click", (e) => {
   if (e.target.closest("[data-edit]")) {
     const id = e.target.closest("[data-edit]").dataset.edit;
@@ -1139,6 +1138,7 @@ document.addEventListener("click", (e) => {
     applyFiltersAndRender();
   }
 });
+
 
   
 </script>
