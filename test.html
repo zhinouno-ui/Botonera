@@ -279,7 +279,11 @@
         <table id="resultsTable" role="table">
           <thead>
             <tr>
-              <th>Agente</th>
+            <th>
+              <button class="action-btn fullscreen-btn" id="fullscreenBtn" title="Pantalla completa">🖥️</button>
+              Agente
+              </th>
+
               <th>Turno</th>
               <th>Agente Hora</th>
               <th>Agente Usuario</th>
@@ -897,29 +901,54 @@ function startInlineEdit(id) {
     }, { once:true });
 }
 
+// Convertir celdas en inputs
+const cells = row.querySelectorAll("td");
+const agenteUsuarioCell = cells[3];
+const agenteMontoCell = cells[4];
+const chuniorUsuarioCell = cells[6];
+const chuniorMontoCell = cells[7];
+
+const makeEditable = (cell, value) => {
+  cell.classList.add("cell-editing");
+  cell.innerHTML = `<input type="text" value="${value}"/>`;
+};
+
+makeEditable(agenteUsuarioCell, agenteUsuarioCell.textContent.trim());
+makeEditable(agenteMontoCell, agenteMontoCell.textContent.replace("$","").trim());
+makeEditable(chuniorUsuarioCell, chuniorUsuarioCell.textContent.trim());
+makeEditable(chuniorMontoCell, chuniorMontoCell.textContent.replace("$","").trim());
+
+// Reemplazar botones por Guardar/Cancelar
+const actionCell = cells[cells.length-1];
+actionCell.innerHTML = `
+  <button class="action-btn edit-btn" data-save="${id}" title="Guardar">💾</button>
+  <button class="action-btn hide-btn" data-cancel="${id}" title="Cancelar">❌</button>
+`;
+
 function saveInlineEdit(id, row) {
     const pairs = window.__COMPARE_PAIRS;
     const p = pairs.find(x => x.id === id);
     if (!p) return;
 
-    const inputs = row.querySelectorAll("input[data-field]");
-    inputs.forEach(inp=>{
-        const val = inp.value.trim();
-        switch(inp.dataset.field){
-            case "agenteUsuario": 
-                if (p.agente) p.agente.usuario = val.toLowerCase();
-                break;
-            case "agenteMonto":
-                if (p.agente) p.agente.monto = parseAmountRaw(val);
-                break;
-            case "chuniorUsuario":
-                if (p.chunior) p.chunior.usuario = val.toLowerCase();
-                break;
-            case "chuniorMonto":
-                if (p.chunior) p.chunior.monto = parseAmountRaw(val);
-                break;
-        }
-    });
+    const inputs = row.querySelectorAll("input");
+    const [agenteUsuario, agenteMonto, chuniorUsuario, chuniorMonto] = [...inputs].map(i => i.value.trim());
+
+    // Actualizar celdas
+    const cells = row.querySelectorAll("td");
+    cells[3].textContent = agenteUsuario;
+    cells[4].textContent = "$ " + parseFloat(agenteMonto).toFixed(2);
+    cells[6].textContent = chuniorUsuario;
+    cells[7].textContent = "$ " + parseFloat(chuniorMonto).toFixed(2);
+
+    // Marcar fila como editada
+    row.classList.add("edited");
+
+    // Restaurar botones
+    const actionCell = cells[cells.length-1];
+    actionCell.innerHTML = `
+      <button class="action-btn hide-btn" data-hide="${id}" title="Ocultar fila">🙈</button>
+      <button class="action-btn edit-btn" data-edit="${id}" title="Editar fila">✏️</button>
+    `;
 
     rematchAll();
     applyFiltersAndRender();
@@ -979,7 +1008,7 @@ function rematchAll() {
             for (const p of allPairs) {
                 if (p.estado === 'MISSING_CHUNIOR' && !p.agente?.isAdminCharge) { // Only assign to records that were missing CHUNIOR
                     p.chunior = c;
-                    p.estado = 'MISSING_AGENT'; // This record now represents a CHUNIOR entry missing from AGENT
+                    p.estado = 'MISSING_AGENT'; // This record now represents a CHUNIOR entry missing from AGENTE
                     foundExistingMissingAgent = true;
                     break;
                 }
@@ -1036,6 +1065,16 @@ function manuallyLink(id){
     applyFiltersAndRender();
 }
 
+  document.addEventListener("DOMContentLoaded", () => {
+  const fsBtn = document.getElementById("fullscreenBtn");
+  fsBtn?.addEventListener("click", () => {
+    const tableContainer = document.getElementById("tableContainer");
+    if (!document.fullscreenElement) tableContainer.requestFullscreen();
+    else document.exitFullscreen();
+  });
+});
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     setupActionButtons();
@@ -1045,4 +1084,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
