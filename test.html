@@ -581,10 +581,11 @@ function getFilteredPairs() {
     const estadoFilter = document.getElementById('filterEstado').value;
     const movimientoFilter = document.getElementById('filterMovimiento').value;
 
-    if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movimientoFilter].every(f => f === '__ALL')) {
-        return pairs.filter(p => !window.__IGNORED_IDS.has(p.id));
-    }
+if ([fechaFilter, agFilter, opFilter, biFilter, turnoFilter, estadoFilter, movimientoFilter].every(f => f === '__ALL')) {
+    return pairs; // NO filtra ignorados
+}
 
+  
     return pairs.filter(p => {
         if(window.__IGNORED_IDS.has(p.id)) return false;
         const a = p.agente, c = p.chunior;
