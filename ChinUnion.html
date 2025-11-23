@@ -534,9 +534,6 @@ button:hover {
   button.style.transform = "scale(0.95)";
   setTimeout(()=> button.style.transform = "", 150);
 }
-  
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script>
  
     function animateButton(button){
   button.style.transform = "scale(0.95)";
@@ -731,36 +728,6 @@ else if (txtLower.includes("0000003100094931906564")) tipo = "Cbu Juan MP";
   }
 
   // ======================
-  // BANCO PANEL
-  // ======================
-  const bancoToggle=document.getElementById("banco-toggle");
-  const bancoPanel=document.getElementById("banco-panel");
-
-  function cerrarBancoPanel(){
-    bancoPanel.classList.remove("open");
-    bancoToggle.classList.remove("open");
-  }
-
-  bancoToggle.onclick=function(e){
-    e.stopPropagation();
-    if(bancoPanel.classList.contains("open")){
-      cerrarBancoPanel();
-    } else {
-      bancoPanel.classList.add("open");
-      bancoToggle.classList.add("open");
-    }
-  };
-
-  document.addEventListener("click",function(e){
-    if(bancoPanel.classList.contains("open")&&!bancoPanel.contains(e.target)&&!bancoToggle.contains(e.target)){
-      cerrarBancoPanel();
-    }
-  });
-  document.addEventListener("keydown",function(e){
-    if(e.key==="Escape") cerrarBancoPanel();
-  });
-
-  // ======================
   // FLIP CARDS
   // ======================
   document.querySelectorAll(".grupo").forEach(grupo=>{
@@ -794,6 +761,7 @@ function animateButton(button){
   </script>
 </body>
 </html>
+
 
 
 
