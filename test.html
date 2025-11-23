@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -149,7 +150,8 @@
   tr.miss-chunior { border-left: 3px solid var(--bad); }
   tr.miss-agente { border-left: 3px solid var(--warn); }
   tr.ignored { opacity: 0.5; font-style: italic; background: rgba(100,100,100,0.1) !important; }
-  
+  tr.edited td { background-color: rgba(0,150,255,0.15) !important; border-left: 3px solid #0096ff;}
+
   /* === MISC & HELPERS === */
   .badge { padding: 6px 10px; border-radius: 8px; background: var(--glass); color: var(--muted); font-size: 13px; }
   .state-ok { color: var(--ok); font-weight: 700; }
@@ -162,39 +164,6 @@
   .action-btn svg { width: 18px; height: 18px; }
   .hidden { display: none; }
   .results-section { animation: slideInUp 0.6s ease-out forwards; }
-
-  /* Botón ocultar más visible */
-  .action-btn.hide-btn {
-    background: rgba(255,0,0,0.15);
-    border: 1px solid rgba(255,0,0,0.4);
-  }
-  .action-btn.hide-btn:hover {
-    background: rgba(255,0,0,0.35);
-  }
-
-  /* Botón editar */
-  .action-btn.edit-btn {
-    background: rgba(0,150,255,0.15);
-    border: 1px solid rgba(0,150,255,0.4);
-  }
-  .action-btn.edit-btn:hover {
-    background: rgba(0,150,255,0.35);
-  }
-
-  /* Celda editable */
-  .cell-editing {
-    padding: 2px;
-    border-radius: 4px;
-  }
-
-  .cell-editing input {
-    width: 95%;
-    background: #00000033;
-    border: 1px solid #666;
-    border-radius: 4px;
-    padding: 3px 4px;
-    color: white;
-  }
 
   /* === RESPONSIVE DESIGN === */
   @media (max-width: 920px) {
@@ -214,8 +183,11 @@
     "react/": "https://aistudiocdn.com/react@^19.2.0/"
   }
 }
-</script><div class="wrap">
-  <h1>Comparador AGENTE ⇄ CHUNIOR - ChinDiferencia V2</h1>
+</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>Comparador AGENTE ⇄ CHUNIOR - ChinDiferencia</h1>
   <div class="card">
     <div class="row">
       <div style="flex:1;min-width:280px">
@@ -276,11 +248,7 @@
         <table id="resultsTable" role="table">
           <thead>
             <tr>
-            <th>
-              <button class="action-btn fullscreen-btn" id="fullscreenBtn" title="Pantalla completa">🖥️</button>
-              Agente
-              </th>
-
+              <th> <button class="action-btn fullscreen-btn" id="fullscreenBtn" title="Pantalla completa">🖥️</button> Agente</th>
               <th>Turno</th>
               <th>Agente Hora</th>
               <th>Agente Usuario</th>
@@ -634,26 +602,21 @@ function renderTable(filteredPairs){
     else if (p.estado === 'MISSING_CHUNIOR') estadoDisplay = '<span class="state-bad">❌ Falta CH</span>';
     else if (p.estado === 'MISSING_AGENT') estadoDisplay = '<span class="state-warn">❌ Falta AG</span>';
 
-    let actionCell = `
-    <td style="text-align:center;">
-       <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button>
-       <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button>
-       <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button>
-    </td>`;
-
-    if (p.estado === 'OK' || a?.isAdminCharge) {
-       actionCell = `<td style="text-align:center;">
-         <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button>
-       </td>`;
+   let actionCell = `
+  <td style="text-align:center;">
+    <button class="action-btn hide-btn" data-hide="${p.id}" title="Ocultar fila">${iconEyeSlash}</button>
+    <button class="action-btn edit-btn" data-edit="${p.id}" title="Editar fila">✏️</button>
+    <button class="action-btn link-btn" data-link="${p.id}" title="Vincular manualmente">🔗</button>
+  </td>`;
     }
 
     tr.innerHTML = `
-      <td>${escapeHtml(a?.agente?.toUpperCase() || '')}</td><td>${a?.turno || c?.turno || ''}</td><td>${formatTime(a?.fechaObj)}</td>
-      <td>${escapeHtml(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario || '')}</td>
+      <td>${escapeHtml(a?.agente?.toUpperCase())}</td><td>${a?.turno || c?.turno || ''}</td><td>${formatTime(a?.fechaObj)}</td>
+      <td>${escapeHtml(a?.isAdminCharge ? 'CARGA ADMIN' : a?.usuario)}</td>
       <td class="amount ${a && a.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${agenteMonto}</td>
-      <td class="divider">${formatTime(c?.fechaObj)}</td><td>${escapeHtml(c?.usuario || '')}</td>
+      <td class="divider">${formatTime(c?.fechaObj)}</td><td>${escapeHtml(c?.usuario)}</td>
       <td class="amount ${c && c.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${chuniorMonto}</td>
-      <td>${escapeHtml(c?.operador?.toUpperCase() || '')}</td><td>${escapeHtml(c?.billetera || '')}</td>
+      <td>${escapeHtml(c?.operador?.toUpperCase())}</td><td>${escapeHtml(c?.billetera)}</td>
       <td>${estadoDisplay}</td>${actionCell}
     `;
     tbody.appendChild(tr);
@@ -838,236 +801,12 @@ document.getElementById('resultsBody').addEventListener('click', (e) => {
         applyFiltersAndRender();
     }
 });
-
-document.getElementById("resultsBody").addEventListener("click", (e)=>{
-    const hideBtn = e.target.closest("[data-hide]");
-    const editBtn = e.target.closest("[data-edit]");
-    const linkBtn = e.target.closest("[data-link]");
-
-    if (hideBtn) {
-        const id = hideBtn.dataset.hide;
-        window.__IGNORED_IDS.add(id);
-        applyFiltersAndRender();
-        return;
-    }
-
-    if (editBtn) {
-        const id = editBtn.dataset.edit;
-        startInlineEdit(id);
-        return;
-    }
-
-    if (linkBtn) {
-        const id = linkBtn.dataset.link;
-        manuallyLink(id);
-        return;
-    }
-});
-
-function startInlineEdit(id) {
-    const pairs = window.__COMPARE_PAIRS;
-    const p = pairs.find(x => x.id === id);
-    if (!p) return;
-
-    // buscar la <tr>
-    const row = [...document.querySelectorAll("#resultsBody tr")]
-                     .find(r => r.querySelector(`[data-edit="${id}"]`));
-
-    if (!row) return;
-
-    // columnas editable: usuario + monto de ambos lados
-    const editableIndexes = {
-        agenteUsuario: 3,
-        agenteMonto: 4,
-        chuniorUsuario: 6,
-        chuniorMonto: 7
-    };
-
-    Object.entries(editableIndexes).forEach(([key, idx])=> {
-        const cell = row.children[idx];
-        const original = cell.textContent.replace('$', '').trim();
-
-        cell.classList.add("cell-editing");
-        cell.innerHTML = `<input data-field="${key}" value="${original}">`;
-    });
-
-    // Guardar al salir
-    row.addEventListener("focusout", (e)=>{
-        if (!e.target.dataset.field) return;
-        saveInlineEdit(id, row);
-    }, { once:true });
-}
-
-// Convertir celdas en inputs
-const cells = row.querySelectorAll("td");
-const agenteUsuarioCell = cells[3];
-const agenteMontoCell = cells[4];
-const chuniorUsuarioCell = cells[6];
-const chuniorMontoCell = cells[7];
-
-const makeEditable = (cell, value) => {
-  cell.classList.add("cell-editing");
-  cell.innerHTML = `<input type="text" value="${value}"/>`;
-};
-
-makeEditable(agenteUsuarioCell, agenteUsuarioCell.textContent.trim());
-makeEditable(agenteMontoCell, agenteMontoCell.textContent.replace("$","").trim());
-makeEditable(chuniorUsuarioCell, chuniorUsuarioCell.textContent.trim());
-makeEditable(chuniorMontoCell, chuniorMontoCell.textContent.replace("$","").trim());
-
-// Reemplazar botones por Guardar/Cancelar
-const actionCell = cells[cells.length-1];
-actionCell.innerHTML = `
-  <button class="action-btn edit-btn" data-save="${id}" title="Guardar">💾</button>
-  <button class="action-btn hide-btn" data-cancel="${id}" title="Cancelar">❌</button>
-`;
-
-function saveInlineEdit(id, row) {
-    const pairs = window.__COMPARE_PAIRS;
-    const p = pairs.find(x => x.id === id);
-    if (!p) return;
-
-    const inputs = row.querySelectorAll("input");
-    const [agenteUsuario, agenteMonto, chuniorUsuario, chuniorMonto] = [...inputs].map(i => i.value.trim());
-
-    // Actualizar celdas
-    const cells = row.querySelectorAll("td");
-    cells[3].textContent = agenteUsuario;
-    cells[4].textContent = "$ " + parseFloat(agenteMonto).toFixed(2);
-    cells[6].textContent = chuniorUsuario;
-    cells[7].textContent = "$ " + parseFloat(chuniorMonto).toFixed(2);
-
-    // Marcar fila como editada
-    row.classList.add("edited");
-
-    // Restaurar botones
-    const actionCell = cells[cells.length-1];
-    actionCell.innerHTML = `
-      <button class="action-btn hide-btn" data-hide="${id}" title="Ocultar fila">🙈</button>
-      <button class="action-btn edit-btn" data-edit="${id}" title="Editar fila">✏️</button>
-    `;
-
-    rematchAll();
-    applyFiltersAndRender();
-}
-
-function rematchAll() {
-    const allPairs = window.__COMPARE_PAIRS;
-    const agentRows = [];
-    const chuniorRows = [];
-
-    // Separate agents (excluding admin charges) and chunior records
-    allPairs.forEach(p=>{
-        if (p.agente && !p.agente.isAdminCharge) agentRows.push(p.agente);
-        // We need all chunior rows initially, to try and match them
-        if (p.chunior) chuniorRows.push(p.chunior);
-    });
-
-    // Reset matching for all pairs for a fresh matching pass
-    allPairs.forEach(p => {
-        if (!p.agente?.isAdminCharge) { // Keep admin charges as they are
-            p.chunior = null;
-            p.estado = 'MISSING_CHUNIOR';
-        }
-    });
-
-    const matchedChuniorIndices = new Set(); // To track which chunior records have been used
-
-    // First pass: match existing agent records to chunior records
-    allPairs.forEach(p => {
-        if (p.agente && !p.agente.isAdminCharge) {
-            const a = p.agente;
-            let matchedIndex = -1;
-            for (let i = 0; i < chuniorRows.length; i++) {
-                if (matchedChuniorIndices.has(i)) continue; // Skip if already matched
-
-                const c = chuniorRows[i];
-                if (a.usuario === c.usuario && Math.abs(a.monto - c.monto) < 0.01) {
-                    matchedIndex = i;
-                    break;
-                }
-            }
-
-            if (matchedIndex >= 0) {
-                p.chunior = chuniorRows[matchedIndex];
-                p.estado = "OK";
-                matchedChuniorIndices.add(matchedIndex);
-            }
-        }
-    });
-
-    // Second pass: add any remaining unmatched chunior records as 'MISSING_AGENT'
-    for (let i = 0; i < chuniorRows.length; i++) {
-        if (!matchedChuniorIndices.has(i)) {
-            const c = chuniorRows[i];
-            // Look for an existing pair that's missing chunior data and assign it
-            let foundExistingMissingAgent = false;
-            for (const p of allPairs) {
-                if (p.estado === 'MISSING_CHUNIOR' && !p.agente?.isAdminCharge) { // Only assign to records that were missing CHUNIOR
-                    p.chunior = c;
-                    p.estado = 'MISSING_AGENT'; // This record now represents a CHUNIOR entry missing from AGENTE
-                    foundExistingMissingAgent = true;
-                    break;
-                }
-            }
-            if (!foundExistingMissingAgent) {
-                // If no existing placeholder, create a new one (though this shouldn't happen if all initial chunior records are accounted for)
-                allPairs.push({ id: `chunior-miss-new-${Math.random()}`, agente: null, chunior: c, estado: 'MISSING_AGENT', tipoMovimiento: c.tipoMovimiento });
-            }
-        }
-    }
-    
-    // Clean up any remaining MISSING_CHUNIOR that didn't get a match and also don't have an original agent record
-    // This part ensures that if a CHUNIOR record was matched, the original AGENT-MISS record it filled is gone
-    // Or if an AGENT record was successfully matched, its MISSING_CHUNIOR status changes to OK.
-    
-    // Re-index IDs and sort for consistency after potential additions/removals (optional but good for stable UIs)
-    window.__COMPARE_PAIRS = allPairs.sort((a, b) => {
-        const dateA = a.agente?.fechaObj || a.chunior?.fechaObj;
-        const dateB = b.agente?.fechaObj || b.chunior?.fechaObj;
-        return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
-    });
-}
-
-function manuallyLink(id){
-    const pairs = window.__COMPARE_PAIRS;
-    const p = pairs.find(x=>x.id===id);
-    if (!p || !p.agente) return; // Only link if there's an agent record to link FROM
-
-    // Find an unmatched Chunior record (prioritize the one in this row if it's there but unmatched)
-    let chuniorToLink = p.chunior;
-    if (!chuniorToLink || p.estado === 'MISSING_CHUNIOR') {
-        // If this record is missing chunior, or its chunior is "empty", try to find a suitable chunior record that is currently MISSING_AGENT
-        const availableChunior = pairs.find(cp => cp.estado === 'MISSING_AGENT' && cp.chunior && !cp.chunior.isMatched);
-        if (availableChunior) {
-            chuniorToLink = availableChunior.chunior;
-            availableChunior.agente = null; // Mark the original holder of this chunior as now missing its agent
-            availableChunior.estado = 'MISSING_AGENT'; // Keep its state but it's now 'detached'
-        } else {
-            alert('No hay un registro de Chunior disponible para vincular manualmente.');
-            return;
-        }
-    }
-
-    if (chuniorToLink) {
-        // Force manual link
-        p.chunior = chuniorToLink;
-        p.chunior.usuario = p.agente.usuario; // Apply agent's user to chunior
-        p.chunior.monto = p.agente.monto;     // Apply agent's amount to chunior
-        p.estado = 'OK';
-        p.chunior.isMatched = true; // Custom flag to prevent it from being picked by auto-matching again easily
-    }
-
-    rematchAll(); // Re-run rematch to settle other records and clean up
-    applyFiltersAndRender();
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     setupActionButtons();
     updateButtonStates();
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
   const fsBtn = document.getElementById("fullscreenBtn");
   fsBtn?.addEventListener("click", () => {
     const tableContainer = document.getElementById("tableContainer");
@@ -1078,7 +817,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
 document.addEventListener("click", (e) => {
   if (e.target.closest("[data-edit]")) {
     const id = e.target.closest("[data-edit]").dataset.edit;
@@ -1094,8 +832,36 @@ document.addEventListener("click", (e) => {
     actionCell.innerHTML = `<button class="action-btn edit-btn" data-save="${id}">💾</button>
                             <button class="action-btn hide-btn" data-cancel="${id}">❌</button>`;
   }
- });
 
+  if (e.target.closest("[data-save]")) {
+    const id = e.target.closest("[data-save]").dataset.save;
+    const row = [...document.querySelectorAll("#resultsBody tr")].find(tr => tr.querySelector(`[data-save="${id}"]`));
+    if (!row) return;
+    const inputs = row.querySelectorAll("input");
+    const [agenteUsuario, agenteMonto, chuniorUsuario, chuniorMonto] = [...inputs].map(i => i.value.trim());
+    const cells = row.querySelectorAll("td");
+    cells[3].textContent = agenteUsuario;
+    cells[4].textContent = "$ " + parseFloat(agenteMonto).toFixed(2);
+    cells[6].textContent = chuniorUsuario;
+    cells[7].textContent = "$ " + parseFloat(chuniorMonto).toFixed(2);
+    row.classList.add("edited");
+    const actionCell = cells[cells.length-1];
+    actionCell.innerHTML = `<button class="action-btn hide-btn" data-hide="${id}">🙈</button>
+                            <button class="action-btn edit-btn" data-edit="${id}">✏️</button>
+                            <button class="action-btn link-btn" data-link="${id}">🔗</button>`;
+  }
+
+  if (e.target.closest("[data-cancel]")) {
+    applyFiltersAndRender(); // restaura la tabla original
+  }
+});
+  document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-link]")) {
+    const id = e.target.closest("[data-link]").dataset.link;
+    alert("Función de vinculación manual aún no implementada para ID: " + id);
+    // Aquí podrías abrir un modal, buscar coincidencias, etc.
+  }
+});
 
   
 </script>
