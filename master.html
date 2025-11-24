@@ -2,179 +2,772 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Gestor de Billeteras Demo 2</title>
+  <title>Gestor de Billeteras · ChinUnion</title>
   <style>
-    :root {
-      --bg: #121212;
-      --card: #1e1e1e;
-      --accent: #C93C20;
-      --text: #fff;
-      --muted: #aaa;
+    :root{
+      --bg:#05060b;
+      --card:#10121c;
+      --glass:rgba(255,255,255,0.05);
+      --accent:#c93c20;
+      --accent2:#f97316;
+      --accent-soft:#facc15;
+      --text:#f9fafb;
+      --muted:#94a3b8;
+      --border:#1f2933;
+      --good:#22c55e;
     }
-    body { background: var(--bg); color: var(--text); font-family: Arial, sans-serif; margin:0; padding:20px; }
-    h1 { margin-bottom:10px; }
-    .grupo { background: var(--card); padding:10px; border-radius:8px; margin-bottom:10px; }
-    .header { display:flex; justify-content:space-between; align-items:center; }
-    .titulo { font-weight:bold; }
-    .controls { display:flex; gap:6px; }
-    .drag-handle, .flip-btn { cursor:pointer; background:#333; color:#fff; border:none; border-radius:6px; padding:4px 8px; }
-    .wallets-container { margin-top:8px; }
-    button { cursor:pointer; border:none; border-radius:6px; padding:8px; margin:4px 0; width:100%; }
-    button:hover { background:#333; }
-    #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#000; color:#fff; padding:10px 16px; border-radius:6px; opacity:0; transition:opacity 0.3s; }
-    #toast.show { opacity:1; }
-    #historial-box { background:#222; padding:10px; border-radius:8px; margin-top:20px; }
-    #control-maestro { background:#222; padding:10px; border-radius:8px; margin-bottom:20px; }
-    input, select { width:100%; padding:6px; margin:4px 0; border-radius:4px; border:none; }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      padding:18px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:radial-gradient(circle at top,#111827 0,#020617 55%);
+      color:var(--text);
+    }
+    .wrap{max-width:1200px;margin:0 auto;}
+    h1{
+      margin:0 0 10px 0;
+      font-size:22px;
+      font-weight:700;
+      background:linear-gradient(90deg,#f97316,#facc15,#f97316);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .topbar-title{flex:1;}
+    .chip{font-size:11px;padding:4px 8px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid #1e293b;color:var(--muted);}
+    .card{
+      background:linear-gradient(145deg,#020617 0,#020617 45%,#0b1220 100%);
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,0.18);
+      box-shadow:0 18px 45px rgba(0,0,0,.7);
+      padding:16px;
+    }
+    .row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;}
+    .col{flex:1;min-width:260px;}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px;}
+    input,select,textarea{
+      width:100%;
+      border-radius:9px;
+      border:1px solid #1e293b;
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      padding:7px 9px;
+      font-size:13px;
+      outline:none;
+      transition:border .15s,box-shadow .15s,background .15s;
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--accent2);
+      box-shadow:0 0 0 1px rgba(248,250,252,.1);
+      background:rgba(15,23,42,1);
+    }
+    textarea{min-height:70px;resize:vertical;}
+
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:8px 13px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#fff;
+      box-shadow:0 6px 16px rgba(0,0,0,.4);
+      transition:transform .12s,box-shadow .12s,opacity .15s;
+      white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.6);}
+    .btn:active{transform:translateY(0);}
+    .btn-secondary{
+      background:rgba(15,23,42,.9);
+      border:1px solid #1e293b;
+      color:var(--muted);
+      box-shadow:none;
+    }
+    .btn-secondary:hover{
+      border-color:var(--accent-soft);
+      color:var(--accent-soft);
+      box-shadow:0 0 0 1px rgba(234,179,8,.2);
+    }
+    .btn-danger{
+      background:linear-gradient(90deg,#ef4444,#b91c1c);
+    }
+    .btn-icon{
+      width:32px;height:32px;padding:0;
+      justify-content:center;
+      border-radius:999px;
+    }
+    .btn[disabled]{opacity:.45;cursor:default;box-shadow:none;transform:none;}
+
+    .profile-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+    .profile-bar select{max-width:180px;}
+    .spacer{flex:1;}
+
+    .switch-row{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .search-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:8px;
+    }
+    .search-row input{max-width:260px;}
+
+    /* grupos */
+    #gruposContainer{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+    .grupo{
+      background:rgba(15,23,42,.9);
+      border-radius:12px;
+      border:1px solid #1e293b;
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .grupo-header{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .drag-handle{
+      width:26px;height:26px;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      cursor:grab;
+      background:rgba(15,23,42,1);
+      border:1px solid #1f2937;
+      font-size:16px;
+      color:#64748b;
+    }
+    .grupo-main{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      width:100%;
+    }
+    .grupo-title{
+      font-size:14px;
+      font-weight:600;
+    }
+    .grupo-sub{font-size:12px;color:var(--muted);}
+    .tag-pill{
+      font-size:11px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:#020617;
+      border:1px solid #1e293b;
+      color:#e5e7eb;
+    }
+    .grupo-buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
+    }
+    .chip-small{
+      font-size:11px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:#020617;
+      border:1px solid #1e293b;
+      color:var(--muted);
+    }
+    .wallet-label{font-size:11px;color:var(--muted);margin-top:4px;}
+
+    .btn-mini{
+      padding:5px 9px;
+      font-size:11px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#0ea5e9,#22c55e);
+      box-shadow:none;
+    }
+    .btn-mini.alt{
+      background:linear-gradient(90deg,#6366f1,#ec4899);
+    }
+
+    .historial{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    #toast{
+      position:fixed;
+      bottom:18px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#020617;
+      color:var(--text);
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:13px;
+      box-shadow:0 14px 40px rgba(0,0,0,.8);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .25s,transform .25s;
+    }
+    #toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-4px);
+    }
+
+    .drag-over{
+      outline:1px dashed var(--accent-soft);
+      outline-offset:2px;
+    }
+
+    @media(max-width:800px){
+      .topbar{flex-direction:column;align-items:flex-start;}
+      .profile-bar{flex-direction:column;align-items:flex-start;}
+    }
   </style>
 </head>
 <body>
-  <h1>Gestor de Billeteras Demo 2</h1>
-
-  <!-- Control Maestro -->
-  <div id="control-maestro">
-    <h3>Nuevo Grupo</h3>
-    <input id="perfilNombre" placeholder="Perfil (ej. PC1)">
-    <input id="nombreGrupo" placeholder="Nombre del grupo (ej. Torres)">
-    <input id="telefono" placeholder="Teléfono principal">
-    <input id="cbu" placeholder="CBU">
-    <input id="alias" placeholder="Alias">
-    <input id="titular" placeholder="Titular">
-    <select id="billetera">
-      <option value="Mercado Pago">Mercado Pago</option>
-      <option value="PPay">PPay</option>
-      <option value="Ripio">Ripio</option>
-      <option value="Prex">Prex</option>
-      <option value="Brubank">Brubank</option>
-      <option value="Ualá">Ualá</option>
-    </select>
-    <label><input type="checkbox" id="segundaBilletera"> Segunda billetera</label>
-    <div id="segundaInputs" style="display:none;">
-      <input id="cbu2" placeholder="CBU 2">
-      <input id="alias2" placeholder="Alias 2">
-      <input id="titular2" placeholder="Titular 2">
-      <select id="billetera2">
-        <option value="Mercado Pago">Mercado Pago</option>
-        <option value="PPay">PPay</option>
-        <option value="Ripio">Ripio</option>
-        <option value="Prex">Prex</option>
-        <option value="Brubank">Brubank</option>
-        <option value="Ualá">Ualá</option>
-      </select>
+<div class="wrap">
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Gestor de Billeteras · ChinUnion</h1>
+      <div class="chip">Perfiles locales · drag & drop · copiado rápido</div>
     </div>
-    <button onclick="guardarBilletera()">Guardar</button>
-    <button onclick="exportarPerfil()">Exportar Perfil</button>
-    <input type="file" id="importFile" onchange="importarPerfil(this.files[0])">
-    <button onclick="reiniciarPerfil()">Reiniciar Perfil</button>
+    <button id="fsBtn" class="btn btn-icon btn-secondary" title="Pantalla completa">
+      ⛶
+    </button>
   </div>
 
-  <select id="perfilSelector" onchange="cambiarPerfil(this.value)">
-    <option value="default">Default</option>
-  </select>
+  <div class="card">
+    <!-- barra de perfil -->
+    <div class="profile-bar">
+      <div>
+        <label>Perfil activo</label>
+        <select id="perfilSelect"></select>
+      </div>
+      <button id="newProfileBtn" class="btn-secondary btn">＋ Perfil</button>
+      <button id="importProfileBtn" class="btn-secondary btn">⬆ Subir perfil</button>
+      <button id="exportProfileBtn" class="btn-secondary btn">⬇ Exportar perfil</button>
+      <button id="resetProfileBtn" class="btn-secondary btn btn-danger" title="Vaciar perfil actual">⟲ Reset</button>
+      <div class="spacer"></div>
+      <div>
+        <label>Buscar grupo / alias / titular</label>
+        <input id="searchInput" placeholder="matii, luna, mp, etc." />
+      </div>
+    </div>
 
-  <div id="gruposContainer"></div>
+    <!-- form nuevo grupo -->
+    <div class="row">
+      <div class="col">
+        <label>Nombre del grupo</label>
+        <input id="nombreGrupo" placeholder="Ej: Torres / Luna / Billeteras PC02">
+      </div>
+      <div class="col">
+        <label>Teléfono principal</label>
+        <input id="telefono" placeholder="Ej: 11 5555 5555">
+      </div>
+      <div class="col">
+        <label>Notas / referencia interna</label>
+        <input id="notas" placeholder="Ej: Solo recargas mañana · Encargado Nico">
+      </div>
+    </div>
 
-  <!-- Historial -->
-  <div id="historial-box">
-    📝 Último copiado: <span id="historial-text">Nada aún...</span>
-    <button onclick="copyText(lastCopied)">Copiar de nuevo</button>
+    <div class="row">
+      <div class="col">
+        <label>Billetera 1</label>
+        <select id="billetera1">
+          <option>Mercado Pago</option>
+          <option>PPay</option>
+          <option>Ripio</option>
+          <option>Prex</option>
+          <option>Brubank</option>
+          <option>Ualá</option>
+        </select>
+        <input id="alias1" placeholder="Alias 1">
+        <input id="titular1" placeholder="Titular 1">
+        <input id="cbu1" placeholder="CBU / CVU 1">
+      </div>
+      <div class="col">
+        <label>Billetera 2 (opcional)</label>
+        <select id="billetera2">
+          <option value="">(Sin segunda billetera)</option>
+          <option>Mercado Pago</option>
+          <option>PPay</option>
+          <option>Ripio</option>
+          <option>Prex</option>
+          <option>Brubank</option>
+          <option>Ualá</option>
+        </select>
+        <input id="alias2" placeholder="Alias 2">
+        <input id="titular2" placeholder="Titular 2">
+        <input id="cbu2" placeholder="CBU / CVU 2">
+      </div>
+      <div class="col" style="align-self:flex-end;min-width:200px">
+        <button id="addGroupBtn" class="btn" style="width:100%;margin-bottom:6px;">➕ Agregar grupo al perfil</button>
+        <div class="switch-row">
+          <span class="chip-small">Tip:</span>
+          <span>Todo lo que cargues se queda en el perfil activo hasta que lo cambies.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- grupos -->
+    <div id="gruposContainer"></div>
+
+    <!-- historial -->
+    <div class="historial">
+      📝 Último copiado:
+      <span id="historialText">Nada todavía…</span>
+      <button id="copyAgainBtn" class="btn-mini alt">Copiar de nuevo</button>
+    </div>
   </div>
+</div>
 
-  <div id="toast"></div>
+<div id="toast"></div>
+<input id="importFile" type="file" accept="application/json" style="display:none"/>
 
 <script>
-let lastCopied="";
+  // --- Estado global ---
+  let profiles = {};          // { nombrePerfil: [ grupos ] }
+  let activeProfile = null;
+  let lastCopied = "";
+  let searchTerm = "";
+  const LS_KEY = "chinWalletProfiles_v1";
+  const LS_ACTIVE = "chinWalletActive_v1";
 
-document.getElementById("segundaBilletera").addEventListener("change", e=>{
-  document.getElementById("segundaInputs").style.display=e.target.checked?"block":"none";
-});
-
-function showToast(msg){
-  const toast=document.getElementById("toast");
-  toast.textContent="✅ "+msg;
-  toast.classList.add("show");
-  setTimeout(()=>toast.classList.remove("show"),2000);
-}
-function copyText(txt){
-  if(!txt) return;
-  navigator.clipboard.writeText(txt).then(()=>{
-    showToast("Copiado: "+txt.slice(0,20)+"...");
-    lastCopied=txt;
-    document.getElementById("historial-text").textContent=txt;
-  });
-}
-function guardarBilletera(){
-  const perfil=document.getElementById("perfilNombre").value.trim()||"default";
-  const grupo={
-    nombre:document.getElementById("nombreGrupo").value.trim(),
-    telefono:document.getElementById("telefono").value.trim(),
-    cbu:document.getElementById("cbu").value.trim(),
-    alias:document.getElementById("alias").value.trim(),
-    titular:document.getElementById("titular").value.trim(),
-    billetera:document.getElementById("billetera").value,
-    segunda:document.getElementById("segundaBilletera").checked?{
-      cbu:document.getElementById("cbu2").value.trim(),
-      alias:document.getElementById("alias2").value.trim(),
-      titular:document.getElementById("titular2").value.trim(),
-      billetera:document.getElementById("billetera2").value
-    }:null
-  };
-  const data=JSON.parse(localStorage.getItem(perfil)||"[]");
-  data.push(grupo);
-  localStorage.setItem(perfil,JSON.stringify(data));
-  if(![...document.getElementById("perfilSelector").options].some(opt=>opt.value===perfil)){
-    const opt=document.createElement("option");opt.value=perfil;opt.textContent=perfil;
-    document.getElementById("perfilSelector").appendChild(opt);
+  // --- Utilidades visuales ---
+  function showToast(msg){
+    const t = document.getElementById("toast");
+    t.textContent = "✔ " + msg;
+    t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(()=>t.classList.remove("show"), 2000);
   }
-  renderBilleteras(perfil);
-}
-function renderBilleteras(perfil){
-  const data=JSON.parse(localStorage.getItem(perfil)||"[]");
-  const cont=document.getElementById("gruposContainer");
-  cont.innerHTML="";
-  data.forEach(g=>{
-    let front=`<button onclick="copyText('${g.cbu}')">CBU ${g.billetera}</button>
-               <button onclick="copyText('${g.alias}\\nTitular ${g.titular} *${g.billetera}*')">Alias ${g.billetera}</button>`;
-    let back=g.segunda?`<button onclick="copyText('${g.segunda.cbu}')">CBU ${g.segunda.billetera}</button>
-               <button onclick="copyText('${g.segunda.alias}\\nTitular ${g.segunda.titular} *${g.segunda.billetera}*')">Alias ${g.segunda.billetera}</button>`:"";
-    cont.innerHTML+=`
-    <div class="grupo">
-      <div class="header"><div class="titulo">${g.nombre} (${g.telefono})</div>
-        <div class="controls"><button class="drag-handle">☰</button>${g.segunda?'<button class="flip-btn">🔄</button>':""}</div>
-      </div>
-      <div class="wallets-container">
-        ${front}
-        ${back}
-      </div>
-    </div>`;
-  });
-}
-function cambiarPerfil(nombre){ renderBilleteras(nombre); }
-function exportarPerfil(){
-  const perfil=document.getElementById("perfilNombre").value.trim()||"default";
-  const data=localStorage.getItem(perfil);
-  const blob=new Blob([data],{type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=perfil+".json";a.click();
-}
-function importarPerfil(file){
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const perfil=document.getElementById("perfilNombre").value.trim()||"default";
-    localStorage.setItem(perfil,e.target.result);
-    renderBilleteras(perfil);
-  };
-  reader.readAsText(file);
-}
 
-function reiniciarPerfil(){
-  const perfil=document.getElementById("perfilNombre").value.trim()||"default";
-  if(confirm("¿Seguro que querés reiniciar el perfil "+perfil+"?")){
-    localStorage.removeItem(perfil);
-    renderBilleteras(perfil);
+  async function copyText(txt){
+    if(!txt) return;
+    try{
+      await navigator.clipboard.writeText(txt);
+      lastCopied = txt;
+      document.getElementById("historialText").textContent = txt;
+      showToast("Copiado");
+    }catch(e){
+      console.error(e);
+      alert("No se pudo copiar :(");
+    }
   }
-}
+
+  // --- LocalStorage ---
+  function loadFromStorage(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      profiles = raw ? JSON.parse(raw) : {};
+    }catch(e){
+      profiles = {};
+    }
+    if(!profiles || typeof profiles!=="object") profiles = {};
+    activeProfile = localStorage.getItem(LS_ACTIVE) || null;
+    // si no hay perfiles, crear uno por defecto
+    const names = Object.keys(profiles);
+    if(!names.length){
+      profiles["DEFAULT"] = [];
+      activeProfile = "DEFAULT";
+    }else if(!activeProfile || !profiles[activeProfile]){
+      activeProfile = names[0];
+    }
+    saveToStorage(false);
+  }
+
+  function saveToStorage(saveProfiles = true){
+    if(saveProfiles){
+      localStorage.setItem(LS_KEY, JSON.stringify(profiles));
+    }
+    if(activeProfile){
+      localStorage.setItem(LS_ACTIVE, activeProfile);
+    }
+  }
+
+  // --- Perfiles ---
+  function refreshProfileSelect(){
+    const sel = document.getElementById("perfilSelect");
+    sel.innerHTML = "";
+    Object.keys(profiles).sort().forEach(name=>{
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      if(name === activeProfile) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function setActiveProfile(name){
+    if(!profiles[name]){
+      profiles[name] = [];
+    }
+    activeProfile = name;
+    saveToStorage(false);
+    refreshProfileSelect();
+    renderGroups();
+  }
+
+  function handleNewProfile(){
+    const name = prompt("Nombre del nuevo perfil (ej: PC02, AGENTE01):","PC01");
+    if(!name) return;
+    if(!profiles[name]) profiles[name] = [];
+    activeProfile = name;
+    saveToStorage();
+    refreshProfileSelect();
+    renderGroups();
+    showToast("Perfil creado: " + name);
+  }
+
+  function resetCurrentProfile(){
+    if(!activeProfile) return;
+    if(!confirm("¿Vaciar completamente el perfil "+activeProfile+"? Esto no se puede deshacer.")) return;
+    profiles[activeProfile] = [];
+    saveToStorage();
+    renderGroups();
+    showToast("Perfil reiniciado");
+  }
+
+  function exportCurrentProfile(){
+    if(!activeProfile) return;
+    const data = {
+      profileName: activeProfile,
+      groups: profiles[activeProfile] || []
+    };
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "perfil_"+activeProfile+".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast("Perfil exportado");
+  }
+
+  function importProfileFile(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      try{
+        const obj = JSON.parse(e.target.result || "{}");
+        if(!Array.isArray(obj.groups)){
+          alert("Archivo inválido.");
+          return;
+        }
+        let name = obj.profileName || file.name.replace(/\.json$/i,"");
+        name = prompt("Nombre para este perfil importado:", name) || name || "IMPORTADO";
+        profiles[name] = obj.groups;
+        activeProfile = name;
+        saveToStorage();
+        refreshProfileSelect();
+        renderGroups();
+        showToast("Perfil importado: "+name);
+      }catch(err){
+        console.error(err);
+        alert("Error leyendo el perfil.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // --- Grupos ---
+  function readFormGroup(){
+    const nombre = document.getElementById("nombreGrupo").value.trim();
+    if(!nombre){ alert("Poné un nombre de grupo."); return null; }
+    const telefono = document.getElementById("telefono").value.trim();
+    const notas = document.getElementById("notas").value.trim();
+
+    const billetera1 = document.getElementById("billetera1").value.trim();
+    const alias1 = document.getElementById("alias1").value.trim();
+    const titular1 = document.getElementById("titular1").value.trim();
+    const cbu1 = document.getElementById("cbu1").value.trim();
+
+    if(!alias1 || !titular1 || !cbu1){
+      alert("Billetera 1 necesita alias, titular y CBU/CVU.");
+      return null;
+    }
+
+    const billetera2 = document.getElementById("billetera2").value.trim();
+    const alias2 = document.getElementById("alias2").value.trim();
+    const titular2 = document.getElementById("titular2").value.trim();
+    const cbu2 = document.getElementById("cbu2").value.trim();
+
+    const wallet1 = { billetera:billetera1, alias:alias1, titular:titular1, cbu:cbu1 };
+    let wallet2 = null;
+    if(billetera2 && (alias2 || titular2 || cbu2)){
+      wallet2 = { billetera:billetera2, alias:alias2, titular:titular2, cbu:cbu2 };
+    }
+
+    return {
+      id: "g_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),
+      nombre,
+      telefono,
+      notas,
+      wallet1,
+      wallet2
+    };
+  }
+
+  function clearForm(){
+    ["nombreGrupo","telefono","notas","alias1","titular1","cbu1","alias2","titular2","cbu2"].forEach(id=>{
+      document.getElementById(id).value = "";
+    });
+    document.getElementById("billetera1").selectedIndex = 0;
+    document.getElementById("billetera2").selectedIndex = 0;
+  }
+
+  function addGroup(){
+    if(!activeProfile) return;
+    const g = readFormGroup();
+    if(!g) return;
+    profiles[activeProfile].push(g);
+    saveToStorage();
+    clearForm();
+    renderGroups();
+    showToast("Grupo añadido al perfil "+activeProfile);
+  }
+
+  function filteredGroups(){
+    const list = profiles[activeProfile] || [];
+    if(!searchTerm) return list;
+    const term = searchTerm.toLowerCase();
+    return list.filter(g=>{
+      const haystack = [
+        g.nombre,
+        g.telefono,
+        g.notas,
+        g.wallet1?.alias,
+        g.wallet1?.titular,
+        g.wallet2?.alias,
+        g.wallet2?.titular
+      ].join(" ").toLowerCase();
+      return haystack.includes(term);
+    });
+  }
+
+  function templateAlias(wallet){
+    return `${wallet.alias}\nTitular ${wallet.titular} *${wallet.billetera}*`;
+  }
+  function templateCarga(wallet, telefono, nombreGrupo){
+    return `Cargá a ${wallet.alias} (${wallet.titular}) *${wallet.billetera}*\nRef: ${nombreGrupo} · Tel: ${telefono||"-"}`;
+  }
+
+  function renderGroups(){
+    const cont = document.getElementById("gruposContainer");
+    cont.innerHTML = "";
+    const groups = filteredGroups();
+    if(!groups.length){
+      cont.innerHTML = `<div style="font-size:13px;color:var(--muted);margin-top:6px;">No hay grupos en este perfil todavía.</div>`;
+      return;
+    }
+
+    groups.forEach(g=>{
+      const div = document.createElement("div");
+      div.className = "grupo";
+      div.dataset.id = g.id;
+      div.draggable = true;
+
+      const header = document.createElement("div");
+      header.className = "grupo-header";
+
+      const drag = document.createElement("div");
+      drag.className = "drag-handle";
+      drag.textContent = "☰";
+      header.appendChild(drag);
+
+      const main = document.createElement("div");
+      main.className = "grupo-main";
+
+      const left = document.createElement("div");
+      left.style.flex = "1";
+      const title = document.createElement("div");
+      title.className = "grupo-title";
+      title.textContent = g.nombre;
+      const sub = document.createElement("div");
+      sub.className = "grupo-sub";
+      sub.textContent = (g.telefono||"") + (g.notas ? " · " + g.notas : "");
+      left.appendChild(title);
+      left.appendChild(sub);
+
+      const tags = document.createElement("div");
+      tags.style.display = "flex";
+      tags.style.flexWrap = "wrap";
+      tags.style.gap = "4px";
+      const tag1 = document.createElement("span");
+      tag1.className = "tag-pill";
+      tag1.textContent = g.wallet1.billetera;
+      tags.appendChild(tag1);
+      if(g.wallet2){
+        const tag2 = document.createElement("span");
+        tag2.className = "tag-pill";
+        tag2.textContent = g.wallet2.billetera;
+        tags.appendChild(tag2);
+      }
+      left.appendChild(tags);
+
+      main.appendChild(left);
+      header.appendChild(main);
+
+      div.appendChild(header);
+
+      const btnRow = document.createElement("div");
+      btnRow.className = "grupo-buttons";
+
+      // Wallet 1
+      const w1Label = document.createElement("div");
+      w1Label.className = "wallet-label";
+      w1Label.textContent = "Wallet 1";
+      btnRow.appendChild(w1Label);
+
+      const b1 = document.createElement("button");
+      b1.className = "btn-mini";
+      b1.textContent = "CBU 1";
+      b1.onclick = ()=>copyText(g.wallet1.cbu);
+      btnRow.appendChild(b1);
+
+      const b2 = document.createElement("button");
+      b2.className = "btn-mini";
+      b2.textContent = "Alias 1";
+      b2.onclick = ()=>copyText(templateAlias(g.wallet1));
+      btnRow.appendChild(b2);
+
+      const b3 = document.createElement("button");
+      b3.className = "btn-mini alt";
+      b3.textContent = "Texto carga 1";
+      b3.onclick = ()=>copyText(templateCarga(g.wallet1,g.telefono,g.nombre));
+      btnRow.appendChild(b3);
+
+      // Wallet 2 opcional
+      if(g.wallet2){
+        const spacer = document.createElement("span");
+        spacer.className = "chip-small";
+        spacer.textContent = "·";
+        btnRow.appendChild(spacer);
+
+        const w2Label = document.createElement("div");
+        w2Label.className = "wallet-label";
+        w2Label.textContent = "Wallet 2";
+        btnRow.appendChild(w2Label);
+
+        const c1 = document.createElement("button");
+        c1.className = "btn-mini";
+        c1.textContent = "CBU 2";
+        c1.onclick = ()=>copyText(g.wallet2.cbu);
+        btnRow.appendChild(c1);
+
+        const c2 = document.createElement("button");
+        c2.className = "btn-mini";
+        c2.textContent = "Alias 2";
+        c2.onclick = ()=>copyText(templateAlias(g.wallet2));
+        btnRow.appendChild(c2);
+
+        const c3 = document.createElement("button");
+        c3.className = "btn-mini alt";
+        c3.textContent = "Texto carga 2";
+        c3.onclick = ()=>copyText(templateCarga(g.wallet2,g.telefono,g.nombre));
+        btnRow.appendChild(c3);
+      }
+
+      div.appendChild(btnRow);
+      cont.appendChild(div);
+    });
+
+    attachDragHandlers();
+  }
+
+  // --- Drag & drop ---
+  function attachDragHandlers(){
+    const container = document.getElementById("gruposContainer");
+    let dragId = null;
+
+    container.querySelectorAll(".grupo").forEach(el=>{
+      el.addEventListener("dragstart", e=>{
+        dragId = el.dataset.id;
+        e.dataTransfer.effectAllowed = "move";
+      });
+      el.addEventListener("dragover", e=>{
+        e.preventDefault();
+        el.classList.add("drag-over");
+      });
+      el.addEventListener("dragleave", ()=>el.classList.remove("drag-over"));
+      el.addEventListener("drop", e=>{
+        e.preventDefault();
+        el.classList.remove("drag-over");
+        if(!dragId || dragId === el.dataset.id) return;
+        const list = profiles[activeProfile] || [];
+        const fromIdx = list.findIndex(g=>g.id===dragId);
+        const toIdx = list.findIndex(g=>g.id===el.dataset.id);
+        if(fromIdx<0 || toIdx<0) return;
+        const [moved] = list.splice(fromIdx,1);
+        list.splice(toIdx,0,moved);
+        profiles[activeProfile] = list;
+        saveToStorage();
+        renderGroups();
+      });
+    });
+  }
+
+  // --- Búsqueda ---
+  document.getElementById("searchInput").addEventListener("input", e=>{
+    searchTerm = e.target.value || "";
+    renderGroups();
+  });
+
+  // --- Botones top ---
+  document.getElementById("addGroupBtn").addEventListener("click", addGroup);
+  document.getElementById("newProfileBtn").addEventListener("click", handleNewProfile);
+  document.getElementById("resetProfileBtn").addEventListener("click", resetCurrentProfile);
+  document.getElementById("exportProfileBtn").addEventListener("click", exportCurrentProfile);
+  document.getElementById("importProfileBtn").addEventListener("click", ()=>document.getElementById("importFile").click());
+  document.getElementById("importFile").addEventListener("change", e=>{
+    const file = e.target.files[0];
+    e.target.value = "";
+    if(file) importProfileFile(file);
+  });
+  document.getElementById("perfilSelect").addEventListener("change", e=>{
+    activeProfile = e.target.value;
+    saveToStorage(false);
+    renderGroups();
+  });
+  document.getElementById("copyAgainBtn").addEventListener("click", ()=>copyText(lastCopied||""));
+
+  // Pantalla completa
+  document.getElementById("fsBtn").addEventListener("click", ()=>{
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen?.();
+    }else{
+      document.exitFullscreen?.();
+    }
+  });
+
+  // --- Init ---
+  loadFromStorage();
+  refreshProfileSelect();
+  renderGroups();
 </script>
 </body>
 </html>
