@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ChinPlantilla — Plantilla para ChinMaker</title>
+<style>
+:root{
+  --bg:#0b0b10; --card:#0f1220; --card-2:#0b0f1a;
+  --muted:#98a3b3; --text:#eaf6ff;
+  --accent:#8A2BE2; --accent-2:#a855f7;
+  --ok:#10B981; --bad:#EF4444;
+  --glass: rgba(255,255,255,0.03);
+  --radius:12px;
+  --shadow: 0 12px 40px rgba(2,6,23,0.6);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:
+  radial-gradient(circle at 10% 10%, rgba(138,43,226,0.06), transparent 15%),
+  radial-gradient(circle at 90% 90%, rgba(16,185,129,0.03), transparent 15%),
+  var(--bg); color:var(--text); padding:18px;}
+.wrap{max-width:1200px;margin:0 auto;}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.title{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.small{font-size:13px;color:var(--muted)}
+
+/* Controls row */
+.controls{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+.btn.warn{background:linear-gradient(90deg,#f97316,#f59e0b)}
+
+/* Main area */
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--card); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);}
+.flex{display:flex;gap:8px;align-items:center}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:16px}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
+
+/* Left area (content rendered from JSON) */
+.preview-area{min-height:380px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03);}
+
+/* Group styles */
+.grupo{margin-bottom:12px;padding:10px;border-radius:8px;background:var(--card-2);border:1px solid rgba(255,255,255,0.02)}
+.grupo h3{margin:0 0 8px}
+.wallets-container{perspective:1200px}
+.wallets-card{width:100%;min-height:72px;position:relative;transition:transform .45s cubic-bezier(.2,.9,.3,1);transform-style:preserve-3d;border-radius:8px;background:rgba(255,255,255,0.02)}
+.wallets-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;gap:8px;padding:8px}
+.wallets-face.back{transform:rotateY(180deg)}
+.wallets-card.flipped{transform:rotateY(180deg)}
+.wallets-face button{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:var(--text);font-weight:700;cursor:pointer}
+
+/* small helpers */
+.handle-dots{width:14px;height:32px;border-radius:8px;background:
+ radial-gradient(circle at 3px 4px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 3px 12px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 3px 20px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 9px 4px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 9px 12px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 9px 20px,#6b6f7a 1px,transparent 0);
+ cursor:grab}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(14px);background:rgba(8,10,14,0.9);color:var(--text);padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:all .18s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hist{font-size:12px;color:var(--muted);margin-top:8px;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;}
+
+/* import area */
+.import-box{display:flex;flex-direction:column;gap:8px}
+.import-box textarea{min-height:120px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
+
+/* fullscreen */
+.fullscreen{position:fixed;inset:8px;background:var(--bg);z-index:80;padding:22px;border-radius:12px;display:none;flex-direction:column}
+.fullscreen.show{display:flex;border:1px solid rgba(255,255,255,0.03)}
+
+/* empty placeholder */
+.empty{padding:20px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <div class="title">ChinPlantilla</div>
+      <div class="small">Plantilla runtime — carga aquí un archivo <strong>.chin.json</strong> exportado por ChinMaker</div>
+    </div>
+
+    <div class="controls">
+      <input id="fileImport" type="file" accept=".json,.chin.json" style="display:none" />
+      <button id="btnImport" class="btn ghost">Importar JSON</button>
+      <button id="btnExport" class="btn">Exportar JSON</button>
+      <button id="btnClear" class="btn ghost">Limpiar</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div id="mainCard" class="card preview-area">
+        <div id="placeholder" class="empty">
+          <div style="font-weight:700;margin-bottom:8px">Ningún archivo cargado</div>
+          <div class="small">Usá "Importar JSON" para cargar la configuración exportada desde ChinMaker.</div>
+        </div>
+
+        <div id="contentRoot" style="display:none"></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="small">Historial de copiado</div>
+          <div id="histCount" class="small">0</div>
+        </div>
+        <div id="histBox" class="hist">Sin historial aún</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">Meta & Paleta</h3>
+        <div class="small">Perfil: <span id="metaPerfil">-</span></div>
+        <div style="margin-top:8px" class="small">Fecha export: <span id="metaFecha">-</span></div>
+        <div style="margin-top:12px">
+          <div class="small">Paleta</div>
+          <div id="paletaBoxes" style="display:flex;gap:8px;margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3 style="margin:0 0 10px">WhatsApp / Revinculación</h3>
+        <div class="small">Números: <span id="waNums">-</span></div>
+        <div style="margin-top:8px" class="small">Mensaje inicio: <span id="waMsg">-</span></div>
+        <div style="margin-top:10px">
+          <button id="btnPreviewWsp" class="btn ghost">Probar enlace WhatsApp</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3 style="margin:0 0 10px">Secciones</h3>
+        <div id="sectionList" class="small"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="fullscreen" class="fullscreen"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+// ChinPlantilla runtime
+// - Carga JSON (file or paste) produced by ChinMaker
+// - Renders everything; no hardcoded data remains after load
+// - Provides Export (current state) + Import (file input)
+// - Keeps toasts & history working
+
+let CURRENT = null;
+let HISTORY = [];
+const $ = id => document.getElementById(id);
+
+function resetView(){
+  CURRENT = null;
+  HISTORY = [];
+  $('contentRoot').innerHTML = '';
+  $('contentRoot').style.display = 'none';
+  $('placeholder').style.display = 'block';
+  $('metaPerfil').textContent = '-';
+  $('metaFecha').textContent = '-';
+  $('paletaBoxes').innerHTML = '';
+  $('waNums').textContent = '-';
+  $('waMsg').textContent = '-';
+  $('sectionList').textContent = '';
+  $('histBox').textContent = 'Sin historial aún';
+  $('histCount').textContent = '0';
+}
+resetView();
+
+function showToast(msg, time=1400){
+  const t = $('toast'); t.textContent = '✅ ' + msg; t.classList.add('show'); setTimeout(()=> t.classList.remove('show'), time);
+}
+
+function addHistory(txt){
+  HISTORY.unshift({text:txt, at: new Date().toISOString()});
+  if(HISTORY.length>30) HISTORY.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  if(HISTORY.length===0){ $('histBox').textContent='Sin historial aún'; $('histCount').textContent='0'; return; }
+  $('histCount').textContent = String(HISTORY.length);
+  $('histBox').innerHTML = HISTORY.slice(0,10).map(h => `<div style="margin-bottom:6px;padding:8px;background:rgba(255,255,255,0.01);border-radius:6px"><div style="font-size:13px">${escapeHtml(h.text).slice(0,180)}</div><div class="small" style="margin-top:6px;color:var(--muted)">${h.at}</div></div>`).join('');
+}
+
+function escapeHtml(s){ if(!s) return ''; return (''+s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+// ---------- Import / Export handlers ----------
+$('btnImport').addEventListener('click', ()=> $('fileImport').click());
+$('fileImport').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if(!f) return;
+  try{
+    const txt = await f.text();
+    const obj = JSON.parse(txt);
+    loadFromChinJson(obj);
+    showToast('Archivo cargado');
+  }catch(err){ alert('JSON inválido'); }
+});
+$('btnClear').addEventListener('click', ()=> { if(confirm('Limpiar plantilla y historial?')) resetView(); });
+
+$('btnExport').addEventListener('click', ()=>{
+  if(!CURRENT){ alert('No hay datos para exportar'); return; }
+  const blob = new Blob([JSON.stringify(CURRENT, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${(CURRENT.perfil||'perfil')}.chin.json`; a.click(); URL.revokeObjectURL(a.href);
+  showToast('Exportado JSON');
+});
+
+// ---------- Main loader ----------
+function loadFromChinJson(json){
+  // Basic validation & sanitize
+  const data = Object.assign({}, json);
+  data.paleta = data.paleta || {acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444'};
+  data.whatsapp = data.whatsapp || {numeros:[], mensajeInicio:''};
+  data.revinculacion = data.revinculacion || {saludos:[]};
+  data.billeteras = Array.isArray(data.billeteras) ? data.billeteras : [];
+  data.secciones = Array.isArray(data.secciones) ? data.secciones : [];
+  data.order = Array.isArray(data.order) ? data.order : data.secciones.map(s=>s.id);
+  data.metadata = data.metadata || {};
+  CURRENT = data;
+
+  // Render meta
+  $('metaPerfil').textContent = CURRENT.perfil || '';
+  $('metaFecha').textContent = CURRENT.fechaExport || CURRENT.metadata.lastExport || '';
+  renderPaleta(CURRENT.paleta);
+  renderWhats(CURRENT.whatsapp);
+  renderSections(CURRENT.secciones, CURRENT.order);
+  renderBilleteras(CURRENT.billeteras);
+  $('placeholder').style.display = 'none';
+  $('contentRoot').style.display = 'block';
+  showToast('Vista renderizada');
+}
+
+// ---------- Renderers ----------
+function renderPaleta(p){
+  const box = $('paletaBoxes'); box.innerHTML = '';
+  if(!p) return;
+  ['acento','ok','bad'].forEach(k=>{
+    const el = document.createElement('div'); el.style.minWidth='64px'; el.style.height='36px'; el.style.borderRadius='8px';
+    el.style.background = p[k] || '#222'; el.title = k; box.appendChild(el);
+  });
+}
+
+function renderWhats(wa){
+  $('waNums').textContent = (Array.isArray(wa.numeros) && wa.numeros.length) ? wa.numeros.join(', ') : '-';
+  $('waMsg').textContent = wa.mensajeInicio || '-';
+  $('btnPreviewWsp').onclick = ()=> {
+    if(!CURRENT) return alert('No hay configuración'); 
+    const nums = CURRENT.whatsapp?.numeros || [];
+    if(!nums.length) return alert('No hay números WA en la configuración');
+    const first = nums[0];
+    const msg = encodeURIComponent((CURRENT.whatsapp?.mensajeInicio || '').replace('{usuario}','USUARIO'));
+    const url = `https://wa.me/${first}?text=${msg}`;
+    window.open(url, '_blank');
+  };
+}
+
+function renderSections(secciones, order){
+  const list = $('sectionList'); list.innerHTML = '';
+  if(!secciones || !secciones.length){ list.textContent = '-'; return; }
+  order.forEach(id=>{
+    const s = secciones.find(x=>x.id===id) || secciones.find(x=>x.name===id);
+    if(!s) return;
+    const el = document.createElement('div'); el.style.marginBottom='6px';
+    el.innerHTML = `<strong>${escapeHtml(s.name)}</strong> — ${Array.isArray(s.buttons)? s.buttons.length:0} botones`;
+    list.appendChild(el);
+  });
+}
+
+// Renders sections & buttons into contentRoot
+function renderBilleteras(billeteras){
+  const root = $('contentRoot'); root.innerHTML = '';
+  // render secciones in order (including custom secciones)
+  (CURRENT.order || CURRENT.secciones.map(s=>s.id)).forEach(sid=>{
+    const s = (CURRENT.secciones||[]).find(x=>x.id===sid) || { id:sid, name:sid, buttons:[] };
+    const group = document.createElement('div'); group.className='grupo';
+    const h = document.createElement('h3'); h.textContent = s.name; group.appendChild(h);
+
+    // buttons from section
+    if(Array.isArray(s.buttons) && s.buttons.length){
+      s.buttons.forEach(btn=>{
+        const b = document.createElement('button');
+        b.textContent = btn.name || 'btn';
+        b.onclick = ()=> { copyAndRecord(btn.text || '', btn.name || 'btn'); };
+        group.appendChild(b);
+      });
+    }
+
+    // If this section is "billeteras" or has billeteras -> render those
+    if(s.id === 'billeteras' || s.name.toLowerCase().includes('billetera')){
+      // Render each wallet
+      (CURRENT.billeteras || []).forEach(w=>{
+        const wwrap = document.createElement('div'); wwrap.style.marginTop='8px';
+        const inner = document.createElement('div'); inner.className='wallets-card';
+        const front = document.createElement('div'); front.className='wallets-face front';
+        const back = document.createElement('div'); back.className='wallets-face back';
+
+        // left info and actions
+        const btn1 = document.createElement('button'); btn1.textContent = `CBU: ${w.cbu||'(sin)'}`
+        btn1.onclick = ()=> copyAndRecord(w.cbu || '', (w.label||'Billetera') + ' CBU');
+        const btn2 = document.createElement('button'); btn2.textContent = `Alias: ${w.alias||'(sin)'}`
+        btn2.onclick = ()=> copyAndRecord(`${w.alias || ''}\nTitular ${w.titular || ''}`, (w.label||'Billetera') + ' Alias');
+
+        front.appendChild(btn1); front.appendChild(btn2);
+
+        // flip side actions (if flip present)
+        if(w.flip && w.flipData){
+          const b1 = document.createElement('button'); b1.textContent = `CBU: ${w.flipData.cbu||'(sin)'}`
+          b1.onclick = ()=> copyAndRecord(w.flipData.cbu || '', (w.label||'Billetera') + ' CBU (flip)');
+          const b2 = document.createElement('button'); b2.textContent = `Alias: ${w.flipData.alias||'(sin)'}`
+          b2.onclick = ()=> copyAndRecord(`${w.flipData.alias || ''}\nTitular ${w.flipData.titular || ''}`, (w.label||'Billetera') + ' Alias (flip)');
+          back.appendChild(b1); back.appendChild(b2);
+        } else {
+          const p = document.createElement('div'); p.className='small'; p.style.color='var(--muted)'; p.textContent='Sin flip';
+          back.appendChild(p);
+        }
+
+        inner.appendChild(front); inner.appendChild(back);
+
+        // flip toggle
+        const flipBtn = document.createElement('button'); flipBtn.className='btn ghost'; flipBtn.textContent='🔄 Flip'; flipBtn.style.marginTop='6px';
+        flipBtn.onclick = ()=> inner.classList.toggle('flipped');
+
+        wwrap.appendChild(inner);
+        wwrap.appendChild(flipBtn);
+
+        group.appendChild(wwrap);
+      });
+    }
+
+    root.appendChild(group);
+  });
+}
+
+// copy helper
+function copyAndRecord(txt,label){
+  if(!txt){ showToast('Nada para copiar'); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=> { showToast(label || 'Texto'); addHistory(txt); }).catch(()=> { fallbackCopy(txt); addHistory(txt); });
+  } else { fallbackCopy(txt); addHistory(txt); }
+}
+function fallbackCopy(txt){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('Texto (fallback)'); }
+
+// Utility: remove any stray data (ensures template is zeroed before load)
+function zeroTemplate(){
+  $('contentRoot').innerHTML = '';
+  $('placeholder').style.display = 'block';
+  $('contentRoot').style.display = 'none';
+}
+
+// When user pastes raw JSON text manually (optional)
+function pasteJsonText(txt){
+  try{
+    const obj = JSON.parse(txt);
+    loadFromChinJson(obj);
+  }catch(e){ alert('JSON inválido'); }
+}
+
+// Expose minimal API for debugging
+window.chinplantilla = { loadFromChinJson, zeroTemplate, pasteJsonText, getCurrent: ()=> CURRENT, getHistory: ()=> HISTORY };
+</script>
+
+<!-- Sortable: optional for enabling drag reorder of groups if needed by template consumers -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</body>
+</html>
