@@ -251,9 +251,9 @@
           <textarea id="promoInfo"></textarea>
         </div>
         <div>
-          <label>Códigos amigo (R1, R2...)</label>
-          <input type="text" id="promoCodigos" placeholder="R1, R2, R3">
-          <p class="muted">Se usa {codigo} según la PC activa: PC01→R1, PC02→R2, etc.</p>
+          <label>Códigos amigo (, R2...)</label>
+          <input type="text" id="promoCodigos" placeholder=", R2, R3">
+          <p class="muted">Se usa {codigo} según la PC activa: PC01→, PC02→R2, etc.</p>
         </div>
       </div>
     </div>
@@ -375,7 +375,7 @@ const DEFAULT_CONFIG = () => ({
   },
   billeteras: [],
   utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
-  promoAmigo: { codigos: ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'], texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
+
   estructuraBotones: { orden: ['utilidad','billeteras','promoAmigo','revin'] }
 });
 
