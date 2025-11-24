@@ -2,1210 +2,820 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<title>ChinMaker • Editor Maestro de Botoneras</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ChinMaker — Editor Maestro</title>
+<!-- Minimal reset + variables -->
 <style>
-  :root{
-    --bg:#050711;
-    --bg-soft:#0b101d;
-    --card:#101524;
-    --card-soft:#141a2b;
-    --accent:#8A2BE2;
-    --accent-soft:#5b21b6;
-    --accent-light:#a855f7;
-    --ok:#10B981;
-    --bad:#EF4444;
-    --warn:#F59E0B;
-    --muted:#9ca3af;
-    --text:#e5f3ff;
-    --border:rgba(148,163,184,.25);
-    --shadow:0 16px 40px rgba(0,0,0,.6);
-    --radius:14px;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    background:
-      radial-gradient(circle at top left,rgba(138,43,226,0.25),transparent 55%),
-      radial-gradient(circle at bottom right,rgba(16,185,129,0.18),transparent 55%),
-      linear-gradient(180deg,#030712,#020617 55%,#020617 100%);
-    min-height:100vh;
-    color:var(--text);
-    padding:18px;
-  }
-  .wrap{max-width:1320px;margin:0 auto;}
+:root{
+  --bg:#050511; --card:#0f1220; --card-2:#0b0f1a;
+  --muted:#98a3b3; --text:#eaf6ff;
+  --accent:#8A2BE2; --accent-2:#a855f7;
+  --ok:#10B981; --bad:#EF4444;
+  --glass: rgba(255,255,255,0.03);
+  --radius:12px;
+  --shadow: 0 12px 40px rgba(2,6,23,0.6);
+}
 
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:16px;
-    margin-bottom:16px;
-  }
-  .title-block h1{
-    margin:0;
-    font-size:22px;
-    letter-spacing:.03em;
-    background:linear-gradient(90deg,#f9fafb,var(--accent-light));
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-  }
-  .title-block small{color:var(--muted);font-size:13px;}
+/* Basic layout */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:
+  radial-gradient(circle at 10% 10%, rgba(138,43,226,0.06), transparent 15%),
+  radial-gradient(circle at 90% 90%, rgba(16,185,129,0.03), transparent 15%),
+  var(--bg); color:var(--text); padding:18px;
+}
+.wrap{max-width:1300px;margin:0 auto;}
 
-  .chip{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:4px 10px;
-    border-radius:999px;
-    background:rgba(15,23,42,.7);
-    border:1px solid rgba(148,163,184,.4);
-    font-size:11px;
-    color:var(--muted);
-  }
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.title{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--muted);font-size:13px}
 
-  .layout{
-    display:grid;
-    grid-template-columns: minmax(0,1.2fr) minmax(0,1fr);
-    gap:16px;
-  }
-  @media (max-width:980px){
-    .layout{grid-template-columns:1fr;}
-  }
+/* Layout grid */
+.layout{display:grid;grid-template-columns:1fr 420px;gap:16px}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
 
-  .card{
-    background:radial-gradient(circle at top left,rgba(148,163,184,.16),transparent 55%),var(--card);
-    border-radius:var(--radius);
-    border:1px solid rgba(148,163,184,.25);
-    box-shadow:var(--shadow);
-    padding:14px 16px 16px;
-  }
-  .card h2{
-    margin:0 0 8px;
-    font-size:15px;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    color:#e5e7eb;
-  }
-  .sub{
-    margin-top:0;
-    color:var(--muted);
-    font-size:12px;
-  }
+/* Cards */
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--card); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);}
+.card h2{margin:0 0 8px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.col{flex:1;min-width:140px}
 
-  .row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    align-items:center;
-  }
-  label{
-    font-size:12px;
-    color:var(--muted);
-    margin-bottom:3px;
-    display:block;
-  }
-  input[type=text], input[type=number], textarea, select{
-    width:100%;
-    padding:7px 9px;
-    border-radius:8px;
-    border:1px solid rgba(148,163,184,.35);
-    background:rgba(15,23,42,.85);
-    color:var(--text);
-    font-size:13px;
-    outline:none;
-    transition:border-color .16s, box-shadow .16s, background .16s;
-  }
-  textarea{min-height:74px;resize:vertical;}
-  input:focus, textarea:focus, select:focus{
-    border-color:var(--accent-light);
-    box-shadow:0 0 0 1px rgba(168,85,247,.32);
-    background:#020617;
-  }
-  select{
-    appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239ca3af' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5z'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;
-    background-position:right 8px center;
-    background-size:16px;
-    padding-right:26px;
-  }
+/* Inputs */
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+input[type=text], textarea, select{
+  width:100%; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:var(--text);
+}
+textarea{min-height:80px;resize:vertical}
 
-  .btn{
-    border:none;
-    border-radius:999px;
-    padding:7px 13px;
-    font-size:12px;
-    font-weight:600;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
-    background:linear-gradient(90deg,var(--accent),var(--accent-light));
-    color:white;
-    box-shadow:0 10px 25px rgba(88,28,135,.5);
-    transition:transform .12s, box-shadow .12s, opacity .12s;
-  }
-  .btn:active{transform:translateY(1px);box-shadow:0 5px 16px rgba(15,23,42,.8);}
-  .btn.small{padding:6px 10px;font-size:11px;}
-  .btn.ghost{
-    background:transparent;
-    border-radius:10px;
-    padding:7px 11px;
-    border:1px solid rgba(148,163,184,.45);
-    box-shadow:none;
-    color:var(--muted);
-  }
-  .btn.ghost:hover{border-color:var(--accent-light);color:#e5e7eb;}
-  .btn.warn{background:linear-gradient(90deg,#f97316,#facc15);box-shadow:0 10px 25px rgba(234,179,8,.45);}
-  .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.5);box-shadow:none;}
+/* Buttons */
+.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.05);color:var(--muted)}
+.btn.warn{background:linear-gradient(90deg,#f97316,#f59e0b)}
 
-  .section-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:10px;
-    margin-bottom:10px;
-  }
+/* Wallet list */
+.wallet-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.wallet-card{display:grid;grid-template-columns:28px 1fr 110px;gap:8px;align-items:center;padding:10px;border-radius:10px;background:var(--card-2);border:1px solid rgba(255,255,255,0.03)}
+.wallet-card .label{font-weight:700}
+.drag-handle{width:22px;height:36px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); cursor:grab; display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+.wallet-actions{display:flex;gap:6px;align-items:center;justify-content:flex-end}
 
-  .pill-row{display:flex;flex-wrap:wrap;gap:6px;}
-  .pill{
-    padding:4px 8px;
-    border-radius:999px;
-    font-size:11px;
-    border:1px solid rgba(148,163,184,.45);
-    color:var(--muted);
-    cursor:pointer;
-  }
-  .pill.active{
-    background:rgba(168,85,247,.1);
-    border-color:var(--accent-light);
-    color:#e5e7eb;
-  }
+/* Preview */
+.preview{position:relative}
+.preview-head{display:flex;justify-content:space-between; align-items:center; margin-bottom:8px}
+.preview-area{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:12px;border-radius:10px; min-height:120px; border:1px solid rgba(255,255,255,0.03)}
+.preview-controls{display:flex;gap:8px;align-items:center}
 
-  .wallet-list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
-  .wallet-card{
-    background:var(--card-soft);
-    border-radius:11px;
-    border:1px solid rgba(148,163,184,.45);
-    padding:9px 10px;
-    display:grid;
-    grid-template-columns:18px minmax(0,1fr);
-    gap:8px;
-    align-items:flex-start;
-    position:relative;
-  }
-  .wallet-card.dragging{
-    opacity:.55;
-    border-style:dashed;
-  }
-  .drag-handle{
-    width:14px;
-    height:32px;
-    border-radius:8px;
-    background:radial-gradient(circle at 3px 3px,#6b7280 1px,transparent 0),
-               radial-gradient(circle at 3px 11px,#6b7280 1px,transparent 0),
-               radial-gradient(circle at 3px 19px,#6b7280 1px,transparent 0),
-               radial-gradient(circle at 9px 3px,#6b7280 1px,transparent 0),
-               radial-gradient(circle at 9px 11px,#6b7280 1px,transparent 0),
-               radial-gradient(circle at 9px 19px,#6b7280 1px,transparent 0);
-    background-color:#020617;
-    border:1px solid rgba(75,85,99,.8);
-    cursor:grab;
-    margin-top:2px;
-  }
-  .wallet-main{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-    gap:6px;
-  }
-  .wallet-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:4px;
-  }
-  .wallet-label{
-    font-size:13px;
-    font-weight:600;
-  }
-  .badge{
-    padding:3px 7px;
-    border-radius:999px;
-    font-size:10px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    border:1px solid rgba(148,163,184,.5);
-    color:var(--muted);
-  }
-  .badge.flip{border-color:var(--accent-light);color:var(--accent-light);}
-  .badge.egreso{border-color:var(--bad);color:var(--bad);}
+/* Search */
+.search{display:flex;gap:8px;align-items:center}
+.search input{padding:8px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02)}
 
-  .wallet-actions{
-    display:flex;
-    gap:6px;
-  }
+/* Modal */
+.modal-back{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6));display:none;align-items:center;justify-content:center;z-index:60}
+.modal{width:760px;max-width:94%;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
 
-  .switch-row{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    font-size:11px;
-    color:var(--muted);
-    margin-top:3px;
-  }
-  .switch{
-    position:relative;
-    width:30px;
-    height:16px;
-    background:#020617;
-    border-radius:999px;
-    border:1px solid rgba(148,163,184,.6);
-    cursor:pointer;
-  }
-  .switch-thumb{
-    position:absolute;
-    top:1px;
-    left:2px;
-    width:12px;
-    height:12px;
-    border-radius:999px;
-    background:#e5e7eb;
-    transition:transform .16s;
-  }
-  .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-light));border-color:transparent;}
-  .switch.on .switch-thumb{transform:translateX(12px);background:#f9fafb;}
+/* Tiny UI details */
+.badge{padding:6px 10px;border-radius:999px;background:var(--glass);color:var(--muted);font-weight:700;font-size:12px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(14px);background:rgba(8,10,14,0.9);color:var(--text);padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:all .18s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.kv{font-size:12px;color:var(--muted)}
 
-  .preview-card{
-    background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);
-    border-radius:var(--radius);
-    border:1px solid rgba(148,163,184,.3);
-    padding:12px 13px;
-    box-shadow:var(--shadow);
-  }
-  .preview-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:10px;
-  }
-  .preview-tabs{
-    display:inline-flex;
-    background:#020617;
-    padding:2px;
-    border-radius:999px;
-    border:1px solid rgba(148,163,184,.35);
-  }
-  .tab-chip{
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:11px;
-    cursor:pointer;
-    color:var(--muted);
-  }
-  .tab-chip.active{
-    background:linear-gradient(90deg,var(--accent),var(--accent-light));
-    color:#f9fafb;
-  }
-
-  .preview-group{
-    margin-bottom:10px;
-    border-radius:10px;
-    padding:9px 10px;
-    background:rgba(15,23,42,.9);
-    border:1px solid rgba(148,163,184,.28);
-  }
-  .preview-group h3{
-    margin:0 0 6px;
-    font-size:13px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .chip-mini{
-    font-size:10px;
-    padding:2px 7px;
-    border-radius:999px;
-    background:rgba(15,23,42,.9);
-    border:1px solid rgba(148,163,184,.55);
-    color:var(--muted);
-  }
-
-  .btn-preview{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:7px 9px;
-    border-radius:9px;
-    background:linear-gradient(90deg,#111827,#020617);
-    border:1px solid rgba(55,65,81,.9);
-    cursor:pointer;
-    font-size:12px;
-    margin-bottom:5px;
-  }
-  .btn-preview span.label{font-weight:500;}
-  .btn-preview span.sub{font-size:11px;color:var(--muted);}
-  .btn-preview:hover{
-    border-color:var(--accent-light);
-    box-shadow:0 0 0 1px rgba(168,85,247,.35);
-  }
-
-  .toast{
-    position:fixed;
-    left:50%;
-    bottom:16px;
-    transform:translateX(-50%) translateY(20px);
-    padding:8px 11px;
-    border-radius:999px;
-    background:rgba(15,23,42,.96);
-    border:1px solid rgba(148,163,184,.55);
-    color:#e5e7eb;
-    font-size:12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .16s, transform .16s;
-    z-index:40;
-  }
-  .toast.show{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
-  }
-  .toast-icon{
-    width:16px;
-    height:16px;
-    border-radius:999px;
-    background:rgba(16,185,129,.12);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:11px;
-    color:var(--ok);
-  }
-
-  .divider-label{
-    margin:10px 0 6px;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.1em;
-    color:var(--muted);
-  }
-
-  .search-row{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    margin-bottom:6px;
-  }
-  .search-row input{
-    flex:1;
-  }
-
-  .muted{color:var(--muted);font-size:11px;}
-
+/* small helpers */
+.flex{display:flex;gap:8px;align-items:center}
+.small{font-size:12px;color:var(--muted)}
+.handle-dots{width:14px;height:32px;border-radius:8px;background:
+ radial-gradient(circle at 3px 4px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 3px 12px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 3px 20px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 9px 4px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 9px 12px,#6b6f7a 1px,transparent 0),
+ radial-gradient(circle at 9px 20px,#6b6f7a 1px,transparent 0);
+ cursor:grab}
+.fullscreen{position:fixed;inset:10px;background:var(--bg);z-index:80;padding:22px;border-radius:12px;display:none;flex-direction:column}
+.fullscreen.show{display:flex;border:1px solid rgba(255,255,255,0.03)}
+.small-muted{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="title-block">
-      <h1>ChinMaker · Editor Maestro</h1>
-      <small>Arma perfiles, billeteras y mensajes para exportar a la ChinPlantilla.</small>
+  <div class="header">
+    <div>
+      <div class="title">ChinMaker • Editor Maestro</div>
+      <div class="subtitle small">Perfiles, billeteras, secciones y export para ChinPlantilla</div>
     </div>
-    <div class="row">
-      <div class="chip">
-        <span>💾</span> <span id="chipStatus">Perfil sin cambios</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="card" style="margin-bottom:14px;">
-    <div class="row" style="justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
-      <div style="min-width:220px;">
-        <label>Perfil activo</label>
-        <div class="row" style="gap:6px;">
-          <select id="profileSelect" style="flex:1;min-width:140px;"></select>
-          <button class="btn small subtle" id="btnNewProfile">Nuevo</button>
-        </div>
-        <p class="muted" style="margin-top:3px;">Ej: PC01, PC02, Gonzales, CasinoCentro...</p>
-      </div>
-      <div class="row" style="gap:8px;">
-        <input type="file" id="fileImport" accept=".json" style="display:none;">
-        <button class="btn small" id="btnExport">Exportar perfil</button>
-        <button class="btn small ghost" id="btnImport">Subir perfil</button>
-        <button class="btn small warn" id="btnReset">Reiniciar perfil</button>
-      </div>
+    <div class="flex">
+      <div id="statusChip" class="badge small">Sin perfil activo</div>
+      <button id="btnExport" class="btn">Exportar .chin.json</button>
+      <button id="btnImport" class="btn ghost">Importar .chin.json</button>
     </div>
   </div>
 
   <div class="layout">
-    <!-- EDITOR -->
-    <div class="card">
-      <h2>Editor de configuración</h2>
-      <p class="sub">Todo lo que configures acá se guarda en el navegador y se puede exportar a un archivo <code>.chin.json</code>.</p>
+    <!-- LEFT: Editor -->
+    <div>
+      <div class="card">
+        <h2>Perfiles (Control Maestro)</h2>
+        <div class="row">
+          <select id="profileSelect"></select>
+          <div class="flex">
+            <button id="btnNewProfile" class="btn small">Nuevo</button>
+            <button id="btnRenameProfile" class="btn ghost small">Renombrar</button>
+            <button id="btnResetProfile" class="btn warn small">Reiniciar</button>
+          </div>
+        </div>
+        <p class="small-muted">Al entrar se requiere elegir o crear un perfil. Todo se guarda por perfil en localStorage.</p>
+      </div>
 
-      <div class="section-grid">
-        <div>
-          <label>Color acento</label>
-          <input type="text" id="colorAccent" placeholder="#8A2BE2" />
-        </div>
-        <div>
-          <label>Color OK</label>
-          <input type="text" id="colorOk" placeholder="#10B981" />
-        </div>
-        <div>
-          <label>Color Error</label>
-          <input type="text" id="colorBad" placeholder="#EF4444" />
+      <div class="card" style="margin-top:12px;">
+        <h2>Paleta & Meta</h2>
+        <div class="section">
+          <div class="row">
+            <div class="col">
+              <label>Acento</label>
+              <input id="inpAccent" type="text" placeholder="#8A2BE2">
+            </div>
+            <div class="col">
+              <label>OK</label>
+              <input id="inpOk" type="text" placeholder="#10B981">
+            </div>
+            <div class="col">
+              <label>Error</label>
+              <input id="inpBad" type="text" placeholder="#EF4444">
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px;align-items:center">
+            <div class="col">
+              <label>Nombre del perfil (meta)</label>
+              <input id="metaName" type="text" placeholder="PC01">
+            </div>
+            <div style="width:120px">
+              <label>Fecha export</label>
+              <input id="metaDate" type="text" readonly>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="divider-label">WhatsApp & Revinculación</div>
-      <div class="section-grid">
-        <div>
-          <label>Números de WhatsApp (separados por coma)</label>
-          <input type="text" id="waNumbers" placeholder="54911..., 54911..." />
+      <div class="card" style="margin-top:12px;">
+        <h2>Billeteras</h2>
+        <div class="row" style="align-items:center">
+          <div class="col search">
+            <input id="walletSearch" placeholder="Buscar billeteras (nombre, alias, titular)" />
+          </div>
+          <div class="flex">
+            <button id="btnAddWallet" class="btn small">+ Añadir</button>
+            <button id="btnImportWallets" class="btn ghost small">Importar masiva</button>
+            <button id="btnDuplicate" class="btn ghost small">Duplicar</button>
+          </div>
         </div>
-        <div>
-          <label>Mensaje de inicio (usa {usuario})</label>
-          <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma"></textarea>
-        </div>
+
+        <div class="wallet-list" id="walletList"></div>
       </div>
 
-      <div class="section-grid">
-        <div>
-          <label>Saludos Revinculación (PC01)</label>
-          <textarea id="revPC01" placeholder="Un saludo por línea..."></textarea>
+      <div class="card" style="margin-top:12px;">
+        <h2>Secciones & Botones</h2>
+        <div class="row">
+          <div class="col">
+            <label>Agregar sección</label>
+            <input id="sectionNewName" placeholder="Ej.: Promo Amigo">
+          </div>
+          <div style="width:170px">
+            <label>&nbsp;</label>
+            <div class="flex">
+              <button id="btnAddSection" class="btn small">Agregar</button>
+            </div>
+          </div>
         </div>
-        <div>
-          <label>Saludos Revinculación (PC02)</label>
-          <textarea id="revPC02" placeholder="Opcional"></textarea>
-        </div>
+        <div id="sectionsList" style="margin-top:10px"></div>
       </div>
 
-      <div class="section-grid">
-        <div>
-          <label>Códigos amigo (separados por coma)</label>
-          <input type="text" id="codigosAmigo" placeholder="R1, R2, R3" />
+      <div class="card" style="margin-top:12px;">
+        <h2>Revinculación / WhatsApp</h2>
+        <div class="row">
+          <div class="col">
+            <label>Números WhatsApp (coma separado)</label>
+            <input id="waNumbers" placeholder="54911..., 54911..." />
+          </div>
+          <div class="col">
+            <label>Mensaje inicio (usa {usuario})</label>
+            <input id="waMessage" placeholder="Hola soy {usuario} ..." />
+          </div>
         </div>
-        <div>
-          <label>Texto promo amigo (usa {codigo} y {usuario})</label>
-          <textarea id="promoTexto" placeholder="Tu código amigo es {codigo}{usuario} ..."></textarea>
-        </div>
-      </div>
 
-      <div class="divider-label">Textos de utilidad</div>
-      <div class="section-grid">
-        <div>
-          <label>Utilidad · Info</label>
-          <textarea id="utilInfo"></textarea>
-        </div>
-        <div>
-          <label>Utilidad · Cargado</label>
-          <textarea id="utilCargado"></textarea>
-        </div>
-        <div>
-          <label>Utilidad · Retiro</label>
-          <textarea id="utilRetiro"></textarea>
+        <div style="margin-top:8px">
+          <label>Saludos (gestión ilimitada)</label>
+          <div id="revContainer"></div>
+          <div style="margin-top:8px" class="flex">
+            <input id="revAddText" placeholder="Escribe saludo y pulsa Añadir" />
+            <button id="btnAddRev" class="btn small">Añadir</button>
+          </div>
         </div>
       </div>
-
-      <div class="divider-label">Billeteras</div>
-      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <p class="muted" style="margin:0;">Arrastrá con el grip para ordenar. Cada card es una billetera con CBU y Alias.</p>
-        <button class="btn small subtle" id="btnAddWallet">+ Añadir billetera</button>
-      </div>
-      <div class="wallet-list" id="walletList"></div>
     </div>
 
-    <!-- PREVIEW -->
-    <div class="preview-card">
-      <div class="preview-header">
-        <div>
-          <div class="row" style="gap:6px;align-items:center;">
-            <span class="muted" style="font-size:11px;">Vista previa</span>
+    <!-- RIGHT: Preview -->
+    <div>
+      <div class="card preview">
+        <div class="preview-head">
+          <div>
+            <div style="font-weight:800">Vista previa</div>
+            <div class="small">Simulación interactiva (no copia a portapapeles salvo preview)</div>
           </div>
-          <div class="muted" style="margin-top:2px;font-size:11px;">Simula la botonera final. Los botones copian texto y muestran toasts.</div>
+          <div class="preview-controls">
+            <button id="btnFullscreenPreview" class="btn small ghost">Pantalla completa</button>
+            <button id="btnClearPreview" class="btn ghost small">Limpiar</button>
+          </div>
         </div>
-        <div class="preview-tabs" id="previewTabs">
-          <div class="tab-chip active" data-tab="pc01">PC01</div>
-          <div class="tab-chip" data-tab="pc02">PC02</div>
-          <div class="tab-chip" data-tab="promo">Promo</div>
-        </div>
+
+        <div class="preview-area" id="previewArea"></div>
+
+        <div style="margin-top:10px" class="small-muted">Último toast: <span id="lastToastText">-</span></div>
+
       </div>
 
-      <div id="previewContent">
-        <!-- se rellena por JS -->
+      <div class="card" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="small-muted">Resumen</div>
+          <div><span id="countWallets" class="kv">0</span> billeteras</div>
+        </div>
+        <div style="margin-top:10px" class="small-muted">Usá exportar para generar el `.chin.json` que lee ChinPlantilla</div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast">
-  <div class="toast-icon">✔</div>
-  <span id="toastText">Copiado</span>
+<!-- Modals -->
+<div id="modalBack" class="modal-back">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div id="modalContent"></div>
+    <div style="margin-top:12px;text-align:right">
+      <button id="modalClose" class="btn ghost">Cerrar</button>
+    </div>
+  </div>
 </div>
 
+<div id="fullscreen" class="fullscreen"></div>
+
+<div id="toast" class="toast">Copiado</div>
+
+<!-- SCRIPT -->
 <script>
-/* === Estado base === */
-const STORAGE_LIST_KEY = 'chinmaker_profiles_list';
-const STORAGE_PREFIX = 'chinmaker_profile_';
-const STORAGE_LAST = 'chinmaker_last_profile';
+/* ========= State & storage ========= */
+const KEY_PREFIX = 'chinmaker_v1_';
+const PROFILE_LIST = KEY_PREFIX + 'profiles';
+const LAST_PROFILE = KEY_PREFIX + 'last';
 
-const DEFAULT_CONFIG = () => ({
-  perfil: 'PC01',
-  fechaExport: null,
-  paleta: {
-    color1: '#10101A',
-    color2: '#0A0A10',
-    acento: '#8A2BE2',
-    ok: '#10B981',
-    bad: '#EF4444'
-  },
-  whatsapp: {
-    numeros: [],
-    mensajeInicio: 'Hola soy {usuario} quiero mi clave y cronograma'
-  },
-  revinculacion: {
-    saludos: {
-      PC01: [],
-      PC02: []
-    },
-    codigosAmigo: ['R1','R2','R3']
-  },
-  billeteras: [],
-  utilidad: {
-    info: '',
-    cargado: '',
-    retiro: ''
-  },
-  promoAmigo: {
-    texto: 'Tu código amigo es {codigo}{usuario}'
-  },
-  estructuraBotones: {
-    orden: ['utilidad','billeteras','promoAmigo','revin']
-  }
-});
+let state = {
+  profiles: {},    // profileName -> config
+  active: null
+};
 
-let currentProfileName = 'PC01';
-let config = DEFAULT_CONFIG();
-let dirtyTimer = null;
-
-/* === Utilidades de LocalStorage === */
-function loadProfileNames(){
-  try{
-    const raw = localStorage.getItem(STORAGE_LIST_KEY);
-    if(!raw) return [];
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr : [];
-  }catch(e){ return []; }
-}
-function saveProfileNames(list){
-  localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(Array.from(new Set(list))));
-}
-function saveCurrentProfile(){
-  const key = STORAGE_PREFIX + currentProfileName;
-  localStorage.setItem(key, JSON.stringify(config));
-  localStorage.setItem(STORAGE_LAST, currentProfileName);
-  indicateSaved();
-}
-function loadProfile(name){
-  const key = STORAGE_PREFIX + name;
-  const raw = localStorage.getItem(key);
-  if(!raw) return null;
-  try{
-    const obj = JSON.parse(raw);
-    return normalizeConfig(obj);
-  }catch(e){
-    console.error('Error parseando perfil',e);
-    return null;
-  }
-}
-function normalizeConfig(obj){
-  const base = DEFAULT_CONFIG();
-  const merged = {
-    ...base,
-    ...obj,
-    paleta: {...base.paleta, ...(obj.paleta||{})},
-    whatsapp: {...base.whatsapp, ...(obj.whatsapp||{})},
-    revinculacion:{
-      ...base.revinculacion,
-      ...(obj.revinculacion||{}),
-      saludos:{
-        ...base.revinculacion.saludos,
-        ...((obj.revinculacion && obj.revinculacion.saludos)||{})
-      }
-    },
-    utilidad:{...base.utilidad, ...(obj.utilidad||{})},
-    promoAmigo:{...base.promoAmigo, ...(obj.promoAmigo||{})},
-    estructuraBotones:{...base.estructuraBotones, ...(obj.estructuraBotones||{})},
-    billeteras:Array.isArray(obj.billeteras)?obj.billeteras:base.billeteras
+/* Default config factory */
+function defaultConfig(name){
+  return {
+    perfil: name || 'PC01',
+    paleta: { acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444' },
+    whatsapp: { numeros: [], mensajeInicio: 'Hola soy {usuario} quiero mi clave y cronograma' },
+    revinculacion: { saludos: [] }, // unlimited
+    billeteras: [],
+    secciones: [ { id:'utilidad', name:'Utilidad', buttons:[] }, { id:'billeteras', name:'Billeteras', buttons:[] } ],
+    order: ['utilidad','billeteras'],
+    metadata: { created: new Date().toISOString() }
   };
-  return merged;
 }
 
-/* === UI inicial === */
-document.addEventListener('DOMContentLoaded', () => {
-  bootstrapProfiles();
-  bindEditorInputs();
-  renderAll();
-});
-
-function bootstrapProfiles(){
-  const list = loadProfileNames();
-  const last = localStorage.getItem(STORAGE_LAST);
-  if(last && list.includes(last)){
-    currentProfileName = last;
-    config = loadProfile(last) || DEFAULT_CONFIG();
-  }else if(list.length){
-    currentProfileName = list[0];
-    config = loadProfile(list[0]) || DEFAULT_CONFIG();
-  }else{
-    currentProfileName = 'PC01';
-    config = DEFAULT_CONFIG();
-    saveProfileNames([currentProfileName]);
-    saveCurrentProfile();
-  }
-  renderProfileSelect();
+/* ---------- Storage helpers ---------- */
+function saveAll(){
+  try{
+    localStorage.setItem(PROFILE_LIST, JSON.stringify(Object.keys(state.profiles)));
+    Object.entries(state.profiles).forEach(([k,v]) => localStorage.setItem(KEY_PREFIX + k, JSON.stringify(v)));
+    localStorage.setItem(LAST_PROFILE, state.active || '');
+    indicateSaved();
+  }catch(e){ console.error('saveAll',e); }
 }
-
-/* === Render profile selector === */
-function renderProfileSelect(){
-  const select = document.getElementById('profileSelect');
-  const list = loadProfileNames();
-  if(!list.includes(currentProfileName)) list.push(currentProfileName);
-  select.innerHTML = '';
-  list.forEach(name=>{
-    const opt = document.createElement('option');
-    opt.value = name;
-    opt.textContent = name;
-    if(name === currentProfileName) opt.selected = true;
-    select.appendChild(opt);
-  });
-}
-
-/* === Editor bindings === */
-function bindEditorInputs(){
-  const profileSelect = document.getElementById('profileSelect');
-  profileSelect.addEventListener('change', e=>{
-    const name = e.target.value || 'PC01';
-    const existing = loadProfile(name);
-    currentProfileName = name;
-    if(existing) config = existing;
-    else config = {...DEFAULT_CONFIG(), perfil:name};
-    saveProfileNames([...loadProfileNames(), name]);
-    renderAll();
-  });
-
-  document.getElementById('btnNewProfile').addEventListener('click', ()=>{
-    const name = prompt('Nombre del nuevo perfil (ej. PC03, GONZALES):','PC03');
-    if(!name) return;
-    currentProfileName = name.trim();
-    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
-    const list = loadProfileNames();
-    list.push(currentProfileName);
-    saveProfileNames(list);
-    renderProfileSelect();
-    renderAll();
-  });
-
-  document.getElementById('btnReset').addEventListener('click', ()=>{
-    if(!confirm('¿Reiniciar el perfil actual? Se borrará la configuración de este perfil en este navegador.')) return;
-    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
-    saveCurrentProfile();
-    renderAll();
-  });
-
-  document.getElementById('btnExport').addEventListener('click', ()=>{
-    config.fechaExport = new Date().toISOString();
-    const blob = new Blob([JSON.stringify(config,null,2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentProfileName || 'perfil'}.chin.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  });
-
-  const importInput = document.getElementById('fileImport');
-  document.getElementById('btnImport').addEventListener('click', ()=>importInput.click());
-  importInput.addEventListener('change', async (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    try{
-      const text = await file.text();
-      const obj = JSON.parse(text);
-      const normalized = normalizeConfig(obj);
-      currentProfileName = obj.perfil || file.name.replace(/\.json$/i,'') || 'PerfilImportado';
-      config = normalized;
-      const list = loadProfileNames();
-      list.push(currentProfileName);
-      saveProfileNames(list);
-      renderProfileSelect();
-      saveCurrentProfile();
-      renderAll();
-      showToast('Perfil importado correctamente');
-    }catch(err){
-      console.error(err);
-      alert('No se pudo importar el archivo JSON.');
-    }finally{
-      importInput.value = '';
+function loadAll(){
+  try{
+    const listRaw = localStorage.getItem(PROFILE_LIST);
+    const names = listRaw ? JSON.parse(listRaw) : [];
+    names.forEach(n=>{
+      const raw = localStorage.getItem(KEY_PREFIX + n);
+      if(raw) try{ state.profiles[n] = JSON.parse(raw); }catch(e){}
+    });
+    // fallback: if none, create default
+    if(Object.keys(state.profiles).length === 0){
+      const name = 'PC01';
+      state.profiles[name] = defaultConfig(name);
     }
-  });
-
-  /* Inputs simples */
-  const map = {
-    colorAccent:['paleta','acento'],
-    colorOk:['paleta','ok'],
-    colorBad:['paleta','bad'],
-    waNumbers:['whatsapp','numeros'],
-    waMensaje:['whatsapp','mensajeInicio'],
-    revPC01:['revinculacion','saludos','PC01'],
-    revPC02:['revinculacion','saludos','PC02'],
-    codigosAmigo:['revinculacion','codigosAmigo'],
-    promoTexto:['promoAmigo','texto'],
-    utilInfo:['utilidad','info'],
-    utilCargado:['utilidad','cargado'],
-    utilRetiro:['utilidad','retiro']
-  };
-  Object.keys(map).forEach(id=>{
-    const el = document.getElementById(id);
-    el.addEventListener('input', ()=>{
-      const path = map[id];
-      if(id === 'waNumbers'){
-        const arr = el.value.split(',').map(s=>s.trim()).filter(Boolean);
-        config.whatsapp.numeros = arr;
-      }else if(id === 'codigosAmigo'){
-        config.revinculacion.codigosAmigo = el.value.split(',').map(s=>s.trim()).filter(Boolean);
-      }else if(id === 'revPC01' || id === 'revPC02'){
-        const key = path[2];
-        config.revinculacion.saludos[key] = el.value.split('\n').map(s=>s.trim()).filter(Boolean);
-      }else{
-        let obj = config;
-        for(let i=0;i<path.length-1;i++){
-          obj = obj[path[i]];
-        }
-        obj[path[path.length-1]] = el.value;
-      }
-      markDirty();
-      renderPreview();
-    });
-  });
-
-  document.getElementById('btnAddWallet').addEventListener('click', ()=>{
-    config.billeteras.push({
-      id: 'w_'+Date.now(),
-      label: 'Nueva billetera',
-      cbu:'',
-      alias:'',
-      titular:'',
-      billetera:'Mercado Pago',
-      billeteraCustom:'',
-      flip:false,
-      cbu2:'',
-      alias2:'',
-      titular2:'',
-      billetera2:'Mercado Pago',
-      billetera2Custom:''
-    });
-    markDirty();
-    renderWallets();
-    renderPreview();
-  });
-
-  /* preview tabs */
-  document.getElementById('previewTabs').addEventListener('click', e=>{
-    const tab = e.target.closest('.tab-chip');
-    if(!tab) return;
-    document.querySelectorAll('.tab-chip').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    renderPreview();
-  });
+    // active
+    const last = localStorage.getItem(LAST_PROFILE);
+    state.active = last && state.profiles[last] ? last : Object.keys(state.profiles)[0];
+  }catch(e){ console.error('loadAll', e); }
 }
 
-/* === Dirty / Saved indicator === */
-function markDirty(){
-  const chip = document.getElementById('chipStatus');
-  chip.textContent = 'Cambios sin guardar';
-  if(dirtyTimer) clearTimeout(dirtyTimer);
-  dirtyTimer = setTimeout(()=>{ saveCurrentProfile(); },400);
+/* ========= UI utilities ========= */
+const $ = id => document.getElementById(id);
+function showToast(msg, time=1600){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show'); $('lastToastText').textContent = msg;
+  setTimeout(()=>t.classList.remove('show'), time);
 }
-function indicateSaved(){
-  const chip = document.getElementById('chipStatus');
-  chip.textContent = 'Perfil guardado';
+function showModal(html){
+  $('modalContent').innerHTML = html;
+  $('modalBack').style.display = 'flex';
 }
+function closeModal(){ $('modalBack').style.display = 'none'; $('modalContent').innerHTML = ''; }
 
-/* === Render general === */
-function renderAll(){
-  // actualizar inputs desde config
-  document.getElementById('colorAccent').value = config.paleta.acento || '';
-  document.getElementById('colorOk').value = config.paleta.ok || '';
-  document.getElementById('colorBad').value = config.paleta.bad || '';
-  document.getElementById('waNumbers').value = (config.whatsapp.numeros||[]).join(', ');
-  document.getElementById('waMensaje').value = config.whatsapp.mensajeInicio || '';
-  document.getElementById('revPC01').value = (config.revinculacion.saludos.PC01||[]).join('\n');
-  document.getElementById('revPC02').value = (config.revinculacion.saludos.PC02||[]).join('\n');
-  document.getElementById('codigosAmigo').value = (config.revinculacion.codigosAmigo||[]).join(', ');
-  document.getElementById('promoTexto').value = config.promoAmigo.texto || '';
-  document.getElementById('utilInfo').value = config.utilidad.info || '';
-  document.getElementById('utilCargado').value = config.utilidad.cargado || '';
-  document.getElementById('utilRetiro').value = config.utilidad.retiro || '';
-
-  renderWallets();
+/* ========= Initialization ========= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadAll();
+  ensureActiveProfile();
+  bindTopControls();
+  renderProfileSelect();
+  renderAllEditor();
   renderPreview();
+});
+
+/* ========= Profiles handling ========= */
+function ensureActiveProfile(){
+  if(!state.active){ state.active = Object.keys(state.profiles)[0]; }
+  if(!state.profiles[state.active]){ state.profiles[state.active] = defaultConfig(state.active); }
+  updateStatus();
+}
+function renderProfileSelect(){
+  const sel = $('profileSelect'); sel.innerHTML = '';
+  Object.keys(state.profiles).forEach(name=>{
+    const opt = document.createElement('option'); opt.value = name; opt.textContent = name; sel.appendChild(opt);
+  });
+  sel.value = state.active;
+  $('metaName').value = state.active;
+}
+$('profileSelect').addEventListener('change', e=>{
+  state.active = e.target.value;
+  ensureActiveProfile();
+  renderAllEditor(); renderPreview(); saveAll();
+});
+
+/* Top controls */
+function bindTopControls(){
+  $('btnNewProfile').addEventListener('click', ()=>{
+    const name = prompt('Nombre del nuevo perfil (ej: PC02):');
+    if(!name) return;
+    const n = name.trim();
+    if(state.profiles[n]){ alert('Ya existe'); return; }
+    state.profiles[n] = defaultConfig(n);
+    state.active = n;
+    renderProfileSelect(); renderAllEditor(); renderPreview(); saveAll();
+    showToast('Perfil creado: ' + n);
+  });
+
+  $('btnRenameProfile').addEventListener('click', ()=>{
+    const old = state.active;
+    const name = prompt('Nuevo nombre de perfil:', old);
+    if(!name || name.trim()===old) return;
+    const n = name.trim();
+    if(state.profiles[n]){ alert('Ya existe'); return; }
+    state.profiles[n] = state.profiles[old];
+    delete state.profiles[old];
+    state.active = n;
+    renderProfileSelect(); renderAllEditor(); renderPreview(); saveAll(); showToast('Perfil renombrado');
+  });
+
+  $('btnResetProfile').addEventListener('click', ()=>{
+    if(!confirm(`Reiniciar perfil ${state.active}? Se perderán los datos de este perfil.`)) return;
+    state.profiles[state.active] = defaultConfig(state.active);
+    renderAllEditor(); renderPreview(); saveAll(); showToast('Perfil reiniciado');
+  });
+
+  $('btnImport').addEventListener('click', ()=> openImportFile());
+  $('btnExport').addEventListener('click', ()=> doExport());
+  $('btnFullscreenPreview').addEventListener('click', ()=> toggleFullscreenPreview());
+  $('modalClose').addEventListener('click', closeModal);
 }
 
-/* === Render billeteras + drag === */
-const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','Otro'];
+/* Import file (profile) */
+function openImportFile(){
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='.json,.chin.json';
+  inp.onchange = async e=>{
+    const f = e.target.files[0]; if(!f) return;
+    try{
+      const txt = await f.text(); const obj = JSON.parse(txt);
+      const name = obj.perfil || prompt('Nombre para perfil importado:', f.name.replace(/\.[^/.]+$/,''));
+      if(!name) return;
+      state.profiles[name] = normalizeImported(obj);
+      state.active = name;
+      renderProfileSelect(); renderAllEditor(); renderPreview(); saveAll(); showToast('Perfil importado: ' + name);
+    }catch(err){ alert('Archivo inválido'); }
+  };
+  inp.click();
+}
 
-function renderWallets(){
-  const listEl = document.getElementById('walletList');
-  listEl.innerHTML = '';
-  config.billeteras.forEach((w,idx)=>{
-    const card = document.createElement('div');
-    card.className = 'wallet-card';
-    card.draggable = true;
-    card.dataset.index = idx;
+/* Normalize imported data to internal shape */
+function normalizeImported(raw){
+  const out = defaultConfig(raw.perfil || 'imported');
+  try{
+    if(raw.paleta) out.paleta = raw.paleta;
+    if(raw.whatsapp) out.whatsapp = raw.whatsapp;
+    if(raw.revinculacion) out.revinculacion = raw.revinculacion;
+    if(Array.isArray(raw.billeteras)) out.billeteras = raw.billeteras;
+    if(Array.isArray(raw.secciones)) out.secciones = raw.secciones;
+    if(Array.isArray(raw.order)) out.order = raw.order;
+  }catch(e){}
+  out.metadata = Object.assign(out.metadata || {}, raw.metadata || {});
+  return out;
+}
 
+/* Export to .chin.json format required (ChinPlantilla) */
+function doExport(){
+  const cfg = state.profiles[state.active];
+  cfg.metadata = cfg.metadata || {};
+  cfg.metadata.lastExport = new Date().toISOString();
+  cfg.fechaExport = cfg.metadata.lastExport;
+  // build export payload matching schema (see schema.md)
+  const exportObj = {
+    perfil: cfg.perfil,
+    fechaExport: cfg.fechaExport,
+    paleta: cfg.paleta,
+    whatsapp: cfg.whatsapp,
+    revinculacion: cfg.revinculacion,
+    billeteras: cfg.billeteras.map(b => normalizeWalletForExport(b)),
+    secciones: cfg.secciones,
+    order: cfg.order,
+    metadata: cfg.metadata
+  };
+  const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${cfg.perfil || 'perfil'}.chin.json`; a.click(); URL.revokeObjectURL(a.href);
+  saveAll();
+  showToast('Exportado .chin.json');
+}
+
+/* Normalize wallet export: keep minimal clean data for ChinPlantilla */
+function normalizeWalletForExport(w){
+  return {
+    id: w.id || ('w'+(Date.now()+Math.floor(Math.random()*1000))),
+    label: w.label || '',
+    cbu: w.cbu || '',
+    alias: w.alias || '',
+    titular: w.titular || '',
+    billetera: w.billetera === 'Otro' ? (w.billeteraCustom||'Otro') : (w.billetera||''),
+    flip: !!w.flip,
+    flipData: w.flip ? {
+      cbu: w.cbu2||'', alias: w.alias2||'', titular: w.titular2||'', billetera: (w.billetera2 === 'Otro' ? (w.billetera2Custom||'Otro') : (w.billetera2||''))
+    } : null,
+    meta: { tags: w.tags || [] }
+  };
+}
+
+/* ========= Editor renderers ========= */
+function renderAllEditor(){
+  renderProfileSelect();
+  renderPalette();
+  renderWalletList();
+  renderSections();
+  renderRevinculacion();
+  updateStatus();
+}
+
+/* Palette */
+function renderPalette(){
+  const cfg = state.profiles[state.active];
+  $('inpAccent').value = cfg.paleta.acento || '#8A2BE2';
+  $('inpOk').value = cfg.paleta.ok || '#10B981';
+  $('inpBad').value = cfg.paleta.bad || '#EF4444';
+  $('metaName').value = cfg.perfil || state.active;
+  $('metaDate').value = cfg.metadata && cfg.metadata.lastExport ? cfg.metadata.lastExport : '';
+  // bind changes
+  ['inpAccent','inpOk','inpBad'].forEach(id=>{
+    $(id).oninput = (e)=>{
+      cfg.paleta = cfg.paleta || {};
+      if(id==='inpAccent') cfg.paleta.acento = e.target.value;
+      if(id==='inpOk') cfg.paleta.ok = e.target.value;
+      if(id==='inpBad') cfg.paleta.bad = e.target.value;
+      markDirty(); renderPreview();
+    };
+  });
+  $('metaName').onchange = e=>{
+    cfg.perfil = e.target.value; markDirty();
+    renderProfileSelect();
+  };
+}
+
+/* Wallet list render and handlers */
+function renderWalletList(filterText){
+  const cfg = state.profiles[state.active];
+  const list = $('walletList');
+  list.innerHTML = '';
+  const q = (filterText || $('walletSearch').value || '').toLowerCase();
+  cfg.billeteras.forEach((w, idx)=>{
+    const text = (w.label+' '+(w.alias||'')+' '+(w.titular||'')).toLowerCase();
+    if(q && !text.includes(q)) return;
+    const card = document.createElement('div'); card.className='wallet-card'; card.draggable=true; card.dataset.index = idx;
     card.innerHTML = `
-      <div class="drag-handle" data-handle></div>
+      <div class="drag-handle"><div class="handle-dots" title="Arrastrar"></div></div>
       <div>
-        <div class="wallet-header">
-          <span class="wallet-label">${escapeHtml(w.label || 'Billetera')}</span>
-          <div class="wallet-actions">
-            <span class="badge ${w.flip ? 'flip':''}">${w.flip?'Flip ON':'Flip OFF'}</span>
-            <button class="btn small subtle" data-remove="${idx}" title="Eliminar">✕</button>
-          </div>
+        <div class="label">${escapeHtml(w.label||'Billetera')}</div>
+        <div class="small">${escapeHtml(w.alias||w.cbu||'')}</div>
+      </div>
+      <div class="wallet-actions">
+        <button class="btn small ghost" data-edit="${idx}">Editar</button>
+        <button class="btn small" data-dupe="${idx}">Duplicar</button>
+        <button class="btn small ghost" data-based="${idx}">Basada</button>
+        <button class="btn small" data-remove="${idx}">Eliminar</button>
+      </div>
+    `;
+    list.appendChild(card);
+
+    // handlers
+    card.querySelector('[data-edit]').addEventListener('click', ()=> openWalletEditor(idx));
+    card.querySelector('[data-dupe]').addEventListener('click', ()=> duplicateWallet(idx));
+    card.querySelector('[data-based]').addEventListener('click', ()=> newWalletBasedOn(idx));
+    card.querySelector('[data-remove]').addEventListener('click', ()=> { if(confirm('Eliminar?')) { cfg.billeteras.splice(idx,1); markDirty(); renderWalletList(); renderPreview(); }});
+
+    // drag
+    card.addEventListener('dragstart', (ev)=> { ev.dataTransfer.setData('text/plain', idx); card.style.opacity=.5;});
+    card.addEventListener('dragend', ()=> card.style.opacity=1);
+    card.addEventListener('dragover', (ev)=>ev.preventDefault());
+    card.addEventListener('drop', (ev)=>{ ev.preventDefault(); const from=Number(ev.dataTransfer.getData('text/plain')); const to=Number(card.dataset.index); if(from===to) return; const a=cfg.billeteras.splice(from,1)[0]; cfg.billeteras.splice(to,0,a); markDirty(); renderWalletList(); renderPreview(); });
+  });
+  $('countWallets').textContent = String(cfg.billeteras.length);
+}
+
+/* Search handler */
+$('walletSearch').addEventListener('input', ()=> renderWalletList());
+
+/* Add wallet */
+$('btnAddWallet').addEventListener('click', ()=>{
+  const cfg = state.profiles[state.active];
+  cfg.billeteras.push({ id:'w'+Date.now(), label:'Nueva billetera', cbu:'', alias:'', titular:'', billetera:'Mercado Pago', billeteraCustom:'', flip:false, cbu2:'', alias2:'', titular2:'', billetera2:'Mercado Pago', billetera2Custom:''});
+  markDirty(); renderWalletList(); renderPreview();
+});
+
+/* Duplicate wallet */
+function duplicateWallet(idx){
+  const cfg = state.profiles[state.active];
+  const src = cfg.billeteras[idx];
+  const clone = JSON.parse(JSON.stringify(src)); clone.id = 'w'+Date.now();
+  cfg.billeteras.splice(idx+1,0,clone);
+  markDirty(); renderWalletList(); renderPreview();
+}
+
+/* New based on wallet */
+function newWalletBasedOn(idx){
+  const cfg = state.profiles[state.active];
+  const src = cfg.billeteras[idx];
+  const copy = JSON.parse(JSON.stringify(src)); copy.id = 'w'+Date.now(); copy.label = (src.label||'') + ' (copy)';
+  cfg.billeteras.push(copy);
+  markDirty(); renderWalletList(); renderPreview();
+}
+
+/* Wallet editor modal */
+function openWalletEditor(idx){
+  const cfg = state.profiles[state.active];
+  const w = cfg.billeteras[idx];
+  const html = `
+    <h3>Editar billetera</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label>Nombre visible</label><input id="m_label" value="${escapeAttr(w.label||'')}" /></div>
+      <div><label>Titular</label><input id="m_titular" value="${escapeAttr(w.titular||'')}" /></div>
+      <div><label>CBU</label><input id="m_cbu" value="${escapeAttr(w.cbu||'')}" /></div>
+      <div><label>Alias</label><input id="m_alias" value="${escapeAttr(w.alias||'')}" /></div>
+      <div><label>Billetera</label>
+        <select id="m_billetera">
+          <option>Mercado Pago</option><option>Ualá</option><option>Brubank</option><option>Otro</option>
+        </select>
+        <input id="m_billetera_custom" placeholder="Si Otro, indica" style="margin-top:6px;display:none" />
+      </div>
+      <div>
+        <label>Flip (segunda billetera)</label>
+        <div style="display:flex;gap:8px">
+          <button id="m_flip_on" class="btn small ${w.flip? '' : 'ghost'}">${w.flip? 'ON':'ON'}</button>
+          <button id="m_flip_off" class="btn small ghost">${w.flip? 'OFF':'OFF'}</button>
         </div>
-        <div class="wallet-main">
-          <div>
-            <label>Nombre visible (card)</label>
-            <input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" />
-          </div>
-          <div>
-            <label>CBU</label>
-            <input type="text" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
-          </div>
-          <div>
-            <label>Alias</label>
-            <input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" />
-          </div>
-          <div>
-            <label>Titular</label>
-            <input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" />
-          </div>
-          <div>
-            <label>Billetera</label>
-            <select data-field="billetera" data-idx="${idx}">
-              ${WALLET_OPTS.map(opt=>{
-                const sel = w.billetera === opt ? 'selected':'';
-                return `<option value="${opt}" ${sel}>${opt}</option>`;
-              }).join('')}
-            </select>
-            <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
-          </div>
+      </div>
+    </div>
+    <div id="m_flip_area" style="margin-top:8px; display:${w.flip? 'block':'none'}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label>CBU (flip)</label><input id="m_cbu2" value="${escapeAttr(w.cbu2||'')}" /></div>
+        <div><label>Alias (flip)</label><input id="m_alias2" value="${escapeAttr(w.alias2||'')}" /></div>
+        <div><label>Titular (flip)</label><input id="m_titular2" value="${escapeAttr(w.titular2||'')}" /></div>
+        <div><label>Billetera (flip)</label><select id="m_billetera2"><option>Mercado Pago</option><option>Ualá</option><option>Brubank</option><option>Otro</option></select>
+        <input id="m_billetera2_custom" placeholder="Si Otro, indica" style="margin-top:6px;display:none" /></div>
+      </div>
+    </div>
+    <div style="margin-top:10px;text-align:right">
+      <button id="m_save" class="btn">Guardar</button>
+      <button id="m_cancel" class="btn ghost">Cancelar</button>
+    </div>
+  `;
+  showModal(html);
+  // fill selects
+  $('m_billetera').value = w.billetera || 'Mercado Pago';
+  $('m_billetera2').value = w.billetera2 || 'Mercado Pago';
+  if(w.billetera==='Otro'){ $('m_billetera_custom').style.display=''; $('m_billetera_custom').value = w.billeteraCustom||''; }
+  if(w.billetera2==='Otro'){ $('m_billetera2_custom').style.display=''; $('m_billetera2_custom').value = w.billetera2Custom||''; }
+
+  $('m_billetera').onchange = (e)=> { if(e.target.value==='Otro'){ $('m_billetera_custom').style.display=''; } else { $('m_billetera_custom').style.display='none'; } };
+  $('m_billetera2').onchange = (e)=> { if(e.target.value==='Otro'){ $('m_billetera2_custom').style.display=''; } else { $('m_billetera2_custom').style.display='none'; } };
+  $('m_flip_on').addEventListener('click', ()=> { $('m_flip_area').style.display='block'; });
+  $('m_flip_off').addEventListener('click', ()=> { $('m_flip_area').style.display='none'; });
+
+  $('m_save').addEventListener('click', ()=>{
+    w.label = $('m_label').value.trim();
+    w.titular = $('m_titular').value.trim();
+    w.cbu = $('m_cbu').value.trim();
+    w.alias = $('m_alias').value.trim();
+    w.billetera = $('m_billetera').value;
+    w.billeteraCustom = $('m_billetera_custom').value.trim();
+    w.flip = $('m_flip_area').style.display !== 'none';
+    w.cbu2 = $('m_cbu2').value.trim();
+    w.alias2 = $('m_alias2').value.trim();
+    w.titular2 = $('m_titular2').value.trim();
+    w.billetera2 = $('m_billetera2').value;
+    w.billetera2Custom = $('m_billetera2_custom').value.trim();
+    markDirty(); renderWalletList(); renderPreview(); closeModal(); showToast('Billetera guardada');
+  });
+  $('m_cancel').addEventListener('click', ()=> closeModal());
+}
+
+/* ========= Sections & buttons ========= */
+function renderSections(){
+  const cfg = state.profiles[state.active];
+  const container = $('sectionsList'); container.innerHTML = '';
+  cfg.secciones.forEach((s, i)=>{
+    const div = document.createElement('div'); div.style.marginBottom='8px';
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="handle-dots" style="width:20px;height:28px"></div>
+          <strong>${escapeHtml(s.name)}</strong>
+          <span class="small" style="margin-left:8px;color:var(--muted)">${s.buttons.length} botones</span>
         </div>
-        <div class="switch-row">
-          <div class="switch ${w.flip?'on':''}" data-flip="${idx}">
-            <div class="switch-thumb"></div>
-          </div>
-          <span>Segunda billetera (flip)</span>
-        </div>
-        <div class="wallet-main" style="margin-top:6px;${w.flip?'':'display:none'}">
-          <div>
-            <label>CBU (flip)</label>
-            <input type="text" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
-          </div>
-          <div>
-            <label>Alias (flip)</label>
-            <input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" />
-          </div>
-          <div>
-            <label>Titular (flip)</label>
-            <input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" />
-          </div>
-          <div>
-            <label>Billetera (flip)</label>
-            <select data-field="billetera2" data-idx="${idx}">
-              ${WALLET_OPTS.map(opt=>{
-                const sel = w.billetera2 === opt ? 'selected':'';
-                return `<option value="${opt}" ${sel}>${opt}</option>`;
-              }).join('')}
-            </select>
-            <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
-          </div>
+        <div class="flex">
+          <button class="btn small ghost" data-edit="${i}">Editar</button>
+          <button class="btn small" data-add="${i}">+Botón</button>
+          <button class="btn small ghost" data-remove="${i}">Eliminar</button>
         </div>
       </div>
     `;
-
-    listEl.appendChild(card);
-  });
-
-  // eventos de edición simples
-  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
-    el.addEventListener('input', onWalletFieldChange);
-    el.addEventListener('change', onWalletFieldChange);
-  });
-
-  listEl.querySelectorAll('[data-remove]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const idx = parseInt(btn.dataset.remove,10);
-      if(isNaN(idx)) return;
-      if(!confirm('¿Eliminar esta billetera?')) return;
-      config.billeteras.splice(idx,1);
-      markDirty();
-      renderWallets();
-      renderPreview();
-    });
-  });
-
-  listEl.querySelectorAll('[data-flip]').forEach(sw=>{
-    sw.addEventListener('click', ()=>{
-      const idx = parseInt(sw.dataset.flip,10);
-      if(isNaN(idx)) return;
-      const w = config.billeteras[idx];
-      w.flip = !w.flip;
-      markDirty();
-      renderWallets();
-      renderPreview();
-    });
-  });
-
-  // drag
-  listEl.querySelectorAll('.wallet-card').forEach(card=>{
-    card.addEventListener('dragstart', onDragStart);
-    card.addEventListener('dragover', onDragOver);
-    card.addEventListener('drop', onDrop);
-    card.addEventListener('dragend', onDragEnd);
+    container.appendChild(div);
+    div.querySelector('[data-edit]').addEventListener('click', ()=> editSection(i));
+    div.querySelector('[data-add]').addEventListener('click', ()=> addButtonToSection(i));
+    div.querySelector('[data-remove]').addEventListener('click', ()=> { if(confirm('Eliminar sección?')){ cfg.secciones.splice(i,1); markDirty(); renderSections(); }});
   });
 }
 
-function onWalletFieldChange(e){
-  const idx = parseInt(e.target.dataset.idx,10);
-  const field = e.target.dataset.field;
-  if(isNaN(idx) || !field) return;
-  const w = config.billeteras[idx];
-  if(!w) return;
-  if(field === 'billetera' || field==='billetera2'){
-    w[field] = e.target.value;
-    const customField = field==='billetera'?'billeteraCustom':'billetera2Custom';
-    const inputCustom = e.target.parentElement.querySelector(`input[data-field="${customField}"]`);
-    if(inputCustom){
-      inputCustom.style.display = e.target.value === 'Otro' ? '' : 'none';
-    }
-  }else{
-    w[field] = e.target.value;
-  }
-  markDirty();
-  renderPreview();
+/* Add new section */
+$('btnAddSection').addEventListener('click', ()=>{
+  const name = $('sectionNewName').value.trim();
+  if(!name){ alert('Nombre requerido'); return; }
+  const cfg = state.profiles[state.active];
+  cfg.secciones.push({ id: 's_'+Date.now(), name, buttons:[] });
+  markDirty(); renderSections(); $('sectionNewName').value=''; renderPreview();
+});
+
+/* Edit section */
+function editSection(idx){
+  const cfg = state.profiles[state.active]; const s = cfg.secciones[idx];
+  let html = `<h3>Editar sección: ${escapeHtml(s.name)}</h3>`;
+  html += `<label>Nombre</label><input id="sec_name" value="${escapeAttr(s.name)}" />`;
+  html += `<div style="margin-top:8px"><label>Orden (arrastra para reordenar en preview)</label><div class="small">Secciones actuales: ${cfg.secciones.map(x=>x.name).join(', ')}</div></div>`;
+  html += `<div style="margin-top:8px;text-align:right"><button id="sec_save" class="btn">Guardar</button></div>`;
+  showModal(html);
+  $('sec_name').oninput = (e)=> s.name = e.target.value;
+  $('sec_save').addEventListener('click', ()=> { markDirty(); renderSections(); renderPreview(); closeModal(); });
 }
 
-/* Drag & drop billeteras */
-let dragIndex = null;
-
-function onDragStart(e){
-  const handle = e.target.querySelector('[data-handle]');
-  if(!handle) return;
-  dragIndex = parseInt(e.target.dataset.index,10);
-  e.dataTransfer.effectAllowed = 'move';
-  e.target.classList.add('dragging');
-}
-function onDragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
-function onDrop(e){
-  e.preventDefault();
-  const target = e.currentTarget;
-  const toIndex = parseInt(target.dataset.index,10);
-  if(dragIndex===null || isNaN(toIndex)) return;
-  if(dragIndex === toIndex) return;
-  const arr = config.billeteras;
-  const [moved] = arr.splice(dragIndex,1);
-  arr.splice(toIndex,0,moved);
-  dragIndex = null;
-  markDirty();
-  renderWallets();
-  renderPreview();
-}
-function onDragEnd(e){
-  e.currentTarget.classList.remove('dragging');
-  dragIndex = null;
+/* Add button to section modal */
+function addButtonToSection(idx){
+  const cfg = state.profiles[state.active]; const s = cfg.secciones[idx];
+  const html = `
+    <h3>Agregar botón a ${escapeHtml(s.name)}</h3>
+    <label>Nombre visible</label><input id="btn_name" />
+    <label>Texto que copia / secundario</label><textarea id="btn_text"></textarea>
+    <label>Estilo</label>
+    <select id="btn_style"><option value="normal">Normal</option><option value="important">Importante</option><option value="warn">Advertencia</option></select>
+    <div style="margin-top:8px;text-align:right"><button id="btn_save" class="btn">Agregar</button></div>
+  `;
+  showModal(html);
+  $('btn_save').addEventListener('click', ()=>{
+    const name = $('btn_name').value.trim(); const text = $('btn_text').value.trim(); const style = $('btn_style').value;
+    if(!name || !text){ alert('Nombre y texto requeridos'); return; }
+    s.buttons.push({ id:'b_'+Date.now(), name, text, style, flip:false });
+    markDirty(); renderSections(); renderPreview(); closeModal(); showToast('Botón agregado');
+  });
 }
 
-/* === Preview === */
-function getActiveTab(){
-  const active = document.querySelector('.tab-chip.active');
-  return active ? active.dataset.tab : 'pc01';
+/* ========= Revinculación management (unlimited) ========= */
+function renderRevinculacion(){
+  const cfg = state.profiles[state.active];
+  const cont = $('revContainer'); cont.innerHTML = '';
+  cfg.revinculacion.saludos.forEach((s, idx)=>{
+    const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.marginBottom='6px';
+    row.innerHTML = `<div style="flex:1;border-radius:8px;padding:8px;background:var(--card-2)">${escapeHtml(s)}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn small ghost" data-edit="${idx}">Editar</button>
+        <button class="btn small" data-remove="${idx}">Eliminar</button>
+      </div>`;
+    cont.appendChild(row);
+    row.querySelector('[data-edit]').addEventListener('click', ()=> { const t = prompt('Editar saludo', s); if(t!=null){ cfg.revinculacion.saludos[idx] = t.trim(); markDirty(); renderRevinculacion(); renderPreview(); }});
+    row.querySelector('[data-remove]').addEventListener('click', ()=> { if(confirm('Eliminar saludo?')){ cfg.revinculacion.saludos.splice(idx,1); markDirty(); renderRevinculacion(); renderPreview(); }});
+  });
 }
 
+/* Add rev */
+$('btnAddRev').addEventListener('click', ()=>{
+  const txt = $('revAddText').value.trim(); if(!txt) return; const cfg = state.profiles[state.active];
+  cfg.revinculacion.saludos.push(txt); $('revAddText').value=''; markDirty(); renderRevinculacion(); renderPreview(); showToast('Saludo agregado');
+});
+
+/* ========= Preview rendering ========= */
 function renderPreview(){
-  const content = document.getElementById('previewContent');
-  const tab = getActiveTab();
-  content.innerHTML = '';
-
-  const palette = config.paleta || {};
-  document.documentElement.style.setProperty('--accent', palette.acento || '#8A2BE2');
-  document.documentElement.style.setProperty('--accent-light', palette.acento || '#a855f7');
-  document.documentElement.style.setProperty('--ok', palette.ok || '#10B981');
-  document.documentElement.style.setProperty('--bad', palette.bad || '#EF4444');
-
-  if(tab === 'pc01' || tab === 'pc02'){
-    // Utilidad
-    if(config.utilidad.info || config.utilidad.cargado || config.utilidad.retiro){
-      const g = document.createElement('div');
-      g.className = 'preview-group';
-      g.innerHTML = `<h3>Utilidad <span class="chip-mini">Texto fijo</span></h3>`;
-      ['info','cargado','retiro'].forEach(key=>{
-        const label = key==='info'?'Info':(key==='cargado'?'Cargado':'Retiro');
-        const value = config.utilidad[key];
-        if(!value) return;
-        const btn = document.createElement('div');
-        btn.className = 'btn-preview';
-        btn.innerHTML = `<div><span class="label">${label}</span><div class="sub">${escapeHtml(shorten(value,70))}</div></div><span class="sub">copiar</span>`;
-        btn.addEventListener('click', ()=>{
-          copyToClipboard(value);
-          showToast(`Copiado texto de ${label}`);
-        });
-        g.appendChild(btn);
-      });
-      content.appendChild(g);
-    }
-
-    // Billeteras
-    if(config.billeteras.length){
-      const g2 = document.createElement('div');
-      g2.className = 'preview-group';
-      g2.innerHTML = `<h3>Billeteras <span class="chip-mini">${config.billeteras.length} activas</span></h3>`;
-      config.billeteras.forEach(w=>{
-        // CBU
-        if(w.cbu){
-          const btn = document.createElement('div');
-          btn.className = 'btn-preview';
-          const billeName = w.billetera === 'Otro' ? (w.billeteraCustom||'Billetera') : w.billetera;
-          btn.innerHTML = `<div><span class="label">${escapeHtml(w.label||'Billetera')}</span><div class="sub">CBU · ${escapeHtml(billeName)}</div></div><span class="sub">CBU</span>`;
-          btn.addEventListener('click', ()=>{
-            copyToClipboard(w.cbu);
-            showToast(`Copiado CBU de ${w.label||'billetera'}`);
-          });
-          g2.appendChild(btn);
-        }
-        // Alias
-        if(w.alias){
-          const btn = document.createElement('div');
-          btn.className = 'btn-preview';
-          const billeName = w.billetera === 'Otro' ? (w.billeteraCustom||'Billetera') : w.billetera;
-          const aliasLabel = `${w.alias} · ${w.titular||''}`.trim();
-          btn.innerHTML = `<div><span class="label">${escapeHtml(w.label||'Billetera')}</span><div class="sub">Alias · ${escapeHtml(billeName)}</div></div><span class="sub">ALIAS</span>`;
-          btn.addEventListener('click', ()=>{
-            const txt = `${w.alias} **${w.titular||''}** ${billeName(w)}`;
-            copyToClipboard(txt);
-            showToast(`Copiado alias de ${w.label||'billetera'}`);
-          });
-          g2.appendChild(btn);
-        }
-        // Flip
-        if(w.flip && (w.cbu2 || w.alias2)){
-          const btn = document.createElement('div');
-          btn.className = 'btn-preview';
-          btn.innerHTML = `<div><span class="label">${escapeHtml(w.label||'Billetera')} (flip)</span><div class="sub">${escapeHtml(w.alias2||w.cbu2||'')}</div></div><span class="sub">FLIP</span>`;
-          btn.addEventListener('click', ()=>{
-            const payload = w.cbu2 || w.alias2;
-            copyToClipboard(payload);
-            showToast(`Copiado (flip) de ${w.label||'billetera'}`);
-          });
-          g2.appendChild(btn);
-        }
-      });
-      content.appendChild(g2);
-    }
-
-    // WhatsApp / Revinc
-    const g3 = document.createElement('div');
-    g3.className = 'preview-group';
-    g3.innerHTML = `<h3>WhatsApp & Revin<span class="chip-mini">PC ${tab==='pc01'?'01':'02'}</span></h3>`;
-    const nums = config.whatsapp.numeros || [];
-    if(nums.length){
-      const btn = document.createElement('div');
-      btn.className = 'btn-preview';
-      btn.innerHTML = `<div><span class="label">WhatsApp principal</span><div class="sub">${escapeHtml(nums[0])}</div></div><span class="sub">copiar</span>`;
-      btn.addEventListener('click', ()=>{
-        copyToClipboard(nums[0]);
-        showToast('Copiado número de WhatsApp');
-      });
-      g3.appendChild(btn);
-    }
-    const saludos = config.revinculacion.saludos[tab==='pc01'?'PC01':'PC02'] || [];
-    if(saludos.length){
-      const btn = document.createElement('div');
-      btn.className = 'btn-preview';
-      btn.innerHTML = `<div><span class="label">Saludo revinculación</span><div class="sub">${escapeHtml(shorten(saludos[0],70))}</div></div><span class="sub">copiar</span>`;
-      btn.addEventListener('click', ()=>{
-        copyToClipboard(saludos[0]);
-        showToast('Copiado saludo de revinculación');
-      });
-      g3.appendChild(btn);
-    }
-    content.appendChild(g3);
-
-  } else if(tab === 'promo'){
-    const g = document.createElement('div');
-    g.className = 'preview-group';
-    const cods = config.revinculacion.codigosAmigo || [];
-    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">${cods.length} códigos</span></h3>`;
-    cods.forEach(c=>{
-      const txt = (config.promoAmigo.texto||'').replace('{codigo}',c+'-').replace('{usuario}','USUARIO');
-      const btn = document.createElement('div');
-      btn.className = 'btn-preview';
-      btn.innerHTML = `<div><span class="label">Código ${escapeHtml(c)}</span><div class="sub">${escapeHtml(shorten(txt,80))}</div></div><span class="sub">copiar</span>`;
-      btn.addEventListener('click', ()=>{
-        copyToClipboard(txt);
-        showToast(`Copiado promo ${c}`);
-      });
-      g.appendChild(btn);
+  const cfg = state.profiles[state.active];
+  const area = $('previewArea'); area.innerHTML = '';
+  // Apply palette
+  document.documentElement.style.setProperty('--accent', cfg.paleta.acento || '--accent');
+  document.documentElement.style.setProperty('--accent-2', cfg.paleta.acento || '--accent-2');
+  // show secciones in order
+  (cfg.order || cfg.secciones.map(s=>s.id)).forEach(sid=>{
+    const s = cfg.secciones.find(x=>x.id===sid) || cfg.secciones.find(x=>x.name===sid);
+    if(!s) return;
+    const box = document.createElement('div'); box.className='preview-group'; box.style.marginBottom='10px';
+    box.innerHTML = `<h3 style="margin:0 0 6px">${escapeHtml(s.name)} <span class="small-muted">${s.buttons.length} botones</span></h3>`;
+    s.buttons.forEach(btn=>{
+      const el = document.createElement('div'); el.className='btn-preview'; el.style.marginBottom='6px';
+      el.innerHTML = `<div style="display:flex;flex-direction:column"><span class="label">${escapeHtml(btn.name)}</span><span class="sub small-muted">${escapeHtml(btn.text).slice(0,60)}</span></div><span class="small-muted">copiar</span>`;
+      el.style.cursor='pointer';
+      el.addEventListener('click', ()=> { simulateCopy(btn.text, btn.name); });
+      box.appendChild(el);
     });
-    content.appendChild(g);
+    area.appendChild(box);
+  });
+
+  // Billeteras preview (visual demo like ChinBotones)
+  if(cfg.billeteras.length){
+    const box = document.createElement('div'); box.className='preview-group';
+    box.innerHTML = `<h3 style="margin:0 0 6px">Billeteras <span class="small-muted">${cfg.billeteras.length}</span></h3>`;
+    cfg.billeteras.forEach((w, idx)=>{
+      const wrap = document.createElement('div'); wrap.className='preview-group';
+      wrap.style.display='flex'; wrap.style.justifyContent='space-between'; wrap.style.alignItems='center'; wrap.style.padding='8px';
+      const left = document.createElement('div'); left.innerHTML = `<div style="font-weight:700">${escapeHtml(w.label)}</div><div class="small-muted">${escapeHtml(w.alias || w.cbu)}</div>`;
+      const right = document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
+      const btnCBU = document.createElement('button'); btnCBU.className='btn ghost small'; btnCBU.textContent='CBU';
+      const btnAlias = document.createElement('button'); btnAlias.className='btn small'; btnAlias.textContent='Alias';
+      btnCBU.addEventListener('click', ()=> simulateCopy(w.cbu || '', (w.label||'') + ' CBU'));
+      btnAlias.addEventListener('click', ()=> simulateCopy(`${w.alias}\nTitular ${w.titular} *${w.billetera || ''}*`, (w.label||'') + ' Alias'));
+      right.appendChild(btnCBU); right.appendChild(btnAlias);
+      wrap.appendChild(left); wrap.appendChild(right);
+      box.appendChild(wrap);
+    });
+    area.appendChild(box);
   }
 }
 
-function billeName(w){
-  const main = w.billetera === 'Otro' ? (w.billeteraCustom||'') : w.billetera;
-  return main || '';
+/* Simulated copy actions */
+function simulateCopy(text, who){
+  // create whatsapp link when it's from waMessage etc
+  showToast(`Preview copiaría: ${who || 'texto'}`);
+  $('lastToastText').textContent = (text||'').slice(0,120);
 }
 
-/* === Helpers === */
-function escapeHtml(str){
-  if(!str) return '';
-  return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+/* Fullscreen preview */
+function toggleFullscreenPreview(){
+  const fs = $('fullscreen');
+  if(fs.classList.contains('show')){ fs.classList.remove('show'); fs.innerHTML=''; return; }
+  const copy = $('previewArea').cloneNode(true);
+  fs.appendChild(copy); fs.classList.add('show');
 }
-function escapeAttr(str){
-  return escapeHtml(str).replace(/"/g,'&quot;');
-}
-function shorten(str,max){
-  if(!str) return '';
-  str = String(str);
-  return str.length>max ? str.slice(0,max-3)+'...' : str;
-}
-async function copyToClipboard(text){
-  try{
-    await navigator.clipboard.writeText(String(text));
-  }catch(e){
-    // fallback silencioso
+
+/* ========= Helpers ========= */
+function escapeHtml(s){ if(!s) return ''; return (''+s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function escapeAttr(s){ return (''+s).replace(/"/g,'&quot;'); }
+function markDirty(){ $('statusChip').textContent = 'Cambios (no exportado)'; saveAll(); }
+function indicateSaved(){ $('statusChip').textContent = state.active ? ('Perfil: ' + state.active) : 'Sin perfil'; }
+
+/* small helpers for old content */
+function shorten(s, n){ if(!s) return ''; return s.length>n? s.slice(0,n-1)+'…':s; }
+
+/* ========= Sections: initial seed if none ========= */
+function ensureSections(){
+  const cfg = state.profiles[state.active];
+  if(!cfg.secciones || !Array.isArray(cfg.secciones) || cfg.secciones.length===0){
+    cfg.secciones = [{ id:'utilidad', name:'Utilidad', buttons:[] }, { id:'billeteras', name:'Billeteras', buttons:[] }];
+    cfg.order = ['utilidad','billeteras'];
   }
 }
-let toastTimer = null;
-function showToast(msg){
-  const toast = document.getElementById('toast');
-  document.getElementById('toastText').textContent = msg;
-  toast.classList.add('show');
-  if(toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>toast.classList.remove('show'),1800);
-}
+
+/* ========= Mark & initial transformations ========= */
+function markDirtyNoSave(){ $('statusChip').textContent = 'Cambios'; }
+function updateStatus(){ $('statusChip').textContent = state.active ? ('Perfil: ' + state.active) : 'Sin perfil'; }
+
+/* Normalize shape on load */
+(function postLoadInit(){
+  Object.keys(state.profiles || {}).forEach(k=> { if(!state.profiles[k].secciones) state.profiles[k].secciones = [{id:'utilidad',name:'Utilidad',buttons:[]},{id:'billeteras',name:'Billeteras',buttons:[]}]; });
+})();
+
+/* Expose a small API for console debugging */
+window.chinmaker = { state, saveAll, loadAll, renderPreview, renderAllEditor };
+
 </script>
 </body>
 </html>
