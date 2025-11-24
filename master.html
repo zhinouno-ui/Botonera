@@ -375,7 +375,7 @@ const DEFAULT_CONFIG = () => ({
   },
   billeteras: [],
   utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
-
+  promoAmigo: { codigos: ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'], texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
   estructuraBotones: { orden: ['utilidad','billeteras','promoAmigo','revin'] }
 });
 
@@ -422,8 +422,6 @@ function normalizeConfig(obj){
   if(!merged.utilidad.retiro) merged.utilidad.retiro = DEFAULT_UTIL_RETIRO;
   if(!merged.promoAmigo.texto) merged.promoAmigo.texto = DEFAULT_PROMO_TEXTO;
   if(!merged.promoAmigo.info) merged.promoAmigo.info = DEFAULT_PROMO_INFO;
-  if(!Array.isArray(merged.promoAmigo.codigos) || !merged.promoAmigo.codigos.length){
-    merged.promoAmigo.codigos = ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'];
   }
   return merged;
 }
