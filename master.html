@@ -1,773 +1,1211 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Gestor de Billeteras · ChinUnion</title>
-  <style>
-    :root{
-      --bg:#05060b;
-      --card:#10121c;
-      --glass:rgba(255,255,255,0.05);
-      --accent:#c93c20;
-      --accent2:#f97316;
-      --accent-soft:#facc15;
-      --text:#f9fafb;
-      --muted:#94a3b8;
-      --border:#1f2933;
-      --good:#22c55e;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      padding:18px;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:radial-gradient(circle at top,#111827 0,#020617 55%);
-      color:var(--text);
-    }
-    .wrap{max-width:1200px;margin:0 auto;}
-    h1{
-      margin:0 0 10px 0;
-      font-size:22px;
-      font-weight:700;
-      background:linear-gradient(90deg,#f97316,#facc15,#f97316);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    .topbar{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .topbar-title{flex:1;}
-    .chip{font-size:11px;padding:4px 8px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid #1e293b;color:var(--muted);}
-    .card{
-      background:linear-gradient(145deg,#020617 0,#020617 45%,#0b1220 100%);
-      border-radius:14px;
-      border:1px solid rgba(148,163,184,0.18);
-      box-shadow:0 18px 45px rgba(0,0,0,.7);
-      padding:16px;
-    }
-    .row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;}
-    .col{flex:1;min-width:260px;}
-    label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px;}
-    input,select,textarea{
-      width:100%;
-      border-radius:9px;
-      border:1px solid #1e293b;
-      background:rgba(15,23,42,.9);
-      color:var(--text);
-      padding:7px 9px;
-      font-size:13px;
-      outline:none;
-      transition:border .15s,box-shadow .15s,background .15s;
-    }
-    input:focus,select:focus,textarea:focus{
-      border-color:var(--accent2);
-      box-shadow:0 0 0 1px rgba(248,250,252,.1);
-      background:rgba(15,23,42,1);
-    }
-    textarea{min-height:70px;resize:vertical;}
+<meta charset="utf-8" />
+<title>ChinMaker • Editor Maestro de Botoneras</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root{
+    --bg:#050711;
+    --bg-soft:#0b101d;
+    --card:#101524;
+    --card-soft:#141a2b;
+    --accent:#8A2BE2;
+    --accent-soft:#5b21b6;
+    --accent-light:#a855f7;
+    --ok:#10B981;
+    --bad:#EF4444;
+    --warn:#F59E0B;
+    --muted:#9ca3af;
+    --text:#e5f3ff;
+    --border:rgba(148,163,184,.25);
+    --shadow:0 16px 40px rgba(0,0,0,.6);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(circle at top left,rgba(138,43,226,0.25),transparent 55%),
+      radial-gradient(circle at bottom right,rgba(16,185,129,0.18),transparent 55%),
+      linear-gradient(180deg,#030712,#020617 55%,#020617 100%);
+    min-height:100vh;
+    color:var(--text);
+    padding:18px;
+  }
+  .wrap{max-width:1320px;margin:0 auto;}
 
-    .btn{
-      border:none;
-      border-radius:999px;
-      padding:8px 13px;
-      font-size:13px;
-      font-weight:600;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      color:#fff;
-      box-shadow:0 6px 16px rgba(0,0,0,.4);
-      transition:transform .12s,box-shadow .12s,opacity .15s;
-      white-space:nowrap;
-    }
-    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.6);}
-    .btn:active{transform:translateY(0);}
-    .btn-secondary{
-      background:rgba(15,23,42,.9);
-      border:1px solid #1e293b;
-      color:var(--muted);
-      box-shadow:none;
-    }
-    .btn-secondary:hover{
-      border-color:var(--accent-soft);
-      color:var(--accent-soft);
-      box-shadow:0 0 0 1px rgba(234,179,8,.2);
-    }
-    .btn-danger{
-      background:linear-gradient(90deg,#ef4444,#b91c1c);
-    }
-    .btn-icon{
-      width:32px;height:32px;padding:0;
-      justify-content:center;
-      border-radius:999px;
-    }
-    .btn[disabled]{opacity:.45;cursor:default;box-shadow:none;transform:none;}
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .title-block h1{
+    margin:0;
+    font-size:22px;
+    letter-spacing:.03em;
+    background:linear-gradient(90deg,#f9fafb,var(--accent-light));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .title-block small{color:var(--muted);font-size:13px;}
 
-    .profile-bar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      margin-bottom:14px;
-    }
-    .profile-bar select{max-width:180px;}
-    .spacer{flex:1;}
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:rgba(15,23,42,.7);
+    border:1px solid rgba(148,163,184,.4);
+    font-size:11px;
+    color:var(--muted);
+  }
 
-    .switch-row{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-top:6px;
-      font-size:12px;
-      color:var(--muted);
-    }
+  .layout{
+    display:grid;
+    grid-template-columns: minmax(0,1.2fr) minmax(0,1fr);
+    gap:16px;
+  }
+  @media (max-width:980px){
+    .layout{grid-template-columns:1fr;}
+  }
 
-    .search-row{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:8px;
-    }
-    .search-row input{max-width:260px;}
+  .card{
+    background:radial-gradient(circle at top left,rgba(148,163,184,.16),transparent 55%),var(--card);
+    border-radius:var(--radius);
+    border:1px solid rgba(148,163,184,.25);
+    box-shadow:var(--shadow);
+    padding:14px 16px 16px;
+  }
+  .card h2{
+    margin:0 0 8px;
+    font-size:15px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:#e5e7eb;
+  }
+  .sub{
+    margin-top:0;
+    color:var(--muted);
+    font-size:12px;
+  }
 
-    /* grupos */
-    #gruposContainer{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
-    .grupo{
-      background:rgba(15,23,42,.9);
-      border-radius:12px;
-      border:1px solid #1e293b;
-      padding:10px 12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .grupo-header{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .drag-handle{
-      width:26px;height:26px;border-radius:8px;
-      display:flex;align-items:center;justify-content:center;
-      cursor:grab;
-      background:rgba(15,23,42,1);
-      border:1px solid #1f2937;
-      font-size:16px;
-      color:#64748b;
-    }
-    .grupo-main{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      width:100%;
-    }
-    .grupo-title{
-      font-size:14px;
-      font-weight:600;
-    }
-    .grupo-sub{font-size:12px;color:var(--muted);}
-    .tag-pill{
-      font-size:11px;
-      padding:3px 7px;
-      border-radius:999px;
-      background:#020617;
-      border:1px solid #1e293b;
-      color:#e5e7eb;
-    }
-    .grupo-buttons{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-top:4px;
-    }
-    .chip-small{
-      font-size:11px;
-      padding:3px 7px;
-      border-radius:999px;
-      background:#020617;
-      border:1px solid #1e293b;
-      color:var(--muted);
-    }
-    .wallet-label{font-size:11px;color:var(--muted);margin-top:4px;}
+  .row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  label{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:3px;
+    display:block;
+  }
+  input[type=text], input[type=number], textarea, select{
+    width:100%;
+    padding:7px 9px;
+    border-radius:8px;
+    border:1px solid rgba(148,163,184,.35);
+    background:rgba(15,23,42,.85);
+    color:var(--text);
+    font-size:13px;
+    outline:none;
+    transition:border-color .16s, box-shadow .16s, background .16s;
+  }
+  textarea{min-height:74px;resize:vertical;}
+  input:focus, textarea:focus, select:focus{
+    border-color:var(--accent-light);
+    box-shadow:0 0 0 1px rgba(168,85,247,.32);
+    background:#020617;
+  }
+  select{
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239ca3af' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 8px center;
+    background-size:16px;
+    padding-right:26px;
+  }
 
-    .btn-mini{
-      padding:5px 9px;
-      font-size:11px;
-      border-radius:999px;
-      background:linear-gradient(90deg,#0ea5e9,#22c55e);
-      box-shadow:none;
-    }
-    .btn-mini.alt{
-      background:linear-gradient(90deg,#6366f1,#ec4899);
-    }
+  .btn{
+    border:none;
+    border-radius:999px;
+    padding:7px 13px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    background:linear-gradient(90deg,var(--accent),var(--accent-light));
+    color:white;
+    box-shadow:0 10px 25px rgba(88,28,135,.5);
+    transition:transform .12s, box-shadow .12s, opacity .12s;
+  }
+  .btn:active{transform:translateY(1px);box-shadow:0 5px 16px rgba(15,23,42,.8);}
+  .btn.small{padding:6px 10px;font-size:11px;}
+  .btn.ghost{
+    background:transparent;
+    border-radius:10px;
+    padding:7px 11px;
+    border:1px solid rgba(148,163,184,.45);
+    box-shadow:none;
+    color:var(--muted);
+  }
+  .btn.ghost:hover{border-color:var(--accent-light);color:#e5e7eb;}
+  .btn.warn{background:linear-gradient(90deg,#f97316,#facc15);box-shadow:0 10px 25px rgba(234,179,8,.45);}
+  .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.5);box-shadow:none;}
 
-    .historial{
-      margin-top:14px;
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
+  .section-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:10px;
+    margin-bottom:10px;
+  }
 
-    #toast{
-      position:fixed;
-      bottom:18px;
-      left:50%;
-      transform:translateX(-50%);
-      background:#020617;
-      color:var(--text);
-      padding:9px 14px;
-      border-radius:999px;
-      font-size:13px;
-      box-shadow:0 14px 40px rgba(0,0,0,.8);
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .25s,transform .25s;
-    }
-    #toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(-4px);
-    }
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .pill{
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:11px;
+    border:1px solid rgba(148,163,184,.45);
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .pill.active{
+    background:rgba(168,85,247,.1);
+    border-color:var(--accent-light);
+    color:#e5e7eb;
+  }
 
-    .drag-over{
-      outline:1px dashed var(--accent-soft);
-      outline-offset:2px;
-    }
+  .wallet-list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+  .wallet-card{
+    background:var(--card-soft);
+    border-radius:11px;
+    border:1px solid rgba(148,163,184,.45);
+    padding:9px 10px;
+    display:grid;
+    grid-template-columns:18px minmax(0,1fr);
+    gap:8px;
+    align-items:flex-start;
+    position:relative;
+  }
+  .wallet-card.dragging{
+    opacity:.55;
+    border-style:dashed;
+  }
+  .drag-handle{
+    width:14px;
+    height:32px;
+    border-radius:8px;
+    background:radial-gradient(circle at 3px 3px,#6b7280 1px,transparent 0),
+               radial-gradient(circle at 3px 11px,#6b7280 1px,transparent 0),
+               radial-gradient(circle at 3px 19px,#6b7280 1px,transparent 0),
+               radial-gradient(circle at 9px 3px,#6b7280 1px,transparent 0),
+               radial-gradient(circle at 9px 11px,#6b7280 1px,transparent 0),
+               radial-gradient(circle at 9px 19px,#6b7280 1px,transparent 0);
+    background-color:#020617;
+    border:1px solid rgba(75,85,99,.8);
+    cursor:grab;
+    margin-top:2px;
+  }
+  .wallet-main{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:6px;
+  }
+  .wallet-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:4px;
+  }
+  .wallet-label{
+    font-size:13px;
+    font-weight:600;
+  }
+  .badge{
+    padding:3px 7px;
+    border-radius:999px;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    border:1px solid rgba(148,163,184,.5);
+    color:var(--muted);
+  }
+  .badge.flip{border-color:var(--accent-light);color:var(--accent-light);}
+  .badge.egreso{border-color:var(--bad);color:var(--bad);}
 
-    @media(max-width:800px){
-      .topbar{flex-direction:column;align-items:flex-start;}
-      .profile-bar{flex-direction:column;align-items:flex-start;}
-    }
-  </style>
+  .wallet-actions{
+    display:flex;
+    gap:6px;
+  }
+
+  .switch-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:3px;
+  }
+  .switch{
+    position:relative;
+    width:30px;
+    height:16px;
+    background:#020617;
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,.6);
+    cursor:pointer;
+  }
+  .switch-thumb{
+    position:absolute;
+    top:1px;
+    left:2px;
+    width:12px;
+    height:12px;
+    border-radius:999px;
+    background:#e5e7eb;
+    transition:transform .16s;
+  }
+  .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-light));border-color:transparent;}
+  .switch.on .switch-thumb{transform:translateX(12px);background:#f9fafb;}
+
+  .preview-card{
+    background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);
+    border-radius:var(--radius);
+    border:1px solid rgba(148,163,184,.3);
+    padding:12px 13px;
+    box-shadow:var(--shadow);
+  }
+  .preview-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .preview-tabs{
+    display:inline-flex;
+    background:#020617;
+    padding:2px;
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,.35);
+  }
+  .tab-chip{
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:11px;
+    cursor:pointer;
+    color:var(--muted);
+  }
+  .tab-chip.active{
+    background:linear-gradient(90deg,var(--accent),var(--accent-light));
+    color:#f9fafb;
+  }
+
+  .preview-group{
+    margin-bottom:10px;
+    border-radius:10px;
+    padding:9px 10px;
+    background:rgba(15,23,42,.9);
+    border:1px solid rgba(148,163,184,.28);
+  }
+  .preview-group h3{
+    margin:0 0 6px;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .chip-mini{
+    font-size:10px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:rgba(15,23,42,.9);
+    border:1px solid rgba(148,163,184,.55);
+    color:var(--muted);
+  }
+
+  .btn-preview{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:7px 9px;
+    border-radius:9px;
+    background:linear-gradient(90deg,#111827,#020617);
+    border:1px solid rgba(55,65,81,.9);
+    cursor:pointer;
+    font-size:12px;
+    margin-bottom:5px;
+  }
+  .btn-preview span.label{font-weight:500;}
+  .btn-preview span.sub{font-size:11px;color:var(--muted);}
+  .btn-preview:hover{
+    border-color:var(--accent-light);
+    box-shadow:0 0 0 1px rgba(168,85,247,.35);
+  }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:16px;
+    transform:translateX(-50%) translateY(20px);
+    padding:8px 11px;
+    border-radius:999px;
+    background:rgba(15,23,42,.96);
+    border:1px solid rgba(148,163,184,.55);
+    color:#e5e7eb;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .16s, transform .16s;
+    z-index:40;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+  .toast-icon{
+    width:16px;
+    height:16px;
+    border-radius:999px;
+    background:rgba(16,185,129,.12);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    color:var(--ok);
+  }
+
+  .divider-label{
+    margin:10px 0 6px;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--muted);
+  }
+
+  .search-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  .search-row input{
+    flex:1;
+  }
+
+  .muted{color:var(--muted);font-size:11px;}
+
+</style>
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar">
-    <div class="topbar-title">
-      <h1>Gestor de Billeteras · ChinUnion</h1>
-      <div class="chip">Perfiles locales · drag & drop · copiado rápido</div>
+  <header>
+    <div class="title-block">
+      <h1>ChinMaker · Editor Maestro</h1>
+      <small>Arma perfiles, billeteras y mensajes para exportar a la ChinPlantilla.</small>
     </div>
-    <button id="fsBtn" class="btn btn-icon btn-secondary" title="Pantalla completa">
-      ⛶
-    </button>
+    <div class="row">
+      <div class="chip">
+        <span>💾</span> <span id="chipStatus">Perfil sin cambios</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="row" style="justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+      <div style="min-width:220px;">
+        <label>Perfil activo</label>
+        <div class="row" style="gap:6px;">
+          <select id="profileSelect" style="flex:1;min-width:140px;"></select>
+          <button class="btn small subtle" id="btnNewProfile">Nuevo</button>
+        </div>
+        <p class="muted" style="margin-top:3px;">Ej: PC01, PC02, Gonzales, CasinoCentro...</p>
+      </div>
+      <div class="row" style="gap:8px;">
+        <input type="file" id="fileImport" accept=".json" style="display:none;">
+        <button class="btn small" id="btnExport">Exportar perfil</button>
+        <button class="btn small ghost" id="btnImport">Subir perfil</button>
+        <button class="btn small warn" id="btnReset">Reiniciar perfil</button>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <!-- barra de perfil -->
-    <div class="profile-bar">
-      <div>
-        <label>Perfil activo</label>
-        <select id="perfilSelect"></select>
-      </div>
-      <button id="newProfileBtn" class="btn-secondary btn">＋ Perfil</button>
-      <button id="importProfileBtn" class="btn-secondary btn">⬆ Subir perfil</button>
-      <button id="exportProfileBtn" class="btn-secondary btn">⬇ Exportar perfil</button>
-      <button id="resetProfileBtn" class="btn-secondary btn btn-danger" title="Vaciar perfil actual">⟲ Reset</button>
-      <div class="spacer"></div>
-      <div>
-        <label>Buscar grupo / alias / titular</label>
-        <input id="searchInput" placeholder="matii, luna, mp, etc." />
-      </div>
-    </div>
+  <div class="layout">
+    <!-- EDITOR -->
+    <div class="card">
+      <h2>Editor de configuración</h2>
+      <p class="sub">Todo lo que configures acá se guarda en el navegador y se puede exportar a un archivo <code>.chin.json</code>.</p>
 
-    <!-- form nuevo grupo -->
-    <div class="row">
-      <div class="col">
-        <label>Nombre del grupo</label>
-        <input id="nombreGrupo" placeholder="Ej: Torres / Luna / Billeteras PC02">
-      </div>
-      <div class="col">
-        <label>Teléfono principal</label>
-        <input id="telefono" placeholder="Ej: 11 5555 5555">
-      </div>
-      <div class="col">
-        <label>Notas / referencia interna</label>
-        <input id="notas" placeholder="Ej: Solo recargas mañana · Encargado Nico">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Billetera 1</label>
-        <select id="billetera1">
-          <option>Mercado Pago</option>
-          <option>PPay</option>
-          <option>Ripio</option>
-          <option>Prex</option>
-          <option>Brubank</option>
-          <option>Ualá</option>
-        </select>
-        <input id="alias1" placeholder="Alias 1">
-        <input id="titular1" placeholder="Titular 1">
-        <input id="cbu1" placeholder="CBU / CVU 1">
-      </div>
-      <div class="col">
-        <label>Billetera 2 (opcional)</label>
-        <select id="billetera2">
-          <option value="">(Sin segunda billetera)</option>
-          <option>Mercado Pago</option>
-          <option>PPay</option>
-          <option>Ripio</option>
-          <option>Prex</option>
-          <option>Brubank</option>
-          <option>Ualá</option>
-        </select>
-        <input id="alias2" placeholder="Alias 2">
-        <input id="titular2" placeholder="Titular 2">
-        <input id="cbu2" placeholder="CBU / CVU 2">
-      </div>
-      <div class="col" style="align-self:flex-end;min-width:200px">
-        <button id="addGroupBtn" class="btn" style="width:100%;margin-bottom:6px;">➕ Agregar grupo al perfil</button>
-        <div class="switch-row">
-          <span class="chip-small">Tip:</span>
-          <span>Todo lo que cargues se queda en el perfil activo hasta que lo cambies.</span>
+      <div class="section-grid">
+        <div>
+          <label>Color acento</label>
+          <input type="text" id="colorAccent" placeholder="#8A2BE2" />
+        </div>
+        <div>
+          <label>Color OK</label>
+          <input type="text" id="colorOk" placeholder="#10B981" />
+        </div>
+        <div>
+          <label>Color Error</label>
+          <input type="text" id="colorBad" placeholder="#EF4444" />
         </div>
       </div>
+
+      <div class="divider-label">WhatsApp & Revinculación</div>
+      <div class="section-grid">
+        <div>
+          <label>Números de WhatsApp (separados por coma)</label>
+          <input type="text" id="waNumbers" placeholder="54911..., 54911..." />
+        </div>
+        <div>
+          <label>Mensaje de inicio (usa {usuario})</label>
+          <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma"></textarea>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div>
+          <label>Saludos Revinculación (PC01)</label>
+          <textarea id="revPC01" placeholder="Un saludo por línea..."></textarea>
+        </div>
+        <div>
+          <label>Saludos Revinculación (PC02)</label>
+          <textarea id="revPC02" placeholder="Opcional"></textarea>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div>
+          <label>Códigos amigo (separados por coma)</label>
+          <input type="text" id="codigosAmigo" placeholder="R1, R2, R3" />
+        </div>
+        <div>
+          <label>Texto promo amigo (usa {codigo} y {usuario})</label>
+          <textarea id="promoTexto" placeholder="Tu código amigo es {codigo}{usuario} ..."></textarea>
+        </div>
+      </div>
+
+      <div class="divider-label">Textos de utilidad</div>
+      <div class="section-grid">
+        <div>
+          <label>Utilidad · Info</label>
+          <textarea id="utilInfo"></textarea>
+        </div>
+        <div>
+          <label>Utilidad · Cargado</label>
+          <textarea id="utilCargado"></textarea>
+        </div>
+        <div>
+          <label>Utilidad · Retiro</label>
+          <textarea id="utilRetiro"></textarea>
+        </div>
+      </div>
+
+      <div class="divider-label">Billeteras</div>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <p class="muted" style="margin:0;">Arrastrá con el grip para ordenar. Cada card es una billetera con CBU y Alias.</p>
+        <button class="btn small subtle" id="btnAddWallet">+ Añadir billetera</button>
+      </div>
+      <div class="wallet-list" id="walletList"></div>
     </div>
 
-    <!-- grupos -->
-    <div id="gruposContainer"></div>
+    <!-- PREVIEW -->
+    <div class="preview-card">
+      <div class="preview-header">
+        <div>
+          <div class="row" style="gap:6px;align-items:center;">
+            <span class="muted" style="font-size:11px;">Vista previa</span>
+          </div>
+          <div class="muted" style="margin-top:2px;font-size:11px;">Simula la botonera final. Los botones copian texto y muestran toasts.</div>
+        </div>
+        <div class="preview-tabs" id="previewTabs">
+          <div class="tab-chip active" data-tab="pc01">PC01</div>
+          <div class="tab-chip" data-tab="pc02">PC02</div>
+          <div class="tab-chip" data-tab="promo">Promo</div>
+        </div>
+      </div>
 
-    <!-- historial -->
-    <div class="historial">
-      📝 Último copiado:
-      <span id="historialText">Nada todavía…</span>
-      <button id="copyAgainBtn" class="btn-mini alt">Copiar de nuevo</button>
+      <div id="previewContent">
+        <!-- se rellena por JS -->
+      </div>
     </div>
   </div>
 </div>
 
-<div id="toast"></div>
-<input id="importFile" type="file" accept="application/json" style="display:none"/>
+<div class="toast" id="toast">
+  <div class="toast-icon">✔</div>
+  <span id="toastText">Copiado</span>
+</div>
 
 <script>
-  // --- Estado global ---
-  let profiles = {};          // { nombrePerfil: [ grupos ] }
-  let activeProfile = null;
-  let lastCopied = "";
-  let searchTerm = "";
-  const LS_KEY = "chinWalletProfiles_v1";
-  const LS_ACTIVE = "chinWalletActive_v1";
+/* === Estado base === */
+const STORAGE_LIST_KEY = 'chinmaker_profiles_list';
+const STORAGE_PREFIX = 'chinmaker_profile_';
+const STORAGE_LAST = 'chinmaker_last_profile';
 
-  // --- Utilidades visuales ---
-  function showToast(msg){
-    const t = document.getElementById("toast");
-    t.textContent = "✔ " + msg;
-    t.classList.add("show");
-    clearTimeout(t._timer);
-    t._timer = setTimeout(()=>t.classList.remove("show"), 2000);
+const DEFAULT_CONFIG = () => ({
+  perfil: 'PC01',
+  fechaExport: null,
+  paleta: {
+    color1: '#10101A',
+    color2: '#0A0A10',
+    acento: '#8A2BE2',
+    ok: '#10B981',
+    bad: '#EF4444'
+  },
+  whatsapp: {
+    numeros: [],
+    mensajeInicio: 'Hola soy {usuario} quiero mi clave y cronograma'
+  },
+  revinculacion: {
+    saludos: {
+      PC01: [],
+      PC02: []
+    },
+    codigosAmigo: ['R1','R2','R3']
+  },
+  billeteras: [],
+  utilidad: {
+    info: '',
+    cargado: '',
+    retiro: ''
+  },
+  promoAmigo: {
+    texto: 'Tu código amigo es {codigo}{usuario}'
+  },
+  estructuraBotones: {
+    orden: ['utilidad','billeteras','promoAmigo','revin']
   }
+});
 
-  async function copyText(txt){
-    if(!txt) return;
-    try{
-      await navigator.clipboard.writeText(txt);
-      lastCopied = txt;
-      document.getElementById("historialText").textContent = txt;
-      showToast("Copiado");
-    }catch(e){
-      console.error(e);
-      alert("No se pudo copiar :(");
-    }
+let currentProfileName = 'PC01';
+let config = DEFAULT_CONFIG();
+let dirtyTimer = null;
+
+/* === Utilidades de LocalStorage === */
+function loadProfileNames(){
+  try{
+    const raw = localStorage.getItem(STORAGE_LIST_KEY);
+    if(!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveProfileNames(list){
+  localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(Array.from(new Set(list))));
+}
+function saveCurrentProfile(){
+  const key = STORAGE_PREFIX + currentProfileName;
+  localStorage.setItem(key, JSON.stringify(config));
+  localStorage.setItem(STORAGE_LAST, currentProfileName);
+  indicateSaved();
+}
+function loadProfile(name){
+  const key = STORAGE_PREFIX + name;
+  const raw = localStorage.getItem(key);
+  if(!raw) return null;
+  try{
+    const obj = JSON.parse(raw);
+    return normalizeConfig(obj);
+  }catch(e){
+    console.error('Error parseando perfil',e);
+    return null;
   }
+}
+function normalizeConfig(obj){
+  const base = DEFAULT_CONFIG();
+  const merged = {
+    ...base,
+    ...obj,
+    paleta: {...base.paleta, ...(obj.paleta||{})},
+    whatsapp: {...base.whatsapp, ...(obj.whatsapp||{})},
+    revinculacion:{
+      ...base.revinculacion,
+      ...(obj.revinculacion||{}),
+      saludos:{
+        ...base.revinculacion.saludos,
+        ...((obj.revinculacion && obj.revinculacion.saludos)||{})
+      }
+    },
+    utilidad:{...base.utilidad, ...(obj.utilidad||{})},
+    promoAmigo:{...base.promoAmigo, ...(obj.promoAmigo||{})},
+    estructuraBotones:{...base.estructuraBotones, ...(obj.estructuraBotones||{})},
+    billeteras:Array.isArray(obj.billeteras)?obj.billeteras:base.billeteras
+  };
+  return merged;
+}
 
-  // --- LocalStorage ---
-  function loadFromStorage(){
-    try{
-      const raw = localStorage.getItem(LS_KEY);
-      profiles = raw ? JSON.parse(raw) : {};
-    }catch(e){
-      profiles = {};
-    }
-    if(!profiles || typeof profiles!=="object") profiles = {};
-    activeProfile = localStorage.getItem(LS_ACTIVE) || null;
-    // si no hay perfiles, crear uno por defecto
-    const names = Object.keys(profiles);
-    if(!names.length){
-      profiles["DEFAULT"] = [];
-      activeProfile = "DEFAULT";
-    }else if(!activeProfile || !profiles[activeProfile]){
-      activeProfile = names[0];
-    }
-    saveToStorage(false);
+/* === UI inicial === */
+document.addEventListener('DOMContentLoaded', () => {
+  bootstrapProfiles();
+  bindEditorInputs();
+  renderAll();
+});
+
+function bootstrapProfiles(){
+  const list = loadProfileNames();
+  const last = localStorage.getItem(STORAGE_LAST);
+  if(last && list.includes(last)){
+    currentProfileName = last;
+    config = loadProfile(last) || DEFAULT_CONFIG();
+  }else if(list.length){
+    currentProfileName = list[0];
+    config = loadProfile(list[0]) || DEFAULT_CONFIG();
+  }else{
+    currentProfileName = 'PC01';
+    config = DEFAULT_CONFIG();
+    saveProfileNames([currentProfileName]);
+    saveCurrentProfile();
   }
+  renderProfileSelect();
+}
 
-  function saveToStorage(saveProfiles = true){
-    if(saveProfiles){
-      localStorage.setItem(LS_KEY, JSON.stringify(profiles));
-    }
-    if(activeProfile){
-      localStorage.setItem(LS_ACTIVE, activeProfile);
-    }
-  }
+/* === Render profile selector === */
+function renderProfileSelect(){
+  const select = document.getElementById('profileSelect');
+  const list = loadProfileNames();
+  if(!list.includes(currentProfileName)) list.push(currentProfileName);
+  select.innerHTML = '';
+  list.forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    if(name === currentProfileName) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
 
-  // --- Perfiles ---
-  function refreshProfileSelect(){
-    const sel = document.getElementById("perfilSelect");
-    sel.innerHTML = "";
-    Object.keys(profiles).sort().forEach(name=>{
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      if(name === activeProfile) opt.selected = true;
-      sel.appendChild(opt);
-    });
-  }
+/* === Editor bindings === */
+function bindEditorInputs(){
+  const profileSelect = document.getElementById('profileSelect');
+  profileSelect.addEventListener('change', e=>{
+    const name = e.target.value || 'PC01';
+    const existing = loadProfile(name);
+    currentProfileName = name;
+    if(existing) config = existing;
+    else config = {...DEFAULT_CONFIG(), perfil:name};
+    saveProfileNames([...loadProfileNames(), name]);
+    renderAll();
+  });
 
-  function setActiveProfile(name){
-    if(!profiles[name]){
-      profiles[name] = [];
-    }
-    activeProfile = name;
-    saveToStorage(false);
-    refreshProfileSelect();
-    renderGroups();
-  }
-
-  function handleNewProfile(){
-    const name = prompt("Nombre del nuevo perfil (ej: PC02, AGENTE01):","PC01");
+  document.getElementById('btnNewProfile').addEventListener('click', ()=>{
+    const name = prompt('Nombre del nuevo perfil (ej. PC03, GONZALES):','PC03');
     if(!name) return;
-    if(!profiles[name]) profiles[name] = [];
-    activeProfile = name;
-    saveToStorage();
-    refreshProfileSelect();
-    renderGroups();
-    showToast("Perfil creado: " + name);
-  }
+    currentProfileName = name.trim();
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    const list = loadProfileNames();
+    list.push(currentProfileName);
+    saveProfileNames(list);
+    renderProfileSelect();
+    renderAll();
+  });
 
-  function resetCurrentProfile(){
-    if(!activeProfile) return;
-    if(!confirm("¿Vaciar completamente el perfil "+activeProfile+"? Esto no se puede deshacer.")) return;
-    profiles[activeProfile] = [];
-    saveToStorage();
-    renderGroups();
-    showToast("Perfil reiniciado");
-  }
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    if(!confirm('¿Reiniciar el perfil actual? Se borrará la configuración de este perfil en este navegador.')) return;
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveCurrentProfile();
+    renderAll();
+  });
 
-  function exportCurrentProfile(){
-    if(!activeProfile) return;
-    const data = {
-      profileName: activeProfile,
-      groups: profiles[activeProfile] || []
-    };
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "perfil_"+activeProfile+".json";
+  document.getElementById('btnExport').addEventListener('click', ()=>{
+    config.fechaExport = new Date().toISOString();
+    const blob = new Blob([JSON.stringify(config,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentProfileName || 'perfil'}.chin.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
-    showToast("Perfil exportado");
-  }
-
-  function importProfileFile(file){
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e=>{
-      try{
-        const obj = JSON.parse(e.target.result || "{}");
-        if(!Array.isArray(obj.groups)){
-          alert("Archivo inválido.");
-          return;
-        }
-        let name = obj.profileName || file.name.replace(/\.json$/i,"");
-        name = prompt("Nombre para este perfil importado:", name) || name || "IMPORTADO";
-        profiles[name] = obj.groups;
-        activeProfile = name;
-        saveToStorage();
-        refreshProfileSelect();
-        renderGroups();
-        showToast("Perfil importado: "+name);
-      }catch(err){
-        console.error(err);
-        alert("Error leyendo el perfil.");
-      }
-    };
-    reader.readAsText(file);
-  }
-
-  // --- Grupos ---
-  function readFormGroup(){
-    const nombre = document.getElementById("nombreGrupo").value.trim();
-    if(!nombre){ alert("Poné un nombre de grupo."); return null; }
-    const telefono = document.getElementById("telefono").value.trim();
-    const notas = document.getElementById("notas").value.trim();
-
-    const billetera1 = document.getElementById("billetera1").value.trim();
-    const alias1 = document.getElementById("alias1").value.trim();
-    const titular1 = document.getElementById("titular1").value.trim();
-    const cbu1 = document.getElementById("cbu1").value.trim();
-
-    if(!alias1 || !titular1 || !cbu1){
-      alert("Billetera 1 necesita alias, titular y CBU/CVU.");
-      return null;
-    }
-
-    const billetera2 = document.getElementById("billetera2").value.trim();
-    const alias2 = document.getElementById("alias2").value.trim();
-    const titular2 = document.getElementById("titular2").value.trim();
-    const cbu2 = document.getElementById("cbu2").value.trim();
-
-    const wallet1 = { billetera:billetera1, alias:alias1, titular:titular1, cbu:cbu1 };
-    let wallet2 = null;
-    if(billetera2 && (alias2 || titular2 || cbu2)){
-      wallet2 = { billetera:billetera2, alias:alias2, titular:titular2, cbu:cbu2 };
-    }
-
-    return {
-      id: "g_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),
-      nombre,
-      telefono,
-      notas,
-      wallet1,
-      wallet2
-    };
-  }
-
-  function clearForm(){
-    ["nombreGrupo","telefono","notas","alias1","titular1","cbu1","alias2","titular2","cbu2"].forEach(id=>{
-      document.getElementById(id).value = "";
-    });
-    document.getElementById("billetera1").selectedIndex = 0;
-    document.getElementById("billetera2").selectedIndex = 0;
-  }
-
-  function addGroup(){
-    if(!activeProfile) return;
-    const g = readFormGroup();
-    if(!g) return;
-    profiles[activeProfile].push(g);
-    saveToStorage();
-    clearForm();
-    renderGroups();
-    showToast("Grupo añadido al perfil "+activeProfile);
-  }
-
-  function filteredGroups(){
-    const list = profiles[activeProfile] || [];
-    if(!searchTerm) return list;
-    const term = searchTerm.toLowerCase();
-    return list.filter(g=>{
-      const haystack = [
-        g.nombre,
-        g.telefono,
-        g.notas,
-        g.wallet1?.alias,
-        g.wallet1?.titular,
-        g.wallet2?.alias,
-        g.wallet2?.titular
-      ].join(" ").toLowerCase();
-      return haystack.includes(term);
-    });
-  }
-
-  function templateAlias(wallet){
-    return `${wallet.alias}\nTitular ${wallet.titular} *${wallet.billetera}*`;
-  }
-  function templateCarga(wallet, telefono, nombreGrupo){
-    return `Cargá a ${wallet.alias} (${wallet.titular}) *${wallet.billetera}*\nRef: ${nombreGrupo} · Tel: ${telefono||"-"}`;
-  }
-
-  function renderGroups(){
-    const cont = document.getElementById("gruposContainer");
-    cont.innerHTML = "";
-    const groups = filteredGroups();
-    if(!groups.length){
-      cont.innerHTML = `<div style="font-size:13px;color:var(--muted);margin-top:6px;">No hay grupos en este perfil todavía.</div>`;
-      return;
-    }
-
-    groups.forEach(g=>{
-      const div = document.createElement("div");
-      div.className = "grupo";
-      div.dataset.id = g.id;
-      div.draggable = true;
-
-      const header = document.createElement("div");
-      header.className = "grupo-header";
-
-      const drag = document.createElement("div");
-      drag.className = "drag-handle";
-      drag.textContent = "☰";
-      header.appendChild(drag);
-
-      const main = document.createElement("div");
-      main.className = "grupo-main";
-
-      const left = document.createElement("div");
-      left.style.flex = "1";
-      const title = document.createElement("div");
-      title.className = "grupo-title";
-      title.textContent = g.nombre;
-      const sub = document.createElement("div");
-      sub.className = "grupo-sub";
-      sub.textContent = (g.telefono||"") + (g.notas ? " · " + g.notas : "");
-      left.appendChild(title);
-      left.appendChild(sub);
-
-      const tags = document.createElement("div");
-      tags.style.display = "flex";
-      tags.style.flexWrap = "wrap";
-      tags.style.gap = "4px";
-      const tag1 = document.createElement("span");
-      tag1.className = "tag-pill";
-      tag1.textContent = g.wallet1.billetera;
-      tags.appendChild(tag1);
-      if(g.wallet2){
-        const tag2 = document.createElement("span");
-        tag2.className = "tag-pill";
-        tag2.textContent = g.wallet2.billetera;
-        tags.appendChild(tag2);
-      }
-      left.appendChild(tags);
-
-      main.appendChild(left);
-      header.appendChild(main);
-
-      div.appendChild(header);
-
-      const btnRow = document.createElement("div");
-      btnRow.className = "grupo-buttons";
-
-      // Wallet 1
-      const w1Label = document.createElement("div");
-      w1Label.className = "wallet-label";
-      w1Label.textContent = "Wallet 1";
-      btnRow.appendChild(w1Label);
-
-      const b1 = document.createElement("button");
-      b1.className = "btn-mini";
-      b1.textContent = "CBU 1";
-      b1.onclick = ()=>copyText(g.wallet1.cbu);
-      btnRow.appendChild(b1);
-
-      const b2 = document.createElement("button");
-      b2.className = "btn-mini";
-      b2.textContent = "Alias 1";
-      b2.onclick = ()=>copyText(templateAlias(g.wallet1));
-      btnRow.appendChild(b2);
-
-      const b3 = document.createElement("button");
-      b3.className = "btn-mini alt";
-      b3.textContent = "Texto carga 1";
-      b3.onclick = ()=>copyText(templateCarga(g.wallet1,g.telefono,g.nombre));
-      btnRow.appendChild(b3);
-
-      // Wallet 2 opcional
-      if(g.wallet2){
-        const spacer = document.createElement("span");
-        spacer.className = "chip-small";
-        spacer.textContent = "·";
-        btnRow.appendChild(spacer);
-
-        const w2Label = document.createElement("div");
-        w2Label.className = "wallet-label";
-        w2Label.textContent = "Wallet 2";
-        btnRow.appendChild(w2Label);
-
-        const c1 = document.createElement("button");
-        c1.className = "btn-mini";
-        c1.textContent = "CBU 2";
-        c1.onclick = ()=>copyText(g.wallet2.cbu);
-        btnRow.appendChild(c1);
-
-        const c2 = document.createElement("button");
-        c2.className = "btn-mini";
-        c2.textContent = "Alias 2";
-        c2.onclick = ()=>copyText(templateAlias(g.wallet2));
-        btnRow.appendChild(c2);
-
-        const c3 = document.createElement("button");
-        c3.className = "btn-mini alt";
-        c3.textContent = "Texto carga 2";
-        c3.onclick = ()=>copyText(templateCarga(g.wallet2,g.telefono,g.nombre));
-        btnRow.appendChild(c3);
-      }
-
-      div.appendChild(btnRow);
-      cont.appendChild(div);
-    });
-
-    attachDragHandlers();
-  }
-
-  // --- Drag & drop ---
-  function attachDragHandlers(){
-    const container = document.getElementById("gruposContainer");
-    let dragId = null;
-
-    container.querySelectorAll(".grupo").forEach(el=>{
-      el.addEventListener("dragstart", e=>{
-        dragId = el.dataset.id;
-        e.dataTransfer.effectAllowed = "move";
-      });
-      el.addEventListener("dragover", e=>{
-        e.preventDefault();
-        el.classList.add("drag-over");
-      });
-      el.addEventListener("dragleave", ()=>el.classList.remove("drag-over"));
-      el.addEventListener("drop", e=>{
-        e.preventDefault();
-        el.classList.remove("drag-over");
-        if(!dragId || dragId === el.dataset.id) return;
-        const list = profiles[activeProfile] || [];
-        const fromIdx = list.findIndex(g=>g.id===dragId);
-        const toIdx = list.findIndex(g=>g.id===el.dataset.id);
-        if(fromIdx<0 || toIdx<0) return;
-        const [moved] = list.splice(fromIdx,1);
-        list.splice(toIdx,0,moved);
-        profiles[activeProfile] = list;
-        saveToStorage();
-        renderGroups();
-      });
-    });
-  }
-
-  // --- Búsqueda ---
-  document.getElementById("searchInput").addEventListener("input", e=>{
-    searchTerm = e.target.value || "";
-    renderGroups();
+    URL.revokeObjectURL(url);
   });
 
-  // --- Botones top ---
-  document.getElementById("addGroupBtn").addEventListener("click", addGroup);
-  document.getElementById("newProfileBtn").addEventListener("click", handleNewProfile);
-  document.getElementById("resetProfileBtn").addEventListener("click", resetCurrentProfile);
-  document.getElementById("exportProfileBtn").addEventListener("click", exportCurrentProfile);
-  document.getElementById("importProfileBtn").addEventListener("click", ()=>document.getElementById("importFile").click());
-  document.getElementById("importFile").addEventListener("change", e=>{
+  const importInput = document.getElementById('fileImport');
+  document.getElementById('btnImport').addEventListener('click', ()=>importInput.click());
+  importInput.addEventListener('change', async (e)=>{
     const file = e.target.files[0];
-    e.target.value = "";
-    if(file) importProfileFile(file);
-  });
-  document.getElementById("perfilSelect").addEventListener("change", e=>{
-    activeProfile = e.target.value;
-    saveToStorage(false);
-    renderGroups();
-  });
-  document.getElementById("copyAgainBtn").addEventListener("click", ()=>copyText(lastCopied||""));
-
-  // Pantalla completa
-  document.getElementById("fsBtn").addEventListener("click", ()=>{
-    if(!document.fullscreenElement){
-      document.documentElement.requestFullscreen?.();
-    }else{
-      document.exitFullscreen?.();
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      const normalized = normalizeConfig(obj);
+      currentProfileName = obj.perfil || file.name.replace(/\.json$/i,'') || 'PerfilImportado';
+      config = normalized;
+      const list = loadProfileNames();
+      list.push(currentProfileName);
+      saveProfileNames(list);
+      renderProfileSelect();
+      saveCurrentProfile();
+      renderAll();
+      showToast('Perfil importado correctamente');
+    }catch(err){
+      console.error(err);
+      alert('No se pudo importar el archivo JSON.');
+    }finally{
+      importInput.value = '';
     }
   });
 
-  // --- Init ---
-  loadFromStorage();
-  refreshProfileSelect();
-  renderGroups();
+  /* Inputs simples */
+  const map = {
+    colorAccent:['paleta','acento'],
+    colorOk:['paleta','ok'],
+    colorBad:['paleta','bad'],
+    waNumbers:['whatsapp','numeros'],
+    waMensaje:['whatsapp','mensajeInicio'],
+    revPC01:['revinculacion','saludos','PC01'],
+    revPC02:['revinculacion','saludos','PC02'],
+    codigosAmigo:['revinculacion','codigosAmigo'],
+    promoTexto:['promoAmigo','texto'],
+    utilInfo:['utilidad','info'],
+    utilCargado:['utilidad','cargado'],
+    utilRetiro:['utilidad','retiro']
+  };
+  Object.keys(map).forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      const path = map[id];
+      if(id === 'waNumbers'){
+        const arr = el.value.split(',').map(s=>s.trim()).filter(Boolean);
+        config.whatsapp.numeros = arr;
+      }else if(id === 'codigosAmigo'){
+        config.revinculacion.codigosAmigo = el.value.split(',').map(s=>s.trim()).filter(Boolean);
+      }else if(id === 'revPC01' || id === 'revPC02'){
+        const key = path[2];
+        config.revinculacion.saludos[key] = el.value.split('\n').map(s=>s.trim()).filter(Boolean);
+      }else{
+        let obj = config;
+        for(let i=0;i<path.length-1;i++){
+          obj = obj[path[i]];
+        }
+        obj[path[path.length-1]] = el.value;
+      }
+      markDirty();
+      renderPreview();
+    });
+  });
+
+  document.getElementById('btnAddWallet').addEventListener('click', ()=>{
+    config.billeteras.push({
+      id: 'w_'+Date.now(),
+      label: 'Nueva billetera',
+      cbu:'',
+      alias:'',
+      titular:'',
+      billetera:'Mercado Pago',
+      billeteraCustom:'',
+      flip:false,
+      cbu2:'',
+      alias2:'',
+      titular2:'',
+      billetera2:'Mercado Pago',
+      billetera2Custom:''
+    });
+    markDirty();
+    renderWallets();
+    renderPreview();
+  });
+
+  /* preview tabs */
+  document.getElementById('previewTabs').addEventListener('click', e=>{
+    const tab = e.target.closest('.tab-chip');
+    if(!tab) return;
+    document.querySelectorAll('.tab-chip').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    renderPreview();
+  });
+}
+
+/* === Dirty / Saved indicator === */
+function markDirty(){
+  const chip = document.getElementById('chipStatus');
+  chip.textContent = 'Cambios sin guardar';
+  if(dirtyTimer) clearTimeout(dirtyTimer);
+  dirtyTimer = setTimeout(()=>{ saveCurrentProfile(); },400);
+}
+function indicateSaved(){
+  const chip = document.getElementById('chipStatus');
+  chip.textContent = 'Perfil guardado';
+}
+
+/* === Render general === */
+function renderAll(){
+  // actualizar inputs desde config
+  document.getElementById('colorAccent').value = config.paleta.acento || '';
+  document.getElementById('colorOk').value = config.paleta.ok || '';
+  document.getElementById('colorBad').value = config.paleta.bad || '';
+  document.getElementById('waNumbers').value = (config.whatsapp.numeros||[]).join(', ');
+  document.getElementById('waMensaje').value = config.whatsapp.mensajeInicio || '';
+  document.getElementById('revPC01').value = (config.revinculacion.saludos.PC01||[]).join('\n');
+  document.getElementById('revPC02').value = (config.revinculacion.saludos.PC02||[]).join('\n');
+  document.getElementById('codigosAmigo').value = (config.revinculacion.codigosAmigo||[]).join(', ');
+  document.getElementById('promoTexto').value = config.promoAmigo.texto || '';
+  document.getElementById('utilInfo').value = config.utilidad.info || '';
+  document.getElementById('utilCargado').value = config.utilidad.cargado || '';
+  document.getElementById('utilRetiro').value = config.utilidad.retiro || '';
+
+  renderWallets();
+  renderPreview();
+}
+
+/* === Render billeteras + drag === */
+const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','Otro'];
+
+function renderWallets(){
+  const listEl = document.getElementById('walletList');
+  listEl.innerHTML = '';
+  config.billeteras.forEach((w,idx)=>{
+    const card = document.createElement('div');
+    card.className = 'wallet-card';
+    card.draggable = true;
+    card.dataset.index = idx;
+
+    card.innerHTML = `
+      <div class="drag-handle" data-handle></div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">${escapeHtml(w.label || 'Billetera')}</span>
+          <div class="wallet-actions">
+            <span class="badge ${w.flip ? 'flip':''}">${w.flip?'Flip ON':'Flip OFF'}</span>
+            <button class="btn small subtle" data-remove="${idx}" title="Eliminar">✕</button>
+          </div>
+        </div>
+        <div class="wallet-main">
+          <div>
+            <label>Nombre visible (card)</label>
+            <input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" />
+          </div>
+          <div>
+            <label>CBU</label>
+            <input type="text" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
+          </div>
+          <div>
+            <label>Alias</label>
+            <input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" />
+          </div>
+          <div>
+            <label>Titular</label>
+            <input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" />
+          </div>
+          <div>
+            <label>Billetera</label>
+            <select data-field="billetera" data-idx="${idx}">
+              ${WALLET_OPTS.map(opt=>{
+                const sel = w.billetera === opt ? 'selected':'';
+                return `<option value="${opt}" ${sel}>${opt}</option>`;
+              }).join('')}
+            </select>
+            <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
+          </div>
+        </div>
+        <div class="switch-row">
+          <div class="switch ${w.flip?'on':''}" data-flip="${idx}">
+            <div class="switch-thumb"></div>
+          </div>
+          <span>Segunda billetera (flip)</span>
+        </div>
+        <div class="wallet-main" style="margin-top:6px;${w.flip?'':'display:none'}">
+          <div>
+            <label>CBU (flip)</label>
+            <input type="text" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
+          </div>
+          <div>
+            <label>Alias (flip)</label>
+            <input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" />
+          </div>
+          <div>
+            <label>Titular (flip)</label>
+            <input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" />
+          </div>
+          <div>
+            <label>Billetera (flip)</label>
+            <select data-field="billetera2" data-idx="${idx}">
+              ${WALLET_OPTS.map(opt=>{
+                const sel = w.billetera2 === opt ? 'selected':'';
+                return `<option value="${opt}" ${sel}>${opt}</option>`;
+              }).join('')}
+            </select>
+            <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
+          </div>
+        </div>
+      </div>
+    `;
+
+    listEl.appendChild(card);
+  });
+
+  // eventos de edición simples
+  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
+    el.addEventListener('input', onWalletFieldChange);
+    el.addEventListener('change', onWalletFieldChange);
+  });
+
+  listEl.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.remove,10);
+      if(isNaN(idx)) return;
+      if(!confirm('¿Eliminar esta billetera?')) return;
+      config.billeteras.splice(idx,1);
+      markDirty();
+      renderWallets();
+      renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-flip]').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      const idx = parseInt(sw.dataset.flip,10);
+      if(isNaN(idx)) return;
+      const w = config.billeteras[idx];
+      w.flip = !w.flip;
+      markDirty();
+      renderWallets();
+      renderPreview();
+    });
+  });
+
+  // drag
+  listEl.querySelectorAll('.wallet-card').forEach(card=>{
+    card.addEventListener('dragstart', onDragStart);
+    card.addEventListener('dragover', onDragOver);
+    card.addEventListener('drop', onDrop);
+    card.addEventListener('dragend', onDragEnd);
+  });
+}
+
+function onWalletFieldChange(e){
+  const idx = parseInt(e.target.dataset.idx,10);
+  const field = e.target.dataset.field;
+  if(isNaN(idx) || !field) return;
+  const w = config.billeteras[idx];
+  if(!w) return;
+  if(field === 'billetera' || field==='billetera2'){
+    w[field] = e.target.value;
+    const customField = field==='billetera'?'billeteraCustom':'billetera2Custom';
+    const inputCustom = e.target.parentElement.querySelector(`input[data-field="${customField}"]`);
+    if(inputCustom){
+      inputCustom.style.display = e.target.value === 'Otro' ? '' : 'none';
+    }
+  }else{
+    w[field] = e.target.value;
+  }
+  markDirty();
+  renderPreview();
+}
+
+/* Drag & drop billeteras */
+let dragIndex = null;
+
+function onDragStart(e){
+  const handle = e.target.querySelector('[data-handle]');
+  if(!handle) return;
+  dragIndex = parseInt(e.target.dataset.index,10);
+  e.dataTransfer.effectAllowed = 'move';
+  e.target.classList.add('dragging');
+}
+function onDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+function onDrop(e){
+  e.preventDefault();
+  const target = e.currentTarget;
+  const toIndex = parseInt(target.dataset.index,10);
+  if(dragIndex===null || isNaN(toIndex)) return;
+  if(dragIndex === toIndex) return;
+  const arr = config.billeteras;
+  const [moved] = arr.splice(dragIndex,1);
+  arr.splice(toIndex,0,moved);
+  dragIndex = null;
+  markDirty();
+  renderWallets();
+  renderPreview();
+}
+function onDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  dragIndex = null;
+}
+
+/* === Preview === */
+function getActiveTab(){
+  const active = document.querySelector('.tab-chip.active');
+  return active ? active.dataset.tab : 'pc01';
+}
+
+function renderPreview(){
+  const content = document.getElementById('previewContent');
+  const tab = getActiveTab();
+  content.innerHTML = '';
+
+  const palette = config.paleta || {};
+  document.documentElement.style.setProperty('--accent', palette.acento || '#8A2BE2');
+  document.documentElement.style.setProperty('--accent-light', palette.acento || '#a855f7');
+  document.documentElement.style.setProperty('--ok', palette.ok || '#10B981');
+  document.documentElement.style.setProperty('--bad', palette.bad || '#EF4444');
+
+  if(tab === 'pc01' || tab === 'pc02'){
+    // Utilidad
+    if(config.utilidad.info || config.utilidad.cargado || config.utilidad.retiro){
+      const g = document.createElement('div');
+      g.className = 'preview-group';
+      g.innerHTML = `<h3>Utilidad <span class="chip-mini">Texto fijo</span></h3>`;
+      ['info','cargado','retiro'].forEach(key=>{
+        const label = key==='info'?'Info':(key==='cargado'?'Cargado':'Retiro');
+        const value = config.utilidad[key];
+        if(!value) return;
+        const btn = document.createElement('div');
+        btn.className = 'btn-preview';
+        btn.innerHTML = `<div><span class="label">${label}</span><div class="sub">${escapeHtml(shorten(value,70))}</div></div><span class="sub">copiar</span>`;
+        btn.addEventListener('click', ()=>{
+          copyToClipboard(value);
+          showToast(`Copiado texto de ${label}`);
+        });
+        g.appendChild(btn);
+      });
+      content.appendChild(g);
+    }
+
+    // Billeteras
+    if(config.billeteras.length){
+      const g2 = document.createElement('div');
+      g2.className = 'preview-group';
+      g2.innerHTML = `<h3>Billeteras <span class="chip-mini">${config.billeteras.length} activas</span></h3>`;
+      config.billeteras.forEach(w=>{
+        // CBU
+        if(w.cbu){
+          const btn = document.createElement('div');
+          btn.className = 'btn-preview';
+          const billeName = w.billetera === 'Otro' ? (w.billeteraCustom||'Billetera') : w.billetera;
+          btn.innerHTML = `<div><span class="label">${escapeHtml(w.label||'Billetera')}</span><div class="sub">CBU · ${escapeHtml(billeName)}</div></div><span class="sub">CBU</span>`;
+          btn.addEventListener('click', ()=>{
+            copyToClipboard(w.cbu);
+            showToast(`Copiado CBU de ${w.label||'billetera'}`);
+          });
+          g2.appendChild(btn);
+        }
+        // Alias
+        if(w.alias){
+          const btn = document.createElement('div');
+          btn.className = 'btn-preview';
+          const billeName = w.billetera === 'Otro' ? (w.billeteraCustom||'Billetera') : w.billetera;
+          const aliasLabel = `${w.alias} · ${w.titular||''}`.trim();
+          btn.innerHTML = `<div><span class="label">${escapeHtml(w.label||'Billetera')}</span><div class="sub">Alias · ${escapeHtml(billeName)}</div></div><span class="sub">ALIAS</span>`;
+          btn.addEventListener('click', ()=>{
+            const txt = `${w.alias} **${w.titular||''}** ${billeName(w)}`;
+            copyToClipboard(txt);
+            showToast(`Copiado alias de ${w.label||'billetera'}`);
+          });
+          g2.appendChild(btn);
+        }
+        // Flip
+        if(w.flip && (w.cbu2 || w.alias2)){
+          const btn = document.createElement('div');
+          btn.className = 'btn-preview';
+          btn.innerHTML = `<div><span class="label">${escapeHtml(w.label||'Billetera')} (flip)</span><div class="sub">${escapeHtml(w.alias2||w.cbu2||'')}</div></div><span class="sub">FLIP</span>`;
+          btn.addEventListener('click', ()=>{
+            const payload = w.cbu2 || w.alias2;
+            copyToClipboard(payload);
+            showToast(`Copiado (flip) de ${w.label||'billetera'}`);
+          });
+          g2.appendChild(btn);
+        }
+      });
+      content.appendChild(g2);
+    }
+
+    // WhatsApp / Revinc
+    const g3 = document.createElement('div');
+    g3.className = 'preview-group';
+    g3.innerHTML = `<h3>WhatsApp & Revin<span class="chip-mini">PC ${tab==='pc01'?'01':'02'}</span></h3>`;
+    const nums = config.whatsapp.numeros || [];
+    if(nums.length){
+      const btn = document.createElement('div');
+      btn.className = 'btn-preview';
+      btn.innerHTML = `<div><span class="label">WhatsApp principal</span><div class="sub">${escapeHtml(nums[0])}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{
+        copyToClipboard(nums[0]);
+        showToast('Copiado número de WhatsApp');
+      });
+      g3.appendChild(btn);
+    }
+    const saludos = config.revinculacion.saludos[tab==='pc01'?'PC01':'PC02'] || [];
+    if(saludos.length){
+      const btn = document.createElement('div');
+      btn.className = 'btn-preview';
+      btn.innerHTML = `<div><span class="label">Saludo revinculación</span><div class="sub">${escapeHtml(shorten(saludos[0],70))}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{
+        copyToClipboard(saludos[0]);
+        showToast('Copiado saludo de revinculación');
+      });
+      g3.appendChild(btn);
+    }
+    content.appendChild(g3);
+
+  } else if(tab === 'promo'){
+    const g = document.createElement('div');
+    g.className = 'preview-group';
+    const cods = config.revinculacion.codigosAmigo || [];
+    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">${cods.length} códigos</span></h3>`;
+    cods.forEach(c=>{
+      const txt = (config.promoAmigo.texto||'').replace('{codigo}',c+'-').replace('{usuario}','USUARIO');
+      const btn = document.createElement('div');
+      btn.className = 'btn-preview';
+      btn.innerHTML = `<div><span class="label">Código ${escapeHtml(c)}</span><div class="sub">${escapeHtml(shorten(txt,80))}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{
+        copyToClipboard(txt);
+        showToast(`Copiado promo ${c}`);
+      });
+      g.appendChild(btn);
+    });
+    content.appendChild(g);
+  }
+}
+
+function billeName(w){
+  const main = w.billetera === 'Otro' ? (w.billeteraCustom||'') : w.billetera;
+  return main || '';
+}
+
+/* === Helpers === */
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+function escapeAttr(str){
+  return escapeHtml(str).replace(/"/g,'&quot;');
+}
+function shorten(str,max){
+  if(!str) return '';
+  str = String(str);
+  return str.length>max ? str.slice(0,max-3)+'...' : str;
+}
+async function copyToClipboard(text){
+  try{
+    await navigator.clipboard.writeText(String(text));
+  }catch(e){
+    // fallback silencioso
+  }
+}
+let toastTimer = null;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'),1800);
+}
 </script>
 </body>
 </html>
