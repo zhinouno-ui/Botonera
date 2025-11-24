@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>ChinMaker • Editor Unificado v3</title>
+  <title>ChinMaker • Editor Unificado v4</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
@@ -66,7 +66,7 @@
       transition:border-color .16s, box-shadow .16s, background .16s;
     }
     input[type=color]{padding:0.25rem;height:36px;cursor:pointer;background:#020617;}
-    textarea{min-height:74px;resize:vertical;}
+    textarea{min-height:90px;resize:vertical;}
     input:focus, textarea:focus, select:focus{
       border-color:var(--accent-light);box-shadow:0 0 0 1px rgba(168,85,247,.32);background:#020617;
     }
@@ -133,18 +133,20 @@
     .divider-label{margin:10px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
     .muted{color:var(--muted);font-size:11px;}
 
-    /* Difuminado de textos de utilidad cuando no están en foco */
-    .blur-holder{position:relative}
-    .blur-holder textarea:not(:focus)+.blur-overlay{opacity:.65;backdrop-filter:blur(1px);pointer-events:none}
-    .blur-overlay{position:absolute;inset:4px;border-radius:8px;transition:.16s;border:1px dashed rgba(148,163,184,.25)}
+    /* Flip animación (preview visual) */
+    .flip-card{position:relative;perspective:1000px;}
+    .flip-inner{transition:transform .4s;transform-style:preserve-3d;}
+    .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+    .flip-face{backface-visibility:hidden;}
+    .flip-back{transform:rotateY(180deg);}
   </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="title-block">
-      <h1>ChinMaker · Editor Unificado v3</h1>
-      <small>Perfiles, billeteras, PCs con WhatsApp y mensajes de revinculación por PC. Exportá a .chin.json.</small>
+      <h1>ChinMaker · Editor Unificado v4</h1>
+      <small>Utilidad siempre arriba, billeteras al medio, promo + revin por PC abajo. Exportá a .chin.json.</small>
     </div>
     <div class="row">
       <div class="chip"><span>💾</span> <span id="chipStatus">Perfil guardado</span></div>
@@ -189,20 +191,20 @@
           <div class="row">
             <button class="btn small ghost" id="pcAddBtn">Agregar PC</button>
             <button class="btn small ghost" id="pcDelBtn">Eliminar última PC</button>
-            <span class="muted" id="pcCountNote">Mínimo 2, máximo 10</span>
+            <span class="muted" id="pcCountNote">Mínimo 1, máximo 10</span>
           </div>
           <div id="pcSlider" class="row" style="margin-top:6px;flex-wrap:wrap;"></div>
         </div>
         <div style="flex:1;min-width:260px;">
           <label>WhatsApp de la PC seleccionada</label>
           <input type="text" id="pcWsp" placeholder="5491100000000">
-          <p class="muted">Texto al copiar WhatsApp usa {usuario} y se reemplaza con lo que escribas en la barra.</p>
+          <p class="muted">Al copiar WhatsApp, {usuario} se reemplaza por lo que escribas en la barra.</p>
         </div>
       </div>
 
       <div class="divider-label">Mensajes de revinculación por PC</div>
       <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <p class="muted" style="margin:0;">Usá {usuario} dentro del texto. Sugerencia: “Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX”.</p>
+        <p class="muted" style="margin:0;">Usá {usuario}. Ej.: “Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX”.</p>
         <button class="btn small subtle" id="btnAddSaludo">+ Añadir mensaje</button>
       </div>
       <div class="list" id="saludosList"></div>
@@ -210,37 +212,50 @@
       <div class="divider-label">Mensaje al copiar WhatsApp</div>
       <div class="section-grid">
         <div>
-          <label>Plantilla de mensaje (usa {usuario})</label>
+          <label>Plantilla (usa {usuario})</label>
           <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma"></textarea>
         </div>
       </div>
 
       <div class="divider-label">Textos de utilidad</div>
       <div class="section-grid">
-        <div class="blur-holder">
+        <div>
           <label>Utilidad · Info</label>
-          <textarea id="utilInfo"></textarea>
-          <div class="blur-overlay"></div>
-          <p class="muted" style="margin-top:6px">Se exporta el texto que veas acá. Por defecto viene difuminado para editar cómodo.</p>
+          <textarea id="utilInfo" data-default="info"></textarea>
         </div>
-        <div class="blur-holder">
+        <div>
           <label>Utilidad · Cargado</label>
-          <textarea id="utilCargado"></textarea>
-          <div class="blur-overlay"></div>
+          <textarea id="utilCargado" data-default="cargado"></textarea>
         </div>
-        <div class="blur-holder">
+        <div>
           <label>Utilidad · Retiro</label>
-          <textarea id="utilRetiro"></textarea>
-          <div class="blur-overlay"></div>
+          <textarea id="utilRetiro" data-default="retiro"></textarea>
         </div>
       </div>
 
       <div class="divider-label">Billeteras</div>
       <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta representa un grupo por nombre visible.</p>
+        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta es un grupo por nombre visible.</p>
         <button class="btn small subtle" id="btnAddWallet">+ Añadir billetera</button>
       </div>
       <div class="list" id="walletList"></div>
+
+      <div class="divider-label">Promo amigo</div>
+      <div class="section-grid">
+        <div>
+          <label>Texto Promo Amigos</label>
+          <textarea id="promoTexto"></textarea>
+        </div>
+        <div>
+          <label>Info Promo Amigos</label>
+          <textarea id="promoInfo"></textarea>
+        </div>
+        <div>
+          <label>Códigos amigo (R1, R2...)</label>
+          <input type="text" id="promoCodigos" placeholder="R1, R2, R3">
+          <p class="muted">Se usa {codigo} según la PC activa: PC01→R1, PC02→R2, etc.</p>
+        </div>
+      </div>
     </div>
 
     <!-- PREVIEW -->
@@ -255,12 +270,12 @@
         <div class="preview-tabs" id="previewTabs">
           <div class="tab-chip active" data-tab="utilidad">Utilidad</div>
           <div class="tab-chip" data-tab="billeteras">Billeteras</div>
-          <div class="tab-chip" data-tab="revin">Mensajes de revinculación</div>
-          <div class="tab-chip" data-tab="promo">Promo</div>
+          <div class="tab-chip" data-tab="promo">Promo amigo</div>
+          <div class="tab-chip" data-tab="revin">Revin por PC</div>
         </div>
       </div>
 
-      <div class="preview-group" id="userBarBox">
+      <div class="preview-group" id="userBarBox" style="display:none;">
         <div class="row" style="justify-content:space-between;align-items:center;">
           <div style="flex:1;min-width:240px;">
             <label>Usuario para {usuario}</label>
@@ -285,9 +300,9 @@
 
 <script>
 /* === Estado base === */
-const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v3';
-const STORAGE_PREFIX = 'chinmaker_profile_v3_';
-const STORAGE_LAST = 'chinmaker_last_profile_v3';
+const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v4';
+const STORAGE_PREFIX = 'chinmaker_profile_v4_';
+const STORAGE_LAST = 'chinmaker_last_profile_v4';
 
 const DEFAULT_UTIL_INFO =
 `✨ SOMOS BET300VIP ✨
@@ -325,6 +340,28 @@ const DEFAULT_UTIL_RETIRO =
 🔹Nombre Del Titular de la cuenta
 Muchas Gracias! 👌`;
 
+const DEFAULT_PROMO_TEXTO =
+`🎉 PROMO AMIGOS 🎉
+
+💥 Invitá a tus amigos y ganá fichas extra al instante.
+👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.
+
+📌 Pedí tu CÓDIGO AMIGO y compartilo.
+Más amigos = más fichas 🤑🎰
+
+🔗 https://bet300.site`;
+
+const DEFAULT_PROMO_INFO =
+`ℹ️ ¿Cómo funciona la Promo Amigos?
+
+1️⃣ Pedí tu **CÓDIGO AMIGO**.
+2️⃣ Compartilo con tus conocidos.
+3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.
+4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.
+
+✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!
+⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.`;
+
 const DEFAULT_CONFIG = () => ({
   perfil: 'PC01',
   fechaExport: null,
@@ -332,14 +369,14 @@ const DEFAULT_CONFIG = () => ({
   whatsapp: {
     plantillaMensaje: 'Hola soy {usuario} quiero mi clave y cronograma',
     pcs: [
-      { nombre:'PC01', wsp:'5491100000000', mensajes:[] },
-      { nombre:'PC02', wsp:'5491100000000', mensajes:[] }
+      // Lógica solicitada: índice 0 es PC1 por defecto (una no unificada).
+      { nombre:'PC01', wsp:'5491100000000', mensajes:[] }
     ]
   },
   billeteras: [],
   utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
-  promoAmigo: { codigos: ['R1','R2','R3'], texto: 'Tu código amigo es {codigo}{usuario}' },
-  estructuraBotones: { orden: ['utilidad','billeteras','revin','promoAmigo'] }
+  promoAmigo: { codigos: ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'], texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
+  estructuraBotones: { orden: ['utilidad','billeteras','promoAmigo','revin'] }
 });
 
 let currentProfileName = 'PC01';
@@ -373,7 +410,7 @@ function normalizeConfig(obj){
     whatsapp: {
       ...base.whatsapp,
       ...(obj.whatsapp||{}),
-      pcs: Array.isArray(obj.whatsapp?.pcs) ? clampPCs(obj.whatsapp.pcs) : base.whatsapp.pcs
+      pcs: normalizePCs(obj.whatsapp?.pcs)
     },
     utilidad: { ...base.utilidad, ...(obj.utilidad||{}) },
     promoAmigo: { ...base.promoAmigo, ...(obj.promoAmigo||{}) },
@@ -383,13 +420,26 @@ function normalizeConfig(obj){
   if(!merged.utilidad.info) merged.utilidad.info = DEFAULT_UTIL_INFO;
   if(!merged.utilidad.cargado) merged.utilidad.cargado = DEFAULT_UTIL_CARGADO;
   if(!merged.utilidad.retiro) merged.utilidad.retiro = DEFAULT_UTIL_RETIRO;
+  if(!merged.promoAmigo.texto) merged.promoAmigo.texto = DEFAULT_PROMO_TEXTO;
+  if(!merged.promoAmigo.info) merged.promoAmigo.info = DEFAULT_PROMO_INFO;
+  if(!Array.isArray(merged.promoAmigo.codigos) || !merged.promoAmigo.codigos.length){
+    merged.promoAmigo.codigos = ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'];
+  }
   return merged;
 }
-function clampPCs(list){
-  // asegura mínimo 2, máximo 10
-  const out = (list||[]).filter(Boolean).slice(0,10);
-  while(out.length<2){ out.push({ nombre:'PC'+String(out.length+1).padStart(2,'0'), wsp:'5491100000000', mensajes:[] }); }
-  return out.map(pc=>({ nombre:pc.nombre||'PC01', wsp:String(pc.wsp||'5491100000000'), mensajes:Array.isArray(pc.mensajes)?pc.mensajes:[] }));
+function normalizePCs(list){
+  let out = Array.isArray(list) ? list.filter(Boolean) : [];
+  if(out.length===0){
+    // mínimo 1 (PC1) como pediste (no unificada)
+    out = [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }];
+  }
+  // límite máximo 10
+  out = out.slice(0,10).map((pc,i)=>({
+    nombre: pc.nombre || ('PC' + String(i+1).padStart(2,'0')),
+    wsp: String(pc.wsp || '5491100000000'),
+    mensajes: Array.isArray(pc.mensajes) ? pc.mensajes : []
+  }));
+  return out;
 }
 
 /* === Bootstrap === */
@@ -506,7 +556,7 @@ function bindEditorInputs(){
   document.getElementById('pcAddBtn').addEventListener('click', ()=>{
     const list = config.whatsapp.pcs;
     if(list.length >= 10){ showToast('Máximo 10 PCs'); return; }
-    const idx = list.length+1;
+    const idx = list.length+1; // PC2 si había solo PC1
     const nombre = 'PC' + String(idx).padStart(2,'0');
     list.push({ nombre, wsp:'5491100000000', mensajes:[] });
     sliderIndex = list.length-1; sliderPreviewIndex = sliderIndex;
@@ -514,7 +564,7 @@ function bindEditorInputs(){
   });
   document.getElementById('pcDelBtn').addEventListener('click', ()=>{
     const list = config.whatsapp.pcs;
-    if(list.length<=2){ showToast('Mínimo 2 PCs'); return; }
+    if(list.length<=1){ showToast('Mínimo 1 PC'); return; }
     list.pop();
     sliderIndex = Math.max(0, Math.min(sliderIndex, list.length-1));
     sliderPreviewIndex = Math.max(0, Math.min(sliderPreviewIndex, list.length-1));
@@ -534,13 +584,36 @@ function bindEditorInputs(){
     markDirty(); renderSaludosEditor(); renderPreview();
   });
 
-  /* Utilidad */
-  const utilMap = { utilInfo:['utilidad','info'], utilCargado:['utilidad','cargado'], utilRetiro:['utilidad','retiro'] };
-  Object.keys(utilMap).forEach(id=>{
+  /* Utilidad placeholders estilo input (sin overlay) */
+  ['utilInfo','utilCargado','utilRetiro'].forEach(id=>{
     const el = document.getElementById(id);
-    el.addEventListener('input', ()=>{
-      const [a,b] = utilMap[id]; config[a][b] = el.value; markDirty(); renderPreview();
+    el.addEventListener('focus', ()=>{
+      const def = getDefaultTextFor(el.dataset.default);
+      if(el.value.trim() === def.trim()){ el.value = ''; }
     });
+    el.addEventListener('blur', ()=>{
+      if(!el.value.trim()){
+        el.value = getDefaultTextFor(el.dataset.default);
+      }
+    });
+    el.addEventListener('input', ()=>{
+      const key = id==='utilInfo'?'info':(id==='utilCargado'?'cargado':'retiro');
+      config.utilidad[key] = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+
+  /* Promo amigo */
+  document.getElementById('promoTexto').addEventListener('input', (e)=>{
+    config.promoAmigo.texto = e.target.value; markDirty(); renderPreview();
+  });
+  document.getElementById('promoInfo').addEventListener('input', (e)=>{
+    config.promoAmigo.info = e.target.value; markDirty(); renderPreview();
+  });
+  document.getElementById('promoCodigos').addEventListener('input', (e)=>{
+    const arr = e.target.value.split(',').map(s=>s.trim()).filter(Boolean);
+    config.promoAmigo.codigos = arr.length ? arr : ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'];
+    markDirty(); renderPreview();
   });
 
   /* Billeteras */
@@ -564,7 +637,6 @@ function bindEditorInputs(){
     const tab = e.target.closest('.tab-chip'); if(!tab) return;
     document.querySelectorAll('.tab-chip').forEach(t=>t.classList.remove('active'));
     tab.classList.add('active');
-    // Mostrar barra de usuario solo en pestañas que lo necesitan (revin)
     document.getElementById('userBarBox').style.display = tab.dataset.tab === 'revin' ? '' : 'none';
     renderPreview();
   });
@@ -590,15 +662,20 @@ function renderAll(){
 
   document.getElementById('waMensaje').value = config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
 
+  // Utilidad defaults as placeholder-style
   document.getElementById('utilInfo').value = config.utilidad.info || DEFAULT_UTIL_INFO;
   document.getElementById('utilCargado').value = config.utilidad.cargado || DEFAULT_UTIL_CARGADO;
   document.getElementById('utilRetiro').value = config.utilidad.retiro || DEFAULT_UTIL_RETIRO;
+
+  // Promo defaults
+  document.getElementById('promoTexto').value = config.promoAmigo.texto || DEFAULT_PROMO_TEXTO;
+  document.getElementById('promoInfo').value = config.promoAmigo.info || DEFAULT_PROMO_INFO;
+  document.getElementById('promoCodigos').value = (config.promoAmigo.codigos||[]).join(', ');
 
   renderPCSlider();
   renderPCSliderPreview();
   renderSaludosEditor();
   renderWallets();
-  // Ajuste: ocultar barra de usuario si pestaña no es revin
   const activeTab = document.querySelector('.tab-chip.active')?.dataset.tab || 'utilidad';
   document.getElementById('userBarBox').style.display = activeTab === 'revin' ? '' : 'none';
   renderPreview();
@@ -608,7 +685,7 @@ function renderAll(){
 function renderPCSlider(){
   const cont = document.getElementById('pcSlider'); cont.innerHTML = '';
   const list = config.whatsapp.pcs;
-  document.getElementById('pcCountNote').textContent = `Mínimo 2, máximo 10 (${list.length})`;
+  document.getElementById('pcCountNote').textContent = `Mínimo 1, máximo 10 (${list.length})`;
   list.forEach((pc, i)=>{
     const btn = document.createElement('button');
     btn.className = 'btn small ghost';
@@ -689,7 +766,7 @@ function renderSaludosEditor(){
   });
 }
 
-/* === Billeteras editor (drag solo con grip) === */
+/* === Billeteras editor (drag solo con grip & flip botón) === */
 const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
 function renderWallets(){
@@ -704,14 +781,20 @@ function renderWallets(){
         <div class="wallet-header">
           <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
           <div class="wallet-actions">
-            <button class="btn small subtle" data-add-flip="${idx}" title="Añadir segunda billetera">+ Segunda billetera</button>
+            <button class="btn small ghost" data-toggle-flip="${idx}" title="Flip">↻ Flip</button>
             <span class="muted">Añade otra billetera del mismo titular</span>
             <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">✕</button>
           </div>
         </div>
         <div class="section-grid">
           <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" /></div>
-          <div><label>CBU</label><input type="text" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" /></div>
+
+          <div>
+            <label>CBU</label>
+            <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
+            <small class="muted">Solo números, 22 dígitos</small>
+          </div>
+
           <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
           <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
           <div>
@@ -725,8 +808,12 @@ function renderWallets(){
         </div>
 
         ${w.flip ? `
-        <div class="section-grid">
-          <div><label>CBU (segunda)</label><input type="text" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" /></div>
+        <div class="section-grid flip-section">
+          <div>
+            <label>CBU (segunda)</label>
+            <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
+            <small class="muted">Solo números, 22 dígitos</small>
+          </div>
           <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
           <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
           <div>
@@ -748,6 +835,18 @@ function renderWallets(){
     el.addEventListener('input', onWalletFieldChange);
     el.addEventListener('change', onWalletFieldChange);
   });
+  // numeric enforcement for CBU/CBU2
+  listEl.querySelectorAll('input[data-field="cbu"], input[data-field="cbu2"]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      el.value = el.value.replace(/\D/g,'').slice(0,22);
+      const idx = parseInt(el.dataset.idx,10);
+      const field = el.dataset.field;
+      const w = config.billeteras[idx]; if(!w) return;
+      w[field] = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+
   listEl.querySelectorAll('[data-remove]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const idx = parseInt(btn.dataset.remove,10);
@@ -757,15 +856,17 @@ function renderWallets(){
       markDirty(); renderWallets(); renderPreview();
     });
   });
-  listEl.querySelectorAll('[data-add-flip]').forEach(btn=>{
+
+  listEl.querySelectorAll('[data-toggle-flip]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const idx = parseInt(btn.dataset.addFlip,10);
+      const idx = parseInt(btn.dataset.toggleFlip,10);
       const w = config.billeteras[idx];
-      if(!w.flip){
-        w.flip = true;
+      w.flip = !w.flip;
+      // copiar datos de titular y billetera si se activa
+      if(w.flip){
         w.titular2 = w.titular || '';
         w.billetera2 = w.billetera || 'Mercado Pago';
-        w.color2 = '#ff6f3d';
+        w.color2 = w.color || '#ff6f3d';
       }
       markDirty(); renderWallets(); renderPreview();
     });
@@ -858,7 +959,7 @@ function renderPreview(){
     ];
     blocks.forEach(b=>{
       const btn = document.createElement('div'); btn.className='btn-preview';
-      btn.innerHTML = `<div><span class="label">${b.label}</span><div class="sub">${escapeHtml(shorten(b.val,120))}</div></div><span class="sub">copiar</span>`;
+      btn.innerHTML = `<div><span class="label">${b.label}</span><div class="sub">${escapeHtml(shorten(b.val,160))}</div></div><span class="sub">copiar</span>`;
       btn.addEventListener('click', ()=>{ copyToClipboard(b.val); showToast(`Copiado texto de ${b.label}`); });
       g.appendChild(btn);
     });
@@ -871,7 +972,6 @@ function renderPreview(){
     if(!(config.billeteras||[]).length){
       const p = document.createElement('p'); p.className='muted'; p.textContent='Sin billeteras cargadas.'; g.appendChild(p);
     }else{
-      // agrupar por label (nombre visible)
       const byLabel = {};
       config.billeteras.forEach(w=>{ const k = (w.label||'Grupo'); (byLabel[k]||(byLabel[k]=[])).push(w); });
       Object.keys(byLabel).forEach(label=>{
@@ -879,6 +979,7 @@ function renderPreview(){
         subgroup.innerHTML = `<h3>${escapeHtml(label)} <span class="chip-mini">${byLabel[label].length} billetera(s)</span></h3>`;
         const grid = document.createElement('div'); grid.className='wallets-face';
         byLabel[label].forEach(w=>{
+          // frente/dorso como botones
           const frontCBU = document.createElement('button');
           frontCBU.className='wallet-btn'; frontCBU.textContent = `CBU ${billeName(w)}`;
           frontCBU.style.borderColor = w.color || '#1f6feb';
@@ -930,20 +1031,44 @@ function renderPreview(){
     content.appendChild(g);
   }
 
+  if(tab === 'promo'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">2 botones</span></h3>`;
+    // Botón Promo
+    const btnPromo = document.createElement('div'); btnPromo.className='btn-preview';
+    btnPromo.innerHTML = `<div><span class="label">🎉 Promo Amigos</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO,160))}</div></div><span class="sub">copiar</span>`;
+    btnPromo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO); showToast('Copiado Promo Amigos'); });
+    g.appendChild(btnPromo);
+    // Botón Info
+    const btnInfo = document.createElement('div'); btnInfo.className='btn-preview';
+    btnInfo.innerHTML = `<div><span class="label">ℹ️ Info Promo</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.info||DEFAULT_PROMO_INFO,160))}</div></div><span class="sub">copiar</span>`;
+    btnInfo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.info||DEFAULT_PROMO_INFO); showToast('Copiado Info Promo'); });
+    g.appendChild(btnInfo);
+    content.appendChild(g);
+  }
+
   if(tab === 'revin'){
     const g = document.createElement('div'); g.className='preview-group';
     const mensajes = pc.mensajes||[];
-    g.innerHTML = `<h3>PC ${escapeHtml(pc.nombre)} · Mensajes de revinculación <span class="chip-mini">${mensajes.length} mensajes</span></h3>`;
+    g.innerHTML = `<h3>PC ${escapeHtml(pc.nombre)} · Mensajes y WhatsApp <span class="chip-mini">${mensajes.length} mensajes</span></h3>`;
 
-    // Link WhatsApp único para esta PC (usa texto base, editable arriba)
+    // WhatsApp único para esta PC (usa plantilla editable)
     const plantilla = (config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma').replace(/\{usuario\}/g, usuario);
     const wspNum = (pc.wsp||'5491100000000').trim();
     const wspLink = `https://wa.me/${encodeURIComponent(wspNum)}?text=${encodeURIComponent(plantilla)}`;
-
     const btnWsp = document.createElement('div'); btnWsp.className='btn-preview';
     btnWsp.innerHTML = `<div><span class="label">Copiar WhatsApp (${escapeHtml(pc.nombre)})</span><div class="sub">${escapeHtml(shorten(wspLink,100))}</div></div><span class="sub">copiar</span>`;
     btnWsp.addEventListener('click', ()=>{ copyToClipboard(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); });
     g.appendChild(btnWsp);
+
+    // Código amigo según PC activa
+    const codeIdx = Math.min(sliderPreviewIndex, (config.promoAmigo.codigos||[]).length-1);
+    const codeVal = (config.promoAmigo.codigos||[])[codeIdx] || 'R1';
+    const codeMsg = (config.promoAmigo.texto||DEFAULT_PROMO_TEXTO).replace(/\{codigo\}/g, codeVal).replace(/\{usuario\}/g, usuario);
+    const btnCodigo = document.createElement('div'); btnCodigo.className='btn-preview';
+    btnCodigo.innerHTML = `<div><span class="label">Código amigo (${escapeHtml(codeVal)})</span><div class="sub">${escapeHtml(shorten(codeMsg,100))}</div></div><span class="sub">copiar</span>`;
+    btnCodigo.addEventListener('click', ()=>{ copyToClipboard(codeMsg); showToast(`Copiado Código Amigo (${codeVal})`); });
+    g.appendChild(btnCodigo);
 
     if(!mensajes.length){
       const p = document.createElement('p'); p.className='muted'; p.textContent='Sin mensajes de revinculación para esta PC.'; g.appendChild(p);
@@ -951,25 +1076,11 @@ function renderPreview(){
       mensajes.forEach((m,i)=>{
         const txt = (m.texto||'').replace(/\{usuario\}/g, usuario);
         const btn = document.createElement('div'); btn.className='btn-preview';
-        btn.innerHTML = `<div><span class="label">Mensaje #${i+1}</span><div class="sub">${escapeHtml(shorten(txt,120))}</div></div><span class="sub">copiar</span>`;
+        btn.innerHTML = `<div><span class="label">Mensaje #${i+1}</span><div class="sub">${escapeHtml(shorten(txt,160))}</div></div><span class="sub">copiar</span>`;
         btn.addEventListener('click', ()=>{ copyToClipboard(txt); showToast(`Copiado mensaje #${i+1}`); });
         g.appendChild(btn);
       });
     }
-    content.appendChild(g);
-  }
-
-  if(tab === 'promo'){
-    const g = document.createElement('div'); g.className='preview-group';
-    const cods = config.promoAmigo.codigos || [];
-    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">${cods.length} códigos</span></h3>`;
-    cods.forEach(c=>{
-      const txt = (config.promoAmigo.texto||'').replace('{codigo}',c).replace('{usuario}',usuario);
-      const btn = document.createElement('div'); btn.className='btn-preview';
-      btn.innerHTML = `<div><span class="label">Código ${escapeHtml(c)}</span><div class="sub">${escapeHtml(shorten(txt,100))}</div></div><span class="sub">copiar</span>`;
-      btn.addEventListener('click', ()=>{ copyToClipboard(txt); showToast(`Copiado promo ${c}`); });
-      g.appendChild(btn);
-    });
     content.appendChild(g);
   }
 }
@@ -977,8 +1088,14 @@ function renderPreview(){
 /* === Helpers === */
 function billeName(w){ return w.billetera==='Otro' ? (w.billeteraCustom||'Billetera') : (w.billetera||'Billetera'); }
 function billeName2(w){ return w.billetera2==='Otro' ? (w.billetera2Custom||'Billetera') : (w.billetera2||'Billetera'); }
+function getDefaultTextFor(kind){
+  if(kind==='info') return DEFAULT_UTIL_INFO;
+  if(kind==='cargado') return DEFAULT_UTIL_CARGADO;
+  if(kind==='retiro') return DEFAULT_UTIL_RETIRO;
+  return '';
+}
 
-function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
 function escapeAttr(str){ return escapeHtml(str).replace(/"/g,'&quot;'); }
 function shorten(str,max){ if(!str) return ''; str=String(str); return str.length>max ? str.slice(0,max-3)+'...' : str; }
 async function copyToClipboard(text){ try{ await navigator.clipboard.writeText(String(text)); }catch(e){} }
