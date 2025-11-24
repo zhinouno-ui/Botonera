@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Gestor de Billeteras Demo</title>
+  <title>Gestor de Billeteras Demo 2</title>
   <style>
     :root {
       --bg: #121212;
@@ -29,13 +29,14 @@
   </style>
 </head>
 <body>
-  <h1>Gestor de Billeteras Demo</h1>
+  <h1>Gestor de Billeteras Demo 2</h1>
 
   <!-- Control Maestro -->
   <div id="control-maestro">
     <h3>Nuevo Grupo</h3>
     <input id="perfilNombre" placeholder="Perfil (ej. PC1)">
     <input id="nombreGrupo" placeholder="Nombre del grupo (ej. Torres)">
+    <input id="telefono" placeholder="Teléfono principal">
     <input id="cbu" placeholder="CBU">
     <input id="alias" placeholder="Alias">
     <input id="titular" placeholder="Titular">
@@ -47,9 +48,24 @@
       <option value="Brubank">Brubank</option>
       <option value="Ualá">Ualá</option>
     </select>
+    <label><input type="checkbox" id="segundaBilletera"> Segunda billetera</label>
+    <div id="segundaInputs" style="display:none;">
+      <input id="cbu2" placeholder="CBU 2">
+      <input id="alias2" placeholder="Alias 2">
+      <input id="titular2" placeholder="Titular 2">
+      <select id="billetera2">
+        <option value="Mercado Pago">Mercado Pago</option>
+        <option value="PPay">PPay</option>
+        <option value="Ripio">Ripio</option>
+        <option value="Prex">Prex</option>
+        <option value="Brubank">Brubank</option>
+        <option value="Ualá">Ualá</option>
+      </select>
+    </div>
     <button onclick="guardarBilletera()">Guardar</button>
     <button onclick="exportarPerfil()">Exportar Perfil</button>
     <input type="file" id="importFile" onchange="importarPerfil(this.files[0])">
+    <button onclick="reiniciarPerfil()">Reiniciar Perfil</button>
   </div>
 
   <select id="perfilSelector" onchange="cambiarPerfil(this.value)">
@@ -67,7 +83,11 @@
   <div id="toast"></div>
 
 <script>
-let lastCopied="", modoSlider=0;
+let lastCopied="";
+
+document.getElementById("segundaBilletera").addEventListener("change", e=>{
+  document.getElementById("segundaInputs").style.display=e.target.checked?"block":"none";
+});
 
 function showToast(msg){
   const toast=document.getElementById("toast");
@@ -87,10 +107,17 @@ function guardarBilletera(){
   const perfil=document.getElementById("perfilNombre").value.trim()||"default";
   const grupo={
     nombre:document.getElementById("nombreGrupo").value.trim(),
+    telefono:document.getElementById("telefono").value.trim(),
     cbu:document.getElementById("cbu").value.trim(),
     alias:document.getElementById("alias").value.trim(),
     titular:document.getElementById("titular").value.trim(),
-    billetera:document.getElementById("billetera").value
+    billetera:document.getElementById("billetera").value,
+    segunda:document.getElementById("segundaBilletera").checked?{
+      cbu:document.getElementById("cbu2").value.trim(),
+      alias:document.getElementById("alias2").value.trim(),
+      titular:document.getElementById("titular2").value.trim(),
+      billetera:document.getElementById("billetera2").value
+    }:null
   };
   const data=JSON.parse(localStorage.getItem(perfil)||"[]");
   data.push(grupo);
@@ -106,14 +133,18 @@ function renderBilleteras(perfil){
   const cont=document.getElementById("gruposContainer");
   cont.innerHTML="";
   data.forEach(g=>{
+    let front=`<button onclick="copyText('${g.cbu}')">CBU ${g.billetera}</button>
+               <button onclick="copyText('${g.alias}\\nTitular ${g.titular} *${g.billetera}*')">Alias ${g.billetera}</button>`;
+    let back=g.segunda?`<button onclick="copyText('${g.segunda.cbu}')">CBU ${g.segunda.billetera}</button>
+               <button onclick="copyText('${g.segunda.alias}\\nTitular ${g.segunda.titular} *${g.segunda.billetera}*')">Alias ${g.segunda.billetera}</button>`:"";
     cont.innerHTML+=`
     <div class="grupo">
-      <div class="header"><div class="titulo">${g.nombre}</div>
-        <div class="controls"><button class="drag-handle">☰</button><button class="flip-btn">🔄</button></div>
+      <div class="header"><div class="titulo">${g.nombre} (${g.telefono})</div>
+        <div class="controls"><button class="drag-handle">☰</button>${g.segunda?'<button class="flip-btn">🔄</button>':""}</div>
       </div>
       <div class="wallets-container">
-        <button onclick="copyText('${g.cbu}')">CBU ${g.billetera}</button>
-        <button onclick="copyText('${g.alias}\\nTitular ${g.titular} *${g.billetera}*')">Alias ${g.billetera}</button>
+        ${front}
+        ${back}
       </div>
     </div>`;
   });
@@ -135,6 +166,14 @@ function importarPerfil(file){
     renderBilleteras(perfil);
   };
   reader.readAsText(file);
+}
+
+function reiniciarPerfil(){
+  const perfil=document.getElementById("perfilNombre").value.trim()||"default";
+  if(confirm("¿Seguro que querés reiniciar el perfil "+perfil+"?")){
+    localStorage.removeItem(perfil);
+    renderBilleteras(perfil);
+  }
 }
 </script>
 </body>
