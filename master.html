@@ -1,821 +1,997 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ChinMaker — Editor Maestro</title>
-<!-- Minimal reset + variables -->
-<style>
-:root{
-  --bg:#050511; --card:#0f1220; --card-2:#0b0f1a;
-  --muted:#98a3b3; --text:#eaf6ff;
-  --accent:#8A2BE2; --accent-2:#a855f7;
-  --ok:#10B981; --bad:#EF4444;
-  --glass: rgba(255,255,255,0.03);
-  --radius:12px;
-  --shadow: 0 12px 40px rgba(2,6,23,0.6);
-}
+  <meta charset="utf-8" />
+  <title>ChinMaker • Editor Unificado v3</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#050711;
+      --bg-soft:#0b101d;
+      --card:#101524;
+      --card-soft:#141a2b;
+      --accent:#8A2BE2;
+      --accent-light:#a855f7;
+      --ok:#10B981;
+      --bad:#EF4444;
+      --muted:#9ca3af;
+      --text:#e5f3ff;
+      --border:rgba(148,163,184,.25);
+      --shadow:0 16px 40px rgba(0,0,0,.6);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left,rgba(138,43,226,0.25),transparent 55%),
+        radial-gradient(circle at bottom right,rgba(16,185,129,0.18),transparent 55%),
+        linear-gradient(180deg,#030712,#020617 55%,#020617 100%);
+      min-height:100vh;
+      color:var(--text);
+      padding:18px;
+    }
+    .wrap{max-width:1320px;margin:0 auto;}
 
-/* Basic layout */
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:
-  radial-gradient(circle at 10% 10%, rgba(138,43,226,0.06), transparent 15%),
-  radial-gradient(circle at 90% 90%, rgba(16,185,129,0.03), transparent 15%),
-  var(--bg); color:var(--text); padding:18px;
-}
-.wrap{max-width:1300px;margin:0 auto;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+    .title-block h1{
+      margin:0;font-size:22px;letter-spacing:.03em;
+      background:linear-gradient(90deg,#f9fafb,var(--accent-light));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .title-block small{color:var(--muted);font-size:13px;}
 
-/* Header */
-.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-.title{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.subtitle{color:var(--muted);font-size:13px}
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
+      background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.4);font-size:11px;color:var(--muted);
+    }
 
-/* Layout grid */
-.layout{display:grid;grid-template-columns:1fr 420px;gap:16px}
-@media(max-width:980px){.layout{grid-template-columns:1fr}}
+    .layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;}
+    @media (max-width:980px){.layout{grid-template-columns:1fr;}}
 
-/* Cards */
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--card); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);}
-.card h2{margin:0 0 8px;font-size:14px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.col{flex:1;min-width:140px}
+    .card{
+      background:radial-gradient(circle at top left,rgba(148,163,184,.16),transparent 55%),var(--card);
+      border-radius:var(--radius);border:1px solid rgba(148,163,184,.25);box-shadow:var(--shadow);padding:14px 16px 16px;
+    }
+    .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:#e5e7eb;}
+    .sub{margin-top:0;color:var(--muted);font-size:12px;}
 
-/* Inputs */
-label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-input[type=text], textarea, select{
-  width:100%; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:var(--text);
-}
-textarea{min-height:80px;resize:vertical}
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    label{font-size:12px;color:var(--muted);margin-bottom:3px;display:block;}
+    input[type=text], textarea, select, input[type=color]{
+      width:100%;padding:7px 9px;border-radius:8px;border:1px solid rgba(148,163,184,.35);
+      background:rgba(15,23,42,.85);color:var(--text);font-size:13px;outline:none;
+      transition:border-color .16s, box-shadow .16s, background .16s;
+    }
+    input[type=color]{padding:0.25rem;height:36px;cursor:pointer;background:#020617;}
+    textarea{min-height:74px;resize:vertical;}
+    input:focus, textarea:focus, select:focus{
+      border-color:var(--accent-light);box-shadow:0 0 0 1px rgba(168,85,247,.32);background:#020617;
+    }
+    select{
+      appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239ca3af' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 8px center;background-size:16px;padding-right:26px;
+    }
 
-/* Buttons */
-.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:700;cursor:pointer}
-.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.05);color:var(--muted)}
-.btn.warn{background:linear-gradient(90deg,#f97316,#f59e0b)}
+    .btn{
+      border:none;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+      display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-light));
+      color:white;box-shadow:0 10px 25px rgba(88,28,135,.5);transition:transform .12s, box-shadow .12s, opacity .12s;
+    }
+    .btn.small{padding:6px 10px;font-size:11px;}
+    .btn.ghost{background:transparent;border-radius:10px;padding:7px 11px;border:1px solid rgba(148,163,184,.45);box-shadow:none;color:var(--muted);}
+    .btn.warn{background:linear-gradient(90deg,#f97316,#facc15);box-shadow:0 10px 25px rgba(234,179,8,.45);}
+    .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.5);box-shadow:none;}
+    .btn.icon{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:8px;background:#1f2530}
 
-/* Wallet list */
-.wallet-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.wallet-card{display:grid;grid-template-columns:28px 1fr 110px;gap:8px;align-items:center;padding:10px;border-radius:10px;background:var(--card-2);border:1px solid rgba(255,255,255,0.03)}
-.wallet-card .label{font-weight:700}
-.drag-handle{width:22px;height:36px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); cursor:grab; display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
-.wallet-actions{display:flex;gap:6px;align-items:center;justify-content:flex-end}
+    .section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px;}
 
-/* Preview */
-.preview{position:relative}
-.preview-head{display:flex;justify-content:space-between; align-items:center; margin-bottom:8px}
-.preview-area{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:12px;border-radius:10px; min-height:120px; border:1px solid rgba(255,255,255,0.03)}
-.preview-controls{display:flex;gap:8px;align-items:center}
+    .list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+    .card-row{
+      background:var(--card-soft);border-radius:11px;border:1px solid rgba(148,163,184,.45);
+      padding:9px 10px;display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:flex-start;position:relative;
+    }
+    .grip{
+      width:28px;height:28px;border-radius:8px;background:#1f2530;color:#fff;cursor:grab;display:flex;align-items:center;justify-content:center;border:1px solid rgba(75,85,99,.8);
+    }
+    .card-row.dragging{opacity:.65;border-style:dashed;}
+    .card-row.placeholder::after{
+      content:'';position:absolute;left:0;right:0;height:4px;border-radius:999px;background:rgba(168,85,247,.35);
+      transform:translateY(-6px);transition:.16s;
+    }
 
-/* Search */
-.search{display:flex;gap:8px;align-items:center}
-.search input{padding:8px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02)}
+    .wallet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+    .wallet-label{font-size:13px;font-weight:600;}
+    .wallet-actions{display:flex;gap:6px;align-items:center;}
 
-/* Modal */
-.modal-back{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.6));display:none;align-items:center;justify-content:center;z-index:60}
-.modal{width:760px;max-width:94%;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    .preview-card{background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);border-radius:var(--radius);border:1px solid rgba(148,163,184,.3);padding:12px 13px;box-shadow:var(--shadow);}
+    .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .preview-tabs{display:inline-flex;background:#020617;padding:2px;border-radius:999px;border:1px solid rgba(148,163,184,.35);}
+    .tab-chip{padding:5px 10px;border-radius:999px;font-size:11px;cursor:pointer;color:var(--muted);}
+    .tab-chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-light));color:#f9fafb;}
 
-/* Tiny UI details */
-.badge{padding:6px 10px;border-radius:999px;background:var(--glass);color:var(--muted);font-weight:700;font-size:12px}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(14px);background:rgba(8,10,14,0.9);color:var(--text);padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:all .18s}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.kv{font-size:12px;color:var(--muted)}
+    .preview-group{margin-bottom:10px;border-radius:10px;padding:9px 10px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.28);}
+    .preview-group h3{margin:0 0 6px;font-size:13px;display:flex;align-items:center;justify-content:space-between;}
+    .chip-mini{font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.55);color:var(--muted);}
 
-/* small helpers */
-.flex{display:flex;gap:8px;align-items:center}
-.small{font-size:12px;color:var(--muted)}
-.handle-dots{width:14px;height:32px;border-radius:8px;background:
- radial-gradient(circle at 3px 4px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 3px 12px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 3px 20px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 9px 4px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 9px 12px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 9px 20px,#6b6f7a 1px,transparent 0);
- cursor:grab}
-.fullscreen{position:fixed;inset:10px;background:var(--bg);z-index:80;padding:22px;border-radius:12px;display:none;flex-direction:column}
-.fullscreen.show{display:flex;border:1px solid rgba(255,255,255,0.03)}
-.small-muted{font-size:12px;color:var(--muted)}
-</style>
+    .wallets-face{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+    .wallet-btn{width:100%;padding:10px;border:none;border-radius:10px;background:#1b2029;color:#fff;font-weight:700;cursor:pointer;border:1px solid rgba(55,65,81,.9)}
+    .wallet-btn:hover{background:#222836}
+
+    .btn-preview{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;border-radius:9px;background:linear-gradient(90deg,#111827,#020617);border:1px solid rgba(55,65,81,.9);cursor:pointer;font-size:12px;margin-bottom:5px;}
+    .btn-preview span.label{font-weight:500;}
+    .btn-preview span.sub{font-size:11px;color:var(--muted);}
+    .btn-preview:hover{border-color:var(--accent-light);box-shadow:0 0 0 1px rgba(168,85,247,.35);}
+
+    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);padding:8px 11px;border-radius:999px;background:rgba(15,23,42,.96);border:1px solid rgba(148,163,184,.55);color:#e5e7eb;font-size:12px;display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .16s, transform .16s;z-index:40;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast-icon{width:16px;height:16px;border-radius:999px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ok);}
+
+    .divider-label{margin:10px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+    .muted{color:var(--muted);font-size:11px;}
+
+    /* Difuminado de textos de utilidad cuando no están en foco */
+    .blur-holder{position:relative}
+    .blur-holder textarea:not(:focus)+.blur-overlay{opacity:.65;backdrop-filter:blur(1px);pointer-events:none}
+    .blur-overlay{position:absolute;inset:4px;border-radius:8px;transition:.16s;border:1px dashed rgba(148,163,184,.25)}
+  </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="header">
-    <div>
-      <div class="title">ChinMaker • Editor Maestro</div>
-      <div class="subtitle small">Perfiles, billeteras, secciones y export para ChinPlantilla</div>
+  <header>
+    <div class="title-block">
+      <h1>ChinMaker · Editor Unificado v3</h1>
+      <small>Perfiles, billeteras, PCs con WhatsApp y mensajes de revinculación por PC. Exportá a .chin.json.</small>
     </div>
-    <div class="flex">
-      <div id="statusChip" class="badge small">Sin perfil activo</div>
-      <button id="btnExport" class="btn">Exportar .chin.json</button>
-      <button id="btnImport" class="btn ghost">Importar .chin.json</button>
+    <div class="row">
+      <div class="chip"><span>💾</span> <span id="chipStatus">Perfil guardado</span></div>
+    </div>
+  </header>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="row" style="justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+      <div style="min-width:220px;">
+        <label>Perfil activo</label>
+        <div class="row" style="gap:6px;">
+          <select id="profileSelect" style="flex:1;min-width:140px;"></select>
+          <button class="btn small subtle" id="btnNewProfile">Nuevo</button>
+        </div>
+        <p class="muted" style="margin-top:3px;">Ej: PC01, PC02, Gonzales, CasinoCentro...</p>
+      </div>
+      <div class="row" style="gap:8px;">
+        <input type="file" id="fileImport" accept=".json" style="display:none;">
+        <button class="btn small" id="btnExport">Exportar perfil</button>
+        <button class="btn small ghost" id="btnImport">Subir perfil</button>
+        <button class="btn small warn" id="btnReset">Reiniciar perfil</button>
+      </div>
     </div>
   </div>
 
   <div class="layout">
-    <!-- LEFT: Editor -->
-    <div>
-      <div class="card">
-        <h2>Perfiles (Control Maestro)</h2>
-        <div class="row">
-          <select id="profileSelect"></select>
-          <div class="flex">
-            <button id="btnNewProfile" class="btn small">Nuevo</button>
-            <button id="btnRenameProfile" class="btn ghost small">Renombrar</button>
-            <button id="btnResetProfile" class="btn warn small">Reiniciar</button>
-          </div>
-        </div>
-        <p class="small-muted">Al entrar se requiere elegir o crear un perfil. Todo se guarda por perfil en localStorage.</p>
+    <!-- EDITOR -->
+    <div class="card">
+      <h2>Editor de configuración</h2>
+      <p class="sub">Se guarda en el navegador y podés exportarlo a <code>.chin.json</code>.</p>
+
+      <div class="section-grid">
+        <div><label>Color acento</label><input type="color" id="colorAccent" value="#8A2BE2"></div>
+        <div><label>Color OK</label><input type="color" id="colorOk" value="#10B981"></div>
+        <div><label>Color Error</label><input type="color" id="colorBad" value="#EF4444"></div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
-        <h2>Paleta & Meta</h2>
-        <div class="section">
+      <div class="divider-label">PCs y WhatsApp</div>
+      <div class="row">
+        <div style="flex:1;min-width:260px;">
+          <label>PCs configuradas</label>
           <div class="row">
-            <div class="col">
-              <label>Acento</label>
-              <input id="inpAccent" type="text" placeholder="#8A2BE2">
-            </div>
-            <div class="col">
-              <label>OK</label>
-              <input id="inpOk" type="text" placeholder="#10B981">
-            </div>
-            <div class="col">
-              <label>Error</label>
-              <input id="inpBad" type="text" placeholder="#EF4444">
-            </div>
+            <button class="btn small ghost" id="pcAddBtn">Agregar PC</button>
+            <button class="btn small ghost" id="pcDelBtn">Eliminar última PC</button>
+            <span class="muted" id="pcCountNote">Mínimo 2, máximo 10</span>
           </div>
-          <div class="row" style="margin-top:10px;align-items:center">
-            <div class="col">
-              <label>Nombre del perfil (meta)</label>
-              <input id="metaName" type="text" placeholder="PC01">
-            </div>
-            <div style="width:120px">
-              <label>Fecha export</label>
-              <input id="metaDate" type="text" readonly>
-            </div>
-          </div>
+          <div id="pcSlider" class="row" style="margin-top:6px;flex-wrap:wrap;"></div>
+        </div>
+        <div style="flex:1;min-width:260px;">
+          <label>WhatsApp de la PC seleccionada</label>
+          <input type="text" id="pcWsp" placeholder="5491100000000">
+          <p class="muted">Texto al copiar WhatsApp usa {usuario} y se reemplaza con lo que escribas en la barra.</p>
         </div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
-        <h2>Billeteras</h2>
-        <div class="row" style="align-items:center">
-          <div class="col search">
-            <input id="walletSearch" placeholder="Buscar billeteras (nombre, alias, titular)" />
-          </div>
-          <div class="flex">
-            <button id="btnAddWallet" class="btn small">+ Añadir</button>
-            <button id="btnImportWallets" class="btn ghost small">Importar masiva</button>
-            <button id="btnDuplicate" class="btn ghost small">Duplicar</button>
-          </div>
-        </div>
+      <div class="divider-label">Mensajes de revinculación por PC</div>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <p class="muted" style="margin:0;">Usá {usuario} dentro del texto. Sugerencia: “Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX”.</p>
+        <button class="btn small subtle" id="btnAddSaludo">+ Añadir mensaje</button>
+      </div>
+      <div class="list" id="saludosList"></div>
 
-        <div class="wallet-list" id="walletList"></div>
+      <div class="divider-label">Mensaje al copiar WhatsApp</div>
+      <div class="section-grid">
+        <div>
+          <label>Plantilla de mensaje (usa {usuario})</label>
+          <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma"></textarea>
+        </div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
-        <h2>Secciones & Botones</h2>
-        <div class="row">
-          <div class="col">
-            <label>Agregar sección</label>
-            <input id="sectionNewName" placeholder="Ej.: Promo Amigo">
-          </div>
-          <div style="width:170px">
-            <label>&nbsp;</label>
-            <div class="flex">
-              <button id="btnAddSection" class="btn small">Agregar</button>
-            </div>
-          </div>
+      <div class="divider-label">Textos de utilidad</div>
+      <div class="section-grid">
+        <div class="blur-holder">
+          <label>Utilidad · Info</label>
+          <textarea id="utilInfo"></textarea>
+          <div class="blur-overlay"></div>
+          <p class="muted" style="margin-top:6px">Se exporta el texto que veas acá. Por defecto viene difuminado para editar cómodo.</p>
         </div>
-        <div id="sectionsList" style="margin-top:10px"></div>
-      </div>
-
-      <div class="card" style="margin-top:12px;">
-        <h2>Revinculación / WhatsApp</h2>
-        <div class="row">
-          <div class="col">
-            <label>Números WhatsApp (coma separado)</label>
-            <input id="waNumbers" placeholder="54911..., 54911..." />
-          </div>
-          <div class="col">
-            <label>Mensaje inicio (usa {usuario})</label>
-            <input id="waMessage" placeholder="Hola soy {usuario} ..." />
-          </div>
+        <div class="blur-holder">
+          <label>Utilidad · Cargado</label>
+          <textarea id="utilCargado"></textarea>
+          <div class="blur-overlay"></div>
         </div>
-
-        <div style="margin-top:8px">
-          <label>Saludos (gestión ilimitada)</label>
-          <div id="revContainer"></div>
-          <div style="margin-top:8px" class="flex">
-            <input id="revAddText" placeholder="Escribe saludo y pulsa Añadir" />
-            <button id="btnAddRev" class="btn small">Añadir</button>
-          </div>
+        <div class="blur-holder">
+          <label>Utilidad · Retiro</label>
+          <textarea id="utilRetiro"></textarea>
+          <div class="blur-overlay"></div>
         </div>
       </div>
+
+      <div class="divider-label">Billeteras</div>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta representa un grupo por nombre visible.</p>
+        <button class="btn small subtle" id="btnAddWallet">+ Añadir billetera</button>
+      </div>
+      <div class="list" id="walletList"></div>
     </div>
 
-    <!-- RIGHT: Preview -->
-    <div>
-      <div class="card preview">
-        <div class="preview-head">
-          <div>
-            <div style="font-weight:800">Vista previa</div>
-            <div class="small">Simulación interactiva (no copia a portapapeles salvo preview)</div>
+    <!-- PREVIEW -->
+    <div class="preview-card">
+      <div class="preview-header">
+        <div>
+          <div class="row" style="gap:6px;align-items:center;">
+            <span class="muted" style="font-size:11px;">Vista previa</span>
           </div>
-          <div class="preview-controls">
-            <button id="btnFullscreenPreview" class="btn small ghost">Pantalla completa</button>
-            <button id="btnClearPreview" class="btn ghost small">Limpiar</button>
-          </div>
+          <div class="muted" style="margin-top:2px;font-size:11px;">Los botones copian texto y muestran toasts.</div>
         </div>
-
-        <div class="preview-area" id="previewArea"></div>
-
-        <div style="margin-top:10px" class="small-muted">Último toast: <span id="lastToastText">-</span></div>
-
+        <div class="preview-tabs" id="previewTabs">
+          <div class="tab-chip active" data-tab="utilidad">Utilidad</div>
+          <div class="tab-chip" data-tab="billeteras">Billeteras</div>
+          <div class="tab-chip" data-tab="revin">Mensajes de revinculación</div>
+          <div class="tab-chip" data-tab="promo">Promo</div>
+        </div>
       </div>
 
-      <div class="card" style="margin-top:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="small-muted">Resumen</div>
-          <div><span id="countWallets" class="kv">0</span> billeteras</div>
+      <div class="preview-group" id="userBarBox">
+        <div class="row" style="justify-content:space-between;align-items:center;">
+          <div style="flex:1;min-width:240px;">
+            <label>Usuario para {usuario}</label>
+            <input type="text" id="previewUsuario" placeholder="Escribí el usuario...">
+          </div>
+          <div style="flex:1;min-width:240px;">
+            <label>PC para vista previa</label>
+            <div id="pcSliderPreview" class="row" style="flex-wrap:wrap;"></div>
+          </div>
         </div>
-        <div style="margin-top:10px" class="small-muted">Usá exportar para generar el `.chin.json` que lee ChinPlantilla</div>
       </div>
+
+      <div id="previewContent"></div>
     </div>
   </div>
 </div>
 
-<!-- Modals -->
-<div id="modalBack" class="modal-back">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div id="modalContent"></div>
-    <div style="margin-top:12px;text-align:right">
-      <button id="modalClose" class="btn ghost">Cerrar</button>
-    </div>
-  </div>
+<div class="toast" id="toast">
+  <div class="toast-icon">✔</div>
+  <span id="toastText">Copiado</span>
 </div>
 
-<div id="fullscreen" class="fullscreen"></div>
-
-<div id="toast" class="toast">Copiado</div>
-
-<!-- SCRIPT -->
 <script>
-/* ========= State & storage ========= */
-const KEY_PREFIX = 'chinmaker_v1_';
-const PROFILE_LIST = KEY_PREFIX + 'profiles';
-const LAST_PROFILE = KEY_PREFIX + 'last';
+/* === Estado base === */
+const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v3';
+const STORAGE_PREFIX = 'chinmaker_profile_v3_';
+const STORAGE_LAST = 'chinmaker_last_profile_v3';
 
-let state = {
-  profiles: {},    // profileName -> config
-  active: null
-};
+const DEFAULT_UTIL_INFO =
+`✨ SOMOS BET300VIP ✨
 
-/* Default config factory */
-function defaultConfig(name){
-  return {
-    perfil: name || 'PC01',
-    paleta: { acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444' },
-    whatsapp: { numeros: [], mensajeInicio: 'Hola soy {usuario} quiero mi clave y cronograma' },
-    revinculacion: { saludos: [] }, // unlimited
-    billeteras: [],
-    secciones: [ { id:'utilidad', name:'Utilidad', buttons:[] }, { id:'billeteras', name:'Billeteras', buttons:[] } ],
-    order: ['utilidad','billeteras'],
-    metadata: { created: new Date().toISOString() }
+Disfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮
+
+📲 ¿Listo para disfrutar al máximo? 🚀
+
+Para añadir saldo, lo haces mediante CBU. 🧾
+‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️
+📩 Envianos el comprobante y empezá a jugar. 🚀
+
+📍 C4RG4 MÍNIMA: $2000
+📍 RET1R0 MÍNIMO: $5000
+Sin Monto Maximo!!
+Un retiro cada 24hs exactas!
+
+🕐 Atención personalizada las 24hs los 365 dias del año!!!!`;
+
+const DEFAULT_UTIL_CARGADO =
+`✅ ¡Saldo acreditado!
+Tu cuenta ya está lista para girar y ganar 🎰
+🍀 ¡Éxitos en cada tirada!
+Si no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado en nuestro estado de perfil! 
+🎰 TAMBIEN PODES CARGARTE POR TU CUENTA!
+ ACA EN https://bet300.site/
+ tu mismo usuario, tu misma clave.
+ 12345a
+ avisame si queres mas info`;
+
+const DEFAULT_UTIL_RETIRO =
+`✅ Para hacer el retiro, mandanos estos datos
+🔹CBU, No Alias(para evitar equivocaciones)
+🔹Monto a retirar
+🔹Nombre Del Titular de la cuenta
+Muchas Gracias! 👌`;
+
+const DEFAULT_CONFIG = () => ({
+  perfil: 'PC01',
+  fechaExport: null,
+  paleta: { acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444' },
+  whatsapp: {
+    plantillaMensaje: 'Hola soy {usuario} quiero mi clave y cronograma',
+    pcs: [
+      { nombre:'PC01', wsp:'5491100000000', mensajes:[] },
+      { nombre:'PC02', wsp:'5491100000000', mensajes:[] }
+    ]
+  },
+  billeteras: [],
+  utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
+  promoAmigo: { codigos: ['R1','R2','R3'], texto: 'Tu código amigo es {codigo}{usuario}' },
+  estructuraBotones: { orden: ['utilidad','billeteras','revin','promoAmigo'] }
+});
+
+let currentProfileName = 'PC01';
+let config = DEFAULT_CONFIG();
+let dirtyTimer = null;
+let sliderIndex = 0; // PC seleccionada (editor)
+let sliderPreviewIndex = 0; // PC seleccionada (preview)
+let draggingWallet = null;
+
+/* === LocalStorage === */
+function loadProfileNames(){ try{ const raw = localStorage.getItem(STORAGE_LIST_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
+function saveProfileNames(list){ localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(Array.from(new Set(list)))); }
+function saveCurrentProfile(){
+  const key = STORAGE_PREFIX + currentProfileName;
+  localStorage.setItem(key, JSON.stringify(config));
+  localStorage.setItem(STORAGE_LAST, currentProfileName);
+  indicateSaved();
+}
+function loadProfile(name){
+  const key = STORAGE_PREFIX + name;
+  const raw = localStorage.getItem(key);
+  if(!raw) return null;
+  try{ return normalizeConfig(JSON.parse(raw)); }catch(e){ return null; }
+}
+function normalizeConfig(obj){
+  const base = DEFAULT_CONFIG();
+  const merged = {
+    ...base,
+    ...obj,
+    paleta: { ...base.paleta, ...(obj.paleta||{}) },
+    whatsapp: {
+      ...base.whatsapp,
+      ...(obj.whatsapp||{}),
+      pcs: Array.isArray(obj.whatsapp?.pcs) ? clampPCs(obj.whatsapp.pcs) : base.whatsapp.pcs
+    },
+    utilidad: { ...base.utilidad, ...(obj.utilidad||{}) },
+    promoAmigo: { ...base.promoAmigo, ...(obj.promoAmigo||{}) },
+    estructuraBotones: { ...base.estructuraBotones, ...(obj.estructuraBotones||{}) },
+    billeteras: Array.isArray(obj.billeteras)? obj.billeteras : base.billeteras
   };
+  if(!merged.utilidad.info) merged.utilidad.info = DEFAULT_UTIL_INFO;
+  if(!merged.utilidad.cargado) merged.utilidad.cargado = DEFAULT_UTIL_CARGADO;
+  if(!merged.utilidad.retiro) merged.utilidad.retiro = DEFAULT_UTIL_RETIRO;
+  return merged;
+}
+function clampPCs(list){
+  // asegura mínimo 2, máximo 10
+  const out = (list||[]).filter(Boolean).slice(0,10);
+  while(out.length<2){ out.push({ nombre:'PC'+String(out.length+1).padStart(2,'0'), wsp:'5491100000000', mensajes:[] }); }
+  return out.map(pc=>({ nombre:pc.nombre||'PC01', wsp:String(pc.wsp||'5491100000000'), mensajes:Array.isArray(pc.mensajes)?pc.mensajes:[] }));
 }
 
-/* ---------- Storage helpers ---------- */
-function saveAll(){
-  try{
-    localStorage.setItem(PROFILE_LIST, JSON.stringify(Object.keys(state.profiles)));
-    Object.entries(state.profiles).forEach(([k,v]) => localStorage.setItem(KEY_PREFIX + k, JSON.stringify(v)));
-    localStorage.setItem(LAST_PROFILE, state.active || '');
-    indicateSaved();
-  }catch(e){ console.error('saveAll',e); }
-}
-function loadAll(){
-  try{
-    const listRaw = localStorage.getItem(PROFILE_LIST);
-    const names = listRaw ? JSON.parse(listRaw) : [];
-    names.forEach(n=>{
-      const raw = localStorage.getItem(KEY_PREFIX + n);
-      if(raw) try{ state.profiles[n] = JSON.parse(raw); }catch(e){}
-    });
-    // fallback: if none, create default
-    if(Object.keys(state.profiles).length === 0){
-      const name = 'PC01';
-      state.profiles[name] = defaultConfig(name);
-    }
-    // active
-    const last = localStorage.getItem(LAST_PROFILE);
-    state.active = last && state.profiles[last] ? last : Object.keys(state.profiles)[0];
-  }catch(e){ console.error('loadAll', e); }
-}
-
-/* ========= UI utilities ========= */
-const $ = id => document.getElementById(id);
-function showToast(msg, time=1600){
-  const t = $('toast'); t.textContent = msg; t.classList.add('show'); $('lastToastText').textContent = msg;
-  setTimeout(()=>t.classList.remove('show'), time);
-}
-function showModal(html){
-  $('modalContent').innerHTML = html;
-  $('modalBack').style.display = 'flex';
-}
-function closeModal(){ $('modalBack').style.display = 'none'; $('modalContent').innerHTML = ''; }
-
-/* ========= Initialization ========= */
+/* === Bootstrap === */
 document.addEventListener('DOMContentLoaded', ()=>{
-  loadAll();
-  ensureActiveProfile();
-  bindTopControls();
-  renderProfileSelect();
-  renderAllEditor();
-  renderPreview();
+  bootstrapProfiles();
+  bindEditorInputs();
+  renderAll();
 });
 
-/* ========= Profiles handling ========= */
-function ensureActiveProfile(){
-  if(!state.active){ state.active = Object.keys(state.profiles)[0]; }
-  if(!state.profiles[state.active]){ state.profiles[state.active] = defaultConfig(state.active); }
-  updateStatus();
+function bootstrapProfiles(){
+  const list = loadProfileNames();
+  const last = localStorage.getItem(STORAGE_LAST);
+  if(last && list.includes(last)){
+    currentProfileName = last;
+    config = loadProfile(last) || DEFAULT_CONFIG();
+  }else if(list.length){
+    currentProfileName = list[0];
+    config = loadProfile(list[0]) || DEFAULT_CONFIG();
+  }else{
+    currentProfileName = 'PC01';
+    config = DEFAULT_CONFIG();
+    saveProfileNames([currentProfileName]);
+    saveCurrentProfile();
+  }
+  renderProfileSelect();
 }
+
+/* === Profile select === */
 function renderProfileSelect(){
-  const sel = $('profileSelect'); sel.innerHTML = '';
-  Object.keys(state.profiles).forEach(name=>{
-    const opt = document.createElement('option'); opt.value = name; opt.textContent = name; sel.appendChild(opt);
+  const select = document.getElementById('profileSelect');
+  const list = loadProfileNames();
+  if(!list.includes(currentProfileName)) list.push(currentProfileName);
+  select.innerHTML = '';
+  list.forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    if(name === currentProfileName) opt.selected = true;
+    select.appendChild(opt);
   });
-  sel.value = state.active;
-  $('metaName').value = state.active;
 }
-$('profileSelect').addEventListener('change', e=>{
-  state.active = e.target.value;
-  ensureActiveProfile();
-  renderAllEditor(); renderPreview(); saveAll();
-});
 
-/* Top controls */
-function bindTopControls(){
-  $('btnNewProfile').addEventListener('click', ()=>{
-    const name = prompt('Nombre del nuevo perfil (ej: PC02):');
+/* === Bindings === */
+function bindEditorInputs(){
+  document.getElementById('profileSelect').addEventListener('change', e=>{
+    const name = e.target.value || 'PC01';
+    const existing = loadProfile(name);
+    currentProfileName = name;
+    config = existing || {...DEFAULT_CONFIG(), perfil:name};
+    saveProfileNames([...loadProfileNames(), name]);
+    sliderIndex = 0; sliderPreviewIndex = 0;
+    renderAll();
+  });
+
+  document.getElementById('btnNewProfile').addEventListener('click', ()=>{
+    const name = prompt('Nombre del nuevo perfil (ej. PC03, GONZALES):','PC03');
     if(!name) return;
-    const n = name.trim();
-    if(state.profiles[n]){ alert('Ya existe'); return; }
-    state.profiles[n] = defaultConfig(n);
-    state.active = n;
-    renderProfileSelect(); renderAllEditor(); renderPreview(); saveAll();
-    showToast('Perfil creado: ' + n);
-  });
-
-  $('btnRenameProfile').addEventListener('click', ()=>{
-    const old = state.active;
-    const name = prompt('Nuevo nombre de perfil:', old);
-    if(!name || name.trim()===old) return;
-    const n = name.trim();
-    if(state.profiles[n]){ alert('Ya existe'); return; }
-    state.profiles[n] = state.profiles[old];
-    delete state.profiles[old];
-    state.active = n;
-    renderProfileSelect(); renderAllEditor(); renderPreview(); saveAll(); showToast('Perfil renombrado');
-  });
-
-  $('btnResetProfile').addEventListener('click', ()=>{
-    if(!confirm(`Reiniciar perfil ${state.active}? Se perderán los datos de este perfil.`)) return;
-    state.profiles[state.active] = defaultConfig(state.active);
-    renderAllEditor(); renderPreview(); saveAll(); showToast('Perfil reiniciado');
-  });
-
-  $('btnImport').addEventListener('click', ()=> openImportFile());
-  $('btnExport').addEventListener('click', ()=> doExport());
-  $('btnFullscreenPreview').addEventListener('click', ()=> toggleFullscreenPreview());
-  $('modalClose').addEventListener('click', closeModal);
-}
-
-/* Import file (profile) */
-function openImportFile(){
-  const inp = document.createElement('input'); inp.type='file'; inp.accept='.json,.chin.json';
-  inp.onchange = async e=>{
-    const f = e.target.files[0]; if(!f) return;
-    try{
-      const txt = await f.text(); const obj = JSON.parse(txt);
-      const name = obj.perfil || prompt('Nombre para perfil importado:', f.name.replace(/\.[^/.]+$/,''));
-      if(!name) return;
-      state.profiles[name] = normalizeImported(obj);
-      state.active = name;
-      renderProfileSelect(); renderAllEditor(); renderPreview(); saveAll(); showToast('Perfil importado: ' + name);
-    }catch(err){ alert('Archivo inválido'); }
-  };
-  inp.click();
-}
-
-/* Normalize imported data to internal shape */
-function normalizeImported(raw){
-  const out = defaultConfig(raw.perfil || 'imported');
-  try{
-    if(raw.paleta) out.paleta = raw.paleta;
-    if(raw.whatsapp) out.whatsapp = raw.whatsapp;
-    if(raw.revinculacion) out.revinculacion = raw.revinculacion;
-    if(Array.isArray(raw.billeteras)) out.billeteras = raw.billeteras;
-    if(Array.isArray(raw.secciones)) out.secciones = raw.secciones;
-    if(Array.isArray(raw.order)) out.order = raw.order;
-  }catch(e){}
-  out.metadata = Object.assign(out.metadata || {}, raw.metadata || {});
-  return out;
-}
-
-/* Export to .chin.json format required (ChinPlantilla) */
-function doExport(){
-  const cfg = state.profiles[state.active];
-  cfg.metadata = cfg.metadata || {};
-  cfg.metadata.lastExport = new Date().toISOString();
-  cfg.fechaExport = cfg.metadata.lastExport;
-  // build export payload matching schema (see schema.md)
-  const exportObj = {
-    perfil: cfg.perfil,
-    fechaExport: cfg.fechaExport,
-    paleta: cfg.paleta,
-    whatsapp: cfg.whatsapp,
-    revinculacion: cfg.revinculacion,
-    billeteras: cfg.billeteras.map(b => normalizeWalletForExport(b)),
-    secciones: cfg.secciones,
-    order: cfg.order,
-    metadata: cfg.metadata
-  };
-  const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${cfg.perfil || 'perfil'}.chin.json`; a.click(); URL.revokeObjectURL(a.href);
-  saveAll();
-  showToast('Exportado .chin.json');
-}
-
-/* Normalize wallet export: keep minimal clean data for ChinPlantilla */
-function normalizeWalletForExport(w){
-  return {
-    id: w.id || ('w'+(Date.now()+Math.floor(Math.random()*1000))),
-    label: w.label || '',
-    cbu: w.cbu || '',
-    alias: w.alias || '',
-    titular: w.titular || '',
-    billetera: w.billetera === 'Otro' ? (w.billeteraCustom||'Otro') : (w.billetera||''),
-    flip: !!w.flip,
-    flipData: w.flip ? {
-      cbu: w.cbu2||'', alias: w.alias2||'', titular: w.titular2||'', billetera: (w.billetera2 === 'Otro' ? (w.billetera2Custom||'Otro') : (w.billetera2||''))
-    } : null,
-    meta: { tags: w.tags || [] }
-  };
-}
-
-/* ========= Editor renderers ========= */
-function renderAllEditor(){
-  renderProfileSelect();
-  renderPalette();
-  renderWalletList();
-  renderSections();
-  renderRevinculacion();
-  updateStatus();
-}
-
-/* Palette */
-function renderPalette(){
-  const cfg = state.profiles[state.active];
-  $('inpAccent').value = cfg.paleta.acento || '#8A2BE2';
-  $('inpOk').value = cfg.paleta.ok || '#10B981';
-  $('inpBad').value = cfg.paleta.bad || '#EF4444';
-  $('metaName').value = cfg.perfil || state.active;
-  $('metaDate').value = cfg.metadata && cfg.metadata.lastExport ? cfg.metadata.lastExport : '';
-  // bind changes
-  ['inpAccent','inpOk','inpBad'].forEach(id=>{
-    $(id).oninput = (e)=>{
-      cfg.paleta = cfg.paleta || {};
-      if(id==='inpAccent') cfg.paleta.acento = e.target.value;
-      if(id==='inpOk') cfg.paleta.ok = e.target.value;
-      if(id==='inpBad') cfg.paleta.bad = e.target.value;
-      markDirty(); renderPreview();
-    };
-  });
-  $('metaName').onchange = e=>{
-    cfg.perfil = e.target.value; markDirty();
+    currentProfileName = name.trim();
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveProfileNames([...loadProfileNames(), currentProfileName]);
     renderProfileSelect();
-  };
+    renderAll();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    if(!confirm('¿Reiniciar el perfil actual?')) return;
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveCurrentProfile();
+    sliderIndex = 0; sliderPreviewIndex = 0;
+    renderAll();
+  });
+
+  document.getElementById('btnExport').addEventListener('click', ()=>{
+    config.fechaExport = new Date().toISOString();
+    const blob = new Blob([JSON.stringify(config,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `${currentProfileName || 'perfil'}.chin.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    showToast('Perfil exportado');
+  });
+
+  const importInput = document.getElementById('fileImport');
+  document.getElementById('btnImport').addEventListener('click', ()=>importInput.click());
+  importInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      currentProfileName = obj.perfil || file.name.replace(/\.json$/i,'') || 'Importado';
+      config = normalizeConfig(obj);
+      saveProfileNames([...loadProfileNames(), currentProfileName]);
+      renderProfileSelect(); saveCurrentProfile(); renderAll();
+      showToast('Perfil importado correctamente');
+    }catch(err){ alert('No se pudo importar el JSON.'); }
+    finally{ importInput.value=''; }
+  });
+
+  /* Palette */
+  const paletteMap = { colorAccent:['paleta','acento'], colorOk:['paleta','ok'], colorBad:['paleta','bad'] };
+  Object.keys(paletteMap).forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      const [a,b] = paletteMap[id]; config[a][b] = el.value; markDirty(); renderPreview();
+    });
+  });
+
+  /* Mensaje WhatsApp plantilla */
+  const waMensaje = document.getElementById('waMensaje');
+  waMensaje.addEventListener('input', ()=>{
+    config.whatsapp.plantillaMensaje = waMensaje.value; markDirty(); renderPreview();
+  });
+
+  /* PCs */
+  document.getElementById('pcAddBtn').addEventListener('click', ()=>{
+    const list = config.whatsapp.pcs;
+    if(list.length >= 10){ showToast('Máximo 10 PCs'); return; }
+    const idx = list.length+1;
+    const nombre = 'PC' + String(idx).padStart(2,'0');
+    list.push({ nombre, wsp:'5491100000000', mensajes:[] });
+    sliderIndex = list.length-1; sliderPreviewIndex = sliderIndex;
+    markDirty(); renderPCSlider(); renderPCSliderPreview(); renderSaludosEditor(); renderPreview();
+  });
+  document.getElementById('pcDelBtn').addEventListener('click', ()=>{
+    const list = config.whatsapp.pcs;
+    if(list.length<=2){ showToast('Mínimo 2 PCs'); return; }
+    list.pop();
+    sliderIndex = Math.max(0, Math.min(sliderIndex, list.length-1));
+    sliderPreviewIndex = Math.max(0, Math.min(sliderPreviewIndex, list.length-1));
+    markDirty(); renderPCSlider(); renderPCSliderPreview(); renderSaludosEditor(); renderPreview();
+  });
+
+  document.getElementById('pcWsp').addEventListener('input', (e)=>{
+    const list = config.whatsapp.pcs; if(!list.length) return;
+    list[sliderIndex].wsp = e.target.value.trim();
+    markDirty(); renderPreview();
+  });
+
+  /* Mensajes de revinculación por PC */
+  document.getElementById('btnAddSaludo').addEventListener('click', ()=>{
+    const pc = config.whatsapp.pcs[sliderIndex];
+    pc.mensajes.push({ id:'m_'+Date.now(), texto:'Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX' });
+    markDirty(); renderSaludosEditor(); renderPreview();
+  });
+
+  /* Utilidad */
+  const utilMap = { utilInfo:['utilidad','info'], utilCargado:['utilidad','cargado'], utilRetiro:['utilidad','retiro'] };
+  Object.keys(utilMap).forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      const [a,b] = utilMap[id]; config[a][b] = el.value; markDirty(); renderPreview();
+    });
+  });
+
+  /* Billeteras */
+  document.getElementById('btnAddWallet').addEventListener('click', ()=>{
+    config.billeteras.push({
+      id:'w_'+Date.now(),
+      label:'Grupo / Nombre visible',
+      cbu:'', alias:'', titular:'',
+      billetera:'Mercado Pago', billeteraCustom:'',
+      color:'#1f6feb',
+      flip:false,
+      cbu2:'', alias2:'', titular2:'',
+      billetera2:'Mercado Pago', billetera2Custom:'',
+      color2:'#ff6f3d'
+    });
+    markDirty(); renderWallets(); renderPreview();
+  });
+
+  /* Preview tabs */
+  document.getElementById('previewTabs').addEventListener('click', e=>{
+    const tab = e.target.closest('.tab-chip'); if(!tab) return;
+    document.querySelectorAll('.tab-chip').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    // Mostrar barra de usuario solo en pestañas que lo necesitan (revin)
+    document.getElementById('userBarBox').style.display = tab.dataset.tab === 'revin' ? '' : 'none';
+    renderPreview();
+  });
+
+  /* Usuario preview */
+  document.getElementById('previewUsuario').addEventListener('input', ()=> renderPreview());
 }
 
-/* Wallet list render and handlers */
-function renderWalletList(filterText){
-  const cfg = state.profiles[state.active];
-  const list = $('walletList');
-  list.innerHTML = '';
-  const q = (filterText || $('walletSearch').value || '').toLowerCase();
-  cfg.billeteras.forEach((w, idx)=>{
-    const text = (w.label+' '+(w.alias||'')+' '+(w.titular||'')).toLowerCase();
-    if(q && !text.includes(q)) return;
-    const card = document.createElement('div'); card.className='wallet-card'; card.draggable=true; card.dataset.index = idx;
-    card.innerHTML = `
-      <div class="drag-handle"><div class="handle-dots" title="Arrastrar"></div></div>
+/* === Dirty indicator === */
+function markDirty(){
+  const chip = document.getElementById('chipStatus');
+  chip.textContent = 'Cambios sin guardar';
+  if(dirtyTimer) clearTimeout(dirtyTimer);
+  dirtyTimer = setTimeout(()=>{ saveCurrentProfile(); },400);
+}
+function indicateSaved(){ document.getElementById('chipStatus').textContent = 'Perfil guardado'; }
+
+/* === Render general === */
+function renderAll(){
+  document.getElementById('colorAccent').value = config.paleta.acento || '#8A2BE2';
+  document.getElementById('colorOk').value = config.paleta.ok || '#10B981';
+  document.getElementById('colorBad').value = config.paleta.bad || '#EF4444';
+
+  document.getElementById('waMensaje').value = config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
+
+  document.getElementById('utilInfo').value = config.utilidad.info || DEFAULT_UTIL_INFO;
+  document.getElementById('utilCargado').value = config.utilidad.cargado || DEFAULT_UTIL_CARGADO;
+  document.getElementById('utilRetiro').value = config.utilidad.retiro || DEFAULT_UTIL_RETIRO;
+
+  renderPCSlider();
+  renderPCSliderPreview();
+  renderSaludosEditor();
+  renderWallets();
+  // Ajuste: ocultar barra de usuario si pestaña no es revin
+  const activeTab = document.querySelector('.tab-chip.active')?.dataset.tab || 'utilidad';
+  document.getElementById('userBarBox').style.display = activeTab === 'revin' ? '' : 'none';
+  renderPreview();
+}
+
+/* === PCs sliders (editor y preview) === */
+function renderPCSlider(){
+  const cont = document.getElementById('pcSlider'); cont.innerHTML = '';
+  const list = config.whatsapp.pcs;
+  document.getElementById('pcCountNote').textContent = `Mínimo 2, máximo 10 (${list.length})`;
+  list.forEach((pc, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small ghost';
+    btn.textContent = pc.nombre;
+    btn.style.borderColor = i===sliderIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.45)';
+    btn.style.color = i===sliderIndex ? '#e5e7eb' : 'var(--muted)';
+    btn.addEventListener('click', ()=>{
+      sliderIndex = i;
+      document.getElementById('pcWsp').value = pc.wsp || '';
+      renderPCSlider(); renderSaludosEditor(); renderPreview();
+    });
+    cont.appendChild(btn);
+  });
+  document.getElementById('pcWsp').value = (list[sliderIndex]?.wsp || '');
+}
+
+function renderPCSliderPreview(){
+  const cont = document.getElementById('pcSliderPreview'); cont.innerHTML = '';
+  const list = config.whatsapp.pcs;
+  list.forEach((pc, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small ghost';
+    btn.textContent = pc.nombre;
+    btn.style.borderColor = i===sliderPreviewIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.45)';
+    btn.style.color = i===sliderPreviewIndex ? '#e5e7eb' : 'var(--muted)';
+    btn.addEventListener('click', ()=>{
+      sliderPreviewIndex = i;
+      renderPCSliderPreview(); renderPreview();
+    });
+    cont.appendChild(btn);
+  });
+}
+
+/* === Mensajes de revinculación por PC (editor) === */
+function renderSaludosEditor(){
+  const listEl = document.getElementById('saludosList'); listEl.innerHTML = '';
+  const pc = config.whatsapp.pcs[sliderIndex];
+  const arr = pc.mensajes || [];
+  if(!arr.length){
+    const p = document.createElement('p'); p.className='muted';
+    p.textContent = 'No hay mensajes cargados para esta PC.';
+    listEl.appendChild(p);
+  }
+  arr.forEach((s,idx)=>{
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.innerHTML = `
+      <button class="btn icon" title="Arrastrar (deshabilitado)">☰</button>
       <div>
-        <div class="label">${escapeHtml(w.label||'Billetera')}</div>
-        <div class="small">${escapeHtml(w.alias||w.cbu||'')}</div>
-      </div>
-      <div class="wallet-actions">
-        <button class="btn small ghost" data-edit="${idx}">Editar</button>
-        <button class="btn small" data-dupe="${idx}">Duplicar</button>
-        <button class="btn small ghost" data-based="${idx}">Basada</button>
-        <button class="btn small" data-remove="${idx}">Eliminar</button>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #${idx+1}</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">✕</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
+        </div>
       </div>
     `;
-    list.appendChild(card);
-
-    // handlers
-    card.querySelector('[data-edit]').addEventListener('click', ()=> openWalletEditor(idx));
-    card.querySelector('[data-dupe]').addEventListener('click', ()=> duplicateWallet(idx));
-    card.querySelector('[data-based]').addEventListener('click', ()=> newWalletBasedOn(idx));
-    card.querySelector('[data-remove]').addEventListener('click', ()=> { if(confirm('Eliminar?')) { cfg.billeteras.splice(idx,1); markDirty(); renderWalletList(); renderPreview(); }});
-
-    // drag
-    card.addEventListener('dragstart', (ev)=> { ev.dataTransfer.setData('text/plain', idx); card.style.opacity=.5;});
-    card.addEventListener('dragend', ()=> card.style.opacity=1);
-    card.addEventListener('dragover', (ev)=>ev.preventDefault());
-    card.addEventListener('drop', (ev)=>{ ev.preventDefault(); const from=Number(ev.dataTransfer.getData('text/plain')); const to=Number(card.dataset.index); if(from===to) return; const a=cfg.billeteras.splice(from,1)[0]; cfg.billeteras.splice(to,0,a); markDirty(); renderWalletList(); renderPreview(); });
+    listEl.appendChild(row);
   });
-  $('countWallets').textContent = String(cfg.billeteras.length);
+
+  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      const i = parseInt(el.dataset.sIdx,10);
+      pc.mensajes[i].texto = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+  listEl.querySelectorAll('[data-remove-s]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = parseInt(btn.dataset.removeS,10);
+      pc.mensajes.splice(i,1);
+      markDirty(); renderSaludosEditor(); renderPreview();
+    });
+  });
 }
 
-/* Search handler */
-$('walletSearch').addEventListener('input', ()=> renderWalletList());
+/* === Billeteras editor (drag solo con grip) === */
+const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
-/* Add wallet */
-$('btnAddWallet').addEventListener('click', ()=>{
-  const cfg = state.profiles[state.active];
-  cfg.billeteras.push({ id:'w'+Date.now(), label:'Nueva billetera', cbu:'', alias:'', titular:'', billetera:'Mercado Pago', billeteraCustom:'', flip:false, cbu2:'', alias2:'', titular2:'', billetera2:'Mercado Pago', billetera2Custom:''});
-  markDirty(); renderWalletList(); renderPreview();
-});
-
-/* Duplicate wallet */
-function duplicateWallet(idx){
-  const cfg = state.profiles[state.active];
-  const src = cfg.billeteras[idx];
-  const clone = JSON.parse(JSON.stringify(src)); clone.id = 'w'+Date.now();
-  cfg.billeteras.splice(idx+1,0,clone);
-  markDirty(); renderWalletList(); renderPreview();
-}
-
-/* New based on wallet */
-function newWalletBasedOn(idx){
-  const cfg = state.profiles[state.active];
-  const src = cfg.billeteras[idx];
-  const copy = JSON.parse(JSON.stringify(src)); copy.id = 'w'+Date.now(); copy.label = (src.label||'') + ' (copy)';
-  cfg.billeteras.push(copy);
-  markDirty(); renderWalletList(); renderPreview();
-}
-
-/* Wallet editor modal */
-function openWalletEditor(idx){
-  const cfg = state.profiles[state.active];
-  const w = cfg.billeteras[idx];
-  const html = `
-    <h3>Editar billetera</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div><label>Nombre visible</label><input id="m_label" value="${escapeAttr(w.label||'')}" /></div>
-      <div><label>Titular</label><input id="m_titular" value="${escapeAttr(w.titular||'')}" /></div>
-      <div><label>CBU</label><input id="m_cbu" value="${escapeAttr(w.cbu||'')}" /></div>
-      <div><label>Alias</label><input id="m_alias" value="${escapeAttr(w.alias||'')}" /></div>
-      <div><label>Billetera</label>
-        <select id="m_billetera">
-          <option>Mercado Pago</option><option>Ualá</option><option>Brubank</option><option>Otro</option>
-        </select>
-        <input id="m_billetera_custom" placeholder="Si Otro, indica" style="margin-top:6px;display:none" />
-      </div>
+function renderWallets(){
+  const listEl = document.getElementById('walletList'); listEl.innerHTML = '';
+  (config.billeteras||[]).forEach((w,idx)=>{
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.dataset.index = idx;
+    row.innerHTML = `
+      <button class="grip" data-grip title="Arrastrar">☰</button>
       <div>
-        <label>Flip (segunda billetera)</label>
-        <div style="display:flex;gap:8px">
-          <button id="m_flip_on" class="btn small ${w.flip? '' : 'ghost'}">${w.flip? 'ON':'ON'}</button>
-          <button id="m_flip_off" class="btn small ghost">${w.flip? 'OFF':'OFF'}</button>
+        <div class="wallet-header">
+          <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-add-flip="${idx}" title="Añadir segunda billetera">+ Segunda billetera</button>
+            <span class="muted">Añade otra billetera del mismo titular</span>
+            <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">✕</button>
+          </div>
         </div>
-      </div>
-    </div>
-    <div id="m_flip_area" style="margin-top:8px; display:${w.flip? 'block':'none'}">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div><label>CBU (flip)</label><input id="m_cbu2" value="${escapeAttr(w.cbu2||'')}" /></div>
-        <div><label>Alias (flip)</label><input id="m_alias2" value="${escapeAttr(w.alias2||'')}" /></div>
-        <div><label>Titular (flip)</label><input id="m_titular2" value="${escapeAttr(w.titular2||'')}" /></div>
-        <div><label>Billetera (flip)</label><select id="m_billetera2"><option>Mercado Pago</option><option>Ualá</option><option>Brubank</option><option>Otro</option></select>
-        <input id="m_billetera2_custom" placeholder="Si Otro, indica" style="margin-top:6px;display:none" /></div>
-      </div>
-    </div>
-    <div style="margin-top:10px;text-align:right">
-      <button id="m_save" class="btn">Guardar</button>
-      <button id="m_cancel" class="btn ghost">Cancelar</button>
-    </div>
-  `;
-  showModal(html);
-  // fill selects
-  $('m_billetera').value = w.billetera || 'Mercado Pago';
-  $('m_billetera2').value = w.billetera2 || 'Mercado Pago';
-  if(w.billetera==='Otro'){ $('m_billetera_custom').style.display=''; $('m_billetera_custom').value = w.billeteraCustom||''; }
-  if(w.billetera2==='Otro'){ $('m_billetera2_custom').style.display=''; $('m_billetera2_custom').value = w.billetera2Custom||''; }
-
-  $('m_billetera').onchange = (e)=> { if(e.target.value==='Otro'){ $('m_billetera_custom').style.display=''; } else { $('m_billetera_custom').style.display='none'; } };
-  $('m_billetera2').onchange = (e)=> { if(e.target.value==='Otro'){ $('m_billetera2_custom').style.display=''; } else { $('m_billetera2_custom').style.display='none'; } };
-  $('m_flip_on').addEventListener('click', ()=> { $('m_flip_area').style.display='block'; });
-  $('m_flip_off').addEventListener('click', ()=> { $('m_flip_area').style.display='none'; });
-
-  $('m_save').addEventListener('click', ()=>{
-    w.label = $('m_label').value.trim();
-    w.titular = $('m_titular').value.trim();
-    w.cbu = $('m_cbu').value.trim();
-    w.alias = $('m_alias').value.trim();
-    w.billetera = $('m_billetera').value;
-    w.billeteraCustom = $('m_billetera_custom').value.trim();
-    w.flip = $('m_flip_area').style.display !== 'none';
-    w.cbu2 = $('m_cbu2').value.trim();
-    w.alias2 = $('m_alias2').value.trim();
-    w.titular2 = $('m_titular2').value.trim();
-    w.billetera2 = $('m_billetera2').value;
-    w.billetera2Custom = $('m_billetera2_custom').value.trim();
-    markDirty(); renderWalletList(); renderPreview(); closeModal(); showToast('Billetera guardada');
-  });
-  $('m_cancel').addEventListener('click', ()=> closeModal());
-}
-
-/* ========= Sections & buttons ========= */
-function renderSections(){
-  const cfg = state.profiles[state.active];
-  const container = $('sectionsList'); container.innerHTML = '';
-  cfg.secciones.forEach((s, i)=>{
-    const div = document.createElement('div'); div.style.marginBottom='8px';
-    div.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="display:flex;gap:8px;align-items:center">
-          <div class="handle-dots" style="width:20px;height:28px"></div>
-          <strong>${escapeHtml(s.name)}</strong>
-          <span class="small" style="margin-left:8px;color:var(--muted)">${s.buttons.length} botones</span>
+        <div class="section-grid">
+          <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" /></div>
+          <div><label>CBU</label><input type="text" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" /></div>
+          <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
+          <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
+          <div>
+            <label>Billetera</label>
+            <select data-field="billetera" data-idx="${idx}">
+              ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
+            </select>
+            <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
+          </div>
+          <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
         </div>
-        <div class="flex">
-          <button class="btn small ghost" data-edit="${i}">Editar</button>
-          <button class="btn small" data-add="${i}">+Botón</button>
-          <button class="btn small ghost" data-remove="${i}">Eliminar</button>
-        </div>
+
+        ${w.flip ? `
+        <div class="section-grid">
+          <div><label>CBU (segunda)</label><input type="text" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" /></div>
+          <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
+          <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
+          <div>
+            <label>Billetera (segunda)</label>
+            <select data-field="billetera2" data-idx="${idx}">
+              ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
+            </select>
+            <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
+          </div>
+          <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
+        </div>`:''}
       </div>
     `;
-    container.appendChild(div);
-    div.querySelector('[data-edit]').addEventListener('click', ()=> editSection(i));
-    div.querySelector('[data-add]').addEventListener('click', ()=> addButtonToSection(i));
-    div.querySelector('[data-remove]').addEventListener('click', ()=> { if(confirm('Eliminar sección?')){ cfg.secciones.splice(i,1); markDirty(); renderSections(); }});
+    listEl.appendChild(row);
+  });
+
+  // edición
+  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
+    el.addEventListener('input', onWalletFieldChange);
+    el.addEventListener('change', onWalletFieldChange);
+  });
+  listEl.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.remove,10);
+      if(isNaN(idx)) return;
+      if(!confirm('¿Eliminar este grupo?')) return;
+      config.billeteras.splice(idx,1);
+      markDirty(); renderWallets(); renderPreview();
+    });
+  });
+  listEl.querySelectorAll('[data-add-flip]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.addFlip,10);
+      const w = config.billeteras[idx];
+      if(!w.flip){
+        w.flip = true;
+        w.titular2 = w.titular || '';
+        w.billetera2 = w.billetera || 'Mercado Pago';
+        w.color2 = '#ff6f3d';
+      }
+      markDirty(); renderWallets(); renderPreview();
+    });
+  });
+
+  // drag solo con grip
+  listEl.querySelectorAll('[data-grip]').forEach(grip=>{
+    const row = grip.closest('.card-row');
+    grip.addEventListener('mousedown', e=>{
+      draggingWallet = row;
+      row.classList.add('dragging');
+      e.preventDefault();
+    });
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!draggingWallet) return;
+    const listEl = document.getElementById('walletList');
+    const rows = Array.from(listEl.children);
+    const y = e.clientY;
+    let target = null;
+    rows.forEach(r=>{
+      const rect = r.getBoundingClientRect();
+      r.classList.remove('placeholder');
+      if(y>rect.top && y<rect.bottom) target = r;
+    });
+    if(target && target!==draggingWallet){
+      target.classList.add('placeholder');
+    }
+  });
+  document.addEventListener('mouseup', e=>{
+    if(!draggingWallet) return;
+    const listEl = document.getElementById('walletList');
+    const rows = Array.from(listEl.children);
+    let toIdx = null;
+    rows.forEach((r,i)=>{
+      if(r.classList.contains('placeholder')){ toIdx = i; r.classList.remove('placeholder'); }
+    });
+    const fromIdx = parseInt(draggingWallet.dataset.index,10);
+    draggingWallet.classList.remove('dragging');
+    draggingWallet = null;
+    if(toIdx===null || isNaN(fromIdx)) return;
+    const arr = config.billeteras;
+    const item = arr.splice(fromIdx,1)[0];
+    arr.splice(toIdx,0,item);
+    markDirty(); renderWallets(); renderPreview();
   });
 }
 
-/* Add new section */
-$('btnAddSection').addEventListener('click', ()=>{
-  const name = $('sectionNewName').value.trim();
-  if(!name){ alert('Nombre requerido'); return; }
-  const cfg = state.profiles[state.active];
-  cfg.secciones.push({ id: 's_'+Date.now(), name, buttons:[] });
-  markDirty(); renderSections(); $('sectionNewName').value=''; renderPreview();
-});
-
-/* Edit section */
-function editSection(idx){
-  const cfg = state.profiles[state.active]; const s = cfg.secciones[idx];
-  let html = `<h3>Editar sección: ${escapeHtml(s.name)}</h3>`;
-  html += `<label>Nombre</label><input id="sec_name" value="${escapeAttr(s.name)}" />`;
-  html += `<div style="margin-top:8px"><label>Orden (arrastra para reordenar en preview)</label><div class="small">Secciones actuales: ${cfg.secciones.map(x=>x.name).join(', ')}</div></div>`;
-  html += `<div style="margin-top:8px;text-align:right"><button id="sec_save" class="btn">Guardar</button></div>`;
-  showModal(html);
-  $('sec_name').oninput = (e)=> s.name = e.target.value;
-  $('sec_save').addEventListener('click', ()=> { markDirty(); renderSections(); renderPreview(); closeModal(); });
+function onWalletFieldChange(e){
+  const idx = parseInt(e.target.dataset.idx,10);
+  const field = e.target.dataset.field;
+  const w = config.billeteras[idx]; if(!w) return;
+  if(field==='billetera' || field==='billetera2'){
+    w[field] = e.target.value;
+    const customField = field==='billetera'?'billeteraCustom':'billetera2Custom';
+    const inputCustom = e.target.parentElement.querySelector(`input[data-field="${customField}"]`);
+    if(inputCustom){ inputCustom.style.display = e.target.value==='Otro' ? '' : 'none'; }
+  }else{ w[field] = e.target.value; }
+  markDirty(); renderPreview();
 }
 
-/* Add button to section modal */
-function addButtonToSection(idx){
-  const cfg = state.profiles[state.active]; const s = cfg.secciones[idx];
-  const html = `
-    <h3>Agregar botón a ${escapeHtml(s.name)}</h3>
-    <label>Nombre visible</label><input id="btn_name" />
-    <label>Texto que copia / secundario</label><textarea id="btn_text"></textarea>
-    <label>Estilo</label>
-    <select id="btn_style"><option value="normal">Normal</option><option value="important">Importante</option><option value="warn">Advertencia</option></select>
-    <div style="margin-top:8px;text-align:right"><button id="btn_save" class="btn">Agregar</button></div>
-  `;
-  showModal(html);
-  $('btn_save').addEventListener('click', ()=>{
-    const name = $('btn_name').value.trim(); const text = $('btn_text').value.trim(); const style = $('btn_style').value;
-    if(!name || !text){ alert('Nombre y texto requeridos'); return; }
-    s.buttons.push({ id:'b_'+Date.now(), name, text, style, flip:false });
-    markDirty(); renderSections(); renderPreview(); closeModal(); showToast('Botón agregado');
-  });
+/* === Preview === */
+function getActiveTab(){
+  const active = document.querySelector('.tab-chip.active');
+  return active ? active.dataset.tab : 'utilidad';
+}
+function applyPalette(){
+  const p = config.paleta || {};
+  document.documentElement.style.setProperty('--accent', p.acento || '#8A2BE2');
+  document.documentElement.style.setProperty('--accent-light', p.acento || '#a855f7');
+  document.documentElement.style.setProperty('--ok', p.ok || '#10B981');
+  document.documentElement.style.setProperty('--bad', p.bad || '#EF4444');
 }
 
-/* ========= Revinculación management (unlimited) ========= */
-function renderRevinculacion(){
-  const cfg = state.profiles[state.active];
-  const cont = $('revContainer'); cont.innerHTML = '';
-  cfg.revinculacion.saludos.forEach((s, idx)=>{
-    const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.marginBottom='6px';
-    row.innerHTML = `<div style="flex:1;border-radius:8px;padding:8px;background:var(--card-2)">${escapeHtml(s)}</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <button class="btn small ghost" data-edit="${idx}">Editar</button>
-        <button class="btn small" data-remove="${idx}">Eliminar</button>
-      </div>`;
-    cont.appendChild(row);
-    row.querySelector('[data-edit]').addEventListener('click', ()=> { const t = prompt('Editar saludo', s); if(t!=null){ cfg.revinculacion.saludos[idx] = t.trim(); markDirty(); renderRevinculacion(); renderPreview(); }});
-    row.querySelector('[data-remove]').addEventListener('click', ()=> { if(confirm('Eliminar saludo?')){ cfg.revinculacion.saludos.splice(idx,1); markDirty(); renderRevinculacion(); renderPreview(); }});
-  });
-}
-
-/* Add rev */
-$('btnAddRev').addEventListener('click', ()=>{
-  const txt = $('revAddText').value.trim(); if(!txt) return; const cfg = state.profiles[state.active];
-  cfg.revinculacion.saludos.push(txt); $('revAddText').value=''; markDirty(); renderRevinculacion(); renderPreview(); showToast('Saludo agregado');
-});
-
-/* ========= Preview rendering ========= */
 function renderPreview(){
-  const cfg = state.profiles[state.active];
-  const area = $('previewArea'); area.innerHTML = '';
-  // Apply palette
-  document.documentElement.style.setProperty('--accent', cfg.paleta.acento || '--accent');
-  document.documentElement.style.setProperty('--accent-2', cfg.paleta.acento || '--accent-2');
-  // show secciones in order
-  (cfg.order || cfg.secciones.map(s=>s.id)).forEach(sid=>{
-    const s = cfg.secciones.find(x=>x.id===sid) || cfg.secciones.find(x=>x.name===sid);
-    if(!s) return;
-    const box = document.createElement('div'); box.className='preview-group'; box.style.marginBottom='10px';
-    box.innerHTML = `<h3 style="margin:0 0 6px">${escapeHtml(s.name)} <span class="small-muted">${s.buttons.length} botones</span></h3>`;
-    s.buttons.forEach(btn=>{
-      const el = document.createElement('div'); el.className='btn-preview'; el.style.marginBottom='6px';
-      el.innerHTML = `<div style="display:flex;flex-direction:column"><span class="label">${escapeHtml(btn.name)}</span><span class="sub small-muted">${escapeHtml(btn.text).slice(0,60)}</span></div><span class="small-muted">copiar</span>`;
-      el.style.cursor='pointer';
-      el.addEventListener('click', ()=> { simulateCopy(btn.text, btn.name); });
-      box.appendChild(el);
-    });
-    area.appendChild(box);
-  });
+  applyPalette();
+  const content = document.getElementById('previewContent'); content.innerHTML = '';
+  const tab = getActiveTab();
+  const usuario = (document.getElementById('previewUsuario').value || 'USUARIO').trim();
+  const pcs = config.whatsapp.pcs;
+  const pc = pcs[sliderPreviewIndex] || pcs[0];
 
-  // Billeteras preview (visual demo like ChinBotones)
-  if(cfg.billeteras.length){
-    const box = document.createElement('div'); box.className='preview-group';
-    box.innerHTML = `<h3 style="margin:0 0 6px">Billeteras <span class="small-muted">${cfg.billeteras.length}</span></h3>`;
-    cfg.billeteras.forEach((w, idx)=>{
-      const wrap = document.createElement('div'); wrap.className='preview-group';
-      wrap.style.display='flex'; wrap.style.justifyContent='space-between'; wrap.style.alignItems='center'; wrap.style.padding='8px';
-      const left = document.createElement('div'); left.innerHTML = `<div style="font-weight:700">${escapeHtml(w.label)}</div><div class="small-muted">${escapeHtml(w.alias || w.cbu)}</div>`;
-      const right = document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
-      const btnCBU = document.createElement('button'); btnCBU.className='btn ghost small'; btnCBU.textContent='CBU';
-      const btnAlias = document.createElement('button'); btnAlias.className='btn small'; btnAlias.textContent='Alias';
-      btnCBU.addEventListener('click', ()=> simulateCopy(w.cbu || '', (w.label||'') + ' CBU'));
-      btnAlias.addEventListener('click', ()=> simulateCopy(`${w.alias}\nTitular ${w.titular} *${w.billetera || ''}*`, (w.label||'') + ' Alias'));
-      right.appendChild(btnCBU); right.appendChild(btnAlias);
-      wrap.appendChild(left); wrap.appendChild(right);
-      box.appendChild(wrap);
+  if(tab === 'utilidad'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Utilidad <span class="chip-mini">Texto fijo</span></h3>`;
+    const blocks = [
+      { key:'info', label:'Info', val: config.utilidad.info || DEFAULT_UTIL_INFO },
+      { key:'cargado', label:'Cargado', val: config.utilidad.cargado || DEFAULT_UTIL_CARGADO },
+      { key:'retiro', label:'Retiro', val: config.utilidad.retiro || DEFAULT_UTIL_RETIRO }
+    ];
+    blocks.forEach(b=>{
+      const btn = document.createElement('div'); btn.className='btn-preview';
+      btn.innerHTML = `<div><span class="label">${b.label}</span><div class="sub">${escapeHtml(shorten(b.val,120))}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{ copyToClipboard(b.val); showToast(`Copiado texto de ${b.label}`); });
+      g.appendChild(btn);
     });
-    area.appendChild(box);
+    content.appendChild(g);
+  }
+
+  if(tab === 'billeteras'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Billeteras por grupo <span class="chip-mini">${config.billeteras.length} grupos</span></h3>`;
+    if(!(config.billeteras||[]).length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin billeteras cargadas.'; g.appendChild(p);
+    }else{
+      // agrupar por label (nombre visible)
+      const byLabel = {};
+      config.billeteras.forEach(w=>{ const k = (w.label||'Grupo'); (byLabel[k]||(byLabel[k]=[])).push(w); });
+      Object.keys(byLabel).forEach(label=>{
+        const subgroup = document.createElement('div'); subgroup.className='preview-group';
+        subgroup.innerHTML = `<h3>${escapeHtml(label)} <span class="chip-mini">${byLabel[label].length} billetera(s)</span></h3>`;
+        const grid = document.createElement('div'); grid.className='wallets-face';
+        byLabel[label].forEach(w=>{
+          const frontCBU = document.createElement('button');
+          frontCBU.className='wallet-btn'; frontCBU.textContent = `CBU ${billeName(w)}`;
+          frontCBU.style.borderColor = w.color || '#1f6feb';
+          frontCBU.addEventListener('click', ()=>{
+            const val = (w.cbu||'').trim();
+            if(!val) return showToast('CBU vacío');
+            copyToClipboard(val);
+            showToast(`Copiado CBU de ${w.titular||'Titular'}`);
+          });
+          grid.appendChild(frontCBU);
+
+          const frontAlias = document.createElement('button');
+          frontAlias.className='wallet-btn'; frontAlias.textContent = `Alias ${billeName(w)}`;
+          frontAlias.style.borderColor = w.color || '#1f6feb';
+          frontAlias.addEventListener('click', ()=>{
+            const msg = `${w.alias||''}\nTitular ${w.titular||''} *${billeName(w)}*`;
+            copyToClipboard(msg.trim());
+            showToast(`Copiado Alias de ${w.titular||'Titular'}`);
+          });
+          grid.appendChild(frontAlias);
+
+          if(w.flip){
+            const backCBU = document.createElement('button');
+            backCBU.className='wallet-btn'; backCBU.textContent = `CBU ${billeName2(w)}`;
+            backCBU.style.borderColor = w.color2 || '#ff6f3d';
+            backCBU.addEventListener('click', ()=>{
+              const val = (w.cbu2||'').trim();
+              if(!val) return showToast('CBU (segunda) vacío');
+              copyToClipboard(val);
+              showToast(`Copiado CBU (segunda) de ${w.titular2||'Titular'}`);
+            });
+            grid.appendChild(backCBU);
+
+            const backAlias = document.createElement('button');
+            backAlias.className='wallet-btn'; backAlias.textContent = `Alias ${billeName2(w)}`;
+            backAlias.style.borderColor = w.color2 || '#ff6f3d';
+            backAlias.addEventListener('click', ()=>{
+              const msg = `${w.alias2||''}\nTitular ${w.titular2||''} *${billeName2(w)}*`;
+              copyToClipboard(msg.trim());
+              showToast(`Copiado Alias (segunda) de ${w.titular2||'Titular'}`);
+            });
+            grid.appendChild(backAlias);
+          }
+        });
+        subgroup.appendChild(grid);
+        g.appendChild(subgroup);
+      });
+    }
+    content.appendChild(g);
+  }
+
+  if(tab === 'revin'){
+    const g = document.createElement('div'); g.className='preview-group';
+    const mensajes = pc.mensajes||[];
+    g.innerHTML = `<h3>PC ${escapeHtml(pc.nombre)} · Mensajes de revinculación <span class="chip-mini">${mensajes.length} mensajes</span></h3>`;
+
+    // Link WhatsApp único para esta PC (usa texto base, editable arriba)
+    const plantilla = (config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma').replace(/\{usuario\}/g, usuario);
+    const wspNum = (pc.wsp||'5491100000000').trim();
+    const wspLink = `https://wa.me/${encodeURIComponent(wspNum)}?text=${encodeURIComponent(plantilla)}`;
+
+    const btnWsp = document.createElement('div'); btnWsp.className='btn-preview';
+    btnWsp.innerHTML = `<div><span class="label">Copiar WhatsApp (${escapeHtml(pc.nombre)})</span><div class="sub">${escapeHtml(shorten(wspLink,100))}</div></div><span class="sub">copiar</span>`;
+    btnWsp.addEventListener('click', ()=>{ copyToClipboard(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); });
+    g.appendChild(btnWsp);
+
+    if(!mensajes.length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin mensajes de revinculación para esta PC.'; g.appendChild(p);
+    }else{
+      mensajes.forEach((m,i)=>{
+        const txt = (m.texto||'').replace(/\{usuario\}/g, usuario);
+        const btn = document.createElement('div'); btn.className='btn-preview';
+        btn.innerHTML = `<div><span class="label">Mensaje #${i+1}</span><div class="sub">${escapeHtml(shorten(txt,120))}</div></div><span class="sub">copiar</span>`;
+        btn.addEventListener('click', ()=>{ copyToClipboard(txt); showToast(`Copiado mensaje #${i+1}`); });
+        g.appendChild(btn);
+      });
+    }
+    content.appendChild(g);
+  }
+
+  if(tab === 'promo'){
+    const g = document.createElement('div'); g.className='preview-group';
+    const cods = config.promoAmigo.codigos || [];
+    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">${cods.length} códigos</span></h3>`;
+    cods.forEach(c=>{
+      const txt = (config.promoAmigo.texto||'').replace('{codigo}',c).replace('{usuario}',usuario);
+      const btn = document.createElement('div'); btn.className='btn-preview';
+      btn.innerHTML = `<div><span class="label">Código ${escapeHtml(c)}</span><div class="sub">${escapeHtml(shorten(txt,100))}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{ copyToClipboard(txt); showToast(`Copiado promo ${c}`); });
+      g.appendChild(btn);
+    });
+    content.appendChild(g);
   }
 }
 
-/* Simulated copy actions */
-function simulateCopy(text, who){
-  // create whatsapp link when it's from waMessage etc
-  showToast(`Preview copiaría: ${who || 'texto'}`);
-  $('lastToastText').textContent = (text||'').slice(0,120);
+/* === Helpers === */
+function billeName(w){ return w.billetera==='Otro' ? (w.billeteraCustom||'Billetera') : (w.billetera||'Billetera'); }
+function billeName2(w){ return w.billetera2==='Otro' ? (w.billetera2Custom||'Billetera') : (w.billetera2||'Billetera'); }
+
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(str){ return escapeHtml(str).replace(/"/g,'&quot;'); }
+function shorten(str,max){ if(!str) return ''; str=String(str); return str.length>max ? str.slice(0,max-3)+'...' : str; }
+async function copyToClipboard(text){ try{ await navigator.clipboard.writeText(String(text)); }catch(e){} }
+let toastTimer = null;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'),1800);
 }
 
-/* Fullscreen preview */
-function toggleFullscreenPreview(){
-  const fs = $('fullscreen');
-  if(fs.classList.contains('show')){ fs.classList.remove('show'); fs.innerHTML=''; return; }
-  const copy = $('previewArea').cloneNode(true);
-  fs.appendChild(copy); fs.classList.add('show');
-}
-
-/* ========= Helpers ========= */
-function escapeHtml(s){ if(!s) return ''; return (''+s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-function escapeAttr(s){ return (''+s).replace(/"/g,'&quot;'); }
-function markDirty(){ $('statusChip').textContent = 'Cambios (no exportado)'; saveAll(); }
-function indicateSaved(){ $('statusChip').textContent = state.active ? ('Perfil: ' + state.active) : 'Sin perfil'; }
-
-/* small helpers for old content */
-function shorten(s, n){ if(!s) return ''; return s.length>n? s.slice(0,n-1)+'…':s; }
-
-/* ========= Sections: initial seed if none ========= */
-function ensureSections(){
-  const cfg = state.profiles[state.active];
-  if(!cfg.secciones || !Array.isArray(cfg.secciones) || cfg.secciones.length===0){
-    cfg.secciones = [{ id:'utilidad', name:'Utilidad', buttons:[] }, { id:'billeteras', name:'Billeteras', buttons:[] }];
-    cfg.order = ['utilidad','billeteras'];
-  }
-}
-
-/* ========= Mark & initial transformations ========= */
-function markDirtyNoSave(){ $('statusChip').textContent = 'Cambios'; }
-function updateStatus(){ $('statusChip').textContent = state.active ? ('Perfil: ' + state.active) : 'Sin perfil'; }
-
-/* Normalize shape on load */
-(function postLoadInit(){
-  Object.keys(state.profiles || {}).forEach(k=> { if(!state.profiles[k].secciones) state.profiles[k].secciones = [{id:'utilidad',name:'Utilidad',buttons:[]},{id:'billeteras',name:'Billeteras',buttons:[]}]; });
-})();
-
-/* Expose a small API for console debugging */
-window.chinmaker = { state, saveAll, loadAll, renderPreview, renderAllEditor };
-
+/* === Init end === */
 </script>
 </body>
 </html>
