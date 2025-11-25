@@ -1,36 +1,25 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>ChinMaker • Editor Unificado v4</title>
+  <title>ChinMaker • Editor Unificado v5 (flip animado)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
-      --bg:#050711;
-      --bg-soft:#0b101d;
-      --card:#101524;
-      --card-soft:#141a2b;
-      --accent:#8A2BE2;
-      --accent-light:#a855f7;
-      --ok:#10B981;
-      --bad:#EF4444;
-      --muted:#9ca3af;
-      --text:#e5f3ff;
-      --border:rgba(148,163,184,.25);
-      --shadow:0 16px 40px rgba(0,0,0,.6);
-      --radius:14px;
+      --bg:#050711; --bg-soft:#0b101d; --card:#101524; --card-soft:#141a2b;
+      --accent:#8A2BE2; --accent-light:#a855f7; --ok:#10B981; --bad:#EF4444;
+      --muted:#9ca3af; --text:#e5f3ff; --border:rgba(148,163,184,.25);
+      --shadow:0 16px 40px rgba(0,0,0,.6); --radius:14px;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
       background:
         radial-gradient(circle at top left,rgba(138,43,226,0.25),transparent 55%),
         radial-gradient(circle at bottom right,rgba(16,185,129,0.18),transparent 55%),
         linear-gradient(180deg,#030712,#020617 55%,#020617 100%);
-      min-height:100vh;
-      color:var(--text);
-      padding:18px;
+      min-height:100vh; color:var(--text); padding:18px;
     }
     .wrap{max-width:1320px;margin:0 auto;}
 
@@ -41,21 +30,15 @@
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     }
     .title-block small{color:var(--muted);font-size:13px;}
-
-    .chip{
-      display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
-      background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.4);font-size:11px;color:var(--muted);
-    }
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.4);font-size:11px;color:var(--muted);}
 
     .layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;}
     @media (max-width:980px){.layout{grid-template-columns:1fr;}}
 
-    .card{
-      background:radial-gradient(circle at top left,rgba(148,163,184,.16),transparent 55%),var(--card);
-      border-radius:var(--radius);border:1px solid rgba(148,163,184,.25);box-shadow:var(--shadow);padding:14px 16px 16px;
-    }
+    .card{background:radial-gradient(circle at top left,rgba(148,163,184,.16),transparent 55%),var(--card);border-radius:var(--radius);border:1px solid rgba(148,163,184,.25);box-shadow:var(--shadow);padding:14px 16px 16px;}
     .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:#e5e7eb;}
     .sub{margin-top:0;color:var(--muted);font-size:12px;}
+    .divider-label{margin:10px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
 
     .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
     label{font-size:12px;color:var(--muted);margin-bottom:3px;display:block;}
@@ -82,29 +65,19 @@
     }
     .btn.small{padding:6px 10px;font-size:11px;}
     .btn.ghost{background:transparent;border-radius:10px;padding:7px 11px;border:1px solid rgba(148,163,184,.45);box-shadow:none;color:var(--muted);}
-    .btn.warn{background:linear-gradient(90deg,#f97316,#facc15);box-shadow:0 10px 25px rgba(234,179,8,.45);}
     .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.5);box-shadow:none;}
-    .btn.icon{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:8px;background:#1f2530}
-
     .section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px;}
-
     .list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
-    .card-row{
-      background:var(--card-soft);border-radius:11px;border:1px solid rgba(148,163,184,.45);
-      padding:9px 10px;display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:flex-start;position:relative;
-    }
-    .grip{
-      width:28px;height:28px;border-radius:8px;background:#1f2530;color:#fff;cursor:grab;display:flex;align-items:center;justify-content:center;border:1px solid rgba(75,85,99,.8);
-    }
+
+    .card-row{background:var(--card-soft);border-radius:11px;border:1px solid rgba(148,163,184,.45);padding:9px 10px;display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:flex-start;position:relative;}
+    .grip{width:28px;height:28px;border-radius:8px;background:#1f2530;color:#fff;cursor:grab;display:flex;align-items:center;justify-content:center;border:1px solid rgba(75,85,99,.8);}
     .card-row.dragging{opacity:.65;border-style:dashed;}
-    .card-row.placeholder::after{
-      content:'';position:absolute;left:0;right:0;height:4px;border-radius:999px;background:rgba(168,85,247,.35);
-      transform:translateY(-6px);transition:.16s;
-    }
+    .card-row.placeholder::after{content:'';position:absolute;left:0;right:0;height:4px;border-radius:999px;background:rgba(168,85,247,.35);transform:translateY(-6px);transition:.16s;}
 
     .wallet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
     .wallet-label{font-size:13px;font-weight:600;}
     .wallet-actions{display:flex;gap:6px;align-items:center;}
+    .muted{color:var(--muted);font-size:11px;}
 
     .preview-card{background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);border-radius:var(--radius);border:1px solid rgba(148,163,184,.3);padding:12px 13px;box-shadow:var(--shadow);}
     .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
@@ -117,6 +90,17 @@
     .chip-mini{font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.55);color:var(--muted);}
 
     .wallets-face{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+
+    /* Flip-card shared (editor + preview) */
+    .flip-card{position:relative;perspective:1000px;border:1px solid rgba(55,65,81,.6);border-radius:12px;overflow:hidden;background:#121826;}
+    .flip-inner{position:relative;transition:transform .45s;transform-style:preserve-3d;}
+    .flip-face{min-height:110px;padding:10px;backface-visibility:hidden;}
+    .flip-back{transform:rotateY(180deg);}
+    .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+    .flip-toolbar{position:absolute;top:6px;right:6px;display:flex;gap:6px;z-index:2}
+    .flip-btn{border:none;border-radius:8px;padding:5px 8px;font-size:11px;background:#1f2530;color:#fff;cursor:pointer;border:1px solid rgba(75,85,99,.6)}
+    .flip-title{font-size:12px;color:#9ca3af;margin-bottom:8px;}
+
     .wallet-btn{width:100%;padding:10px;border:none;border-radius:10px;background:#1b2029;color:#fff;font-weight:700;cursor:pointer;border:1px solid rgba(55,65,81,.9)}
     .wallet-btn:hover{background:#222836}
 
@@ -128,24 +112,14 @@
     .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);padding:8px 11px;border-radius:999px;background:rgba(15,23,42,.96);border:1px solid rgba(148,163,184,.55);color:#e5e7eb;font-size:12px;display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .16s, transform .16s;z-index:40;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     .toast-icon{width:16px;height:16px;border-radius:999px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ok);}
-
-    .divider-label{margin:10px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
-    .muted{color:var(--muted);font-size:11px;}
-
-    /* Flip animación (preview visual) */
-    .flip-card{position:relative;perspective:1000px;}
-    .flip-inner{transition:transform .4s;transform-style:preserve-3d;}
-    .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
-    .flip-face{backface-visibility:hidden;}
-    .flip-back{transform:rotateY(180deg);}
   </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="title-block">
-      <h1>ChinMaker · Editor Unificado v4</h1>
-      <small>Utilidad siempre arriba, billeteras al medio, promo + revin por PC abajo. Exportá a .chin.json.</small>
+      <h1>ChinMaker · Editor Unificado v5</h1>
+      <small>Flip animado en editor y vista previa. Utilidad arriba, billeteras al medio, promo + revin abajo.</small>
     </div>
     <div class="row">
       <div class="chip"><span>💾</span> <span id="chipStatus">Perfil guardado</span></div>
@@ -234,7 +208,7 @@
 
       <div class="divider-label">Billeteras</div>
       <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta es un grupo por nombre visible.</p>
+        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta es un grupo por nombre visible. Flip con animación.</p>
         <button class="btn small subtle" id="btnAddWallet">+ Añadir billetera</button>
       </div>
       <div class="list" id="walletList"></div>
@@ -299,9 +273,9 @@
 
 <script>
 /* === Estado base === */
-const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v4';
-const STORAGE_PREFIX = 'chinmaker_profile_v4_';
-const STORAGE_LAST = 'chinmaker_last_profile_v4';
+const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v5';
+const STORAGE_PREFIX = 'chinmaker_profile_v5_';
+const STORAGE_LAST = 'chinmaker_last_profile_v5';
 
 const DEFAULT_UTIL_INFO =
 `✨ SOMOS BET300VIP ✨
@@ -367,10 +341,7 @@ const DEFAULT_CONFIG = () => ({
   paleta: { acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444' },
   whatsapp: {
     plantillaMensaje: 'Hola soy {usuario} quiero mi clave y cronograma',
-    pcs: [
-      // Lógica solicitada: índice 0 es PC1 por defecto (una no unificada).
-      { nombre:'PC01', wsp:'5491100000000', mensajes:[] }
-    ]
+    pcs: [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }]
   },
   billeteras: [],
   utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
@@ -381,8 +352,8 @@ const DEFAULT_CONFIG = () => ({
 let currentProfileName = 'PC01';
 let config = DEFAULT_CONFIG();
 let dirtyTimer = null;
-let sliderIndex = 0; // PC seleccionada (editor)
-let sliderPreviewIndex = 0; // PC seleccionada (preview)
+let sliderIndex = 0;
+let sliderPreviewIndex = 0;
 let draggingWallet = null;
 
 /* === LocalStorage === */
@@ -403,12 +374,10 @@ function loadProfile(name){
 function normalizeConfig(obj){
   const base = DEFAULT_CONFIG();
   const merged = {
-    ...base,
-    ...obj,
+    ...base, ...obj,
     paleta: { ...base.paleta, ...(obj.paleta||{}) },
     whatsapp: {
-      ...base.whatsapp,
-      ...(obj.whatsapp||{}),
+      ...base.whatsapp, ...(obj.whatsapp||{}),
       pcs: normalizePCs(obj.whatsapp?.pcs)
     },
     utilidad: { ...base.utilidad, ...(obj.utilidad||{}) },
@@ -428,11 +397,7 @@ function normalizeConfig(obj){
 }
 function normalizePCs(list){
   let out = Array.isArray(list) ? list.filter(Boolean) : [];
-  if(out.length===0){
-    // mínimo 1 (PC1) como pediste (no unificada)
-    out = [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }];
-  }
-  // límite máximo 10
+  if(out.length===0){ out = [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }]; }
   out = out.slice(0,10).map((pc,i)=>({
     nombre: pc.nombre || ('PC' + String(i+1).padStart(2,'0')),
     wsp: String(pc.wsp || '5491100000000'),
@@ -545,17 +510,16 @@ function bindEditorInputs(){
     });
   });
 
-  /* Mensaje WhatsApp plantilla */
-  const waMensaje = document.getElementById('waMensaje');
-  waMensaje.addEventListener('input', ()=>{
-    config.whatsapp.plantillaMensaje = waMensaje.value; markDirty(); renderPreview();
+  /* WhatsApp plantilla */
+  document.getElementById('waMensaje').addEventListener('input', (e)=>{
+    config.whatsapp.plantillaMensaje = e.target.value; markDirty(); renderPreview();
   });
 
   /* PCs */
   document.getElementById('pcAddBtn').addEventListener('click', ()=>{
     const list = config.whatsapp.pcs;
     if(list.length >= 10){ showToast('Máximo 10 PCs'); return; }
-    const idx = list.length+1; // PC2 si había solo PC1
+    const idx = list.length+1; // PC02 si había solo PC01
     const nombre = 'PC' + String(idx).padStart(2,'0');
     list.push({ nombre, wsp:'5491100000000', mensajes:[] });
     sliderIndex = list.length-1; sliderPreviewIndex = sliderIndex;
@@ -583,7 +547,7 @@ function bindEditorInputs(){
     markDirty(); renderSaludosEditor(); renderPreview();
   });
 
-  /* Utilidad placeholders estilo input (sin overlay) */
+  /* Utilidad placeholder-style */
   ['utilInfo','utilCargado','utilRetiro'].forEach(id=>{
     const el = document.getElementById(id);
     el.addEventListener('focus', ()=>{
@@ -623,9 +587,9 @@ function bindEditorInputs(){
       cbu:'', alias:'', titular:'',
       billetera:'Mercado Pago', billeteraCustom:'',
       color:'#1f6feb',
-      flip:false,
+      flip:false, flippedPreview:false,
       cbu2:'', alias2:'', titular2:'',
-      billetera2:'Mercado Pago', billetera2Custom:'',
+      billetera2:'Prex', billetera2Custom:'',
       color2:'#ff6f3d'
     });
     markDirty(); renderWallets(); renderPreview();
@@ -661,12 +625,10 @@ function renderAll(){
 
   document.getElementById('waMensaje').value = config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
 
-  // Utilidad defaults as placeholder-style
   document.getElementById('utilInfo').value = config.utilidad.info || DEFAULT_UTIL_INFO;
   document.getElementById('utilCargado').value = config.utilidad.cargado || DEFAULT_UTIL_CARGADO;
   document.getElementById('utilRetiro').value = config.utilidad.retiro || DEFAULT_UTIL_RETIRO;
 
-  // Promo defaults
   document.getElementById('promoTexto').value = config.promoAmigo.texto || DEFAULT_PROMO_TEXTO;
   document.getElementById('promoInfo').value = config.promoAmigo.info || DEFAULT_PROMO_INFO;
   document.getElementById('promoCodigos').value = (config.promoAmigo.codigos||[]).join(', ');
@@ -765,7 +727,7 @@ function renderSaludosEditor(){
   });
 }
 
-/* === Billeteras editor (drag solo con grip & flip botón) === */
+/* === Billeteras editor (drag + flip animado) === */
 const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
 function renderWallets(){
@@ -774,56 +736,75 @@ function renderWallets(){
     const row = document.createElement('div');
     row.className = 'card-row';
     row.dataset.index = idx;
+
+    // Flip editor card with animation
+    const front = `
+      <div class="flip-title">Frente</div>
+      <div class="section-grid">
+        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" /></div>
+        <div>
+          <label>CBU</label>
+          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
+        <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
+        <div>
+          <label>Billetera</label>
+          <select data-field="billetera" data-idx="${idx}">
+            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
+        </div>
+        <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
+      </div>
+    `;
+    const back = `
+      <div class="flip-title">Dorso</div>
+      <div class="section-grid">
+        <div>
+          <label>CBU (segunda)</label>
+          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
+        <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
+        <div>
+          <label>Billetera (segunda)</label>
+          <select data-field="billetera2" data-idx="${idx}">
+            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
+        </div>
+        <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
+      </div>
+    `;
+
     row.innerHTML = `
       <button class="grip" data-grip title="Arrastrar">☰</button>
       <div>
         <div class="wallet-header">
           <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
           <div class="wallet-actions">
-            <button class="btn small ghost" data-toggle-flip="${idx}" title="Flip">↻ Flip</button>
+            <button class="btn small ghost" data-toggle-flip="${idx}" title="Flip">${w.flip?'↻ Flip ON':'↻ Flip OFF'}</button>
             <span class="muted">Añade otra billetera del mismo titular</span>
             <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">✕</button>
           </div>
         </div>
-        <div class="section-grid">
-          <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" /></div>
 
-          <div>
-            <label>CBU</label>
-            <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
-            <small class="muted">Solo números, 22 dígitos</small>
+        <div class="flip-card ${w.flippedEditor?'flipped':''}" data-flip-card="${idx}">
+          <div class="flip-toolbar">
+            ${w.flip ? `<button class="flip-btn" data-flip-view="${idx}">${w.flippedEditor?'Ver frente':'Ver dorso'}</button>` : ''}
           </div>
-
-          <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
-          <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
-          <div>
-            <label>Billetera</label>
-            <select data-field="billetera" data-idx="${idx}">
-              ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
-            </select>
-            <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
+          <div class="flip-inner">
+            <div class="flip-face">
+              ${front}
+            </div>
+            <div class="flip-face flip-back">
+              ${back}
+            </div>
           </div>
-          <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
         </div>
-
-        ${w.flip ? `
-        <div class="section-grid flip-section">
-          <div>
-            <label>CBU (segunda)</label>
-            <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
-            <small class="muted">Solo números, 22 dígitos</small>
-          </div>
-          <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
-          <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
-          <div>
-            <label>Billetera (segunda)</label>
-            <select data-field="billetera2" data-idx="${idx}">
-              ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
-            </select>
-            <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
-          </div>
-          <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
-        </div>`:''}
       </div>
     `;
     listEl.appendChild(row);
@@ -861,13 +842,29 @@ function renderWallets(){
       const idx = parseInt(btn.dataset.toggleFlip,10);
       const w = config.billeteras[idx];
       w.flip = !w.flip;
-      // copiar datos de titular y billetera si se activa
       if(w.flip){
         w.titular2 = w.titular || '';
-        w.billetera2 = w.billetera || 'Mercado Pago';
-        w.color2 = w.color || '#ff6f3d';
+        w.billetera2 = w.billetera2 || 'Prex';
+        w.color2 = w.color2 || '#ff6f3d';
+        w.flippedEditor = true; // mostrar dorso al activar
+      }else{
+        w.flippedEditor = false;
       }
       markDirty(); renderWallets(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-flip-view]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.flipView,10);
+      const w = config.billeteras[idx];
+      w.flippedEditor = !w.flippedEditor;
+      markDirty();
+      const card = document.querySelector(`[data-flip-card="${idx}"]`);
+      if(card){
+        card.classList.toggle('flipped', w.flippedEditor);
+        btn.textContent = w.flippedEditor ? 'Ver frente' : 'Ver dorso';
+      }
     });
   });
 
@@ -977,52 +974,90 @@ function renderPreview(){
         const subgroup = document.createElement('div'); subgroup.className='preview-group';
         subgroup.innerHTML = `<h3>${escapeHtml(label)} <span class="chip-mini">${byLabel[label].length} billetera(s)</span></h3>`;
         const grid = document.createElement('div'); grid.className='wallets-face';
-        byLabel[label].forEach(w=>{
-          // frente/dorso como botones
-          const frontCBU = document.createElement('button');
-          frontCBU.className='wallet-btn'; frontCBU.textContent = `CBU ${billeName(w)}`;
-          frontCBU.style.borderColor = w.color || '#1f6feb';
-          frontCBU.addEventListener('click', ()=>{
+
+        byLabel[label].forEach((w,i)=>{
+          // Flip-card preview per wallet
+          const card = document.createElement('div');
+          card.className = 'flip-card' + (w.flippedPreview?' flipped':'');
+          const inner = document.createElement('div');
+          inner.className = 'flip-inner';
+
+          const toolbar = document.createElement('div');
+          toolbar.className = 'flip-toolbar';
+          if(w.flip){
+            const btn = document.createElement('button');
+            btn.className = 'flip-btn';
+            btn.textContent = w.flippedPreview ? 'Ver frente' : 'Ver dorso';
+            btn.addEventListener('click', ()=>{
+              w.flippedPreview = !w.flippedPreview;
+              card.classList.toggle('flipped', w.flippedPreview);
+              btn.textContent = w.flippedPreview ? 'Ver frente' : 'Ver dorso';
+            });
+            toolbar.appendChild(btn);
+          }
+
+          const faceFront = document.createElement('div');
+          faceFront.className = 'flip-face';
+          const f1 = document.createElement('button');
+          f1.className = 'wallet-btn';
+          f1.textContent = `CBU ${billeName(w)}`;
+          f1.style.borderColor = w.color || '#1f6feb';
+          f1.addEventListener('click', ()=>{
             const val = (w.cbu||'').trim();
             if(!val) return showToast('CBU vacío');
             copyToClipboard(val);
             showToast(`Copiado CBU de ${w.titular||'Titular'}`);
           });
-          grid.appendChild(frontCBU);
-
-          const frontAlias = document.createElement('button');
-          frontAlias.className='wallet-btn'; frontAlias.textContent = `Alias ${billeName(w)}`;
-          frontAlias.style.borderColor = w.color || '#1f6feb';
-          frontAlias.addEventListener('click', ()=>{
+          const f2 = document.createElement('button');
+          f2.className = 'wallet-btn';
+          f2.textContent = `Alias ${billeName(w)}`;
+          f2.style.borderColor = w.color || '#1f6feb';
+          f2.addEventListener('click', ()=>{
             const msg = `${w.alias||''}\nTitular ${w.titular||''} *${billeName(w)}*`;
             copyToClipboard(msg.trim());
             showToast(`Copiado Alias de ${w.titular||'Titular'}`);
           });
-          grid.appendChild(frontAlias);
+          faceFront.appendChild(f1);
+          faceFront.appendChild(f2);
 
+          const faceBack = document.createElement('div');
+          faceBack.className = 'flip-face flip-back';
           if(w.flip){
-            const backCBU = document.createElement('button');
-            backCBU.className='wallet-btn'; backCBU.textContent = `CBU ${billeName2(w)}`;
-            backCBU.style.borderColor = w.color2 || '#ff6f3d';
-            backCBU.addEventListener('click', ()=>{
+            const b1 = document.createElement('button');
+            b1.className = 'wallet-btn';
+            b1.textContent = `CBU ${billeName2(w)}`;
+            b1.style.borderColor = w.color2 || '#ff6f3d';
+            b1.addEventListener('click', ()=>{
               const val = (w.cbu2||'').trim();
               if(!val) return showToast('CBU (segunda) vacío');
               copyToClipboard(val);
               showToast(`Copiado CBU (segunda) de ${w.titular2||'Titular'}`);
             });
-            grid.appendChild(backCBU);
-
-            const backAlias = document.createElement('button');
-            backAlias.className='wallet-btn'; backAlias.textContent = `Alias ${billeName2(w)}`;
-            backAlias.style.borderColor = w.color2 || '#ff6f3d';
-            backAlias.addEventListener('click', ()=>{
+            const b2 = document.createElement('button');
+            b2.className = 'wallet-btn';
+            b2.textContent = `Alias ${billeName2(w)}`;
+            b2.style.borderColor = w.color2 || '#ff6f3d';
+            b2.addEventListener('click', ()=>{
               const msg = `${w.alias2||''}\nTitular ${w.titular2||''} *${billeName2(w)}*`;
               copyToClipboard(msg.trim());
               showToast(`Copiado Alias (segunda) de ${w.titular2||'Titular'}`);
             });
-            grid.appendChild(backAlias);
+            faceBack.appendChild(b1);
+            faceBack.appendChild(b2);
+          }else{
+            const p = document.createElement('p');
+            p.className = 'muted';
+            p.textContent = 'Sin dorso';
+            faceBack.appendChild(p);
           }
+
+          inner.appendChild(faceFront);
+          inner.appendChild(faceBack);
+          card.appendChild(toolbar);
+          card.appendChild(inner);
+          grid.appendChild(card);
         });
+
         subgroup.appendChild(grid);
         g.appendChild(subgroup);
       });
@@ -1033,12 +1068,10 @@ function renderPreview(){
   if(tab === 'promo'){
     const g = document.createElement('div'); g.className='preview-group';
     g.innerHTML = `<h3>Promo amigo <span class="chip-mini">2 botones</span></h3>`;
-    // Botón Promo
     const btnPromo = document.createElement('div'); btnPromo.className='btn-preview';
     btnPromo.innerHTML = `<div><span class="label">🎉 Promo Amigos</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO,160))}</div></div><span class="sub">copiar</span>`;
     btnPromo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO); showToast('Copiado Promo Amigos'); });
     g.appendChild(btnPromo);
-    // Botón Info
     const btnInfo = document.createElement('div'); btnInfo.className='btn-preview';
     btnInfo.innerHTML = `<div><span class="label">ℹ️ Info Promo</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.info||DEFAULT_PROMO_INFO,160))}</div></div><span class="sub">copiar</span>`;
     btnInfo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.info||DEFAULT_PROMO_INFO); showToast('Copiado Info Promo'); });
@@ -1051,7 +1084,6 @@ function renderPreview(){
     const mensajes = pc.mensajes||[];
     g.innerHTML = `<h3>PC ${escapeHtml(pc.nombre)} · Mensajes y WhatsApp <span class="chip-mini">${mensajes.length} mensajes</span></h3>`;
 
-    // WhatsApp único para esta PC (usa plantilla editable)
     const plantilla = (config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma').replace(/\{usuario\}/g, usuario);
     const wspNum = (pc.wsp||'5491100000000').trim();
     const wspLink = `https://wa.me/${encodeURIComponent(wspNum)}?text=${encodeURIComponent(plantilla)}`;
@@ -1060,7 +1092,6 @@ function renderPreview(){
     btnWsp.addEventListener('click', ()=>{ copyToClipboard(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); });
     g.appendChild(btnWsp);
 
-    // Código amigo según PC activa
     const codeIdx = Math.min(sliderPreviewIndex, (config.promoAmigo.codigos||[]).length-1);
     const codeVal = (config.promoAmigo.codigos||[])[codeIdx] || 'R1';
     const codeMsg = (config.promoAmigo.texto||DEFAULT_PROMO_TEXTO).replace(/\{codigo\}/g, codeVal).replace(/\{usuario\}/g, usuario);
@@ -1111,3 +1142,6 @@ function showToast(msg){
 </script>
 </body>
 </html>
+```
+
+Decime si la animación del flip ahora “se siente” como tarjeta real tanto en el editor como en la vista previa. Si te encaja, pasamos a la plantilla de botonera (ChinPlantilla).
