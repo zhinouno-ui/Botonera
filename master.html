@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,20 +21,16 @@
       min-height:100vh; color:var(--text); padding:18px;
     }
     .wrap{max-width:1320px;margin:0 auto;}
-
     header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
-    .title-block h1{
-      margin:0;font-size:22px;letter-spacing:.03em;
-      background:linear-gradient(90deg,#f9fafb,var(--accent-light));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    }
+    .title-block h1{margin:0;font-size:22px;letter-spacing:.03em;background:linear-gradient(90deg,#f9fafb,var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .title-block small{color:var(--muted);font-size:13px;}
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.4);font-size:11px;color:var(--muted);}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(15,23,42,.75);border:1px solid rgba(148,163,184,.35);font-size:12px;color:var(--muted);box-shadow:0 6px 18px rgba(0,0,0,.45);}
 
     .layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;}
     @media (max-width:980px){.layout{grid-template-columns:1fr;}}
 
-    .card{background:radial-gradient(circle at top left,rgba(148,163,184,.16),transparent 55%),var(--card);border-radius:var(--radius);border:1px solid rgba(148,163,184,.25);box-shadow:var(--shadow);padding:14px 16px 16px;}
+    .card{background:radial-gradient(circle at top left,rgba(148,163,184,.08),transparent 55%),var(--card);border-radius:var(--radius);border:1px solid rgba(148,163,184,.18);box-shadow:var(--shadow);padding:14px 16px 16px;transition:transform .14s, box-shadow .14s;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.7);}
     .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:#e5e7eb;}
     .sub{margin-top:0;color:var(--muted);font-size:12px;}
     .divider-label{margin:10px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
@@ -43,75 +38,90 @@
     .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
     label{font-size:12px;color:var(--muted);margin-bottom:3px;display:block;}
     input[type=text], textarea, select, input[type=color]{
-      width:100%;padding:7px 9px;border-radius:8px;border:1px solid rgba(148,163,184,.35);
-      background:rgba(15,23,42,.85);color:var(--text);font-size:13px;outline:none;
-      transition:border-color .16s, box-shadow .16s, background .16s;
+      width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(148,163,184,.24);
+      background:rgba(6,10,16,.76);color:var(--text);font-size:13px;outline:none;
+      transition:border-color .16s, box-shadow .16s, transform .12s;
     }
     input[type=color]{padding:0.25rem;height:36px;cursor:pointer;background:#020617;}
     textarea{min-height:90px;resize:vertical;}
     input:focus, textarea:focus, select:focus{
-      border-color:var(--accent-light);box-shadow:0 0 0 1px rgba(168,85,247,.32);background:#020617;
+      border-color:var(--accent-light);box-shadow:0 6px 20px rgba(168,85,247,.08);transform:translateY(-1px);
     }
     select{
-      appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239ca3af' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5z'/%3E%3C/svg%3E");
+      appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239ca3af' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5z'/%3E%3C/svg%3E");
       background-repeat:no-repeat;background-position:right 8px center;background-size:16px;padding-right:26px;
     }
 
     .btn{
-      border:none;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-      display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-light));
-      color:white;box-shadow:0 10px 25px rgba(88,28,135,.5);transition:transform .12s, box-shadow .12s, opacity .12s;
+      border:none;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+      display:inline-flex;align-items:center;gap:8px;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-light));
+      color:white;box-shadow:0 10px 25px rgba(88,28,135,.45);transition:transform .12s, box-shadow .12s, opacity .12s;
     }
     .btn.small{padding:6px 10px;font-size:11px;}
-    .btn.ghost{background:transparent;border-radius:10px;padding:7px 11px;border:1px solid rgba(148,163,184,.45);box-shadow:none;color:var(--muted);}
-    .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.5);box-shadow:none;}
+    .btn.ghost{background:transparent;border-radius:10px;padding:7px 11px;border:1px solid rgba(148,163,184,.28);box-shadow:none;color:var(--muted);}
+    .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.12);box-shadow:none;}
+    .btn:active{transform:translateY(1px) scale(.998);}
     .section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px;}
-    .list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+    .list{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
 
-    .card-row{background:var(--card-soft);border-radius:11px;border:1px solid rgba(148,163,184,.45);padding:9px 10px;display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:flex-start;position:relative;}
-    .grip{width:28px;height:28px;border-radius:8px;background:#1f2530;color:#fff;cursor:grab;display:flex;align-items:center;justify-content:center;border:1px solid rgba(75,85,99,.8);}
-    .card-row.dragging{opacity:.65;border-style:dashed;}
-    .card-row.placeholder::after{content:'';position:absolute;left:0;right:0;height:4px;border-radius:999px;background:rgba(168,85,247,.35);transform:translateY(-6px);transition:.16s;}
+    .card-row{background:var(--card-soft);border-radius:11px;border:1px solid rgba(148,163,184,.16);padding:10px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:flex-start;position:relative;transition:transform .12s, box-shadow .12s;}
+    .card-row .grip{width:34px;height:34px;border-radius:10px;background:#1f2530;color:#fff;cursor:grab;display:flex;align-items:center;justify-content:center;border:1px solid rgba(75,85,99,.6);box-shadow:0 6px 18px rgba(0,0,0,.45);}
+    .card-row.dragging{transform:translateY(-6px) scale(1.02) rotate(-0.6deg);box-shadow:0 30px 60px rgba(0,0,0,.6);opacity:.98;z-index:20;}
+    .card-row.placeholder::after{content:'';position:absolute;left:8px;right:8px;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-light));bottom:-10px;opacity:.9;transition:all .18s ease;}
 
-    .wallet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-    .wallet-label{font-size:13px;font-weight:600;}
-    .wallet-actions{display:flex;gap:6px;align-items:center;}
+    .wallet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    .wallet-label{font-size:13px;font-weight:700;}
+    .wallet-actions{display:flex;gap:8px;align-items:center;}
     .muted{color:var(--muted);font-size:11px;}
 
-    .preview-card{background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);border-radius:var(--radius);border:1px solid rgba(148,163,184,.3);padding:12px 13px;box-shadow:var(--shadow);}
+    .preview-card{background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);border-radius:var(--radius);border:1px solid rgba(148,163,184,.14);padding:12px 13px;box-shadow:var(--shadow);}
     .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-    .preview-tabs{display:inline-flex;background:#020617;padding:2px;border-radius:999px;border:1px solid rgba(148,163,184,.35);}
-    .tab-chip{padding:5px 10px;border-radius:999px;font-size:11px;cursor:pointer;color:var(--muted);}
-    .tab-chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-light));color:#f9fafb;}
+    .preview-tabs{display:inline-flex;background:#020617;padding:3px;border-radius:999px;border:1px solid rgba(148,163,184,.18);}
+    .tab-chip{padding:6px 11px;border-radius:999px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .12s;}
+    .tab-chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-light));color:#f9fafb;box-shadow:0 8px 30px rgba(138,43,226,.12);}
 
-    .preview-group{margin-bottom:10px;border-radius:10px;padding:9px 10px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.28);}
-    .preview-group h3{margin:0 0 6px;font-size:13px;display:flex;align-items:center;justify-content:space-between;}
-    .chip-mini{font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.55);color:var(--muted);}
+    .preview-group{margin-bottom:10px;border-radius:10px;padding:10px;background:rgba(15,23,42,.84);border:1px solid rgba(148,163,184,.08);box-shadow:inset 0 -6px 20px rgba(0,0,0,.35);}
+    .preview-group h3{margin:0 0 8px;font-size:14px;display:flex;align-items:center;justify-content:space-between;}
+    .chip-mini{font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.12);color:var(--muted);}
 
-    .wallets-face{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+    .wallets-face{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 
-    /* Flip-card shared (editor + preview) */
-    .flip-card{position:relative;perspective:1000px;border:1px solid rgba(55,65,81,.6);border-radius:12px;overflow:hidden;background:#121826;}
-    .flip-inner{position:relative;transition:transform .45s;transform-style:preserve-3d;}
-    .flip-face{min-height:110px;padding:10px;backface-visibility:hidden;}
-    .flip-back{transform:rotateY(180deg);}
-    .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
-    .flip-toolbar{position:absolute;top:6px;right:6px;display:flex;gap:6px;z-index:2}
-    .flip-btn{border:none;border-radius:8px;padding:5px 8px;font-size:11px;background:#1f2530;color:#fff;cursor:pointer;border:1px solid rgba(75,85,99,.6)}
-    .flip-title{font-size:12px;color:#9ca3af;margin-bottom:8px;}
+   /* Flip-card contenedor fijo */
+    .flip-card{
+      position:relative; width:100%; border:1px solid rgba(55,65,81,.4); border-radius:12px; overflow:hidden;
+      background:#0f1724; height:160px; perspective:1200px; transition:transform .18s, box-shadow .18s;
+      box-shadow:0 14px 36px rgba(0,0,0,.5);
+    }
+    .flip-inner{position:relative; width:100%; height:100%; transition:transform .55s cubic-bezier(.2,.9,.3,1); transform-style:preserve-3d;}
+    .flip-card.flipped .flip-inner{ transform:rotateY(180deg); }
+    .flip-face{position:absolute; inset:0; padding:12px; backface-visibility:hidden; display:flex; flex-direction:column; gap:10px; align-items:stretch;}
+    .flip-back{ transform:rotateY(180deg); }
 
-    .wallet-btn{width:100%;padding:10px;border:none;border-radius:10px;background:#1b2029;color:#fff;font-weight:700;cursor:pointer;border:1px solid rgba(55,65,81,.9)}
-    .wallet-btn:hover{background:#222836}
+    .flip-toolbar{position:absolute; top:8px; right:8px; z-index:6; display:flex; gap:6px;}
+    .flip-btn{border:none; border-radius:8px; padding:6px 10px; font-size:12px; background:#111827; color:#fff; cursor:pointer; border:1px solid rgba(75,85,99,.6); box-shadow:0 8px 20px rgba(0,0,0,.45);}
 
-    .btn-preview{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;border-radius:9px;background:linear-gradient(90deg,#111827,#020617);border:1px solid rgba(55,65,81,.9);cursor:pointer;font-size:12px;margin-bottom:5px;}
-    .btn-preview span.label{font-weight:500;}
-    .btn-preview span.sub{font-size:11px;color:var(--muted);}
-    .btn-preview:hover{border-color:var(--accent-light);box-shadow:0 0 0 1px rgba(168,85,247,.35);}
+    .wallet-btn{width:100%;padding:10px;border:none;border-radius:10px;background:#1b2029;color:#fff;font-weight:700;cursor:pointer;border:1px solid rgba(55,65,81,.9);transition:transform .12s, box-shadow .12s;}
+    .wallet-btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(0,0,0,.6);}
+    .btn-preview{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,#0b1220,#020617);border:1px solid rgba(55,65,81,.9);cursor:pointer;font-size:13px;margin-bottom:8px;transition:transform .12s, box-shadow .12s;}
+    .btn-preview:hover{transform:translateY(-4px);border-color:var(--accent-light);box-shadow:0 18px 40px rgba(138,43,226,.12);}
 
-    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);padding:8px 11px;border-radius:999px;background:rgba(15,23,42,.96);border:1px solid rgba(148,163,184,.55);color:#e5e7eb;font-size:12px;display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .16s, transform .16s;z-index:40;}
+    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);padding:10px 14px;border-radius:999px;background:rgba(15,23,42,.98);border:1px solid rgba(148,163,184,.35);color:#e5e7eb;font-size:13px;display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:60;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    .toast-icon{width:16px;height:16px;border-radius:999px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ok);}
+    .toast-icon{width:20px;height:20px;border-radius:999px;background:rgba(138,43,226,.08);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent-light);}
+
+    /* tooltips simples por hover (data-tooltip) */
+    [data-tooltip]{position:relative;cursor:help;}
+    [data-tooltip]:hover::after{
+      content:attr(data-tooltip);
+      position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);white-space:nowrap;padding:6px 9px;border-radius:8px;background:rgba(10,12,16,.94);color:var(--text);font-size:12px;border:1px solid rgba(148,163,184,.12);box-shadow:0 8px 30px rgba(0,0,0,.6);z-index:80;
+    }
+
+    /* pequeño pulso para botones importantes */
+    @keyframes pulse {
+      0%{ transform:scale(1); box-shadow:0 10px 25px rgba(168,85,247,.06); }
+      50%{ transform:scale(1.015); box-shadow:0 20px 40px rgba(168,85,247,.10); }
+      100%{ transform:scale(1); box-shadow:0 10px 25px rgba(168,85,247,.06); }
+    }
   </style>
 </head>
 <body>
@@ -122,7 +132,7 @@
       <small>Flip animado en editor y vista previa. Utilidad arriba, billeteras al medio, promo + revin abajo.</small>
     </div>
     <div class="row">
-      <div class="chip"><span>💾</span> <span id="chipStatus">Perfil guardado</span></div>
+      <div class="chip" data-tooltip="Estado del perfil actual: se guarda automáticamente 📁"><span style="font-size:16px">📁</span> <span id="chipStatus" style="margin-left:6px">Perfil guardado</span></div>
     </div>
   </header>
 
@@ -131,16 +141,16 @@
       <div style="min-width:220px;">
         <label>Perfil activo</label>
         <div class="row" style="gap:6px;">
-          <select id="profileSelect" style="flex:1;min-width:140px;"></select>
-          <button class="btn small subtle" id="btnNewProfile">Nuevo</button>
+          <select id="profileSelect" style="flex:1;min-width:140px;" data-tooltip="Seleccioná el perfil."></select>
+          <button class="btn small subtle" id="btnNewProfile" data-tooltip="Crear nuevo perfil">Nuevo</button>
         </div>
-        <p class="muted" style="margin-top:3px;">Ej: PC01, PC02, Gonzales, CasinoCentro...</p>
+        <p class="muted" style="margin-top:6px;">Ej: PC01, PC02, Gonzales, CasinoCentro...</p>
       </div>
       <div class="row" style="gap:8px;">
         <input type="file" id="fileImport" accept=".json" style="display:none;">
-        <button class="btn small" id="btnExport">Exportar perfil</button>
-        <button class="btn small ghost" id="btnImport">Subir perfil</button>
-        <button class="btn small warn" id="btnReset">Reiniciar perfil</button>
+        <button class="btn small" id="btnExport" data-tooltip="Exportar perfil actual">Exportar perfil</button>
+        <button class="btn small ghost" id="btnImport" data-tooltip="Importar desde .json">Subir perfil</button>
+        <button class="btn small ghost" id="btnReset" data-tooltip="Reiniciar perfil actual">Reiniciar</button>
       </div>
     </div>
   </div>
@@ -149,12 +159,12 @@
     <!-- EDITOR -->
     <div class="card">
       <h2>Editor de configuración</h2>
-      <p class="sub">Se guarda en el navegador y podés exportarlo a <code>.chin.json</code>.</p>
+      <p class="sub">Se guarda en el navegador y podés exportarlo a <code>.chin.json</code>. Mantén el cursor sobre los controles para ver comentarios.</p>
 
       <div class="section-grid">
-        <div><label>Color acento</label><input type="color" id="colorAccent" value="#8A2BE2"></div>
-        <div><label>Color OK</label><input type="color" id="colorOk" value="#10B981"></div>
-        <div><label>Color Error</label><input type="color" id="colorBad" value="#EF4444"></div>
+        <div><label>Color acento</label><input type="color" id="colorAccent" value="#8A2BE2" data-tooltip="Color principal de la interfaz"></div>
+        <div><label>Color OK</label><input type="color" id="colorOk" value="#10B981" data-tooltip="Color para mensajes OK"></div>
+        <div><label>Color Error</label><input type="color" id="colorBad" value="#EF4444" data-tooltip="Color para mensajes de error"></div>
       </div>
 
       <div class="divider-label">PCs y WhatsApp</div>
@@ -162,23 +172,23 @@
         <div style="flex:1;min-width:260px;">
           <label>PCs configuradas</label>
           <div class="row">
-            <button class="btn small ghost" id="pcAddBtn">Agregar PC</button>
-            <button class="btn small ghost" id="pcDelBtn">Eliminar última PC</button>
+            <button class="btn small ghost" id="pcAddBtn" data-tooltip="Agregar nueva PC">Agregar PC</button>
+            <button class="btn small ghost" id="pcDelBtn" data-tooltip="Eliminar la última PC">Eliminar última PC</button>
             <span class="muted" id="pcCountNote">Mínimo 1, máximo 10</span>
           </div>
-          <div id="pcSlider" class="row" style="margin-top:6px;flex-wrap:wrap;"></div>
+          <div id="pcSlider" class="row" style="margin-top:8px;flex-wrap:wrap;"></div>
         </div>
         <div style="flex:1;min-width:260px;">
           <label>WhatsApp de la PC seleccionada</label>
-          <input type="text" id="pcWsp" placeholder="5491100000000">
-          <p class="muted">Al copiar WhatsApp, {usuario} se reemplaza por lo que escribas en la barra.</p>
+          <input type="text" id="pcWsp" placeholder="5491100000000" data-tooltip="Número WA para la PC (sin espacios) Ej: 54911...">
+          <p class="muted">Al copiar WhatsApp, <code>{usuario}</code> se reemplaza por lo que escribas en la barra de vista previa.</p>
         </div>
       </div>
 
       <div class="divider-label">Mensajes de revinculación por PC</div>
-      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <p class="muted" style="margin:0;">Usá {usuario}. Ej.: “Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX”.</p>
-        <button class="btn small subtle" id="btnAddSaludo">+ Añadir mensaje</button>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <p class="muted" style="margin:0;">Usá <code>{usuario}</code>. Ej.: “Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX”.</p>
+        <button class="btn small subtle" id="btnAddSaludo" data-tooltip="Agregar mensaje para la PC seleccionada">+ Añadir mensaje</button>
       </div>
       <div class="list" id="saludosList"></div>
 
@@ -186,7 +196,7 @@
       <div class="section-grid">
         <div>
           <label>Plantilla (usa {usuario})</label>
-          <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma"></textarea>
+          <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma" data-tooltip="Mensaje que irá en el link de wa.me"></textarea>
         </div>
       </div>
 
@@ -194,22 +204,22 @@
       <div class="section-grid">
         <div>
           <label>Utilidad · Info</label>
-          <textarea id="utilInfo" data-default="info"></textarea>
+          <textarea id="utilInfo" data-default="info" data-tooltip="Texto informativo general"></textarea>
         </div>
         <div>
           <label>Utilidad · Cargado</label>
-          <textarea id="utilCargado" data-default="cargado"></textarea>
+          <textarea id="utilCargado" data-default="cargado" data-tooltip="Texto que notifica saldo acreditado"></textarea>
         </div>
         <div>
           <label>Utilidad · Retiro</label>
-          <textarea id="utilRetiro" data-default="retiro"></textarea>
+          <textarea id="utilRetiro" data-default="retiro" data-tooltip="Instrucciones para retiros"></textarea>
         </div>
       </div>
 
       <div class="divider-label">Billeteras</div>
-      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta es un grupo por nombre visible. Flip con animación.</p>
-        <button class="btn small subtle" id="btnAddWallet">+ Añadir billetera</button>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta es un grupo por nombre visible. Flip con animación (🔁).</p>
+        <button class="btn small subtle" id="btnAddWallet" data-tooltip="Añadir nuevo grupo de billeteras">+ Añadir billetera</button>
       </div>
       <div class="list" id="walletList"></div>
 
@@ -217,16 +227,16 @@
       <div class="section-grid">
         <div>
           <label>Texto Promo Amigos</label>
-          <textarea id="promoTexto"></textarea>
+          <textarea id="promoTexto" data-tooltip="Texto que compartirán los usuarios"></textarea>
         </div>
         <div>
           <label>Info Promo Amigos</label>
-          <textarea id="promoInfo"></textarea>
+          <textarea id="promoInfo" data-tooltip="Explicación de la promo"></textarea>
         </div>
         <div>
-          <label>Códigos amigo (R1, R2...)</label>
-          <input type="text" id="promoCodigos" placeholder="R1, R2, R3">
-          <p class="muted">Se usa {codigo} según la PC activa: PC01→R1, PC02→R2, etc.</p>
+          <label>Prefijo para códigos (ej. R → R1, R2...)</label>
+          <input type="text" id="promoPrefix" placeholder="R" maxlength="4" data-tooltip="Prefijo que se combina con el número de la PC. Ej: 'R' → R1 para la primera PC">
+          <p class="muted">Los códigos se generan por PC añadida: prefijo + índice de la PC (PC1 → prefijo1). Si no querés 'R', poné otro carácter.</p>
         </div>
       </div>
     </div>
@@ -241,10 +251,10 @@
           <div class="muted" style="margin-top:2px;font-size:11px;">Los botones copian texto y muestran toasts.</div>
         </div>
         <div class="preview-tabs" id="previewTabs">
-          <div class="tab-chip active" data-tab="utilidad">Utilidad</div>
-          <div class="tab-chip" data-tab="billeteras">Billeteras</div>
-          <div class="tab-chip" data-tab="promo">Promo amigo</div>
-          <div class="tab-chip" data-tab="revin">Revin por PC</div>
+          <div class="tab-chip active" data-tab="utilidad" title="Utilidad">Utilidad</div>
+          <div class="tab-chip" data-tab="billeteras" title="Billeteras">Billeteras</div>
+          <div class="tab-chip" data-tab="promo" title="Promo amigo">Promo</div>
+          <div class="tab-chip" data-tab="revin" title="Revin por PC">Revin</div>
         </div>
       </div>
 
@@ -252,7 +262,7 @@
         <div class="row" style="justify-content:space-between;align-items:center;">
           <div style="flex:1;min-width:240px;">
             <label>Usuario para {usuario}</label>
-            <input type="text" id="previewUsuario" placeholder="Escribí el usuario...">
+            <input type="text" id="previewUsuario" placeholder="Escribí el usuario..." data-tooltip="El texto {usuario} se reemplazará por esto en las pruebas">
           </div>
           <div style="flex:1;min-width:240px;">
             <label>PC para vista previa</label>
@@ -267,7 +277,7 @@
 </div>
 
 <div class="toast" id="toast">
-  <div class="toast-icon">✔</div>
+  <div class="toast-icon">✅</div>
   <span id="toastText">Copiado</span>
 </div>
 
@@ -278,62 +288,48 @@ const STORAGE_PREFIX = 'chinmaker_profile_v5_';
 const STORAGE_LAST = 'chinmaker_last_profile_v5';
 
 const DEFAULT_UTIL_INFO =
-`✨ SOMOS BET300VIP ✨
+`📁 SOMOS BET300VIP
 
-Disfrutá de una PLATAF0RMA confiable con + de 2000 jueg0s 0nline 🎮
+Disfrutá de una PLATAFORMA confiable con + de 2000 juegos online 🎰
 
-📲 ¿Listo para disfrutar al máximo? 🚀
+✨ ¿Listo para disfrutar al máximo? ✨
 
-Para añadir saldo, lo haces mediante CBU. 🧾
-‼️ RECORDAR SIEMPRE CONSULTARLO ANTES DE ENVIAR, YA QUE VAMOS CAMBIANDO LAS CUENTAS, DE LO CONTRARIO NO SE EFECTUARÁ LA C4RGA. ‼️
-📩 Envianos el comprobante y empezá a jugar. 🚀
+Para añadir saldo, lo haces mediante CBU.
+📌 RECORDAR CONSULTARLA ANTES DE ENVIAR: vamos rotando cuentas.
+📤 Enviá comprobante y empezá a jugar.
 
-📍 C4RG4 MÍNIMA: $2000
-📍 RET1R0 MÍNIMO: $5000
-Sin Monto Maximo!!
-Un retiro cada 24hs exactas!
+⚠️ CARGA MÍNIMA: $2000
+⚠️ RETIRO MÍNIMO: $5000
+Sin Monto Máximo.
+Un retiro cada 24hs exactas.
 
-🕐 Atención personalizada las 24hs los 365 dias del año!!!!`;
+🕑 Atención personalizada 24/7`;
 
 const DEFAULT_UTIL_CARGADO =
 `✅ ¡Saldo acreditado!
-Tu cuenta ya está lista para girar y ganar 🎰
-🍀 ¡Éxitos en cada tirada!
-Si no ves doble tilde, Encontra nuestro numero de WhatsApp siempre actualizado en nuestro estado de perfil! 
-🎰 TAMBIEN PODES CARGARTE POR TU CUENTA!
- ACA EN https://bet300.site/
- tu mismo usuario, tu misma clave.
- 12345a
- avisame si queres mas info`;
+Tu cuenta ya está lista para girar y ganar 🎉
+Si no ves doble tilde, encontrá nuestro número de WhatsApp actualizado en el estado de perfil.
+También podés cargar desde nuestra web: https://bet300.site/`;
 
 const DEFAULT_UTIL_RETIRO =
-`✅ Para hacer el retiro, mandanos estos datos
-🔹CBU, No Alias(para evitar equivocaciones)
-🔹Monto a retirar
-🔹Nombre Del Titular de la cuenta
-Muchas Gracias! 👌`;
+`💸 Para hacer el retiro, mandanos estos datos:
+• CBU (no Alias)
+• Monto a retirar
+• Nombre del titular
+¡Muchas gracias!`;
 
 const DEFAULT_PROMO_TEXTO =
-`🎉 PROMO AMIGOS 🎉
+`🎁 PROMO AMIGOS
 
-💥 Invitá a tus amigos y ganá fichas extra al instante.
-👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.
-
-📌 Pedí tu CÓDIGO AMIGO y compartilo.
-Más amigos = más fichas 🤑🎰
-
-🔗 https://bet300.site`;
+Invitá a tus amigos y ganá fichas extra. Pedí tu código y compartilo con quien quieras.
+El código se asigna por PC: prefijo + número de PC (ej. R1 para PC1).`;
 
 const DEFAULT_PROMO_INFO =
 `ℹ️ ¿Cómo funciona la Promo Amigos?
-
-1️⃣ Pedí tu **CÓDIGO AMIGO**.
-2️⃣ Compartilo con tus conocidos.
-3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.
-4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.
-
-✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!
-⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.`;
+1) Pedí tu código (prefijo + número de PC).
+2) Compartilo.
+3) Cuando tu invitado haga la primera carga mínima, ingresá el código.
+4) Al acreditarse, recibís la bonificación.`;
 
 const DEFAULT_CONFIG = () => ({
   perfil: 'PC01',
@@ -345,7 +341,7 @@ const DEFAULT_CONFIG = () => ({
   },
   billeteras: [],
   utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
-  promoAmigo: { codigos: ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'], texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
+  promoAmigo: { prefix: 'R', texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
   estructuraBotones: { orden: ['utilidad','billeteras','promoAmigo','revin'] }
 });
 
@@ -390,9 +386,7 @@ function normalizeConfig(obj){
   if(!merged.utilidad.retiro) merged.utilidad.retiro = DEFAULT_UTIL_RETIRO;
   if(!merged.promoAmigo.texto) merged.promoAmigo.texto = DEFAULT_PROMO_TEXTO;
   if(!merged.promoAmigo.info) merged.promoAmigo.info = DEFAULT_PROMO_INFO;
-  if(!Array.isArray(merged.promoAmigo.codigos) || !merged.promoAmigo.codigos.length){
-    merged.promoAmigo.codigos = ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'];
-  }
+  // ensure pcs
   return merged;
 }
 function normalizePCs(list){
@@ -515,6 +509,20 @@ function bindEditorInputs(){
     config.whatsapp.plantillaMensaje = e.target.value; markDirty(); renderPreview();
   });
 
+  /* Promo prefix */
+  document.getElementById('promoPrefix').addEventListener('input', (e)=>{
+    const v = e.target.value.trim() || 'R';
+    config.promoAmigo.prefix = v;
+    markDirty(); renderPreview();
+  });
+
+  /* Mensajes de revinculación por PC */
+  document.getElementById('btnAddSaludo').addEventListener('click', ()=>{
+    const pc = config.whatsapp.pcs[sliderIndex];
+    pc.mensajes.push({ id:'m_'+Date.now(), texto:'Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX' });
+    markDirty(); renderSaludosEditor(); renderPreview();
+  });
+
   /* PCs */
   document.getElementById('pcAddBtn').addEventListener('click', ()=>{
     const list = config.whatsapp.pcs;
@@ -540,13 +548,6 @@ function bindEditorInputs(){
     markDirty(); renderPreview();
   });
 
-  /* Mensajes de revinculación por PC */
-  document.getElementById('btnAddSaludo').addEventListener('click', ()=>{
-    const pc = config.whatsapp.pcs[sliderIndex];
-    pc.mensajes.push({ id:'m_'+Date.now(), texto:'Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX' });
-    markDirty(); renderSaludosEditor(); renderPreview();
-  });
-
   /* Utilidad placeholder-style */
   ['utilInfo','utilCargado','utilRetiro'].forEach(id=>{
     const el = document.getElementById(id);
@@ -566,17 +567,12 @@ function bindEditorInputs(){
     });
   });
 
-  /* Promo amigo */
+  /* Promo amigo text */
   document.getElementById('promoTexto').addEventListener('input', (e)=>{
     config.promoAmigo.texto = e.target.value; markDirty(); renderPreview();
   });
   document.getElementById('promoInfo').addEventListener('input', (e)=>{
     config.promoAmigo.info = e.target.value; markDirty(); renderPreview();
-  });
-  document.getElementById('promoCodigos').addEventListener('input', (e)=>{
-    const arr = e.target.value.split(',').map(s=>s.trim()).filter(Boolean);
-    config.promoAmigo.codigos = arr.length ? arr : ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'];
-    markDirty(); renderPreview();
   });
 
   /* Billeteras */
@@ -631,7 +627,7 @@ function renderAll(){
 
   document.getElementById('promoTexto').value = config.promoAmigo.texto || DEFAULT_PROMO_TEXTO;
   document.getElementById('promoInfo').value = config.promoAmigo.info || DEFAULT_PROMO_INFO;
-  document.getElementById('promoCodigos').value = (config.promoAmigo.codigos||[]).join(', ');
+  document.getElementById('promoPrefix').value = (config.promoAmigo.prefix || 'R');
 
   renderPCSlider();
   renderPCSliderPreview();
@@ -651,7 +647,7 @@ function renderPCSlider(){
     const btn = document.createElement('button');
     btn.className = 'btn small ghost';
     btn.textContent = pc.nombre;
-    btn.style.borderColor = i===sliderIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.45)';
+    btn.style.borderColor = i===sliderIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.28)';
     btn.style.color = i===sliderIndex ? '#e5e7eb' : 'var(--muted)';
     btn.addEventListener('click', ()=>{
       sliderIndex = i;
@@ -670,7 +666,7 @@ function renderPCSliderPreview(){
     const btn = document.createElement('button');
     btn.className = 'btn small ghost';
     btn.textContent = pc.nombre;
-    btn.style.borderColor = i===sliderPreviewIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.45)';
+    btn.style.borderColor = i===sliderPreviewIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.28)';
     btn.style.color = i===sliderPreviewIndex ? '#e5e7eb' : 'var(--muted)';
     btn.addEventListener('click', ()=>{
       sliderPreviewIndex = i;
@@ -694,12 +690,12 @@ function renderSaludosEditor(){
     const row = document.createElement('div');
     row.className = 'card-row';
     row.innerHTML = `
-      <button class="btn icon" title="Arrastrar (deshabilitado)">☰</button>
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
       <div>
         <div class="wallet-header">
           <span class="wallet-label">Mensaje #${idx+1}</span>
           <div class="wallet-actions">
-            <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">✕</button>
+            <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">Eliminar</button>
           </div>
         </div>
         <div>
@@ -741,7 +737,7 @@ function renderWallets(){
     const front = `
       <div class="flip-title">Frente</div>
       <div class="section-grid">
-        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" /></div>
+        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" title="Nombre del grupo visible" /></div>
         <div>
           <label>CBU</label>
           <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
@@ -754,7 +750,7 @@ function renderWallets(){
           <select data-field="billetera" data-idx="${idx}">
             ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
           </select>
-          <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
+          <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
         </div>
         <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
       </div>
@@ -774,21 +770,21 @@ function renderWallets(){
           <select data-field="billetera2" data-idx="${idx}">
             ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
           </select>
-          <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:4px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
+          <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
         </div>
         <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
       </div>
     `;
 
     row.innerHTML = `
-      <button class="grip" data-grip title="Arrastrar">☰</button>
+      <div class="grip" data-grip title="Arrastrar (click y mover)">🔀</div>
       <div>
         <div class="wallet-header">
           <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
           <div class="wallet-actions">
-            <button class="btn small ghost" data-toggle-flip="${idx}" title="Flip">${w.flip?'↻ Flip ON':'↻ Flip OFF'}</button>
+            <button class="btn small ghost" data-toggle-flip="${idx}" title="Activar/Desactivar dorso">🔁 ${w.flip? 'ON' : 'OFF'}</button>
             <span class="muted">Añade otra billetera del mismo titular</span>
-            <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">✕</button>
+            <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">Eliminar</button>
           </div>
         </div>
 
@@ -868,12 +864,13 @@ function renderWallets(){
     });
   });
 
-  // drag solo con grip
+  // drag con grip
   listEl.querySelectorAll('[data-grip]').forEach(grip=>{
     const row = grip.closest('.card-row');
     grip.addEventListener('mousedown', e=>{
       draggingWallet = row;
       row.classList.add('dragging');
+      // pequeño efecto visual inmediato
       e.preventDefault();
     });
   });
@@ -1067,15 +1064,18 @@ function renderPreview(){
 
   if(tab === 'promo'){
     const g = document.createElement('div'); g.className='preview-group';
-    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">2 botones</span></h3>`;
+    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">Texto y explicación</span></h3>`;
     const btnPromo = document.createElement('div'); btnPromo.className='btn-preview';
-    btnPromo.innerHTML = `<div><span class="label">🎉 Promo Amigos</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO,160))}</div></div><span class="sub">copiar</span>`;
+    btnPromo.innerHTML = `<div><span class="label">🎁 Promo Amigos</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO,160))}</div></div><span class="sub">copiar</span>`;
     btnPromo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO); showToast('Copiado Promo Amigos'); });
     g.appendChild(btnPromo);
     const btnInfo = document.createElement('div'); btnInfo.className='btn-preview';
     btnInfo.innerHTML = `<div><span class="label">ℹ️ Info Promo</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.info||DEFAULT_PROMO_INFO,160))}</div></div><span class="sub">copiar</span>`;
     btnInfo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.info||DEFAULT_PROMO_INFO); showToast('Copiado Info Promo'); });
     g.appendChild(btnInfo);
+    const prefixNote = document.createElement('div'); prefixNote.className='muted'; prefixNote.style.marginTop='8px';
+    prefixNote.textContent = `Los códigos se asignan por PC añadida: prefijo + número de PC. Prefijo actual: "${config.promoAmigo.prefix||'R'}"`;
+    g.appendChild(prefixNote);
     content.appendChild(g);
   }
 
@@ -1092,8 +1092,10 @@ function renderPreview(){
     btnWsp.addEventListener('click', ()=>{ copyToClipboard(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); });
     g.appendChild(btnWsp);
 
-    const codeIdx = Math.min(sliderPreviewIndex, (config.promoAmigo.codigos||[]).length-1);
-    const codeVal = (config.promoAmigo.codigos||[])[codeIdx] || 'R1';
+    // generación de código con prefijo + índice de la PC
+    const prefix = config.promoAmigo.prefix || 'R';
+    const idxForCode = sliderPreviewIndex + 1; // PC1 → 1
+    const codeVal = `${prefix}${idxForCode}`;
     const codeMsg = (config.promoAmigo.texto||DEFAULT_PROMO_TEXTO).replace(/\{codigo\}/g, codeVal).replace(/\{usuario\}/g, usuario);
     const btnCodigo = document.createElement('div'); btnCodigo.className='btn-preview';
     btnCodigo.innerHTML = `<div><span class="label">Código amigo (${escapeHtml(codeVal)})</span><div class="sub">${escapeHtml(shorten(codeMsg,100))}</div></div><span class="sub">copiar</span>`;
