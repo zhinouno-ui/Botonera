@@ -1,372 +1,512 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ChinPlantilla — Plantilla para ChinMaker</title>
-<style>
-:root{
-  --bg:#0b0b10; --card:#0f1220; --card-2:#0b0f1a;
-  --muted:#98a3b3; --text:#eaf6ff;
-  --accent:#8A2BE2; --accent-2:#a855f7;
-  --ok:#10B981; --bad:#EF4444;
-  --glass: rgba(255,255,255,0.03);
-  --radius:12px;
-  --shadow: 0 12px 40px rgba(2,6,23,0.6);
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:
-  radial-gradient(circle at 10% 10%, rgba(138,43,226,0.06), transparent 15%),
-  radial-gradient(circle at 90% 90%, rgba(16,185,129,0.03), transparent 15%),
-  var(--bg); color:var(--text); padding:18px;}
-.wrap{max-width:1200px;margin:0 auto;}
+  <meta charset="utf-8" />
+  <title>ChinPlantilla • Cuerpo visual para perfiles .chin.json</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#121212; --card:#1a1f29; --soft:#10141c;
+      --accent:#8A2BE2; --accent2:#a855f7; --ok:#10B981; --warn:#e67e22; --bad:#EF4444;
+      --muted:#cbd5e1; --text:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:linear-gradient(180deg,#0b0f16,#0a0e15 55%,#0a0e15 100%);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+    h1{margin:0;font-size:20px;background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);font-size:12px;margin:4px 0 0}
+    .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .btn{border:none;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;display:inline-flex;gap:8px;align-items:center;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;box-shadow:0 10px 24px rgba(138,43,226,.25)}
+    .btn.ghost{background:transparent;border:1px solid rgba(148,163,184,.25);color:var(--muted);box-shadow:none;border-radius:10px}
+    .btn.small{padding:6px 10px;font-size:11px}
+    .chip{display:inline-flex;gap:6px;padding:6px 10px;border-radius:999px;background:#0e131b;border:1px solid rgba(148,163,184,.25);color:var(--muted);font-size:12px}
 
-/* Header */
-.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-.title{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.small{font-size:13px;color:var(--muted)}
+    .card{background:radial-gradient(circle at top left,rgba(148,163,184,.08),transparent 55%),var(--card);border:1px solid rgba(148,163,184,.16);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+    .card h2{margin:0 0 6px;font-size:14px;text-transform:uppercase;color:#e5e7eb;letter-spacing:.06em}
+    .muted{color:var(--muted);font-size:12px}
 
-/* Controls row */
-.controls{display:flex;gap:8px;align-items:center}
-.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:700;cursor:pointer}
-.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-.btn.warn{background:linear-gradient(90deg,#f97316,#f59e0b)}
+    /* grupos arrastrables */
+    .grupo{background:rgba(255,255,255,.03);border:1px solid rgba(148,163,184,.12);border-radius:10px;padding:10px;margin-bottom:10px;box-shadow:inset 0 -6px 20px rgba(0,0,0,.25)}
+    .grupo .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .titulo{font-size:15px;font-weight:700}
+    .controls{display:flex;gap:6px;align-items:center}
+    .drag{width:28px;height:28px;border-radius:8px;border:1px solid rgba(148,163,184,.25);background:#1c2230;color:#fff;display:flex;align-items:center;justify-content:center;cursor:grab}
+    .drag:active{cursor:grabbing}
 
-/* Main area */
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--card); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);}
-.flex{display:flex;gap:8px;align-items:center}
-.layout{display:grid;grid-template-columns:1fr 380px;gap:16px}
-@media(max-width:980px){.layout{grid-template-columns:1fr}}
+    /* botones de copia preview */
+    .btn-preview{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-radius:9px;background:linear-gradient(90deg,#0f1623,#0b111b);border:1px solid rgba(55,65,81,.7);cursor:pointer;font-size:12px;margin-bottom:6px}
+    .btn-preview:hover{border-color:var(--accent2);box-shadow:0 0 0 1px rgba(168,85,247,.25)}
+    .btn-preview .label{font-weight:600}
+    .btn-preview .sub{font-size:11px;color:var(--muted)}
 
-/* Left area (content rendered from JSON) */
-.preview-area{min-height:380px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03);}
+    /* slider PCs */
+    .slider{display:flex;gap:6px;background:#0e131b;border:1px solid rgba(148,163,184,.25);border-radius:999px;padding:3px}
+    .slider .pc{padding:6px 12px;border-radius:999px;font-size:12px;color:#cbd5e1;border:none;background:transparent;cursor:pointer}
+    .pc.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
 
-/* Group styles */
-.grupo{margin-bottom:12px;padding:10px;border-radius:8px;background:var(--card-2);border:1px solid rgba(255,255,255,0.02)}
-.grupo h3{margin:0 0 8px}
-.wallets-container{perspective:1200px}
-.wallets-card{width:100%;min-height:72px;position:relative;transition:transform .45s cubic-bezier(.2,.9,.3,1);transform-style:preserve-3d;border-radius:8px;background:rgba(255,255,255,0.02)}
-.wallets-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;gap:8px;padding:8px}
-.wallets-face.back{transform:rotateY(180deg)}
-.wallets-card.flipped{transform:rotateY(180deg)}
-.wallets-face button{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:var(--text);font-weight:700;cursor:pointer}
+    /* flip card */
+    .flip-card{position:relative;border:1px solid rgba(55,65,81,.45);border-radius:10px;overflow:hidden;background:#0f1724;height:140px;perspective:1200px;margin-bottom:8px}
+    .flip-inner{position:relative;width:100%;height:100%;transition:transform .5s cubic-bezier(.2,.9,.3,1);transform-style:preserve-3d}
+    .flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+    .flip-face{position:absolute;inset:0;padding:10px;backface-visibility:hidden;display:flex;flex-direction:column;gap:8px}
+    .flip-back{transform:rotateY(180deg)}
+    .flip-toolbar{position:absolute;top:6px;right:6px;z-index:2;display:flex;gap:6px}
+    .flip-btn{border:none;border-radius:8px;padding:5px 8px;font-size:11px;background:#1b202a;color:#fff;border:1px solid rgba(75,85,99,.5);cursor:pointer}
+    .wallet-btn{width:100%;padding:10px;border:none;border-radius:9px;background:#1b2029;color:#fff;font-weight:700;cursor:pointer;border:1px solid rgba(55,65,81,.8)}
+    .wallet-btn:hover{background:#222836}
 
-/* small helpers */
-.handle-dots{width:14px;height:32px;border-radius:8px;background:
- radial-gradient(circle at 3px 4px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 3px 12px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 3px 20px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 9px 4px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 9px 12px,#6b6f7a 1px,transparent 0),
- radial-gradient(circle at 9px 20px,#6b6f7a 1px,transparent 0);
- cursor:grab}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(14px);background:rgba(8,10,14,0.9);color:var(--text);padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:all .18s}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.hist{font-size:12px;color:var(--muted);margin-top:8px;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;}
+    /* toast + historial */
+    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);background:#0f1320;border:1px solid rgba(148,163,184,.35);color:#e5e7eb;border-radius:999px;padding:8px 12px;font-size:12px;opacity:0;pointer-events:none;transition:.18s;z-index:50}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    #historial{background:#0e1522;border-radius:8px;border:1px solid rgba(148,163,184,.18);padding:8px;font-size:12px;margin-top:10px}
+    #historial small{display:block;color:#94a3b8;margin-bottom:6px}
+    #historial pre{white-space:pre-wrap;word-wrap:break-word;background:#0b111b;border:1px solid rgba(148,163,184,.18);padding:8px;border-radius:8px;max-height:160px;overflow:auto}
 
-/* import area */
-.import-box{display:flex;flex-direction:column;gap:8px}
-.import-box textarea{min-height:120px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
-
-/* fullscreen */
-.fullscreen{position:fixed;inset:8px;background:var(--bg);z-index:80;padding:22px;border-radius:12px;display:none;flex-direction:column}
-.fullscreen.show{display:flex;border:1px solid rgba(255,255,255,0.03)}
-
-/* empty placeholder */
-.empty{padding:20px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));text-align:center;color:var(--muted)}
-</style>
+    /* uploader intro */
+    .uploader{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .file{display:none}
+    .input{border:1px dashed rgba(148,163,184,.35);background:#0c121b;border-radius:10px;padding:10px;display:flex;gap:8px;align-items:center}
+    .input input[type="file"]{display:none}
+    .input .label{font-size:12px;color:#cbd5e1}
+  </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="header">
+  <header>
     <div>
-      <div class="title">ChinPlantilla</div>
-      <div class="small">Plantilla runtime — carga aquí un archivo <strong>.chin.json</strong> exportado por ChinMaker</div>
+      <h1>ChinPlantilla</h1>
+      <p class="sub">Cargá un archivo .chin.json exportado desde Master. La plantilla se adapta sola y podés reordenar grupos.</p>
     </div>
+    <div class="bar">
+      <span class="chip" id="statusChip">Sin archivo</span>
+      <button class="btn small" id="btnExportPlantilla">Exportar plantilla</button>
+      <label class="btn ghost small" for="fileInput">Subir .chin.json</label>
+      <input id="fileInput" class="file" type="file" accept=".json">
+    </div>
+  </header>
 
-    <div class="controls">
-      <input id="fileImport" type="file" accept=".json,.chin.json" style="display:none" />
-      <button id="btnImport" class="btn ghost">Importar JSON</button>
-      <button id="btnExport" class="btn">Exportar JSON</button>
-      <button id="btnClear" class="btn ghost">Limpiar</button>
+  <!-- Intro / Info del archivo -->
+  <div class="card">
+    <h2>Archivo</h2>
+    <div class="uploader">
+      <div class="input">
+        <span class="label">Subí tu .chin.json de Master para ver Utilidad, Billeteras, Promo y Revin por PC.</span>
+      </div>
+      <div id="fileMeta" class="muted">Ningún archivo cargado.</div>
     </div>
   </div>
 
-  <div class="layout">
-    <div>
-      <div id="mainCard" class="card preview-area">
-        <div id="placeholder" class="empty">
-          <div style="font-weight:700;margin-bottom:8px">Ningún archivo cargado</div>
-          <div class="small">Usá "Importar JSON" para cargar la configuración exportada desde ChinMaker.</div>
+  <!-- Contenedor de grupos (draggable) -->
+  <div id="gruposContainer">
+    <!-- Utilidad -->
+    <div class="grupo" data-group="utilidad">
+      <div class="header">
+        <div class="titulo">Utilidad</div>
+        <div class="controls">
+          <button class="drag" title="Mover grupo">☰</button>
         </div>
-
-        <div id="contentRoot" style="display:none"></div>
       </div>
-
-      <div class="card" style="margin-top:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="small">Historial de copiado</div>
-          <div id="histCount" class="small">0</div>
-        </div>
-        <div id="histBox" class="hist">Sin historial aún</div>
-      </div>
+      <div id="utilidadBox"></div>
     </div>
 
-    <div>
-      <div class="card">
-        <h3 style="margin:0 0 10px">Meta & Paleta</h3>
-        <div class="small">Perfil: <span id="metaPerfil">-</span></div>
-        <div style="margin-top:8px" class="small">Fecha export: <span id="metaFecha">-</span></div>
-        <div style="margin-top:12px">
-          <div class="small">Paleta</div>
-          <div id="paletaBoxes" style="display:flex;gap:8px;margin-top:8px"></div>
+    <!-- Billeteras -->
+    <div class="grupo" data-group="billeteras">
+      <div class="header">
+        <div class="titulo">Billeteras por grupo</div>
+        <div class="controls">
+          <button class="drag" title="Mover grupo">☰</button>
         </div>
       </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3 style="margin:0 0 10px">WhatsApp / Revinculación</h3>
-        <div class="small">Números: <span id="waNums">-</span></div>
-        <div style="margin-top:8px" class="small">Mensaje inicio: <span id="waMsg">-</span></div>
-        <div style="margin-top:10px">
-          <button id="btnPreviewWsp" class="btn ghost">Probar enlace WhatsApp</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3 style="margin:0 0 10px">Secciones</h3>
-        <div id="sectionList" class="small"></div>
-      </div>
+      <div id="billeterasBox"></div>
     </div>
+
+    <!-- Promo amigo -->
+    <div class="grupo" data-group="promoAmigo">
+      <div class="header">
+        <div class="titulo">Promo amigo</div>
+        <div class="controls">
+          <button class="drag" title="Mover grupo">☰</button>
+        </div>
+      </div>
+      <div id="promoBox"></div>
+    </div>
+
+    <!-- Revin por PC -->
+    <div class="grupo" data-group="revin">
+      <div class="header">
+        <div class="titulo">Mensaje Revin</div>
+        <div class="controls">
+          <button class="drag" title="Mover grupo">☰</button>
+        </div>
+      </div>
+      <div id="revinBox"></div>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div id="historial">
+    <small>Último copiado</small>
+    <pre id="histText">Nada copiado aún…</pre>
   </div>
 </div>
 
-<div id="fullscreen" class="fullscreen"></div>
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast">Copiado</div>
 
+<!-- Sortable -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-// ChinPlantilla runtime
-// - Carga JSON (file or paste) produced by ChinMaker
-// - Renders everything; no hardcoded data remains after load
-// - Provides Export (current state) + Import (file input)
-// - Keeps toasts & history working
+  let profile = null;
+  let lastCopied = '';
 
-let CURRENT = null;
-let HISTORY = [];
-const $ = id => document.getElementById(id);
-
-function resetView(){
-  CURRENT = null;
-  HISTORY = [];
-  $('contentRoot').innerHTML = '';
-  $('contentRoot').style.display = 'none';
-  $('placeholder').style.display = 'block';
-  $('metaPerfil').textContent = '-';
-  $('metaFecha').textContent = '-';
-  $('paletaBoxes').innerHTML = '';
-  $('waNums').textContent = '-';
-  $('waMsg').textContent = '-';
-  $('sectionList').textContent = '';
-  $('histBox').textContent = 'Sin historial aún';
-  $('histCount').textContent = '0';
-}
-resetView();
-
-function showToast(msg, time=1400){
-  const t = $('toast'); t.textContent = '✅ ' + msg; t.classList.add('show'); setTimeout(()=> t.classList.remove('show'), time);
-}
-
-function addHistory(txt){
-  HISTORY.unshift({text:txt, at: new Date().toISOString()});
-  if(HISTORY.length>30) HISTORY.pop();
-  renderHistory();
-}
-
-function renderHistory(){
-  if(HISTORY.length===0){ $('histBox').textContent='Sin historial aún'; $('histCount').textContent='0'; return; }
-  $('histCount').textContent = String(HISTORY.length);
-  $('histBox').innerHTML = HISTORY.slice(0,10).map(h => `<div style="margin-bottom:6px;padding:8px;background:rgba(255,255,255,0.01);border-radius:6px"><div style="font-size:13px">${escapeHtml(h.text).slice(0,180)}</div><div class="small" style="margin-top:6px;color:var(--muted)">${h.at}</div></div>`).join('');
-}
-
-function escapeHtml(s){ if(!s) return ''; return (''+s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-
-// ---------- Import / Export handlers ----------
-$('btnImport').addEventListener('click', ()=> $('fileImport').click());
-$('fileImport').addEventListener('change', async (e) => {
-  const f = e.target.files[0];
-  if(!f) return;
-  try{
-    const txt = await f.text();
-    const obj = JSON.parse(txt);
-    loadFromChinJson(obj);
-    showToast('Archivo cargado');
-  }catch(err){ alert('JSON inválido'); }
-});
-$('btnClear').addEventListener('click', ()=> { if(confirm('Limpiar plantilla y historial?')) resetView(); });
-
-$('btnExport').addEventListener('click', ()=>{
-  if(!CURRENT){ alert('No hay datos para exportar'); return; }
-  const blob = new Blob([JSON.stringify(CURRENT, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `${(CURRENT.perfil||'perfil')}.chin.json`; a.click(); URL.revokeObjectURL(a.href);
-  showToast('Exportado JSON');
-});
-
-// ---------- Main loader ----------
-function loadFromChinJson(json){
-  // Basic validation & sanitize
-  const data = Object.assign({}, json);
-  data.paleta = data.paleta || {acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444'};
-  data.whatsapp = data.whatsapp || {numeros:[], mensajeInicio:''};
-  data.revinculacion = data.revinculacion || {saludos:[]};
-  data.billeteras = Array.isArray(data.billeteras) ? data.billeteras : [];
-  data.secciones = Array.isArray(data.secciones) ? data.secciones : [];
-  data.order = Array.isArray(data.order) ? data.order : data.secciones.map(s=>s.id);
-  data.metadata = data.metadata || {};
-  CURRENT = data;
-
-  // Render meta
-  $('metaPerfil').textContent = CURRENT.perfil || '';
-  $('metaFecha').textContent = CURRENT.fechaExport || CURRENT.metadata.lastExport || '';
-  renderPaleta(CURRENT.paleta);
-  renderWhats(CURRENT.whatsapp);
-  renderSections(CURRENT.secciones, CURRENT.order);
-  renderBilleteras(CURRENT.billeteras);
-  $('placeholder').style.display = 'none';
-  $('contentRoot').style.display = 'block';
-  showToast('Vista renderizada');
-}
-
-// ---------- Renderers ----------
-function renderPaleta(p){
-  const box = $('paletaBoxes'); box.innerHTML = '';
-  if(!p) return;
-  ['acento','ok','bad'].forEach(k=>{
-    const el = document.createElement('div'); el.style.minWidth='64px'; el.style.height='36px'; el.style.borderRadius='8px';
-    el.style.background = p[k] || '#222'; el.title = k; box.appendChild(el);
+  // Drag de grupos
+  new Sortable(document.getElementById('gruposContainer'), {
+    animation: 150,
+    draggable: '.grupo',
+    handle: '.drag'
   });
-}
 
-function renderWhats(wa){
-  $('waNums').textContent = (Array.isArray(wa.numeros) && wa.numeros.length) ? wa.numeros.join(', ') : '-';
-  $('waMsg').textContent = wa.mensajeInicio || '-';
-  $('btnPreviewWsp').onclick = ()=> {
-    if(!CURRENT) return alert('No hay configuración'); 
-    const nums = CURRENT.whatsapp?.numeros || [];
-    if(!nums.length) return alert('No hay números WA en la configuración');
-    const first = nums[0];
-    const msg = encodeURIComponent((CURRENT.whatsapp?.mensajeInicio || '').replace('{usuario}','USUARIO'));
-    const url = `https://wa.me/${first}?text=${msg}`;
-    window.open(url, '_blank');
-  };
-}
+  // Uploader
+  const fileInput = document.getElementById('fileInput');
+  const statusChip = document.getElementById('statusChip');
+  const fileMeta = document.getElementById('fileMeta');
 
-function renderSections(secciones, order){
-  const list = $('sectionList'); list.innerHTML = '';
-  if(!secciones || !secciones.length){ list.textContent = '-'; return; }
-  order.forEach(id=>{
-    const s = secciones.find(x=>x.id===id) || secciones.find(x=>x.name===id);
-    if(!s) return;
-    const el = document.createElement('div'); el.style.marginBottom='6px';
-    el.innerHTML = `<strong>${escapeHtml(s.name)}</strong> — ${Array.isArray(s.buttons)? s.buttons.length:0} botones`;
-    list.appendChild(el);
-  });
-}
-
-// Renders sections & buttons into contentRoot
-function renderBilleteras(billeteras){
-  const root = $('contentRoot'); root.innerHTML = '';
-  // render secciones in order (including custom secciones)
-  (CURRENT.order || CURRENT.secciones.map(s=>s.id)).forEach(sid=>{
-    const s = (CURRENT.secciones||[]).find(x=>x.id===sid) || { id:sid, name:sid, buttons:[] };
-    const group = document.createElement('div'); group.className='grupo';
-    const h = document.createElement('h3'); h.textContent = s.name; group.appendChild(h);
-
-    // buttons from section
-    if(Array.isArray(s.buttons) && s.buttons.length){
-      s.buttons.forEach(btn=>{
-        const b = document.createElement('button');
-        b.textContent = btn.name || 'btn';
-        b.onclick = ()=> { copyAndRecord(btn.text || '', btn.name || 'btn'); };
-        group.appendChild(b);
-      });
+  fileInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      profile = normalizeProfile(obj);
+      statusChip.textContent = `Cargado: ${file.name}`;
+      fileMeta.textContent = `Perfil: ${profile.perfil || 'N/A'} • PCs: ${profile.whatsapp.pcs.length} • Billeteras: ${profile.billeteras.length}`;
+      renderAll();
+    }catch(err){
+      statusChip.textContent = 'Error al cargar';
+      fileMeta.textContent = 'El archivo no es válido.';
     }
+  });
 
-    // If this section is "billeteras" or has billeteras -> render those
-    if(s.id === 'billeteras' || s.name.toLowerCase().includes('billetera')){
-      // Render each wallet
-      (CURRENT.billeteras || []).forEach(w=>{
-        const wwrap = document.createElement('div'); wwrap.style.marginTop='8px';
-        const inner = document.createElement('div'); inner.className='wallets-card';
-        const front = document.createElement('div'); front.className='wallets-face front';
-        const back = document.createElement('div'); back.className='wallets-face back';
+  // Exportar la plantilla (lo que está cargado)
+  document.getElementById('btnExportPlantilla').addEventListener('click', ()=>{
+    if(!profile){
+      showToast('Sin archivo'); return;
+    }
+    const blob = new Blob([JSON.stringify(profile,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `${profile.perfil || 'perfil'}.chin.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    showToast('Exportado');
+  });
 
-        // left info and actions
-        const btn1 = document.createElement('button'); btn1.textContent = `CBU: ${w.cbu||'(sin)'}`
-        btn1.onclick = ()=> copyAndRecord(w.cbu || '', (w.label||'Billetera') + ' CBU');
-        const btn2 = document.createElement('button'); btn2.textContent = `Alias: ${w.alias||'(sin)'}`
-        btn2.onclick = ()=> copyAndRecord(`${w.alias || ''}\nTitular ${w.titular || ''}`, (w.label||'Billetera') + ' Alias');
+  // Normalización para faltantes
+  function normalizeProfile(obj){
+    const out = { ...obj };
+    out.perfil = out.perfil || 'Perfil';
+    // paleta
+    const paleta = out.paleta || {};
+    out.paleta = { acento: paleta.acento || '#8A2BE2', ok: paleta.ok || '#10B981', bad: paleta.bad || '#EF4444' };
 
-        front.appendChild(btn1); front.appendChild(btn2);
+    // utilidad
+    const defInfo = `📁 SOMOS BET300VIP\n\nDisfrutá de una plataforma confiable.\n\n🕑 Atención personalizada 24/7`;
+    const defCargado = `✅ ¡Saldo acreditado!`;
+    const defRetiro = `💸 Para retiro: CBU, monto, titular`;
 
-        // flip side actions (if flip present)
-        if(w.flip && w.flipData){
-          const b1 = document.createElement('button'); b1.textContent = `CBU: ${w.flipData.cbu||'(sin)'}`
-          b1.onclick = ()=> copyAndRecord(w.flipData.cbu || '', (w.label||'Billetera') + ' CBU (flip)');
-          const b2 = document.createElement('button'); b2.textContent = `Alias: ${w.flipData.alias||'(sin)'}`
-          b2.onclick = ()=> copyAndRecord(`${w.flipData.alias || ''}\nTitular ${w.flipData.titular || ''}`, (w.label||'Billetera') + ' Alias (flip)');
-          back.appendChild(b1); back.appendChild(b2);
-        } else {
-          const p = document.createElement('div'); p.className='small'; p.style.color='var(--muted)'; p.textContent='Sin flip';
-          back.appendChild(p);
+    out.utilidad = out.utilidad || {};
+    out.utilidad.info = out.utilidad.info || defInfo;
+    out.utilidad.cargado = out.utilidad.cargado || defCargado;
+    out.utilidad.retiro = out.utilidad.retiro || defRetiro;
+
+    // whatsapp/pcs
+    out.whatsapp = out.whatsapp || {};
+    out.whatsapp.plantillaMensaje = out.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
+    let pcs = Array.isArray(out.whatsapp.pcs) ? out.whatsapp.pcs.filter(Boolean) : [];
+    if(pcs.length===0){
+      pcs = [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }];
+    }
+    out.whatsapp.pcs = pcs.map((pc,i)=>({
+      nombre: pc.nombre || ('PC' + String(i+1).padStart(2,'0')),
+      wsp: String(pc.wsp || '5491100000000'),
+      mensajes: Array.isArray(pc.mensajes) ? pc.mensajes : []
+    })).slice(0,10);
+
+    // billeteras
+    out.billeteras = Array.isArray(out.billeteras) ? out.billeteras : [];
+    out.billeteras = out.billeteras.map(w=>({
+      id: w.id || ('w_'+Math.random().toString(36).slice(2)),
+      label: w.label || 'Grupo / Nombre visible',
+      cbu: w.cbu || '',
+      alias: w.alias || '',
+      titular: w.titular || '',
+      billetera: w.billetera || 'Mercado Pago',
+      billeteraCustom: w.billeteraCustom || '',
+      color: w.color || '#1f6feb',
+      flip: !!w.flip,
+      cbu2: w.cbu2 || '',
+      alias2: w.alias2 || '',
+      titular2: w.titular2 || '',
+      billetera2: w.billetera2 || 'Prex',
+      billetera2Custom: w.billetera2Custom || '',
+      color2: w.color2 || '#ff6f3d'
+    }));
+
+    // promo
+    const promo = out.promoAmigo || {};
+    out.promoAmigo = {
+      prefix: promo.prefix || 'R',
+      texto: promo.texto || '🎁 PROMO AMIGOS\nInvitá y sumá fichas.\nCódigo: {codigo}',
+      info: promo.info || 'ℹ️ Pedí tu código (prefijo + número de PC) y compartilo.'
+    };
+
+    // estructura
+    const ord = out.estructuraBotones?.orden;
+    out.estructuraBotones = { orden: Array.isArray(ord) && ord.length ? ord : ['utilidad','billeteras','promoAmigo','revin'] };
+
+    return out;
+  }
+
+  function renderAll(){
+    applyPalette();
+    renderUtilidad();
+    renderBilleteras();
+    renderPromo();
+    renderRevin();
+    // Reordenar según estructuraBotones
+    const cont = document.getElementById('gruposContainer');
+    const order = profile.estructuraBotones.orden;
+    const map = { utilidad:'[data-group="utilidad"]', billeteras:'[data-group="billeteras"]', promoAmigo:'[data-group="promoAmigo"]', revin:'[data-group="revin"]' };
+    order.forEach(key=>{
+      const el = cont.querySelector(map[key]);
+      if(el) cont.appendChild(el);
+    });
+  }
+
+  function applyPalette(){
+    const p = profile.paleta || {};
+    document.documentElement.style.setProperty('--accent', p.acento || '#8A2BE2');
+    document.documentElement.style.setProperty('--accent2', p.acento || '#a855f7');
+    document.documentElement.style.setProperty('--ok', p.ok || '#10B981');
+    document.documentElement.style.setProperty('--bad', p.bad || '#EF4444');
+  }
+
+  // Utilidad
+  function renderUtilidad(){
+    const box = document.getElementById('utilidadBox'); box.innerHTML = '';
+    const items = [
+      {label:'Info', val: profile.utilidad.info},
+      {label:'Cargado', val: profile.utilidad.cargado},
+      {label:'Retiro', val: profile.utilidad.retiro}
+    ].filter(i=>i.val && i.val.trim());
+    if(!items.length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin textos de utilidad.'; box.appendChild(p); return;
+    }
+    items.forEach(i=>{
+      const btn = document.createElement('div'); btn.className='btn-preview';
+      btn.innerHTML = `<div><span class="label">${i.label}</span><div class="sub">${escapeHtml(shorten(i.val,160))}</div></div><span class="sub">copiar</span>`;
+      btn.onclick = ()=>{ copyText(i.val); showToast(`Copiado ${i.label}`); };
+      box.appendChild(btn);
+    });
+  }
+
+  // Billeteras por grupo
+  function renderBilleteras(){
+    const box = document.getElementById('billeterasBox'); box.innerHTML = '';
+    const list = profile.billeteras || [];
+    if(!list.length){ const p = document.createElement('p'); p.className='muted'; p.textContent='Sin billeteras cargadas.'; box.appendChild(p); return; }
+    const byLabel = {};
+    list.forEach(w=>{ const k = w.label || 'Grupo'; (byLabel[k]||(byLabel[k]=[])).push(w); });
+
+    Object.keys(byLabel).forEach(label=>{
+      const groupCard = document.createElement('div'); groupCard.className='grupo';
+      groupCard.innerHTML = `
+        <div class="header">
+          <div class="titulo">${escapeHtml(label)} <span class="muted" style="font-weight:400;">(${byLabel[label].length} billetera(s))</span></div>
+          <div class="controls"><button class="drag">☰</button></div>
+        </div>
+      `;
+      const inner = document.createElement('div');
+
+      byLabel[label].forEach(w=>{
+        const card = document.createElement('div'); card.className='flip-card';
+        const innerFlip = document.createElement('div'); innerFlip.className='flip-inner';
+        const toolbar = document.createElement('div'); toolbar.className='flip-toolbar';
+
+        if(w.flip){
+          const flipBtn = document.createElement('button'); flipBtn.className='flip-btn';
+          flipBtn.textContent = 'Ver dorso';
+          flipBtn.onclick = ()=>{
+            const flipped = card.classList.toggle('flipped');
+            flipBtn.textContent = flipped ? 'Ver frente' : 'Ver dorso';
+          };
+          toolbar.appendChild(flipBtn);
         }
 
-        inner.appendChild(front); inner.appendChild(back);
+        const faceFront = document.createElement('div'); faceFront.className='flip-face';
+        const f1 = walletButton('CBU ' + billeName(w), w.color, ()=>copyCBU(w.cbu, w.titular));
+        const f2 = walletButton('Alias ' + billeName(w), w.color, ()=>copyAlias(w.alias, w.titular, billeName(w)));
+        faceFront.appendChild(f1); faceFront.appendChild(f2);
 
-        // flip toggle
-        const flipBtn = document.createElement('button'); flipBtn.className='btn ghost'; flipBtn.textContent='🔄 Flip'; flipBtn.style.marginTop='6px';
-        flipBtn.onclick = ()=> inner.classList.toggle('flipped');
+        const faceBack = document.createElement('div'); faceBack.className='flip-face flip-back';
+        if(w.flip){
+          const b1 = walletButton('CBU ' + billeName2(w), w.color2, ()=>copyCBU(w.cbu2, w.titular2));
+          const b2 = walletButton('Alias ' + billeName2(w), w.color2, ()=>copyAlias(w.alias2, w.titular2, billeName2(w)));
+          faceBack.appendChild(b1); faceBack.appendChild(b2);
+        }else{
+          const p = document.createElement('p'); p.className='muted'; p.textContent = 'Sin dorso'; faceBack.appendChild(p);
+        }
 
-        wwrap.appendChild(inner);
-        wwrap.appendChild(flipBtn);
-
-        group.appendChild(wwrap);
+        innerFlip.appendChild(faceFront);
+        innerFlip.appendChild(faceBack);
+        card.appendChild(toolbar);
+        card.appendChild(innerFlip);
+        inner.appendChild(card);
       });
+
+      groupCard.appendChild(inner);
+      box.appendChild(groupCard);
+    });
+  }
+
+  // Promo
+  function renderPromo(){
+    const box = document.getElementById('promoBox'); box.innerHTML = '';
+    const texto = profile.promoAmigo?.texto?.trim();
+    const info = profile.promoAmigo?.info?.trim();
+    if(!texto && !info){ const p = document.createElement('p'); p.className='muted'; p.textContent='Sin promo configurada.'; box.appendChild(p); return; }
+
+    if(texto){
+      const btnPromo = document.createElement('div'); btnPromo.className='btn-preview';
+      btnPromo.innerHTML = `<div><span class="label">🎉 Promo Amigos</span><div class="sub">${escapeHtml(shorten(texto,160))}</div></div><span class="sub">copiar</span>`;
+      btnPromo.onclick = ()=>{ copyText(texto); showToast('Copiado Promo Amigos'); };
+      box.appendChild(btnPromo);
+    }
+    if(info){
+      const btnInfo = document.createElement('div'); btnInfo.className='btn-preview';
+      btnInfo.innerHTML = `<div><span class="label">ℹ️ Info Promo</span><div class="sub">${escapeHtml(shorten(info,160))}</div></div><span class="sub">copiar</span>`;
+      btnInfo.onclick = ()=>{ copyText(info); showToast('Copiado Info Promo'); };
+      box.appendChild(btnInfo);
+    }
+    const pref = profile.promoAmigo?.prefix || 'R';
+    const nPCs = profile.whatsapp.pcs.length;
+    const note = document.createElement('div'); note.className='muted';
+    note.style.marginTop='6px';
+    note.textContent = `Códigos se generan por PC: ${pref}1 para PC01, ${pref}2 para PC02... (${nPCs} PC(s) activas).`;
+    box.appendChild(note);
+  }
+
+  // Revin
+  function renderRevin(){
+    const box = document.getElementById('revinBox'); box.innerHTML = '';
+    const pcs = profile.whatsapp.pcs || [];
+    const plantilla = profile.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
+
+    // Usuario input
+    const row = document.createElement('div');
+    row.style.display = 'flex'; row.style.gap='8px'; row.style.flexWrap='wrap';
+    const userWrap = document.createElement('div'); userWrap.style.flex='1'; userWrap.style.minWidth='240px';
+    const userLabel = document.createElement('label'); userLabel.textContent = 'Usuario para {usuario}';
+    const userInput = document.createElement('input'); userInput.type='text'; userInput.placeholder='Escribí el usuario...';
+    userInput.style.width='100%'; userInput.style.padding='8px'; userInput.style.borderRadius='8px'; userInput.style.border='1px solid rgba(148,163,184,.25)';
+    userWrap.appendChild(userLabel); userWrap.appendChild(userInput);
+    row.appendChild(userWrap);
+
+    // Slider PCs (solo si hay >1)
+    let sliderIdx = 0;
+    if(pcs.length>1){
+      const sliderWrap = document.createElement('div'); sliderWrap.style.flex='1'; sliderWrap.style.minWidth='240px';
+      const sliderLabel = document.createElement('label'); sliderLabel.textContent = 'PC activa';
+      const slider = document.createElement('div'); slider.className='slider';
+      pcs.forEach((pc,i)=>{
+        const b = document.createElement('button'); b.className='pc' + (i===0?' active':'');
+        b.textContent = pc.nombre;
+        b.onclick = ()=>{ sliderIdx=i; Array.from(slider.children).forEach(c=>c.classList.remove('active')); b.classList.add('active'); buildButtons(); };
+        slider.appendChild(b);
+      });
+      sliderWrap.appendChild(sliderLabel); sliderWrap.appendChild(slider);
+      row.appendChild(sliderWrap);
+    }
+    box.appendChild(row);
+
+    // Botones de revin
+    const btns = document.createElement('div'); btns.style.marginTop='8px';
+    box.appendChild(btns);
+
+    function buildButtons(){
+      btns.innerHTML = '';
+      const usuario = (userInput.value || 'USUARIO').trim();
+      const pc = pcs[sliderIdx] || pcs[0];
+      const wspNum = (pc.wsp || '5491100000000').trim();
+      const plantillaFinal = plantilla.replace(/\{usuario\}/g, usuario);
+      const wspLink = `https://wa.me/${encodeURIComponent(wspNum)}?text=${encodeURIComponent(plantillaFinal)}`;
+
+      // Copiar WhatsApp
+      const btnWsp = document.createElement('div'); btnWsp.className='btn-preview';
+      btnWsp.innerHTML = `<div><span class="label">Copiar WhatsApp (${escapeHtml(pc.nombre)})</span><div class="sub">${escapeHtml(shorten(wspLink,100))}</div></div><span class="sub">copiar</span>`;
+      btnWsp.onclick = ()=>{ copyText(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); };
+      btns.appendChild(btnWsp);
+
+      // Código amigo (prefijo + índice de PC)
+      const pref = profile.promoAmigo?.prefix || 'R';
+      const codeVal = `${pref}${sliderIdx+1}`;
+      const codeMsg = (profile.promoAmigo?.texto || 'Código {codigo} para {usuario}').replace(/\{codigo\}/g, codeVal).replace(/\{usuario\}/g, usuario);
+      const btnCode = document.createElement('div'); btnCode.className='btn-preview';
+      btnCode.innerHTML = `<div><span class="label">Código amigo (${escapeHtml(codeVal)})</span><div class="sub">${escapeHtml(shorten(codeMsg,100))}</div></div><span class="sub">copiar</span>`;
+      btnCode.onclick = ()=>{ copyText(codeMsg); showToast(`Copiado Código Amigo (${codeVal})`); };
+      btns.appendChild(btnCode);
+
+      // Mensajes de revinculación (si existen)
+      const mensajes = Array.isArray(pc.mensajes) ? pc.mensajes : [];
+      if(!mensajes.length){
+        const p = document.createElement('p'); p.className='muted'; p.textContent='Sin mensajes de revinculación para esta PC.'; btns.appendChild(p);
+      }else{
+        mensajes.forEach((m,i)=>{
+          const txt = (m.texto || '').replace(/\{usuario\}/g, usuario);
+          const b = document.createElement('div'); b.className='btn-preview';
+          b.innerHTML = `<div><span class="label">Mensaje #${i+1}</span><div class="sub">${escapeHtml(shorten(txt,140))}</div></div><span class="sub">copiar</span>`;
+          b.onclick = ()=>{ copyText(txt); showToast(`Copiado mensaje #${i+1}`); };
+          btns.appendChild(b);
+        });
+      }
     }
 
-    root.appendChild(group);
-  });
-}
+    userInput.addEventListener('input', buildButtons);
+    buildButtons();
+  }
 
-// copy helper
-function copyAndRecord(txt,label){
-  if(!txt){ showToast('Nada para copiar'); return; }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(()=> { showToast(label || 'Texto'); addHistory(txt); }).catch(()=> { fallbackCopy(txt); addHistory(txt); });
-  } else { fallbackCopy(txt); addHistory(txt); }
-}
-function fallbackCopy(txt){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('Texto (fallback)'); }
-
-// Utility: remove any stray data (ensures template is zeroed before load)
-function zeroTemplate(){
-  $('contentRoot').innerHTML = '';
-  $('placeholder').style.display = 'block';
-  $('contentRoot').style.display = 'none';
-}
-
-// When user pastes raw JSON text manually (optional)
-function pasteJsonText(txt){
-  try{
-    const obj = JSON.parse(txt);
-    loadFromChinJson(obj);
-  }catch(e){ alert('JSON inválido'); }
-}
-
-// Expose minimal API for debugging
-window.chinplantilla = { loadFromChinJson, zeroTemplate, pasteJsonText, getCurrent: ()=> CURRENT, getHistory: ()=> HISTORY };
+  // Helpers
+  function billeName(w){ return w.billetera==='Otro' ? (w.billeteraCustom||'Billetera') : (w.billetera||'Billetera'); }
+  function billeName2(w){ return w.billetera2==='Otro' ? (w.billetera2Custom||'Billetera') : (w.billetera2||'Billetera'); }
+  function walletButton(label, borderColor, onClick){
+    const b = document.createElement('button');
+    b.className='wallet-btn';
+    b.textContent = label;
+    b.style.borderColor = borderColor || '#1f6feb';
+    b.onclick = ()=>{ onClick && onClick(); };
+    return b;
+  }
+  function copyCBU(val, titular){
+    const v = (val||'').trim(); if(!v){ showToast('CBU vacío'); return; }
+    copyText(v); showToast(`Copiado CBU${titular?(' de '+titular):''}`);
+  }
+  function copyAlias(alias, titular, billeName){
+    const msg = `${alias||''}\nTitular ${titular||''} *${billeName||''}*`.trim();
+    copyText(msg); showToast(`Copiado Alias${titular?(' de '+titular):''}`);
+  }
+  function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function shorten(str,max){ if(!str) return ''; str=String(str); return str.length>max ? str.slice(0,max-3)+'...' : str; }
+  function showToast(msg){ const t=document.getElementById('toast'); t.textContent = '✅ ' + msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+  function copyText(txt){
+    lastCopied = txt;
+    document.getElementById('histText').textContent = txt;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(String(txt)).then(()=>{}).catch(()=>fallbackCopy(txt));
+    }else fallbackCopy(txt);
+  }
+  function fallbackCopy(txt){
+    const temp = document.createElement('textarea'); temp.value = String(txt);
+    document.body.appendChild(temp); temp.select(); document.execCommand('copy'); document.body.removeChild(temp);
+  }
 </script>
-
-<!-- Sortable: optional for enabling drag reorder of groups if needed by template consumers -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </body>
 </html>
