@@ -1,168 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Comparador de Cargas — Restyled</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* --- Recu-inspired core styles (adapted) --- */
+:root{
+--bg:#111418; /* recu bg */
+--card:#1A1E23;
+--muted:#A8A8A8;
+--accent-from:#C7F24A;
+--accent-to:#24364A;
+--glass: rgba(255,255,255,0.02);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+margin:0;
+font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+background: var(--bg);
+color: #EAF2FF;
+-webkit-font-smoothing:antialiased;
+-moz-osx-font-smoothing:grayscale;
+padding:20px;
+}
 
-<!DOCTYPE html>
-<!-- saved from url=(0039)https://toolboard.vercel.app/revin.html -->
-<html lang="es" nighteye="disabled"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dif • Análisis de Retención</title>
-    <script src="./recu_files/saved_resource"></script><script bis_use="true" type="text/javascript" charset="utf-8" data-bis-config="[&quot;facebook.com/&quot;,&quot;twitter.com/&quot;,&quot;youtube-nocookie.com/embed/&quot;,&quot;//vk.com/&quot;,&quot;//www.vk.com/&quot;,&quot;linkedin.com/&quot;,&quot;//www.linkedin.com/&quot;,&quot;//instagram.com/&quot;,&quot;//www.instagram.com/&quot;,&quot;//www.google.com/recaptcha/api2/&quot;,&quot;//hangouts.google.com/webchat/&quot;,&quot;//www.google.com/calendar/&quot;,&quot;//www.google.com/maps/embed&quot;,&quot;spotify.com/&quot;,&quot;soundcloud.com/&quot;,&quot;//player.vimeo.com/&quot;,&quot;//disqus.com/&quot;,&quot;//tgwidget.com/&quot;,&quot;//js.driftt.com/&quot;,&quot;friends2follow.com&quot;,&quot;/widget&quot;,&quot;login&quot;,&quot;//video.bigmir.net/&quot;,&quot;blogger.com&quot;,&quot;//smartlock.google.com/&quot;,&quot;//keep.google.com/&quot;,&quot;/web.tolstoycomments.com/&quot;,&quot;moz-extension://&quot;,&quot;chrome-extension://&quot;,&quot;/auth/&quot;,&quot;//analytics.google.com/&quot;,&quot;adclarity.com&quot;,&quot;paddle.com/checkout&quot;,&quot;hcaptcha.com&quot;,&quot;recaptcha.net&quot;,&quot;2captcha.com&quot;,&quot;accounts.google.com&quot;,&quot;www.google.com/shopping/customerreviews&quot;,&quot;buy.tinypass.com&quot;,&quot;gstatic.com&quot;,&quot;secureir.ebaystatic.com&quot;,&quot;docs.google.com&quot;,&quot;contacts.google.com&quot;,&quot;github.com&quot;,&quot;mail.google.com&quot;,&quot;chat.google.com&quot;,&quot;audio.xpleer.com&quot;,&quot;keepa.com&quot;,&quot;static.xx.fbcdn.net&quot;,&quot;sas.selleramp.com&quot;,&quot;1plus1.video&quot;,&quot;console.googletagservices.com&quot;,&quot;//lnkd.demdex.net/&quot;,&quot;//radar.cedexis.com/&quot;,&quot;//li.protechts.net/&quot;,&quot;challenges.cloudflare.com/&quot;,&quot;ogs.google.com&quot;]" src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/traffic.js"></script>
-    <!-- Babel for JSX transformation -->
-    <script src="./recu_files/babel.min.js.descarga"></script>
-    
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-      
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #111418;
-        color: white;
-      }
-      
-      /* Custom Scrollbar for dark theme */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #1A1E23; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #2A2F36; 
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #3A4048; 
-      }
 
-      /* Animation utilities */
-      .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-      .animate-slide-up { animation: slideInUp 0.4s ease-out; }
-      
-      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-    
-</head>
-<body>
-  <div class="wrap">
-    <h1>Dif • Análisis de Retención</h1>
-    <p>Detecta usuarios que cargaron el mes anterior pero no el actual.</p>
+.container{max-width:980px;margin:0 auto}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.logo-bubble{padding:10px;border-radius:12px;background:linear-gradient(135deg,var(--accent-from),var(--accent-to));color:#071018}
+h1.title{font-size:20px;margin:0;background:linear-gradient(90deg,#fff,#A8A8A8);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+.subtitle{color:#777;font-size:13px}
 
-    <div class="card">
-      <div class="controls">
-        <div>
-          <label>MES ANTERIOR (CSV)</label><br>
-          <input type="file" id="filePrev" accept=".csv">
-        </div>
-        <div>
-          <label>MES ACTUAL (CSV)</label><br>
-          <input type="file" id="fileCurr" accept=".csv">
-        </div>
-        <div>
-          <label>FORMATO CSV</label><br>
-          <button class="btn" onclick="setFormat(0)">MASTR</button>
-          <button class="btn" onclick="setFormat(1)">AGENTE</button>
-        </div>
-        <div>
-          <label><input type="checkbox" id="onlySingle"> Sólo usuarios con 1 carga (Mes anterior)</label>
-        </div>
-        <div>
-          <label>Límite filas</label><br>
-          <input type="number" id="maxRows" value="0" min="0">
-        </div>
-        <div>
-          <button class="btn" onclick="process()">🔍 Procesar Comparación</button>
-          <button class="btn" onclick="toggleSort()">⇅ Orden: $$$</button>
-        </div>
-      </div>
 
-      <div class="summary">
-        <div>
-          <strong id="summaryCount">Sin procesar</strong>
-          <div class="badge" id="formatBadge">mastr</div>
-        </div>
-        <div>
-          <span id="summaryUsers" class="badge">—</span>
-        </div>
-      </div>
+.card{background:var(--card);border:1px solid #2A2A2A;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.5);margin-bottom:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label.small{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+input[type=file]{width:100%;background:transparent;border:1px solid #2A2A2A;padding:10px;border-radius:10px;color:#DDD}
+.btn-primary{background:linear-gradient(90deg,var(--accent-from),var(--accent-to));color:#071018;border:none;padding:12px;border-radius:12px;font-weight:700;cursor:pointer}
+.btn-ghost{background:#24364A;color:#EAF2FF;border:none;padding:10px;border-radius:10px;cursor:pointer}
 
-      <div id="results"></div>
-    </div>
-  </div>
 
-  <script>
-    let origin = 0;
-    let sortMode = 'monto';
-    let dropped = [];
+.toggles{display:flex;gap:8px;align-items:center}
+.checkbox-custom{display:flex;align-items:center;gap:8px;cursor:pointer}
 
-    function setFormat(val) {
-      origin = val;
-      document.getElementById('formatBadge').textContent = val === 0 ? 'mastr' : 'agente';
-    }
 
-    function toggleSort() {
-      sortMode = sortMode === 'monto' ? 'operaciones' : 'monto';
-    }
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.stat{background:var(--card);border:1px solid #2A2A2A;padding:12px;border-radius:12px}
+.stat .label{font-size:12px;color:#A8A8A8;text-transform:uppercase}
+.stat .value{font-size:18px;font-weight:700}
 
-    function process() {
-      const prevFile = document.getElementById('filePrev').files[0];
-      const currFile = document.getElementById('fileCurr').files[0];
-      if (!prevFile || !currFile) return alert("Cargá ambos archivos");
 
-      Promise.all([readCSV(prevFile), readCSV(currFile)]).then(([prevLines, currLines]) => {
-        const parser = origin === 0 ? parseMastr : parseAgente;
-        const prev = parser(prevLines);
-        const curr = parser(currLines);
-        const currSet = new Set(curr.map(r => r.usuario));
-        const map = {};
-        prev.forEach(r => {
-          if (!map[r.usuario]) map[r.usuario] = { usuario: r.usuario, monto: 0, count: 0, fecha: r.fecha };
-          map[r.usuario].monto += r.monto;
-          map[r.usuario].count += 1;
-        });
-        dropped = Object.values(map).filter(u => !currSet.has(u.usuario));
-        if (document.getElementById('onlySingle').checked) dropped = dropped.filter(u => u.count === 1);
-        render();
-      });
-    }
+.results-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+.result-block{background:var(--card);border:1px solid #2A2A2A;border-radius:12px;overflow:hidden}
+.result-header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(255,255,255,0.02);border-bottom:1px solid #2A2A2A}
+.result-body{max-height:320px;overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.02);color:#EAF2FF;text-align:left}
+th{background:#0f1418;color:#777;font-weight:600}
+.muted{color:#777;font-size:13px}
 
-    function render() {
-      const max = parseInt(document.getElementById('maxRows').value) || 0;
-      const sorted = dropped.sort((a,b)=> sortMode==='monto' ? b.monto-a.monto : b.count-a.count);
-      const limited = max > 0 ? sorted.slice(0,max) : sorted;
-      document.getElementById('summaryCount').textContent = `${dropped.length} usuarios detectados`;
-      document.getElementById('summaryUsers').textContent = `Mostrando ${limited.length}`;
-      let html = `<table><thead><tr><th>Usuario</th><th>Monto</th><th>Apariciones</th></tr></thead><tbody>`;
-      limited.forEach(u=>{
-        html += `<tr><td>${u.usuario}</td><td>$${u.monto.toFixed(2)}</td><td>${u.count}</td></tr>`;
-      });
-      html += `</tbody></table><button class="copy-btn" onclick="copy()">Copiar lista</button>`;
-      document.getElementById('results').innerHTML = html;
-    }
 
-    function copy() {
-      const text = dropped.map(u=>`- ${u.usuario}`).join('\n');
-      navigator.clipboard.writeText(text).then(()=>alert("Copiado"));
-    }
+/* small utilities */
+.right{text-align:right}
+.badge{background:#111418;border:1px solid #2A2A2A;padding:6px 8px;border-radius:8px;color:var(--muted)}
+.copy-btn{background:#2A2F36;border:1px solid #333;padding:8px;border-radius:8px;color:#EAF2FF;cursor:pointer}
 
-    function readCSV(file) {
-      return new Promise((res,rej)=>{
-        const r = new FileReader();
-        r.onload = e => res(e.target.result.split(/\r?\n/).filter(l=>l.trim()));
-        r.onerror = rej;
-        r.readAsText(file);
-      });
-    }
 
-    function parseMastr(lines) {
-      return lines.map(l=>{
-        const c = l.split(',');
-        const monto = parseFloat((c[3]||'').replace(/[^\d.-]/g,''))||0;
-        const usuario = (c[6]||c[5]||'').trim().toLowerCase();
-        return { usuario, monto, fecha: c[0] };
-      }).filter(r=>r.usuario);
-    }
-
-    function parseAgente(lines) {
-      return lines.map(l=>{
-        const c = l.split(',');
+/* responsive */
+@media (max-width:900px){
+.grid-2{grid-template-columns:1fr}
+.stats-grid{grid-template-columns:repeat(2,1fr)}
+</html>
