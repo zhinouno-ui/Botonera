@@ -63,7 +63,7 @@
       import React, { useState, useEffect, useMemo } from 'react';
       import { createRoot } from 'react-dom/client';
       import { 
-        Eye, EyeOff, Edit2, Link as LinkIcon, Download, Copy, Maximize2 
+        Eye, EyeOff, Edit2, Link as LinkIcon, Download, Copy, Maximize2, Minimize2 
       } from 'lucide-react';
 
       /* --- UTILS --- */
@@ -315,7 +315,7 @@
         const labelClass = "block text-xs text-[#A8A8A8] mb-1 uppercase font-semibold";
 
         return (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] backdrop-blur-sm animate-fade-in">
             <div className="bg-[#1A1E23] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-lg shadow-2xl animate-slide-up">
               <h2 className="text-xl font-bold text-white mb-4 border-b border-[#2A2A2A] pb-2">✏️ Editar movimiento</h2>
               <p className="text-xs text-[#777] mb-4">Puedes completar los datos faltantes para conciliar manualmente.</p>
@@ -371,7 +371,7 @@
         });
 
         return (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] backdrop-blur-sm animate-fade-in">
             <div className="bg-[#1A1E23] border border-[#2A2A2A] rounded-xl p-6 w-full max-w-lg shadow-2xl animate-slide-up flex flex-col max-h-[80vh]">
               <h2 className="text-xl font-bold text-white mb-2">🔗 Enlazar movimiento</h2>
               <p className="text-[#A8A8A8] text-sm mb-4">Seleccioná un movimiento huérfano para unirlo con el actual.</p>
@@ -454,6 +454,7 @@
         const [pairs, setPairs] = useState([]);
         const [isProcessing, setIsProcessing] = useState(false);
         const [ignoredIds, setIgnoredIds] = useState(new Set());
+        const [tableFullscreen, setTableFullscreen] = useState(false);
         
         // Modal State
         const [editModalOpen, setEditModalOpen] = useState(false);
@@ -472,6 +473,17 @@
           estado: '__ALL',
           movimiento: '__ALL'
         });
+
+        // Listen for ESC to exit focus mode
+        useEffect(() => {
+          const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && tableFullscreen) {
+              setTableFullscreen(false);
+            }
+          };
+          window.addEventListener('keydown', handleKeyDown);
+          return () => window.removeEventListener('keydown', handleKeyDown);
+        }, [tableFullscreen]);
 
         // Processing Logic
         const processData = async () => {
@@ -719,15 +731,10 @@
           navigator.clipboard.writeText(content).then(() => alert('Copiado al portapapeles!'));
         };
 
-        const toggleFullscreen = () => {
-          if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-          } else {
-            if (document.exitFullscreen) {
-              document.exitFullscreen();
-            }
-          }
-        };
+        // Container class for results wrapper (normal vs fullscreen)
+        const resultsContainerClass = tableFullscreen 
+          ? "fixed inset-0 z-50 bg-[#111418] p-6 overflow-y-auto animate-fade-in"
+          : "animate-slide-up relative";
 
         return (
           <div className="min-h-screen p-4 md:p-6 pb-20 max-w-[1600px] mx-auto animate-fade-in relative">
@@ -735,13 +742,6 @@
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-[#8C6CFF]">
                 Dif • Comparador agentes - chunior
               </h1>
-              <button 
-                onClick={toggleFullscreen} 
-                className="p-2 text-gray-400 hover:text-white rounded-full bg-[#1A1E23] hover:bg-[#2A2F36] transition-colors"
-                title="Pantalla Completa (ESC para salir)"
-              >
-                <Maximize2 size={20} />
-              </button>
             </div>
 
             <div className="bg-[#1A1E23] rounded-xl border border-[#2A2A2A] shadow-2xl p-6 mb-6 animate-slide-up">
@@ -791,8 +791,17 @@
             </div>
 
             {pairs.length > 0 && (
-              <div className="animate-slide-up">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-6 p-4 bg-[#1A1E23] border border-[#2A2A2A] rounded-xl shadow-lg">
+              <div className={resultsContainerClass}>
+                {/* Maximize Button - Absolute to this container */}
+                <button 
+                  onClick={() => setTableFullscreen(!tableFullscreen)} 
+                  className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white rounded-full bg-[#2A2F36] hover:bg-[#3A4048] transition-colors z-20 shadow-lg"
+                  title={tableFullscreen ? "Salir de pantalla completa (ESC)" : "Pantalla completa solo tabla"}
+                >
+                  {tableFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+                </button>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-6 p-4 bg-[#1A1E23] border border-[#2A2A2A] rounded-xl shadow-lg relative">
                   <SummaryBadge label="Total Agente" value={summary.aTotal} type="neutral" />
                   <SummaryBadge label="Total Chunior" value={summary.bTotal} type="neutral" />
                   <SummaryBadge label="Diferencia Total" value={summary.aTotal - summary.bTotal} type="diff" />
@@ -826,7 +835,7 @@
                   </div>
                 </div>
 
-                <div className="overflow-x-auto rounded-lg border border-[#2A2A2A] bg-[#1E2329] max-h-[60vh] custom-scrollbar shadow-inner relative">
+                <div className={`overflow-x-auto rounded-lg border border-[#2A2A2A] bg-[#1E2329] custom-scrollbar shadow-inner relative ${tableFullscreen ? 'h-[calc(100vh-350px)]' : 'max-h-[60vh]'}`}>
                   <table className="w-full text-sm text-left border-collapse">
                     <thead className="sticky top-0 bg-[#1E2329]/95 backdrop-blur-md z-10 text-[#CCCCCC] font-semibold text-xs uppercase tracking-wider shadow-sm">
                       <tr>
