@@ -1,273 +1,75 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Dif • Comparador de Cargas Mensuales</title>
+  <title>Dif • Análisis de Retención</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-
   <style>
-    :root{
-      /* Neo-Modern palette (from recu) */
-      --bg:#111418;
-      --card:#1A1E23;
-      --container:#1E2329;
-      --line:#2A2A2A;
-
-      --text:#FFFFFF;
-      --muted:#A8A8A8;
-      --labels:#CCC;
-
-      --lime:#C7F24A;
-      --lime-2:#D4FF4A;
-      --blue:#24364A;
-      --blue-2:#1F3A5F;
-      --violet:#7A5CFF;
-      --violet-2:#8C6CFF;
-
-      --ok:#9EE759;
-      --warn:#F59E0B;
-      --bad:#EF4444;
-
-      --glass: rgba(255,255,255,0.03);
+    /* Pegado directo del CSS de Recu */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #111418;
+      color: white;
+      padding: 24px;
     }
-
-    /* Base */
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height:100vh;
-      padding:24px;
-      animation: fadeIn 0.4s ease-out;
-    }
-    .wrap{ max-width:980px; margin:0 auto; }
-
-    header{ display:flex; align-items:center; gap:16px; margin-bottom:18px; }
-    h1{
-      margin:0;
-      font-size:22px;
-      font-weight:700;
-      letter-spacing:.2px;
-      background: linear-gradient(90deg, #fff, var(--muted));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      animation: slideInUp 0.35s ease-out;
-    }
-    .muted{ color:var(--muted); font-size:13px; }
-
-    /* Card */
-    .card{
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius:12px;
-      padding:16px;
-      box-shadow: 0 10px 30px rgba(2,8,17,0.6);
-      transition: transform .25s ease, box-shadow .25s ease;
-      animation: slideInUp 0.35s ease-out;
-      position: relative;
-    }
-    .card:hover{ transform: translateY(-2px); box-shadow:0 16px 40px rgba(2,8,17,0.7); }
-
-    .controls{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:12px;}
-    .group{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-
-    label.inline{ font-size:13px; color:var(--muted); display:flex; gap:8px; align-items:center; }
-
-    input[type=file]{
-      background:var(--glass);
-      border:1px dashed rgba(255,255,255,0.08);
-      padding:8px 10px;
-      color:var(--labels);
-      border-radius:8px;
-    }
-
-    .btn{
-      background:linear-gradient(90deg,var(--lime), var(--lime-2));
-      color:#0D1117;
-      border:none;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow: 0 8px 18px rgba(199,242,74,.15);
-      transition: transform .12s ease, opacity .18s ease;
-    }
-    .btn:active{ transform: translateY(1px) scale(.997); }
-    .btn:hover{ opacity:.95; }
-
-    .small-btn{
-      background:linear-gradient(90deg,#ffffff,#dbefff);
-      color:#042a31;
-      border:none;
-      padding:6px 8px;
-      border-radius:8px;
-      font-weight:700;
-      cursor:pointer;
-      font-size:12px;
-      margin-left:8px;
-      transition: transform .12s ease;
-    }
-    .small-btn:active{ transform: translateY(1px) }
-
-    .toggle{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background: rgba(255,255,255,0.02);
-      padding:8px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,0.04);
-    }
-
-    /* Summary bar */
-    .summary{
-      margin-top:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      padding:12px;
-      border-radius:8px;
-      color:var(--muted);
-      font-size:14px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .badge{
-      background: rgba(255,255,255,0.03);
-      padding:6px 8px;
-      border-radius:8px;
-      color:var(--muted);
-      font-size:13px;
-      border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    /* Results */
-    #results{ margin-top:14px; color:#e6eef6; }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:10px;
-      background: var(--container);
-      border-radius:8px;
-      overflow:hidden;
-      transform-origin:top center;
-      animation: fadeIn .18s ease;
-    }
-    th, td{
-      padding:8px 10px;
-      font-size:13px;
-      border-bottom:1px solid rgba(255,255,255,0.06);
-      text-align:left;
-      color:#dff6fb;
-    }
-    th{ background: rgba(0,0,0,0.15); font-weight:600; color:#bfeef9; position:sticky; top:0; z-index:1; }
-    tr:hover td{ background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
-
-    /* Toast */
-    .toast{
-      position:fixed;
-      right:18px;
-      bottom:18px;
-      background:linear-gradient(90deg,#052b32,#073644);
-      color:#dffefe;
-      padding:12px 14px;
-      border-radius:10px;
-      box-shadow: 0 10px 30px rgba(2,8,17,0.7);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      transform:translateY(18px) scale(.98);
-      opacity:0;
-      pointer-events:none;
-      transition: transform .22s ease, opacity .22s ease;
-    }
-    .toast.show{ transform:translateY(0) scale(1); opacity:1; pointer-events:auto; }
-
-    .spinner{
-      width:14px;height:14px;border-radius:50%;
-      border:2px solid rgba(255,255,255,0.14);
-      border-top-color: #aef6ff;
-      animation: spin 1s linear infinite;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--card); }
-    ::-webkit-scrollbar-thumb { background: #2A2F36; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #3A4048; }
-
-    /* Responsive */
-    @media (max-width:760px){
-      .controls{ flex-direction:column; align-items:stretch; }
-      .small-btn{ display:none; }
-    }
-
-    /* Animations */
-    @keyframes spin{ to{ transform: rotate(360deg); } }
-    @keyframes fadeIn{ from{ opacity:0; transform: translateY(6px) } to{ opacity:1; transform:none } }
-    @keyframes slideInUp{ from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(to right, #C7F24A, #A8A8A8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background-color: #1A1E23; border: 1px solid #2A2A2A; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-top: 20px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+    label { font-size: 13px; color: #A8A8A8; }
+    input[type="file"], input[type="number"] { background-color: #1E2329; border: 1px solid #2A2A2A; color: white; padding: 8px; border-radius: 8px; }
+    input[type="checkbox"] { margin-right: 6px; }
+    .btn { background: linear-gradient(to right, #C7F24A, #D4FF4A); color: #0D1117; font-weight: 700; padding: 10px 14px; border: none; border-radius: 10px; cursor: pointer; }
+    .summary { display: flex; justify-content: space-between; margin-top: 16px; padding: 12px; background-color: #1E2329; border-radius: 8px; border: 1px solid #2A2A2A; }
+    .badge { background-color: #24364A; color: #EAF2FF; padding: 6px 10px; border-radius: 8px; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; background-color: #1E2329; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 10px; border-bottom: 1px solid #2A2A2A; font-size: 13px; }
+    th { background-color: #1A1E23; color: #A8A8A8; position: sticky; top: 0; }
+    tr:hover td { background-color: #24364A; }
+    .copy-btn { background-color: #2A2F36; color: #EAF2FF; padding: 6px 10px; border-radius: 8px; font-size: 12px; border: none; cursor: pointer; margin-left: auto; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <div>
-        <h1>Comparador de Cargas Mensuales</h1>
-        <div class="muted">Cargá dos CSV y elegí el origen (mastr / agente). El parser se adapta.</div>
-      </div>
-    </header>
+    <h1>Dif • Análisis de Retención</h1>
+    <p>Detecta usuarios que cargaron el mes anterior pero no el actual.</p>
 
     <div class="card">
-      <div class="group controls">
+      <div class="controls">
         <div>
-          <label class="inline">Archivo mes anterior (CSV):</label>
-          <input type="file" id="filePrev" accept=".csv" />
+          <label>MES ANTERIOR (CSV)</label><br>
+          <input type="file" id="filePrev" accept=".csv">
         </div>
-
         <div>
-          <label class="inline">Archivo mes actual (CSV):</label>
-          <input type="file" id="fileCurr" accept=".csv" />
+          <label>MES ACTUAL (CSV)</label><br>
+          <input type="file" id="fileCurr" accept=".csv">
         </div>
-
-        <div class="toggle">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div class="muted" style="min-width:80px;">Origen CSV</div>
-            <div style="display:flex; background:#111418; padding:6px; border-radius:999px; border:1px solid var(--line); gap:6px;">
-              <button id="btnMastr" class="small-btn" style="background:#24364A;color:#EAF2FF;border:1px solid var(--line)">MASTR</button>
-              <button id="btnAgente" class="small-btn">AGENTE</button>
-            </div>
-          </div>
+        <div>
+          <label>FORMATO CSV</label><br>
+          <button class="btn" onclick="setFormat(0)">MASTR</button>
+          <button class="btn" onclick="setFormat(1)">AGENTE</button>
         </div>
-
-        <div style="min-width:150px">
-          <label class="inline">
-            <input type="checkbox" id="onlySingle" /> Sólo usuarios con 1 carga (mes anterior)
-          </label>
-          <label class="inline">Máx filas por turno (0 = sin límite)</label>
-          <input type="number" id="maxRows" value="0" min="0" step="1" style="width:110px;border-radius:8px;padding:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);color:var(--muted)">
+        <div>
+          <label><input type="checkbox" id="onlySingle"> Sólo usuarios con 1 carga (Mes anterior)</label>
         </div>
-
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-          <button id="processBtn" class="btn">Procesar comparación</button>
-          <button id="toggleSort" class="small-btn" title="Alternar orden">Orden: Monto</button>
+        <div>
+          <label>Límite filas</label><br>
+          <input type="number" id="maxRows" value="0" min="0">
+        </div>
+        <div>
+          <button class="btn" onclick="process()">🔍 Procesar Comparación</button>
+          <button class="btn" onclick="toggleSort()">⇅ Orden: $$$</button>
         </div>
       </div>
 
-      <div id="summary" class="summary" style="margin-top:16px;">
+      <div class="summary">
         <div>
           <strong id="summaryCount">Sin procesar</strong>
-          <div class="muted">Carga previa: —</div>
+          <div class="badge" id="formatBadge">mastr</div>
         </div>
-        <div style="text-align:right;display:flex;align-items:center;gap:8px">
-          <div style="text-align:right">
-            <div class="muted">Formato activo:</div>
-            <div id="formatBadge" class="badge">mastr</div>
-          </div>
+        <div>
+          <span id="summaryUsers" class="badge">—</span>
         </div>
       </div>
 
@@ -275,311 +77,79 @@
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast" role="status" aria-live="polite">
-    <div class="spinner" id="toastSpinner"></div>
-    <div id="toastText">Filtrando...</div>
-  </div>
+  <script>
+    let origin = 0;
+    let sortMode = 'monto';
+    let dropped = [];
 
-<script>
-/* Design-fused functional implementation: keep Comparador logic, apply Recu visuals */
-
-/* Origin mode: 0 = mastr, 1 = agente */
-let origin = 0;
-const btnMastr = document.getElementById('btnMastr');
-const btnAgente = document.getElementById('btnAgente');
-const formatBadge = document.getElementById('formatBadge');
-function updateOriginUI(){
-  formatBadge.textContent = origin === 0 ? 'mastr' : 'agente';
-  if(origin === 0){
-    btnMastr.style.background = '#24364A';
-    btnMastr.style.color = '#EAF2FF';
-    btnMastr.style.border = '1px solid #2A2A2A';
-    btnAgente.style.background = 'linear-gradient(90deg,#ffffff,#dbefff)';
-    btnAgente.style.color = '#042a31';
-    btnAgente.style.border = 'none';
-  } else {
-    btnAgente.style.background = '#24364A';
-    btnAgente.style.color = '#EAF2FF';
-    btnAgente.style.border = '1px solid #2A2A2A';
-    btnMastr.style.background = 'linear-gradient(90deg,#ffffff,#dbefff)';
-    btnMastr.style.color = '#042a31';
-    btnMastr.style.border = 'none';
-  }
-}
-btnMastr.addEventListener('click', ()=>{ origin = 0; updateOriginUI(); });
-btnAgente.addEventListener('click', ()=>{ origin = 1; updateOriginUI(); });
-updateOriginUI();
-
-/* Toast helpers */
-const toast = document.getElementById('toast');
-const toastText = document.getElementById('toastText');
-let toastTimer = null;
-function showToast(text, duration=2200) {
-  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
-  toastText.textContent = text;
-  toast.classList.add('show');
-  toastTimer = setTimeout(()=>{ toast.classList.remove('show'); toastTimer = null; }, duration);
-}
-
-/* CSV reading and parsing (robust for quoted fields) */
-function readCSV(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const text = String(e.target.result || '');
-      const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() !== '' );
-      const filtered = lines.filter(l => !l.startsWith('sep='));
-      // if first line looks like header, skip it
-      const content = (filtered.length > 0 && /[Ff]echa|[Tt]ipo|Alias|Cantidad/.test(filtered[0])) ? filtered.slice(1) : filtered;
-      resolve(content);
-    };
-    reader.onerror = reject;
-    reader.readAsText(file, 'utf-8');
-  });
-}
-function parseCSVLine(line) {
-  const result = [];
-  let cur = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') {
-      if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
-      else inQuotes = !inQuotes;
-      continue;
+    function setFormat(val) {
+      origin = val;
+      document.getElementById('formatBadge').textContent = val === 0 ? 'mastr' : 'agente';
     }
-    if (ch === ',' && !inQuotes) { result.push(cur); cur = ''; continue; }
-    cur += ch;
-  }
-  result.push(cur);
-  return result;
-}
 
-/* Parser 'mastr': Fecha(0), Cantidad(3), Alias agente(5) / jugador(6) */
-function parseRowsmastr(lines) {
-  return lines.map(line => {
-    if (!line || !line.trim()) return null;
-    const cols = parseCSVLine(line);
-    const fecha = (cols[0]||'').trim();
-    let montoRaw = (cols[3] !== undefined ? cols[3] : '');
-    montoRaw = String(montoRaw).replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
-    const monto = parseFloat(montoRaw) || 0;
-    let usuario = (cols[6] || cols[5] || '').trim();
-    usuario = usuario ? usuario.toLowerCase().trim() : '';
-    let fechaObj = null;
-    if (fecha) {
-      fechaObj = new Date(fecha.replace(' ', 'T'));
-      if (isNaN(fechaObj.getTime())) fechaObj = new Date(fecha);
+    function toggleSort() {
+      sortMode = sortMode === 'monto' ? 'operaciones' : 'monto';
     }
-    return { fecha, fechaObj, monto, usuario };
-  }).filter(r => r && r.usuario);
-}
 
-/* Parser 'agente': Fecha(0), Cantidad(2), Alias(4 o 3) */
-function parseRowsagente(lines) {
-  return lines.map(line => {
-    if (!line || !line.trim()) return null;
-    const cols = parseCSVLine(line);
-    const fecha = (cols[0]||'').trim();
-    let montoRaw = (cols[2] !== undefined ? cols[2] : '');
-    montoRaw = String(montoRaw).replace(/\s+/g,'').replace(/[^0-9\.\-]/g,'') || '0';
-    const monto = parseFloat(montoRaw) || 0;
-    let usuario = (cols[4] || cols[3] || '').trim();
-    usuario = usuario ? usuario.toLowerCase().trim() : '';
-    let fechaObj = null;
-    if (fecha) {
-      fechaObj = new Date(fecha.replace(' ', 'T'));
-      if (isNaN(fechaObj.getTime())) fechaObj = new Date(fecha);
-    }
-    return { fecha, fechaObj, monto, usuario };
-  }).filter(r => r && r.usuario);
-}
+    function process() {
+      const prevFile = document.getElementById('filePrev').files[0];
+      const currFile = document.getElementById('fileCurr').files[0];
+      if (!prevFile || !currFile) return alert("Cargá ambos archivos");
 
-/* Estado global para re-render */
-let lastDroppedUsers = [];
-let lastTurnos = { TM: [], TT: [], TN: [] };
-let lastLimited = { TM: [], TT: [], TN: [] };
-let lastPrevStats = { totalCargas: 0, totalMonto: 0, uniquePrev: 0 };
-
-/* Sort mode */
-let sortMode = 'monto';
-const toggleSortBtn = document.getElementById('toggleSort');
-toggleSortBtn.addEventListener('click', () => {
-  sortMode = sortMode === 'monto' ? 'operaciones' : 'monto';
-  toggleSortBtn.textContent = sortMode === 'monto' ? 'Orden: Monto' : 'Orden: Operaciones';
-  if (lastDroppedUsers && lastDroppedUsers.length) {
-    computeTurnosFromDroppedAndRender(lastDroppedUsers);
-  } else {
-    showToast('Procesá archivos primero', 1200);
-  }
-});
-
-/* Main processing */
-document.getElementById('processBtn').addEventListener('click', async () => {
-  const prevFile = document.getElementById('filePrev').files[0];
-  const currFile = document.getElementById('fileCurr').files[0];
-  if (!prevFile || !currFile) return showToast('Cargá ambos archivos CSV primero', 2500);
-
-  showToast('Filtrando y comparando…', 6000);
-  try {
-    const [prevLines, currLines] = await Promise.all([ readCSV(prevFile), readCSV(currFile) ]);
-    const parser = origin === 0 ? parseRowsmastr : parseRowsagente;
-
-    const prev = parser(prevLines);
-    const curr = parser(currLines);
-
-    // contar apariciones en prev
-    const prevCount = {};
-    prev.forEach(r => {
-      if (!r.usuario) return;
-      prevCount[r.usuario] = (prevCount[r.usuario] || 0) + 1;
-    });
-
-    const currentUsers = new Set(curr.map(r => r.usuario));
-
-    // agrupar prev por usuario
-    const prevMap = {};
-    prev.forEach(r => {
-      if (!r.usuario) return;
-      const u = r.usuario;
-      if (!prevMap[u]) prevMap[u] = { usuario: u, count: 0, totalMonto: 0, lastFecha: r.fecha, lastFechaObj: r.fechaObj };
-      prevMap[u].count += 1;
-      prevMap[u].totalMonto += (r.monto || 0);
-
-      const curTime = (r.fechaObj && !isNaN(r.fechaObj.getTime())) ? r.fechaObj.getTime() : (r.fecha ? Date.parse(r.fecha) : NaN);
-      const prevTime = (prevMap[u].lastFechaObj && !isNaN(prevMap[u].lastFechaObj.getTime())) ? prevMap[u].lastFechaObj.getTime() : (prevMap[u].lastFecha ? Date.parse(prevMap[u].lastFecha) : NaN);
-      if (!isNaN(curTime) && (isNaN(prevTime) || curTime > prevTime)) {
-        prevMap[u].lastFecha = r.fecha;
-        prevMap[u].lastFechaObj = r.fechaObj;
-      }
-    });
-
-    // usuarios que no están en el mes actual
-    let droppedUsers = Object.keys(prevMap)
-      .filter(u => !currentUsers.has(u))
-      .map(u => {
-        const it = prevMap[u];
-        return { fecha: it.lastFecha, fechaObj: it.lastFechaObj, monto: it.totalMonto, usuario: it.usuario, apariciones: it.count };
+      Promise.all([readCSV(prevFile), readCSV(currFile)]).then(([prevLines, currLines]) => {
+        const parser = origin === 0 ? parseMastr : parseAgente;
+        const prev = parser(prevLines);
+        const curr = parser(currLines);
+        const currSet = new Set(curr.map(r => r.usuario));
+        const map = {};
+        prev.forEach(r => {
+          if (!map[r.usuario]) map[r.usuario] = { usuario: r.usuario, monto: 0, count: 0, fecha: r.fecha };
+          map[r.usuario].monto += r.monto;
+          map[r.usuario].count += 1;
+        });
+        dropped = Object.values(map).filter(u => !currSet.has(u.usuario));
+        if (document.getElementById('onlySingle').checked) dropped = dropped.filter(u => u.count === 1);
+        render();
       });
-
-    if (document.getElementById('onlySingle').checked) {
-      droppedUsers = droppedUsers.filter(u => u.apariciones === 1);
     }
 
-    // guardar stats
-    lastDroppedUsers = droppedUsers;
-    lastPrevStats.totalCargas = prev.length;
-    lastPrevStats.totalMonto = prev.reduce((a, b) => a + (b.monto || 0), 0);
-    lastPrevStats.uniquePrev = Object.keys(prevMap).length;
-
-    // computar turnos y render
-    computeTurnosFromDroppedAndRender(droppedUsers);
-    showToast('Listo — resultados actualizados', 1600);
-  } catch (err) {
-    console.error(err);
-    showToast('Error procesando archivos', 3200);
-    alert('Error procesando archivos: ' + (err && err.message ? err.message : err));
-  }
-});
-
-function computeTurnosFromDroppedAndRender(droppedUsers) {
-  const turnos = { TM: [], TT: [], TN: [] };
-
-  droppedUsers.forEach(r => {
-    let hora = NaN;
-    if (r.fechaObj && !isNaN(r.fechaObj.getTime())) hora = r.fechaObj.getHours();
-    if (isNaN(hora) && r.fecha) {
-      const m = r.fecha.match(/(\d{2}):(\d{2}):(\d{2})$/);
-      if (m) hora = parseInt(m[1], 10);
+    function render() {
+      const max = parseInt(document.getElementById('maxRows').value) || 0;
+      const sorted = dropped.sort((a,b)=> sortMode==='monto' ? b.monto-a.monto : b.count-a.count);
+      const limited = max > 0 ? sorted.slice(0,max) : sorted;
+      document.getElementById('summaryCount').textContent = `${dropped.length} usuarios detectados`;
+      document.getElementById('summaryUsers').textContent = `Mostrando ${limited.length}`;
+      let html = `<table><thead><tr><th>Usuario</th><th>Monto</th><th>Apariciones</th></tr></thead><tbody>`;
+      limited.forEach(u=>{
+        html += `<tr><td>${u.usuario}</td><td>$${u.monto.toFixed(2)}</td><td>${u.count}</td></tr>`;
+      });
+      html += `</tbody></table><button class="copy-btn" onclick="copy()">Copiar lista</button>`;
+      document.getElementById('results').innerHTML = html;
     }
-    if (isNaN(hora)) turnos.TN.push(r);
-    else if (hora >= 6 && hora < 14) turnos.TM.push(r);
-    else if (hora >= 14 && hora < 22) turnos.TT.push(r);
-    else turnos.TN.push(r);
-  });
 
-  const comparator = (a, b) => {
-    if (sortMode === 'operaciones') return (b.apariciones || 0) - (a.apariciones || 0);
-    return (b.monto || 0) - (a.monto || 0);
-  };
-  Object.keys(turnos).forEach(k => turnos[k].sort(comparator));
-
-  const maxRows = parseInt(document.getElementById('maxRows').value, 10) || 0;
-  const limited = {};
-  Object.keys(turnos).forEach(k => {
-    limited[k] = (maxRows > 0) ? turnos[k].slice(0, maxRows) : turnos[k].slice();
-  });
-
-  lastTurnos = turnos;
-  lastLimited = limited;
-
-  renderResults(limited, turnos);
-}
-
-function renderResults(limited, turnos) {
-  // resumen
-  document.getElementById('summaryCount').textContent = `${lastPrevStats.totalCargas} registros · $${lastPrevStats.totalMonto.toLocaleString('es-AR')}`;
-  document.querySelector('#summary .muted').textContent = `Usuarios únicos mes anterior: ${lastPrevStats.uniquePrev}`;
-
-  // construir HTML por turno
-  let html = '';
-  for (const turno of ['TM', 'TT', 'TN']) {
-    const datos = limited[turno] || [];
-    const totalDetected = (turnos[turno] || []).length;
-
-    html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">`;
-    html += `<h3 style="margin:0">Turno ${turno} <span style="font-weight:600;color:${'var(--muted)'};font-size:13px">(${totalDetected} detectados, mostrando ${datos.length})</span></h3>`;
-    html += `<div><button class="small-btn copy-turn-btn" data-turn="${turno}">Copiar ${turno}</button></div>`;
-    html += `</div>`;
-
-    if (!datos.length) { html += `<div class="muted">Sin usuarios que dejaron de cargar en este turno.</div>`; continue; }
-    html += `<table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Apariciones mes anterior</th></tr></thead><tbody>`;
-    datos.forEach(r => {
-      html += `<tr>
-        <td style="color:#AAA;font-family:'JetBrains Mono',monospace;font-size:12px">${escapeHtml(r.fecha)}</td>
-        <td>${escapeHtml(r.usuario)}</td>
-        <td style="font-family:'JetBrains Mono',monospace;color:${'var(--ok)'};font-weight:700">$ ${(r.monto || 0).toFixed(2)}</td>
-        <td style="color:#AAA;text-align:right">${r.apariciones || 1}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-  }
-  document.getElementById('results').innerHTML = html;
-
-  // attach copy handlers
-  document.querySelectorAll('.copy-turn-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const turn = btn.getAttribute('data-turn');
-      copyUsersOfTurn(turn);
-    });
-  });
-}
-
-/* Copy helpers */
-async function copyUsersOfTurn(turn) {
-  const list = (lastLimited && lastLimited[turn]) ? lastLimited[turn] : [];
-  if (!list || list.length === 0) { showToast(`No hay usuarios en ${turn}`, 1400); return; }
-  const lines = list.map(r => `- ${r.usuario}`);
-  const text = lines.join('\n');
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text);
-    else {
-      const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    function copy() {
+      const text = dropped.map(u=>`- ${u.usuario}`).join('\n');
+      navigator.clipboard.writeText(text).then(()=>alert("Copiado"));
     }
-    showToast(`Usuarios ${turn} copiados`);
-  } catch (e) {
-    console.error(e);
-    showToast('Error al copiar');
-  }
-}
 
-/* utils */
-function escapeHtml(s) {
-  if (!s && s !== 0) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-}
-</script>
-</body>
-</html>
+    function readCSV(file) {
+      return new Promise((res,rej)=>{
+        const r = new FileReader();
+        r.onload = e => res(e.target.result.split(/\r?\n/).filter(l=>l.trim()));
+        r.onerror = rej;
+        r.readAsText(file);
+      });
+    }
+
+    function parseMastr(lines) {
+      return lines.map(l=>{
+        const c = l.split(',');
+        const monto = parseFloat((c[3]||'').replace(/[^\d.-]/g,''))||0;
+        const usuario = (c[6]||c[5]||'').trim().toLowerCase();
+        return { usuario, monto, fecha: c[0] };
+      }).filter(r=>r.usuario);
+    }
+
+    function parseAgente(lines) {
+      return lines.map(l=>{
+        const c = l.split(',');
