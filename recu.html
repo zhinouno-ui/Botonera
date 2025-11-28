@@ -1,34 +1,47 @@
+
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Dif • Análisis de Retención</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    /* Pegado directo del CSS de Recu */
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #111418;
-      color: white;
-      padding: 24px;
-    }
-    .wrap { max-width: 980px; margin: 0 auto; }
-    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(to right, #C7F24A, #A8A8A8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .card { background-color: #1A1E23; border: 1px solid #2A2A2A; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-top: 20px; }
-    .controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
-    label { font-size: 13px; color: #A8A8A8; }
-    input[type="file"], input[type="number"] { background-color: #1E2329; border: 1px solid #2A2A2A; color: white; padding: 8px; border-radius: 8px; }
-    input[type="checkbox"] { margin-right: 6px; }
-    .btn { background: linear-gradient(to right, #C7F24A, #D4FF4A); color: #0D1117; font-weight: 700; padding: 10px 14px; border: none; border-radius: 10px; cursor: pointer; }
-    .summary { display: flex; justify-content: space-between; margin-top: 16px; padding: 12px; background-color: #1E2329; border-radius: 8px; border: 1px solid #2A2A2A; }
-    .badge { background-color: #24364A; color: #EAF2FF; padding: 6px 10px; border-radius: 8px; font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 16px; background-color: #1E2329; border-radius: 8px; overflow: hidden; }
-    th, td { padding: 10px; border-bottom: 1px solid #2A2A2A; font-size: 13px; }
-    th { background-color: #1A1E23; color: #A8A8A8; position: sticky; top: 0; }
-    tr:hover td { background-color: #24364A; }
-    .copy-btn { background-color: #2A2F36; color: #EAF2FF; padding: 6px 10px; border-radius: 8px; font-size: 12px; border: none; cursor: pointer; margin-left: auto; }
-  </style>
+<!-- saved from url=(0039)https://toolboard.vercel.app/revin.html -->
+<html lang="es" nighteye="disabled"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dif • Análisis de Retención</title>
+    <script src="./recu_files/saved_resource"></script><script bis_use="true" type="text/javascript" charset="utf-8" data-bis-config="[&quot;facebook.com/&quot;,&quot;twitter.com/&quot;,&quot;youtube-nocookie.com/embed/&quot;,&quot;//vk.com/&quot;,&quot;//www.vk.com/&quot;,&quot;linkedin.com/&quot;,&quot;//www.linkedin.com/&quot;,&quot;//instagram.com/&quot;,&quot;//www.instagram.com/&quot;,&quot;//www.google.com/recaptcha/api2/&quot;,&quot;//hangouts.google.com/webchat/&quot;,&quot;//www.google.com/calendar/&quot;,&quot;//www.google.com/maps/embed&quot;,&quot;spotify.com/&quot;,&quot;soundcloud.com/&quot;,&quot;//player.vimeo.com/&quot;,&quot;//disqus.com/&quot;,&quot;//tgwidget.com/&quot;,&quot;//js.driftt.com/&quot;,&quot;friends2follow.com&quot;,&quot;/widget&quot;,&quot;login&quot;,&quot;//video.bigmir.net/&quot;,&quot;blogger.com&quot;,&quot;//smartlock.google.com/&quot;,&quot;//keep.google.com/&quot;,&quot;/web.tolstoycomments.com/&quot;,&quot;moz-extension://&quot;,&quot;chrome-extension://&quot;,&quot;/auth/&quot;,&quot;//analytics.google.com/&quot;,&quot;adclarity.com&quot;,&quot;paddle.com/checkout&quot;,&quot;hcaptcha.com&quot;,&quot;recaptcha.net&quot;,&quot;2captcha.com&quot;,&quot;accounts.google.com&quot;,&quot;www.google.com/shopping/customerreviews&quot;,&quot;buy.tinypass.com&quot;,&quot;gstatic.com&quot;,&quot;secureir.ebaystatic.com&quot;,&quot;docs.google.com&quot;,&quot;contacts.google.com&quot;,&quot;github.com&quot;,&quot;mail.google.com&quot;,&quot;chat.google.com&quot;,&quot;audio.xpleer.com&quot;,&quot;keepa.com&quot;,&quot;static.xx.fbcdn.net&quot;,&quot;sas.selleramp.com&quot;,&quot;1plus1.video&quot;,&quot;console.googletagservices.com&quot;,&quot;//lnkd.demdex.net/&quot;,&quot;//radar.cedexis.com/&quot;,&quot;//li.protechts.net/&quot;,&quot;challenges.cloudflare.com/&quot;,&quot;ogs.google.com&quot;]" src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/traffic.js"></script>
+    <!-- Babel for JSX transformation -->
+    <script src="./recu_files/babel.min.js.descarga"></script>
+    
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111418;
+        color: white;
+      }
+      
+      /* Custom Scrollbar for dark theme */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1A1E23; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #2A2F36; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #3A4048; 
+      }
+
+      /* Animation utilities */
+      .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+      .animate-slide-up { animation: slideInUp 0.4s ease-out; }
+      
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    
 </head>
 <body>
   <div class="wrap">
