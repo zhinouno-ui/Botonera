@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>DifMerge • Comparador de fuentes</title>
+<title>Dif • Comparador agentes - chunior</title>
 <style>
   /* === ANIMATIONS === */
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -555,21 +555,21 @@ function renderTable(filteredPairs){
       actionCell = `<td style="text-align:center;"><button class="action-btn" data-id="${p.id}" title="${isIgnored ? 'Incluir' : 'Ignorar'}">${isIgnored ? iconEye : iconEyeSlash}</button></td>`;
     }
 
-    tr.innerHTML = `
-      <td>${escapeHtml(a?.etiqueta?.toUpperCase())}</td>
-      <td>${a?.turno || b?.turno || ''}</td>
-      <td>${formatTime(a?.fechaObj)}</td>
-      <td>${escapeHtml(a?.isAdminCharge ? 'AJUSTE' : a?.usuario)}</td>
-      <td class="amount ${a && a.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${montoA}</td>
-      <td class="divider">${formatTime(b?.fechaObj)}</td>
-      <td>${escapeHtml(b?.usuario)}</td>
-      <td class="amount ${b && b.monto < 0 ? 'amount-neg' : 'amount-pos'}">$ ${montoB}</td>
-      <td>${escapeHtml(b?.operador?.toUpperCase())}</td>
-      <td>${escapeHtml(b?.medio)}</td>
-      <td>${estadoDisplay}</td>
-      ${actionCell}
-    `;
-    tbody.appendChild(tr);
+tr.innerHTML = `
+  <td>${p.a?.usuario || ""}</td>
+  <td>${p.turno || ""}</td>
+  <td>${p.a?.fecha || ""}</td>
+  <td>${p.a?.usuario || ""}</td>
+  <td class="amount">${p.a?.monto || ""}</td>
+  <td class="divider">${p.b?.fecha || ""}</td>
+  <td>${p.b?.usuario || ""}</td>
+  <td class="amount">${p.b?.monto || ""}</td>
+  <td>${p.b?.operador || ""}</td>
+  <td>${p.b?.medio || ""}</td>
+  <td>${p.estado || ""}</td>
+  <td>${actionCell}</td>
+`;
+tbody.appendChild(tr);
   }
 }
 
