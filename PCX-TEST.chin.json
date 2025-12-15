@@ -1,0 +1,159 @@
+{
+  "perfil": "PC01",
+  "fechaExport": "2025-12-15T16:38:40.176Z",
+  "paleta": {
+    "acento": "#8A2BE2",
+    "ok": "#10B981",
+    "bad": "#EF4444"
+  },
+  "whatsapp": {
+    "plantillaMensaje": "Hola soy {usuario} quiero mi clave y cronograma",
+    "pcs": [
+      {
+        "nombre": "PC01",
+        "wsp": "5491162360351",
+        "mensajes": []
+      },
+      {
+        "nombre": "PC02",
+        "wsp": "5491162375352",
+        "mensajes": []
+      },
+      {
+        "nombre": "PC03",
+        "wsp": "5491159009968",
+        "mensajes": []
+      },
+      {
+        "nombre": "PC04",
+        "wsp": "5491138025419",
+        "mensajes": [
+          {
+            "id": "m_1765815624223",
+            "texto": "🔥 ¡Hola {usuario}!  En Bet300 nos gustaría verte de regreso.\n🎁 Tenés un 30% extra en tu próxima carga por volver.\n🔑 Usuario: {usuario} – Clave: 12345a\n🌐 https://www.bet300.biz/\n\n💬 Cajero: 11-5900-9968 "
+          },
+          {
+            "id": "m_1765815656594",
+            "texto": "✨ ¿Cómo va? Bet300 quiere darte la bienvenida otra vez.\n💸 Sumá 30% adicional al cargar tu cuenta.\n👤 Usuario: {usuario} – contraseña: 12345a\n🌍 https://www.bet300.biz/\n\n📞 Soporte/cajero: 11-5900-9968"
+          },
+          {
+            "id": "m_1765815699459",
+            "texto": "🚀 ¡Ey! Te esperamos en Bet300.\n💥 Por volver, activamos +30% en tu carga.\n🧩 Usuario: {usuario} | Clave: 12345a\n🔗 https://www.bet300.biz/\n\n📱 Cajero: 11-5900-9968"
+          },
+          {
+            "id": "m_1765815805549",
+            "texto": "💫 ¡Hola! Pasamos para contarte que Bet300 tiene un beneficio para vos.\n💰 Recargá y recibí 30% extra por regresar.\n🔐 Datos: {usuario} / 12345a\n🌐 https://www.bet300.biz/\n\n☎️ Contacto cajero: 11-5900-9968"
+          },
+          {
+            "id": "m_1765815807610",
+            "texto": "🔥 ¿Todo bien? Te esperamos nuevamente en Bet300.\n🎉 Por volver a jugar, te sumamos 30% más en tu carga.\n🆔 Usuario: {usuario} – Clave: 12345a\n🔗 https://www.bet300.biz/\n\n📲 N° cajero: 11-5900-9968"
+          },
+          {
+            "id": "m_1765815808333",
+            "texto": "⚡ ¡Saludos! Bet300 tiene un plus para tu regreso.\n💸 Cargando hoy, obtenés +30% de regalo.\n🔑 {usuario}  / 12345a\n🌍 https://www.bet300.biz/\n\n📞 Cajero disponible: 11-5900-9968"
+          },
+          {
+            "id": "m_1765815808976",
+            "texto": "🎯 ¡Hola! Queremos verte de nuevo en Bet300.\n💥 Aprovechá un 30% adicional por reiniciar tu juego.\n👤 Usuario: {usuario} – Clave: 12345a\n🔗 https://www.bet300.biz/\n\n☎️ 11-5900-9968 (cajero)"
+          },
+          {
+            "id": "m_1765815809574",
+            "texto": "💎 Nuevo sistema, nuevos beneficios…\n🔰 Tu primer carga viene con +30% de bono exclusivo.\n📲 Aprovechalo desde WhatsApp.\n🔐 Usuario: {usuario} – Clave: 12345a\n🌐 https://www.bet300.biz/\n📣 numero cajero: 1162360351"
+          },
+          {
+            "id": "m_1765815810468",
+            "texto": "🎰 {usuario}  ¡Volvé a jugar con 🟣+30% DE BONO 🟣!\nHace un tiempo que no estás activo y queremos que regreses con ventaja.\n👉 Cargá y activás 🎁 +30% EXTRA 🎁\n📲 Pedilo por WhatsApp: 1162360351"
+          },
+          {
+            "id": "m_1765815811188",
+            "texto": "🔥 Promo de regreso disponible\n🟢 CARGÁS + TE REGALAMOS +30% 🟢\nIdeal para volver fuerte a los slots 🎰\n📱 Pedilo ahora {usuario} → 1162360351"
+          },
+          {
+            "id": "m_1765815811958",
+            "texto": "💎 {usuario} tenes un beneficio activo todavia\n🎁 BONO ESPECIAL: +30% SOBRE TU CARGA 🎁\n🟨 Solo por volver a apostar\n📞 1162360351"
+          },
+          {
+            "id": "m_1765815812815",
+            "texto": "Hola,{usuario} \ntenemos algo para vos!!\n🚨 OFERTA PARA REACTIVACIÓN\n🟥 +30% DE BONO en tu próxima carga\n🟩 Más jugadas • Más saldo • Más chances\n📲 Contactanos 👉 1162360351"
+          },
+          {
+            "id": "m_1765815813495",
+            "texto": "{usuario} 🎲 Te guardamos algo especial\n⭐ VOLVÉS A JUGAR = +30% EXTRA ⭐\n🪙 Aprovechalo antes que venza\n📍 WhatsApp: 1162360351 "
+          },
+          {
+            "id": "m_1765815814164",
+            "texto": "📢 Promo exclusiva\n🟣 RECARGÁ Y SUMÁ +30% DE REGALO\n💥 Solo para usuarios que hace tiempo no juegan\n📞 Pedilo acá → 1162360351"
+          },
+          {
+            "id": "m_1765815814799",
+            "texto": "🎰 Reactivá tu cuenta con potencia\n🟢 +30% DE BONO EN TU PRÓXIMA CARGA 🟢\n🔥 Ideal para entrar a la ruleta o slots con impulso\n📲 1162360351\n"
+          },
+          {
+            "id": "m_1765815815483",
+            "texto": "💥 VOLVISTE = GANÁS\n🟤 BONO +30% AL CARGAR\n📲 Consultá al instante → 1162360351\n🎁 Solo por reactivación"
+          },
+          {
+            "id": "m_1765815816109",
+            "texto": "⏳ Tu beneficio sigue activo\n🟨 +30% EXTRA en tu próxima carga\n🎯 Volvé al juego con ventaja\n👉 WhatsApp: 1162360351\n"
+          }
+        ]
+      }
+    ]
+  },
+  "billeteras": [
+    {
+      "id": "w_1765810550797",
+      "label": "Rafael olivera",
+      "cbu": "0000003100040107526630",
+      "alias": "",
+      "titular": "Rafael olivera",
+      "billetera": "Mercado Pago",
+      "billeteraCustom": "",
+      "color": "#1f6feb",
+      "flip": false,
+      "flippedPreview": false,
+      "cbu2": "",
+      "alias2": "",
+      "titular2": "",
+      "billetera2": "Prex",
+      "billetera2Custom": "",
+      "color2": "#ff6f3d"
+    },
+    {
+      "id": "w_1765816647042",
+      "label": "Soto Paola",
+      "cbu": "0000003100089824808975",
+      "alias": "",
+      "titular": "Soto Paola",
+      "billetera": "Mercado Pago",
+      "billeteraCustom": "",
+      "color": "#1f6feb",
+      "flip": false,
+      "flippedPreview": false,
+      "cbu2": "",
+      "alias2": "",
+      "titular2": "",
+      "billetera2": "Prex",
+      "billetera2Custom": "",
+      "color2": "#ff6f3d"
+    }
+  ],
+  "utilidad": {
+    "info": "✨ BET300VIP ✨\nPlataforma segura con más de 2000 juegos online 🎮\n\n📲 Disfrute de la mejor experiencia 🚀\n\n💳 Las cargas se realizan mediante CBU.\n‼️ Es indispensable consultar el CBU vigente antes de transferir, de lo contrario la carga no se acreditará. ‼️\n📩 Remita el comprobante y su saldo quedará disponible.\n\n📍 Carga mínima: $2000\n📍 Retiro mínimo: $5000\nSin límite máximo, un retiro cada 24hs.\n\n🕐 Atención personalizada las 24 horas, todos los días del año.",
+    "cargado": "✅ ¡Carga confirmada!\nTu cuenta ya está lista para jugar 🎰\n🍀 Que la suerte te acompañe en cada giro.\nSi no ves el doble tilde, recordá que nuestro número oficial siempre está en el estado de perfil.\n🎰 Por ahora las cargas se hacen vía WhatsApp. Muy pronto regresan las autogestionadas.\n👉 Link provisorio: https://bet300.biz/\nClave: 12345a\nBet300",
+    "retiro": "✅ Para hacer el retiro, mandanos estos datos\n🔹CBU, No Alias(para evitar equivocaciones)\n🔹Monto a retirar\n🔹Nombre Del Titular de la cuenta\nMuchas Gracias! 👌"
+  },
+  "promoAmigo": {
+    "prefix": "x",
+    "texto": "🎉 PROMO AMIGOS 🎉\n👉 Cada amigo que cargue la mínima te da **$2000 en fichas extra**.\n📌 Solicitá tu CÓDIGO AMIGO y compartilo.\nCuantos más amigos, más fichas tenes de manera ilimitada 🎰\n🔗 https://bet300.biz",
+    "info": "ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes."
+  },
+  "estructuraBotones": {
+    "orden": [
+      "utilidad",
+      "billeteras",
+      "promoAmigo",
+      "revin"
+    ]
+  }
+}
