@@ -288,48 +288,56 @@ const STORAGE_PREFIX = 'chinmaker_profile_v5_';
 const STORAGE_LAST = 'chinmaker_last_profile_v5';
 
 const DEFAULT_UTIL_INFO =
-`📁 SOMOS BET300VIP
+`✨ BET300VIP ✨
+Plataforma segura con más de 2000 juegos online 🎮
 
-Disfrutá de una PLATAFORMA confiable con + de 2000 juegos online 🎰
+📲 Disfrute de la mejor experiencia 🚀
 
-✨ ¿Listo para disfrutar al máximo? ✨
+💳 Las cargas se realizan mediante CBU.
+‼️ Es indispensable consultar el CBU vigente antes de transferir, de lo contrario la carga no se acreditará. ‼️
+📩 Remita el comprobante y su saldo quedará disponible.
 
-Para añadir saldo, lo haces mediante CBU.
-📌 RECORDAR CONSULTARLA ANTES DE ENVIAR: vamos rotando cuentas.
-📤 Enviá comprobante y empezá a jugar.
+📍 Carga mínima: $2000
+📍 Retiro mínimo: $5000
+Sin límite máximo, un retiro cada 24hs.
 
-⚠️ CARGA MÍNIMA: $2000
-⚠️ RETIRO MÍNIMO: $5000
-Sin Monto Máximo.
-Un retiro cada 24hs exactas.
-
-🕑 Atención personalizada 24/7`;
+🕐 Atención personalizada las 24 horas, todos los días del año.`;
 
 const DEFAULT_UTIL_CARGADO =
-`✅ ¡Saldo acreditado!
-Tu cuenta ya está lista para girar y ganar 🎉
-Si no ves doble tilde, encontrá nuestro número de WhatsApp actualizado en el estado de perfil.
-También podés cargar desde nuestra web: https://bet300.site/`;
+`✅ ¡Carga confirmada!
+Tu cuenta ya está lista para jugar 🎰
+🍀 Que la suerte te acompañe en cada giro.
+Si no ves el doble tilde, recordá que nuestro número oficial siempre está en el estado de perfil.
+🎰 Por ahora las cargas se hacen vía WhatsApp. Muy pronto regresan las autogestionadas.
+👉 Link provisorio: https://bet300.biz/
+Clave: 12345a
+Bet300`;
 
 const DEFAULT_UTIL_RETIRO =
-`💸 Para hacer el retiro, mandanos estos datos:
-• CBU (no Alias)
-• Monto a retirar
-• Nombre del titular
-¡Muchas gracias!`;
+`✅ Para hacer el retiro, mandanos estos datos
+🔹CBU, No Alias(para evitar equivocaciones)
+🔹Monto a retirar
+🔹Nombre Del Titular de la cuenta
+Muchas Gracias! 👌`;
 
 const DEFAULT_PROMO_TEXTO =
-`🎁 PROMO AMIGOS
-
-Invitá a tus amigos y ganá fichas extra. Pedí tu código y compartilo con quien quieras.
-El código se asigna por PC: prefijo + número de PC (ej. R1 para PC1).`;
+`🎉 PROMO AMIGOS 🎉
+👉 Cada amigo que cargue la mínima te da **$2000 en fichas extra**.
+📌 Solicitá tu CÓDIGO AMIGO y compartilo.
+Cuantos más amigos, más fichas tenes de manera ilimitada 🎰
+🔗 https://bet300.biz
+`;
 
 const DEFAULT_PROMO_INFO =
 `ℹ️ ¿Cómo funciona la Promo Amigos?
-1) Pedí tu código (prefijo + número de PC).
-2) Compartilo.
-3) Cuando tu invitado haga la primera carga mínima, ingresá el código.
-4) Al acreditarse, recibís la bonificación.`;
+
+1️⃣ Pedí tu **CÓDIGO AMIGO**.
+2️⃣ Compartilo con tus conocidos.
+3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.
+4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.
+
+✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!
+⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.`;
 
 const DEFAULT_CONFIG = () => ({
   perfil: 'PC01',
@@ -405,6 +413,55 @@ document.addEventListener('DOMContentLoaded', ()=>{
   bootstrapProfiles();
   bindEditorInputs();
   renderAll();
+});
+
+/* === Cambiar PC de un mensaje === */
+document.addEventListener('change', e=>{
+  const sel = e.target.closest('.pc-selector');
+  if(!sel) return;
+
+  const msgId = sel.dataset.msg;
+  const newPcIndex = Number(sel.value);
+
+  let foundMsg = null;
+  let oldPcIndex = null;
+
+  config.whatsapp.pcs.forEach((pc,i)=>{
+    const idx = pc.mensajes.findIndex(m => m.id === msgId);
+    if(idx !== -1){
+      foundMsg = pc.mensajes[idx];
+      oldPcIndex = i;
+    }
+  });
+
+  if(foundMsg === null || oldPcIndex === null) return;
+  if(oldPcIndex === newPcIndex) return;
+
+  // mover mensaje
+  config.whatsapp.pcs[oldPcIndex].mensajes =
+    config.whatsapp.pcs[oldPcIndex].mensajes.filter(m => m.id !== msgId);
+
+  config.whatsapp.pcs[newPcIndex].mensajes.push(foundMsg);
+
+  markDirty();
+  renderSaludosEditor();
+  renderPreview();
+});
+
+/* === Eliminar mensaje === */
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-remove]');
+  if(!btn) return;
+
+  const msgId = btn.dataset.remove;
+
+  config.whatsapp.pcs.forEach(pc=>{
+    pc.mensajes = pc.mensajes.filter(m => m.id !== msgId);
+  });
+
+  markDirty();
+  renderSaludosEditor();
+  renderPreview();
 });
 
 function bootstrapProfiles(){
@@ -692,12 +749,17 @@ function renderSaludosEditor(){
     row.innerHTML = `
       <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
       <div>
-        <div class="wallet-header">
-          <span class="wallet-label">Mensaje #${idx+1}</span>
-          <div class="wallet-actions">
-            <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">Eliminar</button>
-          </div>
-        </div>
+      <div class="wallet-header">
+  <span class="wallet-label">Mensaje #1</span>
+
+  <div class="wallet-actions">
+    <select class="pc-selector" data-msg-id="ID_AQUI">
+      <!-- opciones dinámicas -->
+    </select>
+
+    <button class="btn small subtle" data-remove-s="IDX">Eliminar</button>
+  </div>
+</div>
         <div>
           <label>Usá {usuario} en el texto</label>
           <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
@@ -727,83 +789,146 @@ function renderSaludosEditor(){
 const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
 function renderWallets(){
-  const listEl = document.getElementById('walletList'); listEl.innerHTML = '';
-  (config.billeteras||[]).forEach((w,idx)=>{
+  const list = document.getElementById('walletList');
+  list.innerHTML = '';
+
+  (config.billeteras || []).forEach((w, idx)=>{
     const row = document.createElement('div');
     row.className = 'card-row';
-    row.dataset.index = idx;
-
-    // Flip editor card with animation
-    const front = `
-      <div class="flip-title">Frente</div>
-      <div class="section-grid">
-        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" title="Nombre del grupo visible" /></div>
-        <div>
-          <label>CBU</label>
-          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
-          <small class="muted">Solo números, 22 dígitos</small>
-        </div>
-        <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
-        <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
-        <div>
-          <label>Billetera</label>
-          <select data-field="billetera" data-idx="${idx}">
-            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
-          </select>
-          <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
-        </div>
-        <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
-      </div>
-    `;
-    const back = `
-      <div class="flip-title">Dorso</div>
-      <div class="section-grid">
-        <div>
-          <label>CBU (segunda)</label>
-          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
-          <small class="muted">Solo números, 22 dígitos</small>
-        </div>
-        <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
-        <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
-        <div>
-          <label>Billetera (segunda)</label>
-          <select data-field="billetera2" data-idx="${idx}">
-            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
-          </select>
-          <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
-        </div>
-        <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
-      </div>
-    `;
 
     row.innerHTML = `
-      <div class="grip" data-grip title="Arrastrar (click y mover)">🔀</div>
+      <div class="grip" title="Arrastrar">🔀</div>
+
       <div>
         <div class="wallet-header">
-          <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
+          <span class="wallet-label">
+            ${escapeHtml(w.label || 'Grupo / Nombre visible')}
+          </span>
+
           <div class="wallet-actions">
-            <button class="btn small ghost" data-toggle-flip="${idx}" title="Activar/Desactivar dorso">🔁 ${w.flip? 'ON' : 'OFF'}</button>
-            <span class="muted">Añade otra billetera del mismo titular</span>
-            <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">Eliminar</button>
+            <button
+              class="btn small ghost"
+              data-toggle-flip="${idx}"
+              title="Activar / desactivar segunda billetera"
+            >
+              🔁 ${w.flip ? 'ON' : 'OFF'}
+            </button>
+
+            <button
+              class="btn small subtle"
+              data-remove="${idx}"
+              title="Eliminar grupo"
+            >
+              Eliminar
+            </button>
           </div>
         </div>
 
-        <div class="flip-card ${w.flippedEditor?'flipped':''}" data-flip-card="${idx}">
-          <div class="flip-toolbar">
-            ${w.flip ? `<button class="flip-btn" data-flip-view="${idx}">${w.flippedEditor?'Ver frente':'Ver dorso'}</button>` : ''}
+        <!-- Frente -->
+        <div class="section-grid">
+          <div>
+            <label>Nombre visible</label>
+            <input type="text" data-field="label" data-idx="${idx}"
+              value="${escapeAttr(w.label || '')}">
           </div>
-          <div class="flip-inner">
-            <div class="flip-face">
-              ${front}
-            </div>
-            <div class="flip-face flip-back">
-              ${back}
-            </div>
+
+          <div>
+            <label>CBU</label>
+            <input type="text" inputmode="numeric" maxlength="22"
+              data-field="cbu" data-idx="${idx}"
+              value="${escapeAttr(w.cbu || '')}">
+          </div>
+
+          <div>
+            <label>Alias</label>
+            <input type="text" data-field="alias" data-idx="${idx}"
+              value="${escapeAttr(w.alias || '')}">
+          </div>
+
+          <div>
+            <label>Titular</label>
+            <input type="text" data-field="titular" data-idx="${idx}"
+              value="${escapeAttr(w.titular || '')}">
+          </div>
+
+          <div>
+            <label>Billetera</label>
+            <select data-field="billetera" data-idx="${idx}">
+              ${WALLET_OPTS.map(opt=>`
+                <option value="${opt}" ${w.billetera===opt?'selected':''}>
+                  ${opt}
+                </option>
+              `).join('')}
+            </select>
+
+            <input type="text"
+              data-field="billeteraCustom"
+              data-idx="${idx}"
+              placeholder="Nombre billetera"
+              style="margin-top:6px;${w.billetera==='Otro'?'':'display:none'}"
+              value="${escapeAttr(w.billeteraCustom || '')}">
+          </div>
+
+          <div>
+            <label>Color</label>
+            <input type="color" data-field="color" data-idx="${idx}"
+              value="${escapeAttr(w.color || '#1f6feb')}">
           </div>
         </div>
+
+        <!-- Segunda billetera -->
+        ${w.flip ? `
+          <hr>
+
+          <div class="section-grid">
+            <div>
+              <label>CBU (segunda)</label>
+              <input type="text" inputmode="numeric" maxlength="22"
+                data-field="cbu2" data-idx="${idx}"
+                value="${escapeAttr(w.cbu2 || '')}">
+            </div>
+
+            <div>
+              <label>Alias (segunda)</label>
+              <input type="text" data-field="alias2" data-idx="${idx}"
+                value="${escapeAttr(w.alias2 || '')}">
+            </div>
+
+            <div>
+              <label>Titular (segunda)</label>
+              <input type="text" data-field="titular2" data-idx="${idx}"
+                value="${escapeAttr(w.titular2 || '')}">
+            </div>
+
+            <div>
+              <label>Billetera (segunda)</label>
+              <select data-field="billetera2" data-idx="${idx}">
+                ${WALLET_OPTS.map(opt=>`
+                  <option value="${opt}" ${w.billetera2===opt?'selected':''}>
+                    ${opt}
+                  </option>
+                `).join('')}
+              </select>
+
+              <input type="text"
+                data-field="billetera2Custom"
+                data-idx="${idx}"
+                placeholder="Nombre billetera"
+                style="margin-top:6px;${w.billetera2==='Otro'?'':'display:none'}"
+                value="${escapeAttr(w.billetera2Custom || '')}">
+            </div>
+
+            <div>
+              <label>Color (segunda)</label>
+              <input type="color" data-field="color2" data-idx="${idx}"
+                value="${escapeAttr(w.color2 || '#ff6f3d')}">
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
-    listEl.appendChild(row);
+
+    list.appendChild(row);
   });
 
   // edición
