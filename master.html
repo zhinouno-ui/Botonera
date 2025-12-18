@@ -420,14 +420,14 @@ document.addEventListener('change', e=>{
   const sel = e.target.closest('.pc-selector');
   if(!sel) return;
 
-  const msgId = sel.dataset.msg;
+  const msgId = sel.dataset.msgId; // dataset correcto: data-msg-id -> dataset.msgId
   const newPcIndex = Number(sel.value);
 
   let foundMsg = null;
   let oldPcIndex = null;
 
   config.whatsapp.pcs.forEach((pc,i)=>{
-    const idx = pc.mensajes.findIndex(m => m.id === msgId);
+    const idx = (pc.mensajes||[]).findIndex(m => m.id === msgId);
     if(idx !== -1){
       foundMsg = pc.mensajes[idx];
       oldPcIndex = i;
@@ -437,10 +437,8 @@ document.addEventListener('change', e=>{
   if(foundMsg === null || oldPcIndex === null) return;
   if(oldPcIndex === newPcIndex) return;
 
-  // mover mensaje
-  config.whatsapp.pcs[oldPcIndex].mensajes =
-    config.whatsapp.pcs[oldPcIndex].mensajes.filter(m => m.id !== msgId);
-
+  // mover mensaje entre PCs
+  config.whatsapp.pcs[oldPcIndex].mensajes = config.whatsapp.pcs[oldPcIndex].mensajes.filter(m => m.id !== msgId);
   config.whatsapp.pcs[newPcIndex].mensajes.push(foundMsg);
 
   markDirty();
@@ -448,17 +446,15 @@ document.addEventListener('change', e=>{
   renderPreview();
 });
 
-/* === Eliminar mensaje === */
+// Delegado: eliminar mensaje desde cualquier botón con data-remove-msg
 document.addEventListener('click', e=>{
-  const btn = e.target.closest('[data-remove]');
+  const btn = e.target.closest('[data-remove-msg]');
   if(!btn) return;
-
-  const msgId = btn.dataset.remove;
-
+  const msgId = btn.dataset.removeMsg;
+  // eliminar en todas las PCs por seguridad
   config.whatsapp.pcs.forEach(pc=>{
-    pc.mensajes = pc.mensajes.filter(m => m.id !== msgId);
+    pc.mensajes = (pc.mensajes||[]).filter(m => m.id !== msgId);
   });
-
   markDirty();
   renderSaludosEditor();
   renderPreview();
@@ -735,239 +731,109 @@ function renderPCSliderPreview(){
 
 /* === Mensajes de revinculación por PC (editor) === */
 function renderSaludosEditor(){
-  const listEl = document.getElementById('saludosList'); listEl.innerHTML = '';
+  const listEl = document.getElementById('saludosList');
+  listEl.innerHTML = '';
+
   const pc = config.whatsapp.pcs[sliderIndex];
-  const arr = pc.mensajes || [];
-  if(!arr.length){
-    const p = document.createElement('p'); p.className='muted';
+  const mensajes = pc?.mensajes || [];
+
+  if(mensajes.length === 0){
+    const p = document.createElement('p'); p.className = 'muted';
     p.textContent = 'No hay mensajes cargados para esta PC.';
     listEl.appendChild(p);
+    return;
   }
-  arr.forEach((s,idx)=>{
+
+  mensajes.forEach((m, idx) => {
     const row = document.createElement('div');
     row.className = 'card-row';
+
     row.innerHTML = `
-      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div class="grip">🔒</div>
       <div>
-      <div class="wallet-header">
-  <span class="wallet-label">Mensaje #1</span>
-
-  <div class="wallet-actions">
-    <select class="pc-selector" data-msg-id="ID_AQUI">
-      <!-- opciones dinámicas -->
-    </select>
-
-    <button class="btn small subtle" data-remove-s="IDX">Eliminar</button>
-  </div>
-</div>
-        <div>
-          <label>Usá {usuario} en el texto</label>
-          <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #${idx+1}</span>
+          <div class="wallet-actions">
+            <select class="pc-selector" data-msg-id="${m.id}">
+              ${config.whatsapp.pcs.map((p,i) => `<option value="${i}" ${i===sliderIndex?'selected':''}>${escapeHtml(p.nombre)}</option>`).join('')}
+            </select>
+            <button class="btn small subtle" data-remove-msg="${m.id}">Eliminar</button>
+          </div>
+        </div>
+        <div style="margin-top:6px;">
+          <label>Usá {usuario}</label>
+          <textarea data-msg-text="${m.id}">${escapeHtml(m.texto||'')}</textarea>
         </div>
       </div>
     `;
     listEl.appendChild(row);
   });
 
-  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el=>{
+  // bind input changes
+  listEl.querySelectorAll('[data-msg-text]').forEach(el=>{
     el.addEventListener('input', ()=>{
-      const i = parseInt(el.dataset.sIdx,10);
-      pc.mensajes[i].texto = el.value;
-      markDirty(); renderPreview();
+      const id = el.dataset.msgText;
+      const found = pc.mensajes.find(x=>x.id===id);
+      if(found){ found.texto = el.value; markDirty(); renderPreview(); }
     });
   });
-  listEl.querySelectorAll('[data-remove-s]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const i = parseInt(btn.dataset.removeS,10);
-      pc.mensajes.splice(i,1);
-      markDirty(); renderSaludosEditor(); renderPreview();
-    });
-  });
+
+  // eliminar botón ya está manejado por el listener delegado arriba
 }
 
 /* === Billeteras editor (drag + flip animado) === */
 const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
 function renderWallets(){
-  const list = document.getElementById('walletList');
-  list.innerHTML = '';
+  const listEl = document.getElementById('walletList');
+  listEl.innerHTML = '';
 
-  (config.billeteras || []).forEach((w, idx)=>{
+  (config.billeteras || []).forEach((w, idx) => {
     const row = document.createElement('div');
     row.className = 'card-row';
+    row.dataset.index = idx;
 
     row.innerHTML = `
-      <div class="grip" title="Arrastrar">🔀</div>
-
+      <div class="grip" data-grip>🔀</div>
       <div>
         <div class="wallet-header">
-          <span class="wallet-label">
-            ${escapeHtml(w.label || 'Grupo / Nombre visible')}
-          </span>
-
+          <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
           <div class="wallet-actions">
-            <button
-              class="btn small ghost"
-              data-toggle-flip="${idx}"
-              title="Activar / desactivar segunda billetera"
-            >
-              🔁 ${w.flip ? 'ON' : 'OFF'}
-            </button>
-
-            <button
-              class="btn small subtle"
-              data-remove="${idx}"
-              title="Eliminar grupo"
-            >
-              Eliminar
-            </button>
+            <button class="btn small ghost" data-toggle-flip="${idx}">🔁 ${w.flip ? 'ON' : 'OFF'}</button>
+            <button class="btn small subtle" data-remove-wallet="${idx}">Eliminar</button>
           </div>
         </div>
-
-        <!-- Frente -->
-        <div class="section-grid">
-          <div>
-            <label>Nombre visible</label>
-            <input type="text" data-field="label" data-idx="${idx}"
-              value="${escapeAttr(w.label || '')}">
-          </div>
-
-          <div>
-            <label>CBU</label>
-            <input type="text" inputmode="numeric" maxlength="22"
-              data-field="cbu" data-idx="${idx}"
-              value="${escapeAttr(w.cbu || '')}">
-          </div>
-
-          <div>
-            <label>Alias</label>
-            <input type="text" data-field="alias" data-idx="${idx}"
-              value="${escapeAttr(w.alias || '')}">
-          </div>
-
-          <div>
-            <label>Titular</label>
-            <input type="text" data-field="titular" data-idx="${idx}"
-              value="${escapeAttr(w.titular || '')}">
-          </div>
-
-          <div>
-            <label>Billetera</label>
-            <select data-field="billetera" data-idx="${idx}">
-              ${WALLET_OPTS.map(opt=>`
-                <option value="${opt}" ${w.billetera===opt?'selected':''}>
-                  ${opt}
-                </option>
-              `).join('')}
-            </select>
-
-            <input type="text"
-              data-field="billeteraCustom"
-              data-idx="${idx}"
-              placeholder="Nombre billetera"
-              style="margin-top:6px;${w.billetera==='Otro'?'':'display:none'}"
-              value="${escapeAttr(w.billeteraCustom || '')}">
-          </div>
-
-          <div>
-            <label>Color</label>
-            <input type="color" data-field="color" data-idx="${idx}"
-              value="${escapeAttr(w.color || '#1f6feb')}">
-          </div>
+        <div class="section-grid" style="margin-top:8px;">
+          <div><label>Nombre visible</label><input data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}"></div>
+          <div><label>CBU</label><input data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}"></div>
+          <div><label>Alias</label><input data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}"></div>
+          <div><label>Titular</label><input data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}"></div>
         </div>
-
-        <!-- Segunda billetera -->
-        ${w.flip ? `
-          <hr>
-
-          <div class="section-grid">
-            <div>
-              <label>CBU (segunda)</label>
-              <input type="text" inputmode="numeric" maxlength="22"
-                data-field="cbu2" data-idx="${idx}"
-                value="${escapeAttr(w.cbu2 || '')}">
-            </div>
-
-            <div>
-              <label>Alias (segunda)</label>
-              <input type="text" data-field="alias2" data-idx="${idx}"
-                value="${escapeAttr(w.alias2 || '')}">
-            </div>
-
-            <div>
-              <label>Titular (segunda)</label>
-              <input type="text" data-field="titular2" data-idx="${idx}"
-                value="${escapeAttr(w.titular2 || '')}">
-            </div>
-
-            <div>
-              <label>Billetera (segunda)</label>
-              <select data-field="billetera2" data-idx="${idx}">
-                ${WALLET_OPTS.map(opt=>`
-                  <option value="${opt}" ${w.billetera2===opt?'selected':''}>
-                    ${opt}
-                  </option>
-                `).join('')}
-              </select>
-
-              <input type="text"
-                data-field="billetera2Custom"
-                data-idx="${idx}"
-                placeholder="Nombre billetera"
-                style="margin-top:6px;${w.billetera2==='Otro'?'':'display:none'}"
-                value="${escapeAttr(w.billetera2Custom || '')}">
-            </div>
-
-            <div>
-              <label>Color (segunda)</label>
-              <input type="color" data-field="color2" data-idx="${idx}"
-                value="${escapeAttr(w.color2 || '#ff6f3d')}">
-            </div>
-          </div>
-        ` : ''}
       </div>
     `;
-
-    list.appendChild(row);
+    listEl.appendChild(row);
   });
 
-  // edición
-  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
-    el.addEventListener('input', onWalletFieldChange);
-    el.addEventListener('change', onWalletFieldChange);
-  });
-  // numeric enforcement for CBU/CBU2
-  listEl.querySelectorAll('input[data-field="cbu"], input[data-field="cbu2"]').forEach(el=>{
-    el.addEventListener('input', ()=>{
-      el.value = el.value.replace(/\D/g,'').slice(0,22);
+  // editar campos (delegado por elementos creados)
+  listEl.querySelectorAll('[data-field]').forEach(el=>{
+    el.addEventListener('input', (e)=>{
       const idx = parseInt(el.dataset.idx,10);
       const field = el.dataset.field;
-      const w = config.billeteras[idx]; if(!w) return;
-      w[field] = el.value;
+      if(isNaN(idx) || !config.billeteras[idx]) return;
+      config.billeteras[idx][field] = el.value;
       markDirty(); renderPreview();
     });
   });
 
-  listEl.querySelectorAll('[data-remove]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const idx = parseInt(btn.dataset.remove,10);
-      if(isNaN(idx)) return;
-      if(!confirm('¿Eliminar este grupo?')) return;
-      config.billeteras.splice(idx,1);
-      markDirty(); renderWallets(); renderPreview();
-    });
-  });
-
+  // toggle flip
   listEl.querySelectorAll('[data-toggle-flip]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const idx = parseInt(btn.dataset.toggleFlip,10);
+      if(isNaN(idx) || !config.billeteras[idx]) return;
       const w = config.billeteras[idx];
       w.flip = !w.flip;
       if(w.flip){
-        w.titular2 = w.titular || '';
-        w.billetera2 = w.billetera2 || 'Prex';
-        w.color2 = w.color2 || '#ff6f3d';
-        w.flippedEditor = true; // mostrar dorso al activar
+        w.flippedEditor = true;
       }else{
         w.flippedEditor = false;
       }
@@ -975,59 +841,48 @@ function renderWallets(){
     });
   });
 
-  listEl.querySelectorAll('[data-flip-view]').forEach(btn=>{
+  // eliminar billetera
+  listEl.querySelectorAll('[data-remove-wallet]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const idx = parseInt(btn.dataset.flipView,10);
-      const w = config.billeteras[idx];
-      w.flippedEditor = !w.flippedEditor;
-      markDirty();
-      const card = document.querySelector(`[data-flip-card="${idx}"]`);
-      if(card){
-        card.classList.toggle('flipped', w.flippedEditor);
-        btn.textContent = w.flippedEditor ? 'Ver frente' : 'Ver dorso';
-      }
+      const idx = parseInt(btn.dataset.removeWallet,10);
+      if(isNaN(idx)) return;
+      if(!confirm('¿Eliminar este grupo?')) return;
+      config.billeteras.splice(idx,1);
+      markDirty(); renderWallets(); renderPreview();
     });
   });
 
-  // drag con grip
+  // drag handlers: simple implementation usando data-index en filas
+  let dragging = null;
   listEl.querySelectorAll('[data-grip]').forEach(grip=>{
-    const row = grip.closest('.card-row');
-    grip.addEventListener('mousedown', e=>{
-      draggingWallet = row;
+    grip.addEventListener('mousedown', (ev)=>{
+      const row = grip.closest('.card-row');
+      dragging = { row, startY: ev.clientY, fromIdx: parseInt(row.dataset.index,10) };
       row.classList.add('dragging');
-      // pequeño efecto visual inmediato
-      e.preventDefault();
+      ev.preventDefault();
     });
   });
-  document.addEventListener('mousemove', e=>{
-    if(!draggingWallet) return;
-    const listEl = document.getElementById('walletList');
-    const rows = Array.from(listEl.children);
-    const y = e.clientY;
-    let target = null;
-    rows.forEach(r=>{
-      const rect = r.getBoundingClientRect();
-      r.classList.remove('placeholder');
-      if(y>rect.top && y<rect.bottom) target = r;
-    });
-    if(target && target!==draggingWallet){
-      target.classList.add('placeholder');
-    }
+  document.addEventListener('mousemove', (ev)=>{
+    if(!dragging) return;
+    // visual placeholder handled simply by cursor; actual reorder on mouseup
   });
-  document.addEventListener('mouseup', e=>{
-    if(!draggingWallet) return;
-    const listEl = document.getElementById('walletList');
+  document.addEventListener('mouseup', (ev)=>{
+    if(!dragging) return;
     const rows = Array.from(listEl.children);
+    // find nearest index by Y position
     let toIdx = null;
+    const y = ev.clientY;
     rows.forEach((r,i)=>{
-      if(r.classList.contains('placeholder')){ toIdx = i; r.classList.remove('placeholder'); }
+      const rect = r.getBoundingClientRect();
+      if(y >= rect.top && y <= rect.bottom){ toIdx = i; }
+      r.classList.remove('placeholder');
     });
-    const fromIdx = parseInt(draggingWallet.dataset.index,10);
-    draggingWallet.classList.remove('dragging');
-    draggingWallet = null;
-    if(toIdx===null || isNaN(fromIdx)) return;
+    const from = dragging.fromIdx;
+    dragging.row.classList.remove('dragging');
+    dragging = null;
+    if(toIdx === null || from === toIdx) return;
     const arr = config.billeteras;
-    const item = arr.splice(fromIdx,1)[0];
+    const item = arr.splice(from,1)[0];
     arr.splice(toIdx,0,item);
     markDirty(); renderWallets(); renderPreview();
   });
