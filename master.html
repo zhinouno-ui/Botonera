@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- saved from url=(0042)https://chinbotones.vercel.app/master.html -->
 <html lang="es" style="--accent: #8A2BE2; --accent-light: #8A2BE2; --ok: #10B981; --bad: #EF4444;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -741,8 +742,7 @@ tenemos algo para vos!!
 🔰 Tu primer carga viene con +30% de bono exclusivo.
 📲 Aprovechalo desde WhatsApp.
 🔐 Usuario: USUARIO – Clave: 12345a
-🌐 https://www.bet300.biz/
-📣 numero cajero: 1162360351</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #9</span><div class="sub">🎰 USUARIO  ¡Volvé a jugar con 🟣+30% DE BONO 🟣!
+...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #9</span><div class="sub">🎰 USUARIO  ¡Volvé a jugar con 🟣+30% DE BONO 🟣!
 Hace un tiempo que no estás activo y queremos que regreses con ventaja.
 👉 Cargá y activás 🎁 +30% EXTRA 🎁...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #10</span><div class="sub">🔥 Promo de regreso disponible
 🟢 CARGÁS + TE REGALAMOS +30% 🟢
@@ -755,7 +755,7 @@ tenemos algo para vos!!
 🚨 OFERTA PARA REACTIVACIÓN
 🟥 +30% DE BONO en tu próxima carga
 🟩 Más jugadas • Más saldo • Más chances
-📲 Contactanos 👉 1162360351</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #13</span><div class="sub">USUARIO 🎲 Te guardamos algo especial
+📲 Contactanos...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #13</span><div class="sub">USUARIO 🎲 Te guardamos algo especial
 ⭐ VOLVÉS A JUGAR = +30% EXTRA ⭐
 🪙 Aprovechalo antes que venza
 📍 WhatsApp: 1162360351 </div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #14</span><div class="sub">📢 Promo exclusiva
@@ -783,188 +783,866 @@ tenemos algo para vos!!
 </div>
 
 <script>
-/* ======================================================
-   FIX GLOBAL: UTILIDADES
-   ====================================================== */
-function escapeHtml(str){
-  if(!str) return '';
-  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function escapeAttr(str){ return escapeHtml(str); }
-function shorten(str,max){ if(!str) return ''; return str.length>max ? str.slice(0,max-3)+'...' : str; }
+/* === Estado base === */
+const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v5';
+const STORAGE_PREFIX = 'chinmaker_profile_v5_';
+const STORAGE_LAST = 'chinmaker_last_profile_v5';
 
-/* ======================================================
-   FIX 1: EVENTOS GLOBALES CORREGIDOS
-   ====================================================== */
+const DEFAULT_UTIL_INFO =
+`📁 SOMOS BET300VIP
 
-document.addEventListener('change', e=>{
-  const sel = e.target.closest('.pc-selector');
-  if(!sel) return;
+Disfrutá de una PLATAFORMA confiable con + de 2000 juegos online 🎰
 
-  const msgId = sel.dataset.msgId; // FIX dataset
-  const newPcIndex = Number(sel.value);
+✨ ¿Listo para disfrutar al máximo? ✨
 
-  let foundMsg = null;
-  let oldPcIndex = null;
+Para añadir saldo, lo haces mediante CBU.
+📌 RECORDAR CONSULTARLA ANTES DE ENVIAR: vamos rotando cuentas.
+📤 Enviá comprobante y empezá a jugar.
 
-  config.whatsapp.pcs.forEach((pc,i)=>{
-    const idx = pc.mensajes.findIndex(m=>m.id===msgId);
-    if(idx!==-1){ foundMsg = pc.mensajes[idx]; oldPcIndex=i; }
-  });
+⚠️ CARGA MÍNIMA: $2000
+⚠️ RETIRO MÍNIMO: $5000
+Sin Monto Máximo.
+Un retiro cada 24hs exactas.
 
-  if(foundMsg===null || oldPcIndex===null) return;
-  if(oldPcIndex===newPcIndex) return;
+🕑 Atención personalizada 24/7`;
 
-  config.whatsapp.pcs[oldPcIndex].mensajes =
-    config.whatsapp.pcs[oldPcIndex].mensajes.filter(m=>m.id!==msgId);
-  config.whatsapp.pcs[newPcIndex].mensajes.push(foundMsg);
+const DEFAULT_UTIL_CARGADO =
+`✅ ¡Saldo acreditado!
+Tu cuenta ya está lista para girar y ganar 🎉
+Si no ves doble tilde, encontrá nuestro número de WhatsApp actualizado en el estado de perfil.
+También podés cargar desde nuestra web: https://bet300.site/`;
 
-  markDirty();
-  renderSaludosEditor();
-  renderPreview();
+const DEFAULT_UTIL_RETIRO =
+`💸 Para hacer el retiro, mandanos estos datos:
+• CBU (no Alias)
+• Monto a retirar
+• Nombre del titular
+¡Muchas gracias!`;
+
+const DEFAULT_PROMO_TEXTO =
+`🎁 PROMO AMIGOS
+
+Invitá a tus amigos y ganá fichas extra. Pedí tu código y compartilo con quien quieras.
+El código se asigna por PC: prefijo + número de PC (ej. R1 para PC1).`;
+
+const DEFAULT_PROMO_INFO =
+`ℹ️ ¿Cómo funciona la Promo Amigos?
+1) Pedí tu código (prefijo + número de PC).
+2) Compartilo.
+3) Cuando tu invitado haga la primera carga mínima, ingresá el código.
+4) Al acreditarse, recibís la bonificación.`;
+
+const DEFAULT_CONFIG = () => ({
+  perfil: 'PC01',
+  fechaExport: null,
+  paleta: { acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444' },
+  whatsapp: {
+    plantillaMensaje: 'Hola soy {usuario} quiero mi clave y cronograma',
+    pcs: [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }]
+  },
+  billeteras: [],
+  utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
+  promoAmigo: { prefix: 'R', texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
+  estructuraBotones: { orden: ['utilidad','billeteras','promoAmigo','revin'] }
 });
 
-/* ======================================================
-   FIX 2: RENDER SALUDOS EDITOR (COMPLETO)
-   ====================================================== */
-function renderSaludosEditor(){
-  const list = document.getElementById('saludosList');
-  list.innerHTML = '';
+let currentProfileName = 'PC01';
+let config = DEFAULT_CONFIG();
+let dirtyTimer = null;
+let sliderIndex = 0;
+let sliderPreviewIndex = 0;
+let draggingWallet = null;
 
-  const pc = config.whatsapp.pcs[sliderIndex];
-  const mensajes = pc.mensajes || [];
+/* === LocalStorage === */
+function loadProfileNames(){ try{ const raw = localStorage.getItem(STORAGE_LIST_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
+function saveProfileNames(list){ localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(Array.from(new Set(list)))); }
+function saveCurrentProfile(){
+  const key = STORAGE_PREFIX + currentProfileName;
+  localStorage.setItem(key, JSON.stringify(config));
+  localStorage.setItem(STORAGE_LAST, currentProfileName);
+  indicateSaved();
+}
+function loadProfile(name){
+  const key = STORAGE_PREFIX + name;
+  const raw = localStorage.getItem(key);
+  if(!raw) return null;
+  try{ return normalizeConfig(JSON.parse(raw)); }catch(e){ return null; }
+}
+function normalizeConfig(obj){
+  const base = DEFAULT_CONFIG();
+  const merged = {
+    ...base, ...obj,
+    paleta: { ...base.paleta, ...(obj.paleta||{}) },
+    whatsapp: {
+      ...base.whatsapp, ...(obj.whatsapp||{}),
+      pcs: normalizePCs(obj.whatsapp?.pcs)
+    },
+    utilidad: { ...base.utilidad, ...(obj.utilidad||{}) },
+    promoAmigo: { ...base.promoAmigo, ...(obj.promoAmigo||{}) },
+    estructuraBotones: { ...base.estructuraBotones, ...(obj.estructuraBotones||{}) },
+    billeteras: Array.isArray(obj.billeteras)? obj.billeteras : base.billeteras
+  };
+  if(!merged.utilidad.info) merged.utilidad.info = DEFAULT_UTIL_INFO;
+  if(!merged.utilidad.cargado) merged.utilidad.cargado = DEFAULT_UTIL_CARGADO;
+  if(!merged.utilidad.retiro) merged.utilidad.retiro = DEFAULT_UTIL_RETIRO;
+  if(!merged.promoAmigo.texto) merged.promoAmigo.texto = DEFAULT_PROMO_TEXTO;
+  if(!merged.promoAmigo.info) merged.promoAmigo.info = DEFAULT_PROMO_INFO;
+  // ensure pcs
+  return merged;
+}
+function normalizePCs(list){
+  let out = Array.isArray(list) ? list.filter(Boolean) : [];
+  if(out.length===0){ out = [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }]; }
+  out = out.slice(0,10).map((pc,i)=>({
+    nombre: pc.nombre || ('PC' + String(i+1).padStart(2,'0')),
+    wsp: String(pc.wsp || '5491100000000'),
+    mensajes: Array.isArray(pc.mensajes) ? pc.mensajes : []
+  }));
+  return out;
+}
 
-  if(!mensajes.length){
-    const p = document.createElement('p');
-    p.className = 'muted';
-    p.textContent = 'No hay mensajes cargados para esta PC.';
-    list.appendChild(p);
-    return;
+/* === Bootstrap === */
+document.addEventListener('DOMContentLoaded', ()=>{
+  bootstrapProfiles();
+  bindEditorInputs();
+  renderAll();
+});
+
+function bootstrapProfiles(){
+  const list = loadProfileNames();
+  const last = localStorage.getItem(STORAGE_LAST);
+  if(last && list.includes(last)){
+    currentProfileName = last;
+    config = loadProfile(last) || DEFAULT_CONFIG();
+  }else if(list.length){
+    currentProfileName = list[0];
+    config = loadProfile(list[0]) || DEFAULT_CONFIG();
+  }else{
+    currentProfileName = 'PC01';
+    config = DEFAULT_CONFIG();
+    saveProfileNames([currentProfileName]);
+    saveCurrentProfile();
   }
+  renderProfileSelect();
+}
 
-  mensajes.forEach((msg, idx)=>{
+/* === Profile select === */
+function renderProfileSelect(){
+  const select = document.getElementById('profileSelect');
+  const list = loadProfileNames();
+  if(!list.includes(currentProfileName)) list.push(currentProfileName);
+  select.innerHTML = '';
+  list.forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    if(name === currentProfileName) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+
+/* === Bindings === */
+function bindEditorInputs(){
+  document.getElementById('profileSelect').addEventListener('change', e=>{
+    const name = e.target.value || 'PC01';
+    const existing = loadProfile(name);
+    currentProfileName = name;
+    config = existing || {...DEFAULT_CONFIG(), perfil:name};
+    saveProfileNames([...loadProfileNames(), name]);
+    sliderIndex = 0; sliderPreviewIndex = 0;
+    renderAll();
+  });
+
+  document.getElementById('btnNewProfile').addEventListener('click', ()=>{
+    const name = prompt('Nombre del nuevo perfil (ej. PC03, GONZALES):','PC03');
+    if(!name) return;
+    currentProfileName = name.trim();
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveProfileNames([...loadProfileNames(), currentProfileName]);
+    renderProfileSelect();
+    renderAll();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    if(!confirm('¿Reiniciar el perfil actual?')) return;
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveCurrentProfile();
+    sliderIndex = 0; sliderPreviewIndex = 0;
+    renderAll();
+  });
+
+  document.getElementById('btnExport').addEventListener('click', ()=>{
+    config.fechaExport = new Date().toISOString();
+    const blob = new Blob([JSON.stringify(config,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `${currentProfileName || 'perfil'}.chin.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    showToast('Perfil exportado');
+  });
+
+  const importInput = document.getElementById('fileImport');
+  document.getElementById('btnImport').addEventListener('click', ()=>importInput.click());
+  importInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      currentProfileName = obj.perfil || file.name.replace(/\.json$/i,'') || 'Importado';
+      config = normalizeConfig(obj);
+      saveProfileNames([...loadProfileNames(), currentProfileName]);
+      renderProfileSelect(); saveCurrentProfile(); renderAll();
+      showToast('Perfil importado correctamente');
+    }catch(err){ alert('No se pudo importar el JSON.'); }
+    finally{ importInput.value=''; }
+  });
+
+  /* Palette */
+  const paletteMap = { colorAccent:['paleta','acento'], colorOk:['paleta','ok'], colorBad:['paleta','bad'] };
+  Object.keys(paletteMap).forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      const [a,b] = paletteMap[id]; config[a][b] = el.value; markDirty(); renderPreview();
+    });
+  });
+
+  /* WhatsApp plantilla */
+  document.getElementById('waMensaje').addEventListener('input', (e)=>{
+    config.whatsapp.plantillaMensaje = e.target.value; markDirty(); renderPreview();
+  });
+
+  /* Promo prefix */
+  document.getElementById('promoPrefix').addEventListener('input', (e)=>{
+    const v = e.target.value.trim() || 'R';
+    config.promoAmigo.prefix = v;
+    markDirty(); renderPreview();
+  });
+
+  /* Mensajes de revinculación por PC */
+  document.getElementById('btnAddSaludo').addEventListener('click', ()=>{
+    const pc = config.whatsapp.pcs[sliderIndex];
+    pc.mensajes.push({ id:'m_'+Date.now(), texto:'Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX' });
+    markDirty(); renderSaludosEditor(); renderPreview();
+  });
+
+  /* PCs */
+  document.getElementById('pcAddBtn').addEventListener('click', ()=>{
+    const list = config.whatsapp.pcs;
+    if(list.length >= 10){ showToast('Máximo 10 PCs'); return; }
+    const idx = list.length+1; // PC02 si había solo PC01
+    const nombre = 'PC' + String(idx).padStart(2,'0');
+    list.push({ nombre, wsp:'5491100000000', mensajes:[] });
+    sliderIndex = list.length-1; sliderPreviewIndex = sliderIndex;
+    markDirty(); renderPCSlider(); renderPCSliderPreview(); renderSaludosEditor(); renderPreview();
+  });
+  document.getElementById('pcDelBtn').addEventListener('click', ()=>{
+    const list = config.whatsapp.pcs;
+    if(list.length<=1){ showToast('Mínimo 1 PC'); return; }
+    list.pop();
+    sliderIndex = Math.max(0, Math.min(sliderIndex, list.length-1));
+    sliderPreviewIndex = Math.max(0, Math.min(sliderPreviewIndex, list.length-1));
+    markDirty(); renderPCSlider(); renderPCSliderPreview(); renderSaludosEditor(); renderPreview();
+  });
+
+  document.getElementById('pcWsp').addEventListener('input', (e)=>{
+    const list = config.whatsapp.pcs; if(!list.length) return;
+    list[sliderIndex].wsp = e.target.value.trim();
+    markDirty(); renderPreview();
+  });
+
+  /* Utilidad placeholder-style */
+  ['utilInfo','utilCargado','utilRetiro'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('focus', ()=>{
+      const def = getDefaultTextFor(el.dataset.default);
+      if(el.value.trim() === def.trim()){ el.value = ''; }
+    });
+    el.addEventListener('blur', ()=>{
+      if(!el.value.trim()){
+        el.value = getDefaultTextFor(el.dataset.default);
+      }
+    });
+    el.addEventListener('input', ()=>{
+      const key = id==='utilInfo'?'info':(id==='utilCargado'?'cargado':'retiro');
+      config.utilidad[key] = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+
+  /* Promo amigo text */
+  document.getElementById('promoTexto').addEventListener('input', (e)=>{
+    config.promoAmigo.texto = e.target.value; markDirty(); renderPreview();
+  });
+  document.getElementById('promoInfo').addEventListener('input', (e)=>{
+    config.promoAmigo.info = e.target.value; markDirty(); renderPreview();
+  });
+
+  /* Billeteras */
+  document.getElementById('btnAddWallet').addEventListener('click', ()=>{
+    config.billeteras.push({
+      id:'w_'+Date.now(),
+      label:'Grupo / Nombre visible',
+      cbu:'', alias:'', titular:'',
+      billetera:'Mercado Pago', billeteraCustom:'',
+      color:'#1f6feb',
+      flip:false, flippedPreview:false,
+      cbu2:'', alias2:'', titular2:'',
+      billetera2:'Prex', billetera2Custom:'',
+      color2:'#ff6f3d'
+    });
+    markDirty(); renderWallets(); renderPreview();
+  });
+
+  /* Preview tabs */
+  document.getElementById('previewTabs').addEventListener('click', e=>{
+    const tab = e.target.closest('.tab-chip'); if(!tab) return;
+    document.querySelectorAll('.tab-chip').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('userBarBox').style.display = tab.dataset.tab === 'revin' ? '' : 'none';
+    renderPreview();
+  });
+
+  /* Usuario preview */
+  document.getElementById('previewUsuario').addEventListener('input', ()=> renderPreview());
+}
+
+/* === Dirty indicator === */
+function markDirty(){
+  const chip = document.getElementById('chipStatus');
+  chip.textContent = 'Cambios sin guardar';
+  if(dirtyTimer) clearTimeout(dirtyTimer);
+  dirtyTimer = setTimeout(()=>{ saveCurrentProfile(); },400);
+}
+function indicateSaved(){ document.getElementById('chipStatus').textContent = 'Perfil guardado'; }
+
+/* === Render general === */
+function renderAll(){
+  document.getElementById('colorAccent').value = config.paleta.acento || '#8A2BE2';
+  document.getElementById('colorOk').value = config.paleta.ok || '#10B981';
+  document.getElementById('colorBad').value = config.paleta.bad || '#EF4444';
+
+  document.getElementById('waMensaje').value = config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
+
+  document.getElementById('utilInfo').value = config.utilidad.info || DEFAULT_UTIL_INFO;
+  document.getElementById('utilCargado').value = config.utilidad.cargado || DEFAULT_UTIL_CARGADO;
+  document.getElementById('utilRetiro').value = config.utilidad.retiro || DEFAULT_UTIL_RETIRO;
+
+  document.getElementById('promoTexto').value = config.promoAmigo.texto || DEFAULT_PROMO_TEXTO;
+  document.getElementById('promoInfo').value = config.promoAmigo.info || DEFAULT_PROMO_INFO;
+  document.getElementById('promoPrefix').value = (config.promoAmigo.prefix || 'R');
+
+  renderPCSlider();
+  renderPCSliderPreview();
+  renderSaludosEditor();
+  renderWallets();
+  const activeTab = document.querySelector('.tab-chip.active')?.dataset.tab || 'utilidad';
+  document.getElementById('userBarBox').style.display = activeTab === 'revin' ? '' : 'none';
+  renderPreview();
+}
+
+/* === PCs sliders (editor y preview) === */
+function renderPCSlider(){
+  const cont = document.getElementById('pcSlider'); cont.innerHTML = '';
+  const list = config.whatsapp.pcs;
+  document.getElementById('pcCountNote').textContent = `Mínimo 1, máximo 10 (${list.length})`;
+  list.forEach((pc, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small ghost';
+    btn.textContent = pc.nombre;
+    btn.style.borderColor = i===sliderIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.28)';
+    btn.style.color = i===sliderIndex ? '#e5e7eb' : 'var(--muted)';
+    btn.addEventListener('click', ()=>{
+      sliderIndex = i;
+      document.getElementById('pcWsp').value = pc.wsp || '';
+      renderPCSlider(); renderSaludosEditor(); renderPreview();
+    });
+    cont.appendChild(btn);
+  });
+  document.getElementById('pcWsp').value = (list[sliderIndex]?.wsp || '');
+}
+
+function renderPCSliderPreview(){
+  const cont = document.getElementById('pcSliderPreview'); cont.innerHTML = '';
+  const list = config.whatsapp.pcs;
+  list.forEach((pc, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small ghost';
+    btn.textContent = pc.nombre;
+    btn.style.borderColor = i===sliderPreviewIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.28)';
+    btn.style.color = i===sliderPreviewIndex ? '#e5e7eb' : 'var(--muted)';
+    btn.addEventListener('click', ()=>{
+      sliderPreviewIndex = i;
+      renderPCSliderPreview(); renderPreview();
+    });
+    cont.appendChild(btn);
+  });
+}
+
+/* === Mensajes de revinculación por PC (editor) === */
+function renderSaludosEditor(){
+  const listEl = document.getElementById('saludosList'); listEl.innerHTML = '';
+  const pc = config.whatsapp.pcs[sliderIndex];
+  const arr = pc.mensajes || [];
+  if(!arr.length){
+    const p = document.createElement('p'); p.className='muted';
+    p.textContent = 'No hay mensajes cargados para esta PC.';
+    listEl.appendChild(p);
+  }
+  arr.forEach((s,idx)=>{
     const row = document.createElement('div');
     row.className = 'card-row';
-
     row.innerHTML = `
-      <div class="grip">🔒</div>
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
       <div>
         <div class="wallet-header">
           <span class="wallet-label">Mensaje #${idx+1}</span>
           <div class="wallet-actions">
-            <select class="pc-selector" data-msg-id="${msg.id}">
-              ${config.whatsapp.pcs.map((p,i)=>`
-                <option value="${i}" ${i===sliderIndex?'selected':''}>${p.nombre}</option>
-              `).join('')}
-            </select>
-            <button class="btn small subtle" data-remove-msg="${msg.id}">Eliminar</button>
+            <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">Eliminar</button>
           </div>
         </div>
-        <label>Usá {usuario}</label>
-        <textarea data-msg-text="${msg.id}">${escapeHtml(msg.texto||'')}</textarea>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
+        </div>
       </div>
     `;
-
-    list.appendChild(row);
+    listEl.appendChild(row);
   });
 
-  // edición texto
-  list.querySelectorAll('[data-msg-text]').forEach(el=>{
+  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el=>{
     el.addEventListener('input', ()=>{
-      const id = el.dataset.msgText;
-      const m = pc.mensajes.find(x=>x.id===id);
-      if(m){ m.texto = el.value; markDirty(); renderPreview(); }
+      const i = parseInt(el.dataset.sIdx,10);
+      pc.mensajes[i].texto = el.value;
+      markDirty(); renderPreview();
     });
   });
-
-  // eliminar mensaje
-  list.querySelectorAll('[data-remove-msg]').forEach(btn=>{
+  listEl.querySelectorAll('[data-remove-s]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const id = btn.dataset.removeMsg;
-      pc.mensajes = pc.mensajes.filter(m=>m.id!==id);
+      const i = parseInt(btn.dataset.removeS,10);
+      pc.mensajes.splice(i,1);
       markDirty(); renderSaludosEditor(); renderPreview();
     });
   });
 }
 
-/* ======================================================
-   FIX 3: RENDER WALLETS (ERRORES CRÍTICOS ARREGLADOS)
-   ====================================================== */
-function renderWallets(){
-  const listEl = document.getElementById('walletList');
-  listEl.innerHTML = '';
+/* === Billeteras editor (drag + flip animado) === */
+const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
+function renderWallets(){
+  const listEl = document.getElementById('walletList'); listEl.innerHTML = '';
   (config.billeteras||[]).forEach((w,idx)=>{
     const row = document.createElement('div');
     row.className = 'card-row';
-    row.dataset.index = idx; // FIX drag
+    row.dataset.index = idx;
 
-    row.innerHTML = `
-      <div class="grip" data-grip>🔀</div>
-      <div>
-        <div class="wallet-header">
-          <span class="wallet-label">${escapeHtml(w.label||'Grupo')}</span>
-          <div class="wallet-actions">
-            <button class="btn small ghost" data-toggle-flip="${idx}">🔁 ${w.flip?'ON':'OFF'}</button>
-            <button class="btn small subtle" data-remove-wallet="${idx}">Eliminar</button>
-          </div>
+    // Flip editor card with animation
+    const front = `
+      <div class="flip-title">Frente</div>
+      <div class="section-grid">
+        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" title="Nombre del grupo visible" /></div>
+        <div>
+          <label>CBU</label>
+          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
+          <small class="muted">Solo números, 22 dígitos</small>
         </div>
-        <div class="section-grid">
-          <input data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" placeholder="Nombre visible">
-          <input data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" placeholder="CBU">
-          <input data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" placeholder="Alias">
-          <input data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" placeholder="Titular">
+        <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
+        <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
+        <div>
+          <label>Billetera</label>
+          <select data-field="billetera" data-idx="${idx}">
+            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
         </div>
+        <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
+      </div>
+    `;
+    const back = `
+      <div class="flip-title">Dorso</div>
+      <div class="section-grid">
+        <div>
+          <label>CBU (segunda)</label>
+          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
+        <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
+        <div>
+          <label>Billetera (segunda)</label>
+          <select data-field="billetera2" data-idx="${idx}">
+            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
+        </div>
+        <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
       </div>
     `;
 
+    row.innerHTML = `
+      <div class="grip" data-grip title="Arrastrar (click y mover)">🔀</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
+          <div class="wallet-actions">
+            <button class="btn small ghost" data-toggle-flip="${idx}" title="Activar/Desactivar dorso">🔁 ${w.flip? 'ON' : 'OFF'}</button>
+            <span class="muted">Añade otra billetera del mismo titular</span>
+            <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="flip-card ${w.flippedEditor?'flipped':''}" data-flip-card="${idx}">
+          <div class="flip-toolbar">
+            ${w.flip ? `<button class="flip-btn" data-flip-view="${idx}">${w.flippedEditor?'Ver frente':'Ver dorso'}</button>` : ''}
+          </div>
+          <div class="flip-inner">
+            <div class="flip-face">
+              ${front}
+            </div>
+            <div class="flip-face flip-back">
+              ${back}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
     listEl.appendChild(row);
   });
 
-  // editar campos
-  listEl.querySelectorAll('[data-field]').forEach(el=>{
+  // edición
+  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
+    el.addEventListener('input', onWalletFieldChange);
+    el.addEventListener('change', onWalletFieldChange);
+  });
+  // numeric enforcement for CBU/CBU2
+  listEl.querySelectorAll('input[data-field="cbu"], input[data-field="cbu2"]').forEach(el=>{
     el.addEventListener('input', ()=>{
-      const idx = +el.dataset.idx;
+      el.value = el.value.replace(/\D/g,'').slice(0,22);
+      const idx = parseInt(el.dataset.idx,10);
       const field = el.dataset.field;
-      if(config.billeteras[idx]){
-        config.billeteras[idx][field] = el.value;
-        markDirty(); renderPreview();
+      const w = config.billeteras[idx]; if(!w) return;
+      w[field] = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.remove,10);
+      if(isNaN(idx)) return;
+      if(!confirm('¿Eliminar este grupo?')) return;
+      config.billeteras.splice(idx,1);
+      markDirty(); renderWallets(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-toggle-flip]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.toggleFlip,10);
+      const w = config.billeteras[idx];
+      w.flip = !w.flip;
+      if(w.flip){
+        w.titular2 = w.titular || '';
+        w.billetera2 = w.billetera2 || 'Prex';
+        w.color2 = w.color2 || '#ff6f3d';
+        w.flippedEditor = true; // mostrar dorso al activar
+      }else{
+        w.flippedEditor = false;
+      }
+      markDirty(); renderWallets(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-flip-view]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.flipView,10);
+      const w = config.billeteras[idx];
+      w.flippedEditor = !w.flippedEditor;
+      markDirty();
+      const card = document.querySelector(`[data-flip-card="${idx}"]`);
+      if(card){
+        card.classList.toggle('flipped', w.flippedEditor);
+        btn.textContent = w.flippedEditor ? 'Ver frente' : 'Ver dorso';
       }
     });
   });
 
-  // eliminar billetera
-  listEl.querySelectorAll('[data-remove-wallet]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const idx = +btn.dataset.removeWallet;
-      if(confirm('¿Eliminar billetera?')){
-        config.billeteras.splice(idx,1);
-        markDirty(); renderWallets(); renderPreview();
-      }
+  // drag con grip
+  listEl.querySelectorAll('[data-grip]').forEach(grip=>{
+    const row = grip.closest('.card-row');
+    grip.addEventListener('mousedown', e=>{
+      draggingWallet = row;
+      row.classList.add('dragging');
+      // pequeño efecto visual inmediato
+      e.preventDefault();
     });
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!draggingWallet) return;
+    const listEl = document.getElementById('walletList');
+    const rows = Array.from(listEl.children);
+    const y = e.clientY;
+    let target = null;
+    rows.forEach(r=>{
+      const rect = r.getBoundingClientRect();
+      r.classList.remove('placeholder');
+      if(y>rect.top && y<rect.bottom) target = r;
+    });
+    if(target && target!==draggingWallet){
+      target.classList.add('placeholder');
+    }
+  });
+  document.addEventListener('mouseup', e=>{
+    if(!draggingWallet) return;
+    const listEl = document.getElementById('walletList');
+    const rows = Array.from(listEl.children);
+    let toIdx = null;
+    rows.forEach((r,i)=>{
+      if(r.classList.contains('placeholder')){ toIdx = i; r.classList.remove('placeholder'); }
+    });
+    const fromIdx = parseInt(draggingWallet.dataset.index,10);
+    draggingWallet.classList.remove('dragging');
+    draggingWallet = null;
+    if(toIdx===null || isNaN(fromIdx)) return;
+    const arr = config.billeteras;
+    const item = arr.splice(fromIdx,1)[0];
+    arr.splice(toIdx,0,item);
+    markDirty(); renderWallets(); renderPreview();
   });
 }
 
-/* ======================================================
-   FIX 4: ELIMINACIÓN GLOBAL MENSAJES (DELEGADO)
-   ====================================================== */
-document.addEventListener('click', e=>{
-  const btn = e.target.closest('[data-remove-msg]');
-  if(!btn) return;
+function onWalletFieldChange(e){
+  const idx = parseInt(e.target.dataset.idx,10);
+  const field = e.target.dataset.field;
+  const w = config.billeteras[idx]; if(!w) return;
+  if(field==='billetera' || field==='billetera2'){
+    w[field] = e.target.value;
+    const customField = field==='billetera'?'billeteraCustom':'billetera2Custom';
+    const inputCustom = e.target.parentElement.querySelector(`input[data-field="${customField}"]`);
+    if(inputCustom){ inputCustom.style.display = e.target.value==='Otro' ? '' : 'none'; }
+  }else{ w[field] = e.target.value; }
+  markDirty(); renderPreview();
+}
 
-  const id = btn.dataset.removeMsg;
-  config.whatsapp.pcs.forEach(pc=>{
-    pc.mensajes = pc.mensajes.filter(m=>m.id!==id);
-  });
-  markDirty(); renderSaludosEditor(); renderPreview();
-});
+/* === Preview === */
+function getActiveTab(){
+  const active = document.querySelector('.tab-chip.active');
+  return active ? active.dataset.tab : 'utilidad';
+}
+function applyPalette(){
+  const p = config.paleta || {};
+  document.documentElement.style.setProperty('--accent', p.acento || '#8A2BE2');
+  document.documentElement.style.setProperty('--accent-light', p.acento || '#a855f7');
+  document.documentElement.style.setProperty('--ok', p.ok || '#10B981');
+  document.documentElement.style.setProperty('--bad', p.bad || '#EF4444');
+}
 
-/* ======================================================
-   RESTO DEL CÓDIGO
-   ====================================================== */
-// Todo el resto del JS (preview, bootstrap, storage, etc)
-// permanece IGUAL al archivo original que enviaste.
-// No tenía errores funcionales.
+function renderPreview(){
+  applyPalette();
+  const content = document.getElementById('previewContent'); content.innerHTML = '';
+  const tab = getActiveTab();
+  const usuario = (document.getElementById('previewUsuario').value || 'USUARIO').trim();
+  const pcs = config.whatsapp.pcs;
+  const pc = pcs[sliderPreviewIndex] || pcs[0];
+
+  if(tab === 'utilidad'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Utilidad <span class="chip-mini">Texto fijo</span></h3>`;
+    const blocks = [
+      { key:'info', label:'Info', val: config.utilidad.info || DEFAULT_UTIL_INFO },
+      { key:'cargado', label:'Cargado', val: config.utilidad.cargado || DEFAULT_UTIL_CARGADO },
+      { key:'retiro', label:'Retiro', val: config.utilidad.retiro || DEFAULT_UTIL_RETIRO }
+    ];
+    blocks.forEach(b=>{
+      const btn = document.createElement('div'); btn.className='btn-preview';
+      btn.innerHTML = `<div><span class="label">${b.label}</span><div class="sub">${escapeHtml(shorten(b.val,160))}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{ copyToClipboard(b.val); showToast(`Copiado texto de ${b.label}`); });
+      g.appendChild(btn);
+    });
+    content.appendChild(g);
+  }
+
+  if(tab === 'billeteras'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Billeteras por grupo <span class="chip-mini">${config.billeteras.length} grupos</span></h3>`;
+    if(!(config.billeteras||[]).length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin billeteras cargadas.'; g.appendChild(p);
+    }else{
+      const byLabel = {};
+      config.billeteras.forEach(w=>{ const k = (w.label||'Grupo'); (byLabel[k]||(byLabel[k]=[])).push(w); });
+      Object.keys(byLabel).forEach(label=>{
+        const subgroup = document.createElement('div'); subgroup.className='preview-group';
+        subgroup.innerHTML = `<h3>${escapeHtml(label)} <span class="chip-mini">${byLabel[label].length} billetera(s)</span></h3>`;
+        const grid = document.createElement('div'); grid.className='wallets-face';
+
+        byLabel[label].forEach((w,i)=>{
+          // Flip-card preview per wallet
+          const card = document.createElement('div');
+          card.className = 'flip-card' + (w.flippedPreview?' flipped':'');
+          const inner = document.createElement('div');
+          inner.className = 'flip-inner';
+
+          const toolbar = document.createElement('div');
+          toolbar.className = 'flip-toolbar';
+          if(w.flip){
+            const btn = document.createElement('button');
+            btn.className = 'flip-btn';
+            btn.textContent = w.flippedPreview ? 'Ver frente' : 'Ver dorso';
+            btn.addEventListener('click', ()=>{
+              w.flippedPreview = !w.flippedPreview;
+              card.classList.toggle('flipped', w.flippedPreview);
+              btn.textContent = w.flippedPreview ? 'Ver frente' : 'Ver dorso';
+            });
+            toolbar.appendChild(btn);
+          }
+
+          const faceFront = document.createElement('div');
+          faceFront.className = 'flip-face';
+          const f1 = document.createElement('button');
+          f1.className = 'wallet-btn';
+          f1.textContent = `CBU ${billeName(w)}`;
+          f1.style.borderColor = w.color || '#1f6feb';
+          f1.addEventListener('click', ()=>{
+            const val = (w.cbu||'').trim();
+            if(!val) return showToast('CBU vacío');
+            copyToClipboard(val);
+            showToast(`Copiado CBU de ${w.titular||'Titular'}`);
+          });
+          const f2 = document.createElement('button');
+          f2.className = 'wallet-btn';
+          f2.textContent = `Alias ${billeName(w)}`;
+          f2.style.borderColor = w.color || '#1f6feb';
+          f2.addEventListener('click', ()=>{
+            const msg = `${w.alias||''}\nTitular ${w.titular||''} *${billeName(w)}*`;
+            copyToClipboard(msg.trim());
+            showToast(`Copiado Alias de ${w.titular||'Titular'}`);
+          });
+          faceFront.appendChild(f1);
+          faceFront.appendChild(f2);
+
+          const faceBack = document.createElement('div');
+          faceBack.className = 'flip-face flip-back';
+          if(w.flip){
+            const b1 = document.createElement('button');
+            b1.className = 'wallet-btn';
+            b1.textContent = `CBU ${billeName2(w)}`;
+            b1.style.borderColor = w.color2 || '#ff6f3d';
+            b1.addEventListener('click', ()=>{
+              const val = (w.cbu2||'').trim();
+              if(!val) return showToast('CBU (segunda) vacío');
+              copyToClipboard(val);
+              showToast(`Copiado CBU (segunda) de ${w.titular2||'Titular'}`);
+            });
+            const b2 = document.createElement('button');
+            b2.className = 'wallet-btn';
+            b2.textContent = `Alias ${billeName2(w)}`;
+            b2.style.borderColor = w.color2 || '#ff6f3d';
+            b2.addEventListener('click', ()=>{
+              const msg = `${w.alias2||''}\nTitular ${w.titular2||''} *${billeName2(w)}*`;
+              copyToClipboard(msg.trim());
+              showToast(`Copiado Alias (segunda) de ${w.titular2||'Titular'}`);
+            });
+            faceBack.appendChild(b1);
+            faceBack.appendChild(b2);
+          }else{
+            const p = document.createElement('p');
+            p.className = 'muted';
+            p.textContent = 'Sin dorso';
+            faceBack.appendChild(p);
+          }
+
+          inner.appendChild(faceFront);
+          inner.appendChild(faceBack);
+          card.appendChild(toolbar);
+          card.appendChild(inner);
+          grid.appendChild(card);
+        });
+
+        subgroup.appendChild(grid);
+        g.appendChild(subgroup);
+      });
+    }
+    content.appendChild(g);
+  }
+
+  if(tab === 'promo'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">Texto y explicación</span></h3>`;
+    const btnPromo = document.createElement('div'); btnPromo.className='btn-preview';
+    btnPromo.innerHTML = `<div><span class="label">🎁 Promo Amigos</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO,160))}</div></div><span class="sub">copiar</span>`;
+    btnPromo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO); showToast('Copiado Promo Amigos'); });
+    g.appendChild(btnPromo);
+    const btnInfo = document.createElement('div'); btnInfo.className='btn-preview';
+    btnInfo.innerHTML = `<div><span class="label">ℹ️ Info Promo</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.info||DEFAULT_PROMO_INFO,160))}</div></div><span class="sub">copiar</span>`;
+    btnInfo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.info||DEFAULT_PROMO_INFO); showToast('Copiado Info Promo'); });
+    g.appendChild(btnInfo);
+    const prefixNote = document.createElement('div'); prefixNote.className='muted'; prefixNote.style.marginTop='8px';
+    prefixNote.textContent = `Los códigos se asignan por PC añadida: prefijo + número de PC. Prefijo actual: "${config.promoAmigo.prefix||'R'}"`;
+    g.appendChild(prefixNote);
+    content.appendChild(g);
+  }
+
+  if(tab === 'revin'){
+    const g = document.createElement('div'); g.className='preview-group';
+    const mensajes = pc.mensajes||[];
+    g.innerHTML = `<h3>PC ${escapeHtml(pc.nombre)} · Mensajes y WhatsApp <span class="chip-mini">${mensajes.length} mensajes</span></h3>`;
+
+    const plantilla = (config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma').replace(/\{usuario\}/g, usuario);
+    const wspNum = (pc.wsp||'5491100000000').trim();
+    const wspLink = `https://wa.me/${encodeURIComponent(wspNum)}?text=${encodeURIComponent(plantilla)}`;
+    const btnWsp = document.createElement('div'); btnWsp.className='btn-preview';
+    btnWsp.innerHTML = `<div><span class="label">Copiar WhatsApp (${escapeHtml(pc.nombre)})</span><div class="sub">${escapeHtml(shorten(wspLink,100))}</div></div><span class="sub">copiar</span>`;
+    btnWsp.addEventListener('click', ()=>{ copyToClipboard(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); });
+    g.appendChild(btnWsp);
+
+    // generación de código con prefijo + índice de la PC
+    const prefix = config.promoAmigo.prefix || 'R';
+    const idxForCode = sliderPreviewIndex + 1; // PC1 → 1
+    const codeVal = `${prefix}${idxForCode}`;
+    const codeMsg = (config.promoAmigo.texto||DEFAULT_PROMO_TEXTO).replace(/\{codigo\}/g, codeVal).replace(/\{usuario\}/g, usuario);
+    const btnCodigo = document.createElement('div'); btnCodigo.className='btn-preview';
+    btnCodigo.innerHTML = `<div><span class="label">Código amigo (${escapeHtml(codeVal)})</span><div class="sub">${escapeHtml(shorten(codeMsg,100))}</div></div><span class="sub">copiar</span>`;
+    btnCodigo.addEventListener('click', ()=>{ copyToClipboard(codeMsg); showToast(`Copiado Código Amigo (${codeVal})`); });
+    g.appendChild(btnCodigo);
+
+    if(!mensajes.length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin mensajes de revinculación para esta PC.'; g.appendChild(p);
+    }else{
+      mensajes.forEach((m,i)=>{
+        const txt = (m.texto||'').replace(/\{usuario\}/g, usuario);
+        const btn = document.createElement('div'); btn.className='btn-preview';
+        btn.innerHTML = `<div><span class="label">Mensaje #${i+1}</span><div class="sub">${escapeHtml(shorten(txt,160))}</div></div><span class="sub">copiar</span>`;
+        btn.addEventListener('click', ()=>{ copyToClipboard(txt); showToast(`Copiado mensaje #${i+1}`); });
+        g.appendChild(btn);
+      });
+    }
+    content.appendChild(g);
+  }
+}
+
+/* === Helpers === */
+function billeName(w){ return w.billetera==='Otro' ? (w.billeteraCustom||'Billetera') : (w.billetera||'Billetera'); }
+function billeName2(w){ return w.billetera2==='Otro' ? (w.billetera2Custom||'Billetera') : (w.billetera2||'Billetera'); }
+function getDefaultTextFor(kind){
+  if(kind==='info') return DEFAULT_UTIL_INFO;
+  if(kind==='cargado') return DEFAULT_UTIL_CARGADO;
+  if(kind==='retiro') return DEFAULT_UTIL_RETIRO;
+  return '';
+}
+
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(str){ return escapeHtml(str).replace(/"/g,'&quot;'); }
+function shorten(str,max){ if(!str) return ''; str=String(str); return str.length>max ? str.slice(0,max-3)+'...' : str; }
+async function copyToClipboard(text){ try{ await navigator.clipboard.writeText(String(text)); }catch(e){} }
+let toastTimer = null;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'),1800);
+}
+
+/* === Init end === */
 </script>
+
 
 </body></html>
