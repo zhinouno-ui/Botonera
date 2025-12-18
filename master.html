@@ -57,7 +57,7 @@
       display:inline-flex;align-items:center;gap:8px;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-light));
       color:white;box-shadow:0 10px 25px rgba(88,28,135,.45);transition:transform .12s, box-shadow .12s, opacity .12s;
     }
-    .btn.small{padding:6px 10px;font-size:11px;}
+    .btn.small{padding=6px 10px;font-size:11px;}
     .btn.ghost{background:transparent;border-radius:10px;padding:7px 11px;border:1px solid rgba(148,163,184,.28);box-shadow:none;color:var(--muted);}
     .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.12);box-shadow:none;}
     .btn:active{transform:translateY(1px) scale(.998);}
@@ -803,40 +803,122 @@ function renderWallets(){
             <button class="btn small subtle" data-remove-wallet="${idx}">Eliminar</button>
           </div>
         </div>
+
         <div class="section-grid" style="margin-top:8px;">
-          <div><label>Nombre visible</label><input data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}"></div>
-          <div><label>CBU</label><input data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}"></div>
-          <div><label>Alias</label><input data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}"></div>
-          <div><label>Titular</label><input data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}"></div>
+          <div>
+            <label>Nombre visible</label>
+            <input data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}">
+          </div>
+
+          <div>
+            <label>Tipo de billetera</label>
+            <select data-field="billetera" data-idx="${idx}">
+              ${WALLET_OPTS.map(opt => `<option ${opt===w.billetera ? 'selected' : ''}>${escapeHtml(opt)}</option>`).join('')}
+            </select>
+            <input data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre personalizado" style="${w.billetera==='Otro'?'':'display:none;margin-top:8px;'}" value="${escapeAttr(w.billeteraCustom||'')}">
+          </div>
+
+          <div>
+            <label>Color (frente)</label>
+            <input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}">
+          </div>
+
+          <div>
+            <label>CBU</label>
+            <input data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}">
+          </div>
+
+          <div>
+            <label>Alias</label>
+            <input data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}">
+          </div>
+
+          <div>
+            <label>Titular</label>
+            <input data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}">
+          </div>
         </div>
+
+        <div style="margin-top:10px;border-top:1px dashed rgba(148,163,184,.06);padding-top:10px;">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" data-field="flip" data-idx="${idx}" ${w.flip ? 'checked' : ''} style="transform:scale(1.1);margin-right:8px;">
+            Activar dorso (flip)
+          </label>
+
+          <div class="section-grid" style="margin-top:8px; ${w.flip ? '' : 'display:none;'}" data-dorso="${idx}">
+            <div>
+              <label>CBU (dorso)</label>
+              <input data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}">
+            </div>
+            <div>
+              <label>Alias (dorso)</label>
+              <input data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}">
+            </div>
+            <div>
+              <label>Titular (dorso)</label>
+              <input data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}">
+            </div>
+            <div>
+              <label>Tipo billetera (dorso)</label>
+              <select data-field="billetera2" data-idx="${idx}">
+                ${WALLET_OPTS.map(opt => `<option ${opt===w.billetera2 ? 'selected' : ''}>${escapeHtml(opt)}</option>`).join('')}
+              </select>
+              <input data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre personalizado" style="${w.billetera2==='Otro'?'':'display:none;margin-top:8px;'}" value="${escapeAttr(w.billetera2Custom||'')}">
+            </div>
+            <div>
+              <label>Color (dorso)</label>
+              <input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}">
+            </div>
+          </div>
+        </div>
+
       </div>
     `;
     listEl.appendChild(row);
   });
 
-  // editar campos (delegado por elementos creados)
+  // bind input changes (any field)
   listEl.querySelectorAll('[data-field]').forEach(el=>{
-    el.addEventListener('input', (e)=>{
+    el.addEventListener('input', (ev)=>{
       const idx = parseInt(el.dataset.idx,10);
       const field = el.dataset.field;
       if(isNaN(idx) || !config.billeteras[idx]) return;
-      config.billeteras[idx][field] = el.value;
-      markDirty(); renderPreview();
+      const w = config.billeteras[idx];
+
+      // checkbox for flip uses checked property
+      if(el.type === 'checkbox'){
+        w[field] = el.checked;
+        // show/hide dorso area
+        const dorso = listEl.querySelector(`[data-dorso="${idx}"]`);
+        if(dorso) dorso.style.display = el.checked ? '' : 'none';
+        // when disabling flip, we may want to clear flippedEditor flag
+        if(!el.checked){ w.flippedEditor = false; w.flippedPreview = false; }
+      } else {
+        // normal inputs: set value
+        w[field] = el.value;
+      }
+
+      // handle custom "Otro" visibility for both front and dorso
+      if(field === 'billetera' || field === 'billetera2'){
+        const customField = field === 'billetera' ? 'billeteraCustom' : 'billetera2Custom';
+        const customInput = el.parentElement.querySelector(`input[data-field="${customField}"]`);
+        if(customInput) customInput.style.display = el.value === 'Otro' ? '' : 'none';
+      }
+
+      markDirty();
+      renderPreview();
     });
   });
 
-  // toggle flip
+  // toggle flip button (keeps behaviour for quick toggle)
   listEl.querySelectorAll('[data-toggle-flip]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const idx = parseInt(btn.dataset.toggleFlip,10);
       if(isNaN(idx) || !config.billeteras[idx]) return;
       const w = config.billeteras[idx];
       w.flip = !w.flip;
-      if(w.flip){
-        w.flippedEditor = true;
-      }else{
-        w.flippedEditor = false;
-      }
+      w.flippedEditor = w.flip ? (w.flippedEditor || false) : false;
+      if(!w.flip) w.flippedPreview = false;
       markDirty(); renderWallets(); renderPreview();
     });
   });
@@ -869,7 +951,6 @@ function renderWallets(){
   document.addEventListener('mouseup', (ev)=>{
     if(!dragging) return;
     const rows = Array.from(listEl.children);
-    // find nearest index by Y position
     let toIdx = null;
     const y = ev.clientY;
     rows.forEach((r,i)=>{
@@ -975,6 +1056,8 @@ function renderPreview(){
 
           const faceFront = document.createElement('div');
           faceFront.className = 'flip-face';
+
+          // Primer botón (CBU)
           const f1 = document.createElement('button');
           f1.className = 'wallet-btn';
           f1.textContent = `CBU ${billeName(w)}`;
@@ -985,6 +1068,8 @@ function renderPreview(){
             copyToClipboard(val);
             showToast(`Copiado CBU de ${w.titular||'Titular'}`);
           });
+
+          // Segundo botón (Alias)
           const f2 = document.createElement('button');
           f2.className = 'wallet-btn';
           f2.textContent = `Alias ${billeName(w)}`;
@@ -994,6 +1079,7 @@ function renderPreview(){
             copyToClipboard(msg.trim());
             showToast(`Copiado Alias de ${w.titular||'Titular'}`);
           });
+
           faceFront.appendChild(f1);
           faceFront.appendChild(f2);
 
@@ -1033,6 +1119,28 @@ function renderPreview(){
           card.appendChild(toolbar);
           card.appendChild(inner);
           grid.appendChild(card);
+
+          // Ajuste: frenar el header/cuadro completo para que termine donde acaba el segundo botón + ~10cm extra
+          // 1cm ≈ 37.8px → 10cm ≈ 378px
+          const extraPx = Math.round(10 * 37.8);
+          // Esperar al siguiente frame para medir elementos ya renderizados
+          requestAnimationFrame(()=>{
+            try{
+              const f2Rect = f2.getBoundingClientRect();
+              const cardRect = card.getBoundingClientRect();
+              // distancia desde el left del card hasta el borde derecho del segundo botón
+              const rightOffset = Math.max(0, f2Rect.right - cardRect.left);
+              const desired = rightOffset + extraPx;
+              // limitar a un ancho razonable (no exceder viewport - margin)
+              const maxAllowed = Math.max(300, window.innerWidth - 80);
+              const finalWidth = Math.min(desired, maxAllowed);
+              card.style.maxWidth = finalWidth + 'px';
+              // si querés forzar también minWidth: card.style.minWidth = Math.min(finalWidth, 520) + 'px';
+            }catch(err){
+              // medición pudo fallar en entornos raros; no bloquear
+            }
+          });
+
         });
 
         subgroup.appendChild(grid);
