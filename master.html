@@ -1226,16 +1226,6 @@ function renderSaludosEditor(){
     listEl.appendChild(row);
   });
 
-  // Event listeners para edición de texto
-  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el => {
-    el.addEventListener('input', () => {
-      const i = parseInt(el.dataset.sIdx, 10);
-      pc.mensajes[i].texto = el.value;
-      markDirty(); 
-      renderPreview();
-    });
-  });
-
   // Event listeners para eliminar mensajes
   listEl.querySelectorAll('[data-remove-s]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1246,6 +1236,18 @@ function renderSaludosEditor(){
       renderPreview();
     });
   });
+  
+  // Event listeners para edición de texto
+  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el => {
+    el.addEventListener('input', () => {
+      const i = parseInt(el.dataset.sIdx, 10);
+      pc.mensajes[i].texto = el.value;
+      markDirty(); 
+      renderPreview();
+    });
+  });
+
+  
 
   // Event listeners para mover mensajes
   listEl.querySelectorAll('[data-move-s]').forEach(btn => {
