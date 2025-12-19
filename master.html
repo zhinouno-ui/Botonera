@@ -1,11 +1,136 @@
-<!DOCTYPE html>
-<html lang="es" style="--accent: #8A2BE2; --accent-light: #8A2BE2; --ok: #10B981; --bad: #EF4444;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<title>ChinMaker • Editor Unificado v5 (flip animado)</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-/* --- CSS EXISTENTE --- */
-</style>
+<!DOCTYPE html>
+<!-- saved from url=(0042)https://chinbotones.vercel.app/master.html -->
+<html lang="es" style="--accent: #8A2BE2; --accent-light: #8A2BE2; --ok: #10B981; --bad: #EF4444;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>ChinMaker • Editor Unificado v5 (flip animado)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root{
+      --bg:#050711; --bg-soft:#0b101d; --card:#101524; --card-soft:#141a2b;
+      --accent:#8A2BE2; --accent-light:#a855f7; --ok:#10B981; --bad:#EF4444;
+      --muted:#9ca3af; --text:#e5f3ff; --border:rgba(148,163,184,.25);
+      --shadow:0 16px 40px rgba(0,0,0,.6); --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left,rgba(138,43,226,0.25),transparent 55%),
+        radial-gradient(circle at bottom right,rgba(16,185,129,0.18),transparent 55%),
+        linear-gradient(180deg,#030712,#020617 55%,#020617 100%);
+      min-height:100vh; color:var(--text); padding:18px;
+    }
+    .wrap{max-width:1320px;margin:0 auto;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+    .title-block h1{margin:0;font-size:22px;letter-spacing:.03em;background:linear-gradient(90deg,#f9fafb,var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .title-block small{color:var(--muted);font-size:13px;}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(15,23,42,.75);border:1px solid rgba(148,163,184,.35);font-size:12px;color:var(--muted);box-shadow:0 6px 18px rgba(0,0,0,.45);}
+
+    .layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;}
+    @media (max-width:980px){.layout{grid-template-columns:1fr;}}
+
+    .card{background:radial-gradient(circle at top left,rgba(148,163,184,.08),transparent 55%),var(--card);border-radius:var(--radius);border:1px solid rgba(148,163,184,.18);box-shadow:var(--shadow);padding:14px 16px 16px;transition:transform .14s, box-shadow .14s;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.7);}
+    .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:#e5e7eb;}
+    .sub{margin-top:0;color:var(--muted);font-size:12px;}
+    .divider-label{margin:10px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    label{font-size:12px;color:var(--muted);margin-bottom:3px;display:block;}
+    input[type=text], textarea, select, input[type=color]{
+      width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(148,163,184,.24);
+      background:rgba(6,10,16,.76);color:var(--text);font-size:13px;outline:none;
+      transition:border-color .16s, box-shadow .16s, transform .12s;
+    }
+    input[type=color]{padding:0.25rem;height:36px;cursor:pointer;background:#020617;}
+    textarea{min-height:90px;resize:vertical;}
+    input:focus, textarea:focus, select:focus{
+      border-color:var(--accent-light);box-shadow:0 6px 20px rgba(168,85,247,.08);transform:translateY(-1px);
+    }
+    select{
+      appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239ca3af' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 8px center;background-size:16px;padding-right:26px;
+    }
+
+    .btn{
+      border:none;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+      display:inline-flex;align-items:center;gap:8px;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-light));
+      color:white;box-shadow:0 10px 25px rgba(88,28,135,.45);transition:transform .12s, box-shadow .12s, opacity .12s;
+    }
+    .btn.small{padding:6px 10px;font-size:11px;}
+    .btn.ghost{background:transparent;border-radius:10px;padding:7px 11px;border:1px solid rgba(148,163,184,.28);box-shadow:none;color:var(--muted);}
+    .btn.subtle{background:#111827;border-radius:9px;border:1px solid rgba(148,163,184,.12);box-shadow:none;}
+    .btn:active{transform:translateY(1px) scale(.998);}
+    .section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px;}
+    .list{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+
+    .card-row{background:var(--card-soft);border-radius:11px;border:1px solid rgba(148,163,184,.16);padding:10px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:flex-start;position:relative;transition:transform .12s, box-shadow .12s;}
+    .card-row .grip{width:34px;height:34px;border-radius:10px;background:#1f2530;color:#fff;cursor:grab;display:flex;align-items:center;justify-content:center;border:1px solid rgba(75,85,99,.6);box-shadow:0 6px 18px rgba(0,0,0,.45);}
+    .card-row.dragging{transform:translateY(-6px) scale(1.02) rotate(-0.6deg);box-shadow:0 30px 60px rgba(0,0,0,.6);opacity:.98;z-index:20;}
+    .card-row.placeholder::after{content:'';position:absolute;left:8px;right:8px;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-light));bottom:-10px;opacity:.9;transition:all .18s ease;}
+
+    .wallet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    .wallet-label{font-size:13px;font-weight:700;}
+    .wallet-actions{display:flex;gap:8px;align-items:center;}
+    .muted{color:var(--muted);font-size:11px;}
+
+    .preview-card{background:radial-gradient(circle at top,rgba(248,250,252,.04),transparent 60%),var(--bg-soft);border-radius:var(--radius);border:1px solid rgba(148,163,184,.14);padding:12px 13px;box-shadow:var(--shadow);}
+    .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .preview-tabs{display:inline-flex;background:#020617;padding:3px;border-radius:999px;border:1px solid rgba(148,163,184,.18);}
+    .tab-chip{padding:6px 11px;border-radius:999px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .12s;}
+    .tab-chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-light));color:#f9fafb;box-shadow:0 8px 30px rgba(138,43,226,.12);}
+
+    .preview-group{margin-bottom:10px;border-radius:10px;padding:10px;background:rgba(15,23,42,.84);border:1px solid rgba(148,163,184,.08);box-shadow:inset 0 -6px 20px rgba(0,0,0,.35);}
+    .preview-group h3{margin:0 0 8px;font-size:14px;display:flex;align-items:center;justify-content:space-between;}
+    .chip-mini{font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.12);color:var(--muted);}
+
+    .wallets-face{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+
+   /* Flip-card contenedor fijo */
+    .flip-card{
+      position:relative; width:100%; border:1px solid rgba(55,65,81,.4); border-radius:12px; overflow:hidden;
+      background:#0f1724; height:160px; perspective:1200px; transition:transform .18s, box-shadow .18s;
+      box-shadow:0 14px 36px rgba(0,0,0,.5);
+    }
+    .flip-inner{position:relative; width:100%; height:100%; transition:transform .55s cubic-bezier(.2,.9,.3,1); transform-style:preserve-3d;}
+    .flip-card.flipped .flip-inner{ transform:rotateY(180deg); }
+    .flip-face{position:absolute; inset:0; padding:12px; backface-visibility:hidden; display:flex; flex-direction:column; gap:10px; align-items:stretch;}
+    .flip-back{ transform:rotateY(180deg); }
+
+    .flip-toolbar{position:absolute; top:8px; right:8px; z-index:6; display:flex; gap:6px;}
+    .flip-btn{border:none; border-radius:8px; padding:6px 10px; font-size:12px; background:#111827; color:#fff; cursor:pointer; border:1px solid rgba(75,85,99,.6); box-shadow:0 8px 20px rgba(0,0,0,.45);}
+
+    .wallet-btn{width:100%;padding:10px;border:none;border-radius:10px;background:#1b2029;color:#fff;font-weight:700;cursor:pointer;border:1px solid rgba(55,65,81,.9);transition:transform .12s, box-shadow .12s;}
+    .wallet-btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(0,0,0,.6);}
+    .btn-preview{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,#0b1220,#020617);border:1px solid rgba(55,65,81,.9);cursor:pointer;font-size:13px;margin-bottom:8px;transition:transform .12s, box-shadow .12s;}
+    .btn-preview:hover{transform:translateY(-4px);border-color:var(--accent-light);box-shadow:0 18px 40px rgba(138,43,226,.12);}
+
+    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);padding:10px 14px;border-radius:999px;background:rgba(15,23,42,.98);border:1px solid rgba(148,163,184,.35);color:#e5e7eb;font-size:13px;display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:60;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast-icon{width:20px;height:20px;border-radius:999px;background:rgba(138,43,226,.08);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent-light);}
+
+    <div class="divider-label">Mensajes de revinculación por PC</div>
+<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+  <p class="muted" style="margin:0;">Usá <code>{usuario}</code>. Ej.: "Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX".</p>
+  <button class="btn small subtle" id="btnAddSaludo" data-tooltip="Agregar mensaje para la PC seleccionada">+ Añadir mensaje</button>
+</div>
+<div class="list" id="saludosList"><p class="muted">No hay mensajes cargados para esta PC.</p></div>
+    
+    /* tooltips simples por hover (data-tooltip) */
+    [data-tooltip]{position:relative;cursor:help;}
+    [data-tooltip]:hover::after{
+      content:attr(data-tooltip);
+      position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);white-space:nowrap;padding:6px 9px;border-radius:8px;background:rgba(10,12,16,.94);color:var(--text);font-size:12px;border:1px solid rgba(148,163,184,.12);box-shadow:0 8px 30px rgba(0,0,0,.6);z-index:80;
+    }
+
+    /* pequeño pulso para botones importantes */
+    @keyframes pulse {
+      0%{ transform:scale(1); box-shadow:0 10px 25px rgba(168,85,247,.06); }
+      50%{ transform:scale(1.015); box-shadow:0 20px 40px rgba(168,85,247,.10); }
+      100%{ transform:scale(1); box-shadow:0 10px 25px rgba(168,85,247,.06); }
+    }
+  </style>
 </head>
 <body>
 <div class="wrap">
@@ -19,98 +144,1594 @@
     </div>
   </header>
 
-  <div class="layout">
-    <div class="card">
-      <h2>Mensajes de revinculación por PC</h2>
-      <div id="saludosList" class="list">
-        <!-- Render dinámico de mensajes -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="row" style="justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+      <div style="min-width:220px;">
+        <label>Perfil activo</label>
+        <div class="row" style="gap:6px;">
+          <select id="profileSelect" style="flex:1;min-width:140px;" data-tooltip="Seleccioná el perfil."><option value="PC01">PC01</option></select>
+          <button class="btn small subtle" id="btnNewProfile" data-tooltip="Crear nuevo perfil">Nuevo</button>
+        </div>
+        <p class="muted" style="margin-top:6px;">Ej: PC01, PC02, Gonzales, CasinoCentro...</p>
       </div>
+      <div class="row" style="gap:8px;">
+        <input type="file" id="fileImport" accept=".json" style="display:none;">
+        <button class="btn small" id="btnExport" data-tooltip="Exportar perfil actual">Exportar perfil</button>
+        <button class="btn small ghost" id="btnImport" data-tooltip="Importar desde .json">Subir perfil</button>
+        <button class="btn small ghost" id="btnReset" data-tooltip="Reiniciar perfil actual">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- EDITOR -->
+    <div class="card">
+      <h2>Editor de configuración</h2>
+      <p class="sub">Se guarda en el navegador y podés exportarlo a <code>.chin.json</code>. Mantén el cursor sobre los controles para ver comentarios.</p>
+
+      <div class="section-grid">
+        <div><label>Color acento</label><input type="color" id="colorAccent" value="#8A2BE2" data-tooltip="Color principal de la interfaz"></div>
+        <div><label>Color OK</label><input type="color" id="colorOk" value="#10B981" data-tooltip="Color para mensajes OK"></div>
+        <div><label>Color Error</label><input type="color" id="colorBad" value="#EF4444" data-tooltip="Color para mensajes de error"></div>
+      </div>
+
+      <div class="divider-label">PCs y WhatsApp</div>
+      <div class="row">
+        <div style="flex:1;min-width:260px;">
+          <label>PCs configuradas</label>
+          <div class="row">
+            <button class="btn small ghost" id="pcAddBtn" data-tooltip="Agregar nueva PC">Agregar PC</button>
+            <button class="btn small ghost" id="pcDelBtn" data-tooltip="Eliminar la última PC">Eliminar última PC</button>
+            <span class="muted" id="pcCountNote">Mínimo 1, máximo 10 (4)</span>
+          </div>
+          <div id="pcSlider" class="row" style="margin-top:8px;flex-wrap:wrap;"><button class="btn small ghost" style="border-color: rgba(148, 163, 184, 0.28); color: var(--muted);">PC01</button><button class="btn small ghost" style="border-color: rgba(148, 163, 184, 0.28); color: var(--muted);">PC02</button><button class="btn small ghost" style="border-color: rgba(148, 163, 184, 0.28); color: var(--muted);">PC03</button><button class="btn small ghost" style="border-color: var(--accent-light); color: rgb(229, 231, 235);">PC04</button></div>
+        </div>
+        <div style="flex:1;min-width:260px;">
+          <label>WhatsApp de la PC seleccionada</label>
+          <input type="text" id="pcWsp" placeholder="5491100000000" data-tooltip="Número WA para la PC (sin espacios) Ej: 54911...">
+          <p class="muted">Al copiar WhatsApp, <code>{usuario}</code> se reemplaza por lo que escribas en la barra de vista previa.</p>
+        </div>
+      </div>
+
+      <div class="divider-label">Mensajes de revinculación por PC</div>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <p class="muted" style="margin:0;">Usá <code>{usuario}</code>. Ej.: “Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX”.</p>
+        <button class="btn small subtle" id="btnAddSaludo" data-tooltip="Agregar mensaje para la PC seleccionada">+ Añadir mensaje</button>
+      </div>
+      <div class="list" id="saludosList"><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #1</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="0" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="0" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🔥 ¡Hola {usuario}!  En Bet300 nos gustaría verte de regreso.
+🎁 Tenés un 30% extra en tu próxima carga por volver.
+🔑 Usuario: {usuario} – Clave: 12345a
+🌐 https://www.bet300.biz/
+
+💬 Cajero: 11-5900-9968 </textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #2</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="1" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="1" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">✨ ¿Cómo va? Bet300 quiere darte la bienvenida otra vez.
+💸 Sumá 30% adicional al cargar tu cuenta.
+👤 Usuario: {usuario} – contraseña: 12345a
+🌍 https://www.bet300.biz/
+
+📞 Soporte/cajero: 11-5900-9968</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #3</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="2" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="2" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🚀 ¡Ey! Te esperamos en Bet300.
+💥 Por volver, activamos +30% en tu carga.
+🧩 Usuario: {usuario} | Clave: 12345a
+🔗 https://www.bet300.biz/
+
+📱 Cajero: 11-5900-9968</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #4</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="3" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="3" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">💫 ¡Hola! Pasamos para contarte que Bet300 tiene un beneficio para vos.
+💰 Recargá y recibí 30% extra por regresar.
+🔐 Datos: {usuario} / 12345a
+🌐 https://www.bet300.biz/
+
+☎️ Contacto cajero: 11-5900-9968</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #5</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="4" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="4" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🔥 ¿Todo bien? Te esperamos nuevamente en Bet300.
+🎉 Por volver a jugar, te sumamos 30% más en tu carga.
+🆔 Usuario: {usuario} – Clave: 12345a
+🔗 https://www.bet300.biz/
+
+📲 N° cajero: 11-5900-9968</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #6</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="5" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="5" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">⚡ ¡Saludos! Bet300 tiene un plus para tu regreso.
+💸 Cargando hoy, obtenés +30% de regalo.
+🔑 {usuario}  / 12345a
+🌍 https://www.bet300.biz/
+
+📞 Cajero disponible: 11-5900-9968</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #7</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="6" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="6" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🎯 ¡Hola! Queremos verte de nuevo en Bet300.
+💥 Aprovechá un 30% adicional por reiniciar tu juego.
+👤 Usuario: {usuario} – Clave: 12345a
+🔗 https://www.bet300.biz/
+
+☎️ 11-5900-9968 (cajero)</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #8</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="7" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="7" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">💎 Nuevo sistema, nuevos beneficios…
+🔰 Tu primer carga viene con +30% de bono exclusivo.
+📲 Aprovechalo desde WhatsApp.
+🔐 Usuario: {usuario} – Clave: 12345a
+🌐 https://www.bet300.biz/
+📣 numero cajero: 1162360351</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #9</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="8" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="8" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🎰 {usuario}  ¡Volvé a jugar con 🟣+30% DE BONO 🟣!
+Hace un tiempo que no estás activo y queremos que regreses con ventaja.
+👉 Cargá y activás 🎁 +30% EXTRA 🎁
+📲 Pedilo por WhatsApp: 1162360351</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #10</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="9" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="9" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🔥 Promo de regreso disponible
+🟢 CARGÁS + TE REGALAMOS +30% 🟢
+Ideal para volver fuerte a los slots 🎰
+📱 Pedilo ahora {usuario} → 1162360351</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #11</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="10" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="10" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">💎 {usuario} tenes un beneficio activo todavia
+🎁 BONO ESPECIAL: +30% SOBRE TU CARGA 🎁
+🟨 Solo por volver a apostar
+📞 1162360351</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #12</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="11" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="11" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">Hola,{usuario} 
+tenemos algo para vos!!
+🚨 OFERTA PARA REACTIVACIÓN
+🟥 +30% DE BONO en tu próxima carga
+🟩 Más jugadas • Más saldo • Más chances
+📲 Contactanos 👉 1162360351</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #13</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="12" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="12" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">{usuario} 🎲 Te guardamos algo especial
+⭐ VOLVÉS A JUGAR = +30% EXTRA ⭐
+🪙 Aprovechalo antes que venza
+📍 WhatsApp: 1162360351 </textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #14</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="13" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="13" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">📢 Promo exclusiva
+🟣 RECARGÁ Y SUMÁ +30% DE REGALO
+💥 Solo para usuarios que hace tiempo no juegan
+📞 Pedilo acá → 1162360351</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #15</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="14" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="14" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">🎰 Reactivá tu cuenta con potencia
+🟢 +30% DE BONO EN TU PRÓXIMA CARGA 🟢
+🔥 Ideal para entrar a la ruleta o slots con impulso
+📲 1162360351
+</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #16</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="15" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="15" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">💥 VOLVISTE = GANÁS
+🟤 BONO +30% AL CARGAR
+📲 Consultá al instante → 1162360351
+🎁 Solo por reactivación</textarea>
+        </div>
+      </div>
+    </div><div class="card-row">
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #17</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-remove-s="16" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="16" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">⏳ Tu beneficio sigue activo
+🟨 +30% EXTRA en tu próxima carga
+🎯 Volvé al juego con ventaja
+👉 WhatsApp: 1162360351
+</textarea>
+        </div>
+      </div>
+    </div></div>
+
+      <div class="divider-label">Mensaje al copiar WhatsApp</div>
+      <div class="section-grid">
+        <div>
+          <label>Plantilla (usa {usuario})</label>
+          <textarea id="waMensaje" placeholder="Hola soy {usuario} quiero mi clave y cronograma" data-tooltip="Mensaje que irá en el link de wa.me"></textarea>
+        </div>
+      </div>
+
+      <div class="divider-label">Textos de utilidad</div>
+      <div class="section-grid">
+        <div>
+          <label>Utilidad · Info</label>
+          <textarea id="utilInfo" data-default="info" data-tooltip="Texto informativo general"></textarea>
+        </div>
+        <div>
+          <label>Utilidad · Cargado</label>
+          <textarea id="utilCargado" data-default="cargado" data-tooltip="Texto que notifica saldo acreditado"></textarea>
+        </div>
+        <div>
+          <label>Utilidad · Retiro</label>
+          <textarea id="utilRetiro" data-default="retiro" data-tooltip="Instrucciones para retiros"></textarea>
+        </div>
+      </div>
+
+      <div class="divider-label">Billeteras</div>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <p class="muted" style="margin:0;">Arrastrá con el grip. Cada tarjeta es un grupo por nombre visible. Flip con animación (🔁).</p>
+        <button class="btn small subtle" id="btnAddWallet" data-tooltip="Añadir nuevo grupo de billeteras">+ Añadir billetera</button>
+      </div>
+      <div class="list" id="walletList"><div class="card-row" data-index="0">
+      <div class="grip" data-grip="" title="Arrastrar (click y mover)">🔀</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Rafael olivera</span>
+          <div class="wallet-actions">
+            <button class="btn small ghost" data-toggle-flip="0" title="Activar/Desactivar dorso">🔁 OFF</button>
+            <span class="muted">Añade otra billetera del mismo titular</span>
+            <button class="btn small subtle" data-remove="0" title="Eliminar grupo">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="flip-card " data-flip-card="0">
+          <div class="flip-toolbar">
+            
+          </div>
+          <div class="flip-inner">
+            <div class="flip-face">
+              
+      <div class="flip-title">Frente</div>
+      <div class="section-grid">
+        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="0" value="Rafael olivera" title="Nombre del grupo visible"></div>
+        <div>
+          <label>CBU</label>
+          <input type="text" inputmode="numeric" pattern="\d*" maxlength="22" data-field="cbu" data-idx="0" value="0000003100040107526630">
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias</label><input type="text" data-field="alias" data-idx="0" value=""></div>
+        <div><label>Titular</label><input type="text" data-field="titular" data-idx="0" value=""></div>
+        <div>
+          <label>Billetera</label>
+          <select data-field="billetera" data-idx="0">
+            <option value="Mercado Pago" selected="">Mercado Pago</option><option value="Ualá">Ualá</option><option value="Brubank">Brubank</option><option value="Banco Nación">Banco Nación</option><option value="Santander">Santander</option><option value="Galicia">Galicia</option><option value="BBVA">BBVA</option><option value="PPay">PPay</option><option value="Ripio">Ripio</option><option value="Prex">Prex</option><option value="Otro">Otro</option>
+          </select>
+          <input type="text" data-field="billeteraCustom" data-idx="0" placeholder="Nombre billetera" style="margin-top:6px;display:none" value="">
+        </div>
+        <div><label>Color</label><input type="color" data-field="color" data-idx="0" value="#1f6feb"></div>
+      </div>
+    
+            </div>
+            <div class="flip-face flip-back">
+              
+      <div class="flip-title">Dorso</div>
+      <div class="section-grid">
+        <div>
+          <label>CBU (segunda)</label>
+          <input type="text" inputmode="numeric" pattern="\d*" maxlength="22" data-field="cbu2" data-idx="0" value="">
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="0" value=""></div>
+        <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="0" value=""></div>
+        <div>
+          <label>Billetera (segunda)</label>
+          <select data-field="billetera2" data-idx="0">
+            <option value="Mercado Pago">Mercado Pago</option><option value="Ualá">Ualá</option><option value="Brubank">Brubank</option><option value="Banco Nación">Banco Nación</option><option value="Santander">Santander</option><option value="Galicia">Galicia</option><option value="BBVA">BBVA</option><option value="PPay">PPay</option><option value="Ripio">Ripio</option><option value="Prex" selected="">Prex</option><option value="Otro">Otro</option>
+          </select>
+          <input type="text" data-field="billetera2Custom" data-idx="0" placeholder="Nombre billetera" style="margin-top:6px;display:none" value="">
+        </div>
+        <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="0" value="#ff6f3d"></div>
+      </div>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><div class="card-row" data-index="1">
+      <div class="grip" data-grip="" title="Arrastrar (click y mover)">🔀</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Grupo / Nombre visible</span>
+          <div class="wallet-actions">
+            <button class="btn small ghost" data-toggle-flip="1" title="Activar/Desactivar dorso">🔁 OFF</button>
+            <span class="muted">Añade otra billetera del mismo titular</span>
+            <button class="btn small subtle" data-remove="1" title="Eliminar grupo">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="flip-card " data-flip-card="1">
+          <div class="flip-toolbar">
+            
+          </div>
+          <div class="flip-inner">
+            <div class="flip-face">
+              
+      <div class="flip-title">Frente</div>
+      <div class="section-grid">
+        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="1" value="Grupo / Nombre visible" title="Nombre del grupo visible"></div>
+        <div>
+          <label>CBU</label>
+          <input type="text" inputmode="numeric" pattern="\d*" maxlength="22" data-field="cbu" data-idx="1" value="">
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias</label><input type="text" data-field="alias" data-idx="1" value=""></div>
+        <div><label>Titular</label><input type="text" data-field="titular" data-idx="1" value=""></div>
+        <div>
+          <label>Billetera</label>
+          <select data-field="billetera" data-idx="1">
+            <option value="Mercado Pago" selected="">Mercado Pago</option><option value="Ualá">Ualá</option><option value="Brubank">Brubank</option><option value="Banco Nación">Banco Nación</option><option value="Santander">Santander</option><option value="Galicia">Galicia</option><option value="BBVA">BBVA</option><option value="PPay">PPay</option><option value="Ripio">Ripio</option><option value="Prex">Prex</option><option value="Otro">Otro</option>
+          </select>
+          <input type="text" data-field="billeteraCustom" data-idx="1" placeholder="Nombre billetera" style="margin-top:6px;display:none" value="">
+        </div>
+        <div><label>Color</label><input type="color" data-field="color" data-idx="1" value="#1f6feb"></div>
+      </div>
+    
+            </div>
+            <div class="flip-face flip-back">
+              
+      <div class="flip-title">Dorso</div>
+      <div class="section-grid">
+        <div>
+          <label>CBU (segunda)</label>
+          <input type="text" inputmode="numeric" pattern="\d*" maxlength="22" data-field="cbu2" data-idx="1" value="">
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="1" value=""></div>
+        <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="1" value=""></div>
+        <div>
+          <label>Billetera (segunda)</label>
+          <select data-field="billetera2" data-idx="1">
+            <option value="Mercado Pago">Mercado Pago</option><option value="Ualá">Ualá</option><option value="Brubank">Brubank</option><option value="Banco Nación">Banco Nación</option><option value="Santander">Santander</option><option value="Galicia">Galicia</option><option value="BBVA">BBVA</option><option value="PPay">PPay</option><option value="Ripio">Ripio</option><option value="Prex" selected="">Prex</option><option value="Otro">Otro</option>
+          </select>
+          <input type="text" data-field="billetera2Custom" data-idx="1" placeholder="Nombre billetera" style="margin-top:6px;display:none" value="">
+        </div>
+        <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="1" value="#ff6f3d"></div>
+      </div>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+      <div class="divider-label">Promo amigo</div>
+      <div class="section-grid">
+        <div>
+          <label>Texto Promo Amigos</label>
+          <textarea id="promoTexto" data-tooltip="Texto que compartirán los usuarios"></textarea>
+        </div>
+        <div>
+          <label>Info Promo Amigos</label>
+          <textarea id="promoInfo" data-tooltip="Explicación de la promo"></textarea>
+        </div>
+        <div>
+          <label>Prefijo para códigos (ej. R → R1, R2...)</label>
+          <input type="text" id="promoPrefix" placeholder="R" maxlength="4" data-tooltip="Prefijo que se combina con el número de la PC. Ej: &#39;R&#39; → R1 para la primera PC">
+          <p class="muted">Los códigos se generan por PC añadida: prefijo + índice de la PC (PC1 → prefijo1). Si no querés 'R', poné otro carácter.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-card">
+      <div class="preview-header">
+        <div>
+          <div class="row" style="gap:6px;align-items:center;">
+            <span class="muted" style="font-size:11px;">Vista previa</span>
+          </div>
+          <div class="muted" style="margin-top:2px;font-size:11px;">Los botones copian texto y muestran toasts.</div>
+        </div>
+        <div class="preview-tabs" id="previewTabs">
+          <div class="tab-chip" data-tab="utilidad" title="Utilidad">Utilidad</div>
+          <div class="tab-chip" data-tab="billeteras" title="Billeteras">Billeteras</div>
+          <div class="tab-chip" data-tab="promo" title="Promo amigo">Promo</div>
+          <div class="tab-chip active" data-tab="revin" title="Revin por PC">Revin</div>
+        </div>
+      </div>
+
+      <div class="preview-group" id="userBarBox" style="">
+        <div class="row" style="justify-content:space-between;align-items:center;">
+          <div style="flex:1;min-width:240px;">
+            <label>Usuario para {usuario}</label>
+            <input type="text" id="previewUsuario" placeholder="Escribí el usuario..." data-tooltip="El texto {usuario} se reemplazará por esto en las pruebas">
+          </div>
+          <div style="flex:1;min-width:240px;">
+            <label>PC para vista previa</label>
+            <div id="pcSliderPreview" class="row" style="flex-wrap:wrap;"><button class="btn small ghost" style="border-color: rgba(148, 163, 184, 0.28); color: var(--muted);">PC01</button><button class="btn small ghost" style="border-color: rgba(148, 163, 184, 0.28); color: var(--muted);">PC02</button><button class="btn small ghost" style="border-color: rgba(148, 163, 184, 0.28); color: var(--muted);">PC03</button><button class="btn small ghost" style="border-color: var(--accent-light); color: rgb(229, 231, 235);">PC04</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="previewContent"><div class="preview-group"><h3>PC PC04 · Mensajes y WhatsApp <span class="chip-mini">17 mensajes</span></h3><div class="btn-preview"><div><span class="label">Copiar WhatsApp (PC04)</span><div class="sub">https://wa.me/5491138025419?text=Hola%20soy%20USUARIO%20quiero%20mi%20clave%20y%20cronograma</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Código amigo (x4)</span><div class="sub">🎉 PROMO AMIGOS 🎉
+👉 Cada amigo que cargue la mínima te da **$2000 en fichas extra**.
+📌 Solicit...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #1</span><div class="sub">🔥 ¡Hola USUARIO!  En Bet300 nos gustaría verte de regreso.
+🎁 Tenés un 30% extra en tu próxima carga por volver.
+🔑 Usuario: USUARIO – Clave: 12345a
+🌐 http...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #2</span><div class="sub">✨ ¿Cómo va? Bet300 quiere darte la bienvenida otra vez.
+💸 Sumá 30% adicional al cargar tu cuenta.
+👤 Usuario: USUARIO – contraseña: 12345a
+🌍 https://www.be...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #3</span><div class="sub">🚀 ¡Ey! Te esperamos en Bet300.
+💥 Por volver, activamos +30% en tu carga.
+🧩 Usuario: USUARIO | Clave: 12345a
+🔗 https://www.bet300.biz/
+
+📱 Cajero: 11-5900...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #4</span><div class="sub">💫 ¡Hola! Pasamos para contarte que Bet300 tiene un beneficio para vos.
+💰 Recargá y recibí 30% extra por regresar.
+🔐 Datos: USUARIO / 12345a
+🌐 https://www...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #5</span><div class="sub">🔥 ¿Todo bien? Te esperamos nuevamente en Bet300.
+🎉 Por volver a jugar, te sumamos 30% más en tu carga.
+🆔 Usuario: USUARIO – Clave: 12345a
+🔗 https://www.b...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #6</span><div class="sub">⚡ ¡Saludos! Bet300 tiene un plus para tu regreso.
+💸 Cargando hoy, obtenés +30% de regalo.
+🔑 USUARIO  / 12345a
+🌍 https://www.bet300.biz/
+
+📞 Cajero disponi...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #7</span><div class="sub">🎯 ¡Hola! Queremos verte de nuevo en Bet300.
+💥 Aprovechá un 30% adicional por reiniciar tu juego.
+👤 Usuario: USUARIO – Clave: 12345a
+🔗 https://www.bet300....</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #8</span><div class="sub">💎 Nuevo sistema, nuevos beneficios…
+🔰 Tu primer carga viene con +30% de bono exclusivo.
+📲 Aprovechalo desde WhatsApp.
+🔐 Usuario: USUARIO – Clave: 12345a
+...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #9</span><div class="sub">🎰 USUARIO  ¡Volvé a jugar con 🟣+30% DE BONO 🟣!
+Hace un tiempo que no estás activo y queremos que regreses con ventaja.
+👉 Cargá y activás 🎁 +30% EXTRA 🎁...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #10</span><div class="sub">🔥 Promo de regreso disponible
+🟢 CARGÁS + TE REGALAMOS +30% 🟢
+Ideal para volver fuerte a los slots 🎰
+📱 Pedilo ahora USUARIO → 1162360351</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #11</span><div class="sub">💎 USUARIO tenes un beneficio activo todavia
+🎁 BONO ESPECIAL: +30% SOBRE TU CARGA 🎁
+🟨 Solo por volver a apostar
+📞 1162360351</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #12</span><div class="sub">Hola,USUARIO 
+tenemos algo para vos!!
+🚨 OFERTA PARA REACTIVACIÓN
+🟥 +30% DE BONO en tu próxima carga
+🟩 Más jugadas • Más saldo • Más chances
+📲 Contactanos...</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #13</span><div class="sub">USUARIO 🎲 Te guardamos algo especial
+⭐ VOLVÉS A JUGAR = +30% EXTRA ⭐
+🪙 Aprovechalo antes que venza
+📍 WhatsApp: 1162360351 </div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #14</span><div class="sub">📢 Promo exclusiva
+🟣 RECARGÁ Y SUMÁ +30% DE REGALO
+💥 Solo para usuarios que hace tiempo no juegan
+📞 Pedilo acá → 1162360351</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #15</span><div class="sub">🎰 Reactivá tu cuenta con potencia
+🟢 +30% DE BONO EN TU PRÓXIMA CARGA 🟢
+🔥 Ideal para entrar a la ruleta o slots con impulso
+📲 1162360351
+</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #16</span><div class="sub">💥 VOLVISTE = GANÁS
+🟤 BONO +30% AL CARGAR
+📲 Consultá al instante → 1162360351
+🎁 Solo por reactivación</div></div><span class="sub">copiar</span></div><div class="btn-preview"><div><span class="label">Mensaje #17</span><div class="sub">⏳ Tu beneficio sigue activo
+🟨 +30% EXTRA en tu próxima carga
+🎯 Volvé al juego con ventaja
+👉 WhatsApp: 1162360351
+</div></div><span class="sub">copiar</span></div></div></div>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast">
+  <div class="toast-icon">✅</div>
+  <span id="toastText">Perfil exportado</span>
+</div>
+
 <script>
-/* === Script actualizado === */
+/* === Estado base === */
 const STORAGE_LIST_KEY = 'chinmaker_profiles_list_v5';
 const STORAGE_PREFIX = 'chinmaker_profile_v5_';
 const STORAGE_LAST = 'chinmaker_last_profile_v5';
 
-function renderSaludosEditor(){
-  const list = document.getElementById('saludosList');
-  list.innerHTML = '';
+const DEFAULT_UTIL_INFO =
+`📁 SOMOS BET300VIP
 
-  config.whatsapp.pcs.forEach((pc, pcIndex) => {
-    pc.mensajes.forEach((msg, msgIndex) => {
-      const row = document.createElement('div');
-      row.className = 'card-row';
+Disfrutá de una PLATAFORMA confiable con + de 2000 juegos online 🎰
 
-      row.innerHTML = `
-        <div class="grip">🔒</div>
-        <div>
-          <div class="wallet-header">
-            <span class="wallet-label">Mensaje</span>
+✨ ¿Listo para disfrutar al máximo? ✨
 
-            <div class="wallet-actions">
-              <select class="pc-selector" data-msg="${msg.id}">
-                ${config.whatsapp.pcs.map((p, i) => `
-                  <option value="${i}" ${i === pcIndex ? 'selected' : ''}>
-                    ${p.nombre}
-                  </option>
-                `).join('')}
-              </select>
+Para añadir saldo, lo haces mediante CBU.
+📌 RECORDAR CONSULTARLA ANTES DE ENVIAR: vamos rotando cuentas.
+📤 Enviá comprobante y empezá a jugar.
 
-              <button class="btn small subtle" data-remove="${msg.id}">
-                Eliminar
-              </button>
-            </div>
-          </div>
+⚠️ CARGA MÍNIMA: $2000
+⚠️ RETIRO MÍNIMO: $5000
+Sin Monto Máximo.
+Un retiro cada 24hs exactas.
 
-          <label>Usá {usuario}</label>
-          <textarea data-msg-text="${msg.id}">${msg.texto}</textarea>
-        </div>
-      `;
+🕑 Atención personalizada 24/7`;
 
-      list.appendChild(row);
-    });
+const DEFAULT_UTIL_CARGADO =
+`✅ ¡Saldo acreditado!
+Tu cuenta ya está lista para girar y ganar 🎉
+Si no ves doble tilde, encontrá nuestro número de WhatsApp actualizado en el estado de perfil.
+También podés cargar desde nuestra web: https://bet300.site/`;
+
+const DEFAULT_UTIL_RETIRO =
+`💸 Para hacer el retiro, mandanos estos datos:
+• CBU (no Alias)
+• Monto a retirar
+• Nombre del titular
+¡Muchas gracias!`;
+
+const DEFAULT_PROMO_TEXTO =
+`🎁 PROMO AMIGOS
+
+Invitá a tus amigos y ganá fichas extra. Pedí tu código y compartilo con quien quieras.
+El código se asigna por PC: prefijo + número de PC (ej. R1 para PC1).`;
+
+const DEFAULT_PROMO_INFO =
+`ℹ️ ¿Cómo funciona la Promo Amigos?
+1) Pedí tu código (prefijo + número de PC).
+2) Compartilo.
+3) Cuando tu invitado haga la primera carga mínima, ingresá el código.
+4) Al acreditarse, recibís la bonificación.`;
+
+const DEFAULT_CONFIG = () => ({
+  perfil: 'PC01',
+  fechaExport: null,
+  paleta: { acento:'#8A2BE2', ok:'#10B981', bad:'#EF4444' },
+  whatsapp: {
+    plantillaMensaje: 'Hola soy {usuario} quiero mi clave y cronograma',
+    pcs: [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }]
+  },
+  billeteras: [],
+  utilidad: { info: DEFAULT_UTIL_INFO, cargado: DEFAULT_UTIL_CARGADO, retiro: DEFAULT_UTIL_RETIRO },
+  promoAmigo: { prefix: 'R', texto: DEFAULT_PROMO_TEXTO, info: DEFAULT_PROMO_INFO },
+  estructuraBotones: { orden: ['utilidad','billeteras','promoAmigo','revin'] }
+});
+
+let currentProfileName = 'PC01';
+let config = DEFAULT_CONFIG();
+let dirtyTimer = null;
+let sliderIndex = 0;
+let sliderPreviewIndex = 0;
+let draggingWallet = null;
+
+/* === LocalStorage === */
+function loadProfileNames(){ try{ const raw = localStorage.getItem(STORAGE_LIST_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
+function saveProfileNames(list){ localStorage.setItem(STORAGE_LIST_KEY, JSON.stringify(Array.from(new Set(list)))); }
+function saveCurrentProfile(){
+  const key = STORAGE_PREFIX + currentProfileName;
+  localStorage.setItem(key, JSON.stringify(config));
+  localStorage.setItem(STORAGE_LAST, currentProfileName);
+  indicateSaved();
+}
+function loadProfile(name){
+  const key = STORAGE_PREFIX + name;
+  const raw = localStorage.getItem(key);
+  if(!raw) return null;
+  try{ return normalizeConfig(JSON.parse(raw)); }catch(e){ return null; }
+}
+function normalizeConfig(obj){
+  const base = DEFAULT_CONFIG();
+  const merged = {
+    ...base, ...obj,
+    paleta: { ...base.paleta, ...(obj.paleta||{}) },
+    whatsapp: {
+      ...base.whatsapp, ...(obj.whatsapp||{}),
+      pcs: normalizePCs(obj.whatsapp?.pcs)
+    },
+    utilidad: { ...base.utilidad, ...(obj.utilidad||{}) },
+    promoAmigo: { ...base.promoAmigo, ...(obj.promoAmigo||{}) },
+    estructuraBotones: { ...base.estructuraBotones, ...(obj.estructuraBotones||{}) },
+    billeteras: Array.isArray(obj.billeteras)? obj.billeteras : base.billeteras
+  };
+  if(!merged.utilidad.info) merged.utilidad.info = DEFAULT_UTIL_INFO;
+  if(!merged.utilidad.cargado) merged.utilidad.cargado = DEFAULT_UTIL_CARGADO;
+  if(!merged.utilidad.retiro) merged.utilidad.retiro = DEFAULT_UTIL_RETIRO;
+  if(!merged.promoAmigo.texto) merged.promoAmigo.texto = DEFAULT_PROMO_TEXTO;
+  if(!merged.promoAmigo.info) merged.promoAmigo.info = DEFAULT_PROMO_INFO;
+  // ensure pcs
+  return merged;
+}
+function normalizePCs(list){
+  let out = Array.isArray(list) ? list.filter(Boolean) : [];
+  if(out.length===0){ out = [{ nombre:'PC01', wsp:'5491100000000', mensajes:[] }]; }
+  out = out.slice(0,10).map((pc,i)=>({
+    nombre: pc.nombre || ('PC' + String(i+1).padStart(2,'0')),
+    wsp: String(pc.wsp || '5491100000000'),
+    mensajes: Array.isArray(pc.mensajes) ? pc.mensajes : []
+  }));
+  return out;
+}
+
+/* === Bootstrap === */
+document.addEventListener('DOMContentLoaded', ()=>{
+  bootstrapProfiles();
+  bindEditorInputs();
+  renderAll();
+});
+
+function bootstrapProfiles(){
+  const list = loadProfileNames();
+  const last = localStorage.getItem(STORAGE_LAST);
+  if(last && list.includes(last)){
+    currentProfileName = last;
+    config = loadProfile(last) || DEFAULT_CONFIG();
+  }else if(list.length){
+    currentProfileName = list[0];
+    config = loadProfile(list[0]) || DEFAULT_CONFIG();
+  }else{
+    currentProfileName = 'PC01';
+    config = DEFAULT_CONFIG();
+    saveProfileNames([currentProfileName]);
+    saveCurrentProfile();
+  }
+  renderProfileSelect();
+}
+
+/* === Profile select === */
+function renderProfileSelect(){
+  const select = document.getElementById('profileSelect');
+  const list = loadProfileNames();
+  if(!list.includes(currentProfileName)) list.push(currentProfileName);
+  select.innerHTML = '';
+  list.forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    if(name === currentProfileName) opt.selected = true;
+    select.appendChild(opt);
   });
 }
 
-document.addEventListener('change', e => {
-  const sel = e.target.closest('.pc-selector');
-  if (!sel) return;
-
-  const msgId = sel.dataset.msg;
-  const newPcIndex = Number(sel.value);
-
-  let foundMsg = null;
-  config.whatsapp.pcs.forEach((pc, i) => {
-    const idx = pc.mensajes.findIndex(m => m.id === msgId);
-    if (idx !== -1) {
-      foundMsg = pc.mensajes.splice(idx, 1)[0];
-    }
+/* === Bindings === */
+function bindEditorInputs(){
+  document.getElementById('profileSelect').addEventListener('change', e=>{
+    const name = e.target.value || 'PC01';
+    const existing = loadProfile(name);
+    currentProfileName = name;
+    config = existing || {...DEFAULT_CONFIG(), perfil:name};
+    saveProfileNames([...loadProfileNames(), name]);
+    sliderIndex = 0; sliderPreviewIndex = 0;
+    renderAll();
   });
 
-  if (foundMsg) {
-    config.whatsapp.pcs[newPcIndex].mensajes.push(foundMsg);
+  document.getElementById('btnNewProfile').addEventListener('click', ()=>{
+    const name = prompt('Nombre del nuevo perfil (ej. PC03, GONZALES):','PC03');
+    if(!name) return;
+    currentProfileName = name.trim();
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveProfileNames([...loadProfileNames(), currentProfileName]);
+    renderProfileSelect();
+    renderAll();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    if(!confirm('¿Reiniciar el perfil actual?')) return;
+    config = {...DEFAULT_CONFIG(), perfil:currentProfileName};
+    saveCurrentProfile();
+    sliderIndex = 0; sliderPreviewIndex = 0;
+    renderAll();
+  });
+
+  document.getElementById('btnExport').addEventListener('click', ()=>{
+    config.fechaExport = new Date().toISOString();
+    const blob = new Blob([JSON.stringify(config,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `${currentProfileName || 'perfil'}.chin.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    showToast('Perfil exportado');
+  });
+
+  const importInput = document.getElementById('fileImport');
+  document.getElementById('btnImport').addEventListener('click', ()=>importInput.click());
+  importInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      currentProfileName = obj.perfil || file.name.replace(/\.json$/i,'') || 'Importado';
+      config = normalizeConfig(obj);
+      saveProfileNames([...loadProfileNames(), currentProfileName]);
+      renderProfileSelect(); saveCurrentProfile(); renderAll();
+      showToast('Perfil importado correctamente');
+    }catch(err){ alert('No se pudo importar el JSON.'); }
+    finally{ importInput.value=''; }
+  });
+
+  /* Palette */
+  const paletteMap = { colorAccent:['paleta','acento'], colorOk:['paleta','ok'], colorBad:['paleta','bad'] };
+  Object.keys(paletteMap).forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      const [a,b] = paletteMap[id]; config[a][b] = el.value; markDirty(); renderPreview();
+    });
+  });
+
+  /* WhatsApp plantilla */
+  document.getElementById('waMensaje').addEventListener('input', (e)=>{
+    config.whatsapp.plantillaMensaje = e.target.value; markDirty(); renderPreview();
+  });
+
+  /* Promo prefix */
+  document.getElementById('promoPrefix').addEventListener('input', (e)=>{
+    const v = e.target.value.trim() || 'R';
+    config.promoAmigo.prefix = v;
+    markDirty(); renderPreview();
+  });
+
+  /* Mensajes de revinculación por PC */
+  document.getElementById('btnAddSaludo').addEventListener('click', ()=>{
+    const pc = config.whatsapp.pcs[sliderIndex];
+    pc.mensajes.push({ id:'m_'+Date.now(), texto:'Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX' });
+    markDirty(); renderSaludosEditor(); renderPreview();
+  });
+
+  /* PCs */
+  document.getElementById('pcAddBtn').addEventListener('click', ()=>{
+    const list = config.whatsapp.pcs;
+    if(list.length >= 10){ showToast('Máximo 10 PCs'); return; }
+    const idx = list.length+1; // PC02 si había solo PC01
+    const nombre = 'PC' + String(idx).padStart(2,'0');
+    list.push({ nombre, wsp:'5491100000000', mensajes:[] });
+    sliderIndex = list.length-1; sliderPreviewIndex = sliderIndex;
+    markDirty(); renderPCSlider(); renderPCSliderPreview(); renderSaludosEditor(); renderPreview();
+  });
+  document.getElementById('pcDelBtn').addEventListener('click', ()=>{
+    const list = config.whatsapp.pcs;
+    if(list.length<=1){ showToast('Mínimo 1 PC'); return; }
+    list.pop();
+    sliderIndex = Math.max(0, Math.min(sliderIndex, list.length-1));
+    sliderPreviewIndex = Math.max(0, Math.min(sliderPreviewIndex, list.length-1));
+    markDirty(); renderPCSlider(); renderPCSliderPreview(); renderSaludosEditor(); renderPreview();
+  });
+
+  document.getElementById('pcWsp').addEventListener('input', (e)=>{
+    const list = config.whatsapp.pcs; if(!list.length) return;
+    list[sliderIndex].wsp = e.target.value.trim();
+    markDirty(); renderPreview();
+  });
+
+  /* Utilidad placeholder-style */
+  ['utilInfo','utilCargado','utilRetiro'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('focus', ()=>{
+      const def = getDefaultTextFor(el.dataset.default);
+      if(el.value.trim() === def.trim()){ el.value = ''; }
+    });
+    el.addEventListener('blur', ()=>{
+      if(!el.value.trim()){
+        el.value = getDefaultTextFor(el.dataset.default);
+      }
+    });
+    el.addEventListener('input', ()=>{
+      const key = id==='utilInfo'?'info':(id==='utilCargado'?'cargado':'retiro');
+      config.utilidad[key] = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+
+  /* Promo amigo text */
+  document.getElementById('promoTexto').addEventListener('input', (e)=>{
+    config.promoAmigo.texto = e.target.value; markDirty(); renderPreview();
+  });
+  document.getElementById('promoInfo').addEventListener('input', (e)=>{
+    config.promoAmigo.info = e.target.value; markDirty(); renderPreview();
+  });
+
+  listEl.querySelectorAll('[data-move-s]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const messageIndex = parseInt(btn.dataset.moveS, 10);
+    setupMoveMessageButton(messageIndex, sliderIndex);
+  });
+});
+  /* Billeteras */
+  document.getElementById('btnAddWallet').addEventListener('click', ()=>{
+    config.billeteras.push({
+      id:'w_'+Date.now(),
+      label:'Grupo / Nombre visible',
+      cbu:'', alias:'', titular:'',
+      billetera:'Mercado Pago', billeteraCustom:'',
+      color:'#1f6feb',
+      flip:false, flippedPreview:false,
+      cbu2:'', alias2:'', titular2:'',
+      billetera2:'Prex', billetera2Custom:'',
+      color2:'#ff6f3d'
+    });
+    markDirty(); renderWallets(); renderPreview();
+  });
+
+  /* Preview tabs */
+  document.getElementById('previewTabs').addEventListener('click', e=>{
+    const tab = e.target.closest('.tab-chip'); if(!tab) return;
+    document.querySelectorAll('.tab-chip').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('userBarBox').style.display = tab.dataset.tab === 'revin' ? '' : 'none';
+    renderPreview();
+  });
+
+  /* Usuario preview */
+  document.getElementById('previewUsuario').addEventListener('input', ()=> renderPreview());
+}
+
+/* === Dirty indicator === */
+function markDirty(){
+  const chip = document.getElementById('chipStatus');
+  chip.textContent = 'Cambios sin guardar';
+  if(dirtyTimer) clearTimeout(dirtyTimer);
+  dirtyTimer = setTimeout(()=>{ saveCurrentProfile(); },400);
+}
+function indicateSaved(){ document.getElementById('chipStatus').textContent = 'Perfil guardado'; }
+
+/* === Render general === */
+function renderAll(){
+  document.getElementById('colorAccent').value = config.paleta.acento || '#8A2BE2';
+  document.getElementById('colorOk').value = config.paleta.ok || '#10B981';
+  document.getElementById('colorBad').value = config.paleta.bad || '#EF4444';
+
+  document.getElementById('waMensaje').value = config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma';
+
+  document.getElementById('utilInfo').value = config.utilidad.info || DEFAULT_UTIL_INFO;
+  document.getElementById('utilCargado').value = config.utilidad.cargado || DEFAULT_UTIL_CARGADO;
+  document.getElementById('utilRetiro').value = config.utilidad.retiro || DEFAULT_UTIL_RETIRO;
+
+  document.getElementById('promoTexto').value = config.promoAmigo.texto || DEFAULT_PROMO_TEXTO;
+  document.getElementById('promoInfo').value = config.promoAmigo.info || DEFAULT_PROMO_INFO;
+  document.getElementById('promoPrefix').value = (config.promoAmigo.prefix || 'R');
+
+  renderPCSlider();
+  renderPCSliderPreview();
+  renderSaludosEditor();
+  renderWallets();
+  const activeTab = document.querySelector('.tab-chip.active')?.dataset.tab || 'utilidad';
+  document.getElementById('userBarBox').style.display = activeTab === 'revin' ? '' : 'none';
+  renderPreview();
+}
+
+/* === PCs sliders (editor y preview) === */
+function renderPCSlider(){
+  const cont = document.getElementById('pcSlider'); cont.innerHTML = '';
+  const list = config.whatsapp.pcs;
+  document.getElementById('pcCountNote').textContent = `Mínimo 1, máximo 10 (${list.length})`;
+  list.forEach((pc, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small ghost';
+    btn.textContent = pc.nombre;
+    btn.style.borderColor = i===sliderIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.28)';
+    btn.style.color = i===sliderIndex ? '#e5e7eb' : 'var(--muted)';
+    btn.addEventListener('click', ()=>{
+      sliderIndex = i;
+      document.getElementById('pcWsp').value = pc.wsp || '';
+      renderPCSlider(); renderSaludosEditor(); renderPreview();
+    });
+    cont.appendChild(btn);
+  });
+  document.getElementById('pcWsp').value = (list[sliderIndex]?.wsp || '');
+}
+
+function renderPCSliderPreview(){
+  const cont = document.getElementById('pcSliderPreview'); cont.innerHTML = '';
+  const list = config.whatsapp.pcs;
+  list.forEach((pc, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small ghost';
+    btn.textContent = pc.nombre;
+    btn.style.borderColor = i===sliderPreviewIndex ? 'var(--accent-light)' : 'rgba(148,163,184,.28)';
+    btn.style.color = i===sliderPreviewIndex ? '#e5e7eb' : 'var(--muted)';
+    btn.addEventListener('click', ()=>{
+      sliderPreviewIndex = i;
+      renderPCSliderPreview(); renderPreview();
+    });
+    cont.appendChild(btn);
+  });
+}
+
+/* === Mensajes de revinculación por PC (editor) === */
+function renderSaludosEditor(){
+  const listEl = document.getElementById('saludosList'); listEl.innerHTML = '';
+  const pc = config.whatsapp.pcs[sliderIndex];
+  const arr = pc.mensajes || [];
+  if(!arr.length){
+    const p = document.createElement('p'); p.className='muted';
+    p.textContent = 'No hay mensajes cargados para esta PC.';
+    listEl.appendChild(p);
+  }
+  arr.forEach((s,idx)=>{
+    const row = document.createElement('div');
+    row.className = 'card-row';
+ row.innerHTML = `
+  <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+  <div>
+    <div class="wallet-header">
+      <span class="wallet-label">Mensaje #${idx+1}</span>
+      <div class="wallet-actions">
+        <button class="btn small subtle" data-move-s="${idx}" title="Mover a otra PC">↷ Mover</button>
+        <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">Eliminar</button>
+      </div>
+    </div>
+    <div>
+      <label>Usá {usuario} en el texto</label>
+      <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
+    </div>
+  </div>
+`;;
+
+  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      const i = parseInt(el.dataset.sIdx,10);
+      pc.mensajes[i].texto = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+  listEl.querySelectorAll('[data-remove-s]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = parseInt(btn.dataset.removeS,10);
+      pc.mensajes.splice(i,1);
+      markDirty(); renderSaludosEditor(); renderPreview();
+    });
+  });
+}
+/* === Mover mensaje entre PCs === */
+function setupMoveMessageButton(messageIndex, pcIndex) {
+  const pcs = config.whatsapp.pcs;
+  if (pcs.length <= 1) {
+    showToast('Solo hay una PC disponible');
+    return;
+  }
+  
+  // Crear lista de opciones excluyendo la PC actual
+  const optionsHTML = pcs.map((pc, i) => {
+    if (i === pcIndex) return '';
+    return `<option value="${i}">${pc.nombre} (${pc.mensajes?.length || 0} mensajes)</option>`;
+  }).join('');
+  
+  const selectHTML = `
+    <div style="padding:10px;max-width:300px;">
+      <label style="display:block;margin-bottom:8px;font-size:12px;">Seleccioná la PC destino:</label>
+      <select id="movePcSelect" style="width:100%;padding:6px;border-radius:8px;background:#0b1220;color:#fff;border:1px solid var(--border);">
+        ${optionsHTML}
+      </select>
+    </div>
+  `;
+  
+  // Mostrar diálogo
+  const dialog = document.createElement('div');
+  dialog.style.cssText = `
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.8); display:flex; align-items:center;
+    justify-content:center; z-index:1000;
+  `;
+  
+  dialog.innerHTML = `
+    <div style="background:var(--card); border-radius:12px; padding:20px; 
+                border:1px solid var(--border); box-shadow:var(--shadow); max-width:320px;">
+      <h3 style="margin-top:0;color:var(--text);">Mover mensaje</h3>
+      ${selectHTML}
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px;">
+        <button class="btn small ghost" id="moveCancel">Cancelar</button>
+        <button class="btn small" id="moveConfirm">Mover</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(dialog);
+  
+  // Event listeners
+  document.getElementById('moveCancel').addEventListener('click', () => {
+    document.body.removeChild(dialog);
+  });
+  
+  document.getElementById('moveConfirm').addEventListener('click', () => {
+    const select = document.getElementById('movePcSelect');
+    const targetPcIndex = parseInt(select.value);
+    
+    if (isNaN(targetPcIndex) || targetPcIndex === pcIndex) {
+      showToast('Selección inválida');
+      return;
+    }
+    
+    // Mover el mensaje
+    const currentPc = pcs[pcIndex];
+    const targetPc = pcs[targetPcIndex];
+    const mensaje = currentPc.mensajes[messageIndex];
+    
+    // Remover de PC actual
+    currentPc.mensajes.splice(messageIndex, 1);
+    // Agregar a PC destino
+    targetPc.mensajes.push(mensaje);
+    
     markDirty();
     renderSaludosEditor();
     renderPreview();
-  }
-});
+    showToast(`Mensaje movido a ${targetPc.nombre}`);
+    
+    document.body.removeChild(dialog);
+  });
+}
+  
+/* === Billeteras editor (drag + flip animado) === */
+const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
 
-document.addEventListener('click', e => {
-  const btn = e.target.closest('[data-remove]');
-  if (!btn) return;
+function renderWallets(){
+  const listEl = document.getElementById('walletList'); listEl.innerHTML = '';
+  (config.billeteras||[]).forEach((w,idx)=>{
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.dataset.index = idx;
 
-  const msgId = btn.dataset.remove;
-  config.whatsapp.pcs.forEach(pc => {
-    pc.mensajes = pc.mensajes.filter(m => m.id !== msgId);
+    // Flip editor card with animation
+    const front = `
+      <div class="flip-title">Frente</div>
+      <div class="section-grid">
+        <div><label>Nombre visible</label><input type="text" data-field="label" data-idx="${idx}" value="${escapeAttr(w.label||'')}" title="Nombre del grupo visible" /></div>
+        <div>
+          <label>CBU</label>
+          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu" data-idx="${idx}" value="${escapeAttr(w.cbu||'')}" />
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias</label><input type="text" data-field="alias" data-idx="${idx}" value="${escapeAttr(w.alias||'')}" /></div>
+        <div><label>Titular</label><input type="text" data-field="titular" data-idx="${idx}" value="${escapeAttr(w.titular||'')}" /></div>
+        <div>
+          <label>Billetera</label>
+          <select data-field="billetera" data-idx="${idx}">
+            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <input type="text" data-field="billeteraCustom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera==='Otro'?'':'display:none'}" value="${escapeAttr(w.billeteraCustom||'')}" />
+        </div>
+        <div><label>Color</label><input type="color" data-field="color" data-idx="${idx}" value="${escapeAttr(w.color||'#1f6feb')}"></div>
+      </div>
+    `;
+    const back = `
+      <div class="flip-title">Dorso</div>
+      <div class="section-grid">
+        <div>
+          <label>CBU (segunda)</label>
+          <input type="text" inputmode="numeric" pattern="\\d*" maxlength="22" data-field="cbu2" data-idx="${idx}" value="${escapeAttr(w.cbu2||'')}" />
+          <small class="muted">Solo números, 22 dígitos</small>
+        </div>
+        <div><label>Alias (segunda)</label><input type="text" data-field="alias2" data-idx="${idx}" value="${escapeAttr(w.alias2||'')}" /></div>
+        <div><label>Titular (segunda)</label><input type="text" data-field="titular2" data-idx="${idx}" value="${escapeAttr(w.titular2||'')}" /></div>
+        <div>
+          <label>Billetera (segunda)</label>
+          <select data-field="billetera2" data-idx="${idx}">
+            ${WALLET_OPTS.map(opt=>`<option value="${opt}" ${w.billetera2===opt?'selected':''}>${opt}</option>`).join('')}
+          </select>
+          <input type="text" data-field="billetera2Custom" data-idx="${idx}" placeholder="Nombre billetera" style="margin-top:6px;${w.billetera2==='Otro'?'':'display:none'}" value="${escapeAttr(w.billetera2Custom||'')}" />
+        </div>
+        <div><label>Color (segunda)</label><input type="color" data-field="color2" data-idx="${idx}" value="${escapeAttr(w.color2||'#ff6f3d')}"></div>
+      </div>
+    `;
+
+    row.innerHTML = `
+      <div class="grip" data-grip title="Arrastrar (click y mover)">🔀</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">${escapeHtml(w.label || 'Grupo / Nombre visible')}</span>
+          <div class="wallet-actions">
+            <button class="btn small ghost" data-toggle-flip="${idx}" title="Activar/Desactivar dorso">🔁 ${w.flip? 'ON' : 'OFF'}</button>
+            <span class="muted">Añade otra billetera del mismo titular</span>
+            <button class="btn small subtle" data-remove="${idx}" title="Eliminar grupo">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="flip-card ${w.flippedEditor?'flipped':''}" data-flip-card="${idx}">
+          <div class="flip-toolbar">
+            ${w.flip ? `<button class="flip-btn" data-flip-view="${idx}">${w.flippedEditor?'Ver frente':'Ver dorso'}</button>` : ''}
+          </div>
+          <div class="flip-inner">
+            <div class="flip-face">
+              ${front}
+            </div>
+            <div class="flip-face flip-back">
+              ${back}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    listEl.appendChild(row);
   });
 
-  markDirty();
-  renderSaludosEditor();
-  renderPreview();
-});
+  // edición
+  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
+    el.addEventListener('input', onWalletFieldChange);
+    el.addEventListener('change', onWalletFieldChange);
+  });
+  // numeric enforcement for CBU/CBU2
+  listEl.querySelectorAll('input[data-field="cbu"], input[data-field="cbu2"]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      el.value = el.value.replace(/\D/g,'').slice(0,22);
+      const idx = parseInt(el.dataset.idx,10);
+      const field = el.dataset.field;
+      const w = config.billeteras[idx]; if(!w) return;
+      w[field] = el.value;
+      markDirty(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.remove,10);
+      if(isNaN(idx)) return;
+      if(!confirm('¿Eliminar este grupo?')) return;
+      config.billeteras.splice(idx,1);
+      markDirty(); renderWallets(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-toggle-flip]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.toggleFlip,10);
+      const w = config.billeteras[idx];
+      w.flip = !w.flip;
+      if(w.flip){
+        w.titular2 = w.titular || '';
+        w.billetera2 = w.billetera2 || 'Prex';
+        w.color2 = w.color2 || '#ff6f3d';
+        w.flippedEditor = true; // mostrar dorso al activar
+      }else{
+        w.flippedEditor = false;
+      }
+      markDirty(); renderWallets(); renderPreview();
+    });
+  });
+
+  listEl.querySelectorAll('[data-flip-view]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.flipView,10);
+      const w = config.billeteras[idx];
+      w.flippedEditor = !w.flippedEditor;
+      markDirty();
+      const card = document.querySelector(`[data-flip-card="${idx}"]`);
+      if(card){
+        card.classList.toggle('flipped', w.flippedEditor);
+        btn.textContent = w.flippedEditor ? 'Ver frente' : 'Ver dorso';
+      }
+    });
+  });
+
+  // drag con grip
+  listEl.querySelectorAll('[data-grip]').forEach(grip=>{
+    const row = grip.closest('.card-row');
+    grip.addEventListener('mousedown', e=>{
+      draggingWallet = row;
+      row.classList.add('dragging');
+      // pequeño efecto visual inmediato
+      e.preventDefault();
+    });
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!draggingWallet) return;
+    const listEl = document.getElementById('walletList');
+    const rows = Array.from(listEl.children);
+    const y = e.clientY;
+    let target = null;
+    rows.forEach(r=>{
+      const rect = r.getBoundingClientRect();
+      r.classList.remove('placeholder');
+      if(y>rect.top && y<rect.bottom) target = r;
+    });
+    if(target && target!==draggingWallet){
+      target.classList.add('placeholder');
+    }
+  });
+  document.addEventListener('mouseup', e=>{
+    if(!draggingWallet) return;
+    const listEl = document.getElementById('walletList');
+    const rows = Array.from(listEl.children);
+    let toIdx = null;
+    rows.forEach((r,i)=>{
+      if(r.classList.contains('placeholder')){ toIdx = i; r.classList.remove('placeholder'); }
+    });
+    const fromIdx = parseInt(draggingWallet.dataset.index,10);
+    draggingWallet.classList.remove('dragging');
+    draggingWallet = null;
+    if(toIdx===null || isNaN(fromIdx)) return;
+    const arr = config.billeteras;
+    const item = arr.splice(fromIdx,1)[0];
+    arr.splice(toIdx,0,item);
+    markDirty(); renderWallets(); renderPreview();
+  });
+}
+
+function onWalletFieldChange(e){
+  const idx = parseInt(e.target.dataset.idx,10);
+  const field = e.target.dataset.field;
+  const w = config.billeteras[idx]; if(!w) return;
+  if(field==='billetera' || field==='billetera2'){
+    w[field] = e.target.value;
+    const customField = field==='billetera'?'billeteraCustom':'billetera2Custom';
+    const inputCustom = e.target.parentElement.querySelector(`input[data-field="${customField}"]`);
+    if(inputCustom){ inputCustom.style.display = e.target.value==='Otro' ? '' : 'none'; }
+  }else{ w[field] = e.target.value; }
+  markDirty(); renderPreview();
+}
+
+/* === Preview === */
+function getActiveTab(){
+  const active = document.querySelector('.tab-chip.active');
+  return active ? active.dataset.tab : 'utilidad';
+}
+function applyPalette(){
+  const p = config.paleta || {};
+  document.documentElement.style.setProperty('--accent', p.acento || '#8A2BE2');
+  document.documentElement.style.setProperty('--accent-light', p.acento || '#a855f7');
+  document.documentElement.style.setProperty('--ok', p.ok || '#10B981');
+  document.documentElement.style.setProperty('--bad', p.bad || '#EF4444');
+}
+
+function renderPreview(){
+  applyPalette();
+  const content = document.getElementById('previewContent'); content.innerHTML = '';
+  const tab = getActiveTab();
+  const usuario = (document.getElementById('previewUsuario').value || 'USUARIO').trim();
+  const pcs = config.whatsapp.pcs;
+  const pc = pcs[sliderPreviewIndex] || pcs[0];
+
+  if(tab === 'utilidad'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Utilidad <span class="chip-mini">Texto fijo</span></h3>`;
+    const blocks = [
+      { key:'info', label:'Info', val: config.utilidad.info || DEFAULT_UTIL_INFO },
+      { key:'cargado', label:'Cargado', val: config.utilidad.cargado || DEFAULT_UTIL_CARGADO },
+      { key:'retiro', label:'Retiro', val: config.utilidad.retiro || DEFAULT_UTIL_RETIRO }
+    ];
+    blocks.forEach(b=>{
+      const btn = document.createElement('div'); btn.className='btn-preview';
+      btn.innerHTML = `<div><span class="label">${b.label}</span><div class="sub">${escapeHtml(shorten(b.val,160))}</div></div><span class="sub">copiar</span>`;
+      btn.addEventListener('click', ()=>{ copyToClipboard(b.val); showToast(`Copiado texto de ${b.label}`); });
+      g.appendChild(btn);
+    });
+    content.appendChild(g);
+  }
+
+  if(tab === 'billeteras'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Billeteras por grupo <span class="chip-mini">${config.billeteras.length} grupos</span></h3>`;
+    if(!(config.billeteras||[]).length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin billeteras cargadas.'; g.appendChild(p);
+    }else{
+      const byLabel = {};
+      config.billeteras.forEach(w=>{ const k = (w.label||'Grupo'); (byLabel[k]||(byLabel[k]=[])).push(w); });
+      Object.keys(byLabel).forEach(label=>{
+        const subgroup = document.createElement('div'); subgroup.className='preview-group';
+        subgroup.innerHTML = `<h3>${escapeHtml(label)} <span class="chip-mini">${byLabel[label].length} billetera(s)</span></h3>`;
+        const grid = document.createElement('div'); grid.className='wallets-face';
+
+        byLabel[label].forEach((w,i)=>{
+          // Flip-card preview per wallet
+          const card = document.createElement('div');
+          card.className = 'flip-card' + (w.flippedPreview?' flipped':'');
+          const inner = document.createElement('div');
+          inner.className = 'flip-inner';
+
+          const toolbar = document.createElement('div');
+          toolbar.className = 'flip-toolbar';
+          if(w.flip){
+            const btn = document.createElement('button');
+            btn.className = 'flip-btn';
+            btn.textContent = w.flippedPreview ? 'Ver frente' : 'Ver dorso';
+            btn.addEventListener('click', ()=>{
+              w.flippedPreview = !w.flippedPreview;
+              card.classList.toggle('flipped', w.flippedPreview);
+              btn.textContent = w.flippedPreview ? 'Ver frente' : 'Ver dorso';
+            });
+            toolbar.appendChild(btn);
+          }
+
+          const faceFront = document.createElement('div');
+          faceFront.className = 'flip-face';
+          const f1 = document.createElement('button');
+          f1.className = 'wallet-btn';
+          f1.textContent = `CBU ${billeName(w)}`;
+          f1.style.borderColor = w.color || '#1f6feb';
+          f1.addEventListener('click', ()=>{
+            const val = (w.cbu||'').trim();
+            if(!val) return showToast('CBU vacío');
+            copyToClipboard(val);
+            showToast(`Copiado CBU de ${w.titular||'Titular'}`);
+          });
+          const f2 = document.createElement('button');
+          f2.className = 'wallet-btn';
+          f2.textContent = `Alias ${billeName(w)}`;
+          f2.style.borderColor = w.color || '#1f6feb';
+          f2.addEventListener('click', ()=>{
+            const msg = `${w.alias||''}\nTitular ${w.titular||''} *${billeName(w)}*`;
+            copyToClipboard(msg.trim());
+            showToast(`Copiado Alias de ${w.titular||'Titular'}`);
+          });
+          faceFront.appendChild(f1);
+          faceFront.appendChild(f2);
+
+          const faceBack = document.createElement('div');
+          faceBack.className = 'flip-face flip-back';
+          if(w.flip){
+            const b1 = document.createElement('button');
+            b1.className = 'wallet-btn';
+            b1.textContent = `CBU ${billeName2(w)}`;
+            b1.style.borderColor = w.color2 || '#ff6f3d';
+            b1.addEventListener('click', ()=>{
+              const val = (w.cbu2||'').trim();
+              if(!val) return showToast('CBU (segunda) vacío');
+              copyToClipboard(val);
+              showToast(`Copiado CBU (segunda) de ${w.titular2||'Titular'}`);
+            });
+            const b2 = document.createElement('button');
+            b2.className = 'wallet-btn';
+            b2.textContent = `Alias ${billeName2(w)}`;
+            b2.style.borderColor = w.color2 || '#ff6f3d';
+            b2.addEventListener('click', ()=>{
+              const msg = `${w.alias2||''}\nTitular ${w.titular2||''} *${billeName2(w)}*`;
+              copyToClipboard(msg.trim());
+              showToast(`Copiado Alias (segunda) de ${w.titular2||'Titular'}`);
+            });
+            faceBack.appendChild(b1);
+            faceBack.appendChild(b2);
+          }else{
+            const p = document.createElement('p');
+            p.className = 'muted';
+            p.textContent = 'Sin dorso';
+            faceBack.appendChild(p);
+          }
+
+          inner.appendChild(faceFront);
+          inner.appendChild(faceBack);
+          card.appendChild(toolbar);
+          card.appendChild(inner);
+          grid.appendChild(card);
+        });
+
+        subgroup.appendChild(grid);
+        g.appendChild(subgroup);
+      });
+    }
+    content.appendChild(g);
+  }
+
+  if(tab === 'promo'){
+    const g = document.createElement('div'); g.className='preview-group';
+    g.innerHTML = `<h3>Promo amigo <span class="chip-mini">Texto y explicación</span></h3>`;
+    const btnPromo = document.createElement('div'); btnPromo.className='btn-preview';
+    btnPromo.innerHTML = `<div><span class="label">🎁 Promo Amigos</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO,160))}</div></div><span class="sub">copiar</span>`;
+    btnPromo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.texto||DEFAULT_PROMO_TEXTO); showToast('Copiado Promo Amigos'); });
+    g.appendChild(btnPromo);
+    const btnInfo = document.createElement('div'); btnInfo.className='btn-preview';
+    btnInfo.innerHTML = `<div><span class="label">ℹ️ Info Promo</span><div class="sub">${escapeHtml(shorten(config.promoAmigo.info||DEFAULT_PROMO_INFO,160))}</div></div><span class="sub">copiar</span>`;
+    btnInfo.addEventListener('click', ()=>{ copyToClipboard(config.promoAmigo.info||DEFAULT_PROMO_INFO); showToast('Copiado Info Promo'); });
+    g.appendChild(btnInfo);
+    const prefixNote = document.createElement('div'); prefixNote.className='muted'; prefixNote.style.marginTop='8px';
+    prefixNote.textContent = `Los códigos se asignan por PC añadida: prefijo + número de PC. Prefijo actual: "${config.promoAmigo.prefix||'R'}"`;
+    g.appendChild(prefixNote);
+    content.appendChild(g);
+  }
+
+  if(tab === 'revin'){
+    const g = document.createElement('div'); g.className='preview-group';
+    const mensajes = pc.mensajes||[];
+    g.innerHTML = `<h3>PC ${escapeHtml(pc.nombre)} · Mensajes y WhatsApp <span class="chip-mini">${mensajes.length} mensajes</span></h3>`;
+
+    const plantilla = (config.whatsapp.plantillaMensaje || 'Hola soy {usuario} quiero mi clave y cronograma').replace(/\{usuario\}/g, usuario);
+    const wspNum = (pc.wsp||'5491100000000').trim();
+    const wspLink = `https://wa.me/${encodeURIComponent(wspNum)}?text=${encodeURIComponent(plantilla)}`;
+    const btnWsp = document.createElement('div'); btnWsp.className='btn-preview';
+    btnWsp.innerHTML = `<div><span class="label">Copiar WhatsApp (${escapeHtml(pc.nombre)})</span><div class="sub">${escapeHtml(shorten(wspLink,100))}</div></div><span class="sub">copiar</span>`;
+    btnWsp.addEventListener('click', ()=>{ copyToClipboard(wspLink); showToast(`Copiado WhatsApp (${pc.nombre})`); });
+    g.appendChild(btnWsp);
+
+    // generación de código con prefijo + índice de la PC
+    const prefix = config.promoAmigo.prefix || 'R';
+    const idxForCode = sliderPreviewIndex + 1; // PC1 → 1
+    const codeVal = `${prefix}${idxForCode}`;
+    const codeMsg = (config.promoAmigo.texto||DEFAULT_PROMO_TEXTO).replace(/\{codigo\}/g, codeVal).replace(/\{usuario\}/g, usuario);
+    const btnCodigo = document.createElement('div'); btnCodigo.className='btn-preview';
+    btnCodigo.innerHTML = `<div><span class="label">Código amigo (${escapeHtml(codeVal)})</span><div class="sub">${escapeHtml(shorten(codeMsg,100))}</div></div><span class="sub">copiar</span>`;
+    btnCodigo.addEventListener('click', ()=>{ copyToClipboard(codeMsg); showToast(`Copiado Código Amigo (${codeVal})`); });
+    g.appendChild(btnCodigo);
+
+    if(!mensajes.length){
+      const p = document.createElement('p'); p.className='muted'; p.textContent='Sin mensajes de revinculación para esta PC.'; g.appendChild(p);
+    }else{
+      mensajes.forEach((m,i)=>{
+        const txt = (m.texto||'').replace(/\{usuario\}/g, usuario);
+        const btn = document.createElement('div'); btn.className='btn-preview';
+        btn.innerHTML = `<div><span class="label">Mensaje #${i+1}</span><div class="sub">${escapeHtml(shorten(txt,160))}</div></div><span class="sub">copiar</span>`;
+        btn.addEventListener('click', ()=>{ copyToClipboard(txt); showToast(`Copiado mensaje #${i+1}`); });
+        g.appendChild(btn);
+      });
+    }
+    content.appendChild(g);
+  }
+}
+
+/* === Helpers === */
+function billeName(w){ return w.billetera==='Otro' ? (w.billeteraCustom||'Billetera') : (w.billetera||'Billetera'); }
+function billeName2(w){ return w.billetera2==='Otro' ? (w.billetera2Custom||'Billetera') : (w.billetera2||'Billetera'); }
+function getDefaultTextFor(kind){
+  if(kind==='info') return DEFAULT_UTIL_INFO;
+  if(kind==='cargado') return DEFAULT_UTIL_CARGADO;
+  if(kind==='retiro') return DEFAULT_UTIL_RETIRO;
+  return '';
+}
+
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(str){ return escapeHtml(str).replace(/"/g,'&quot;'); }
+function shorten(str,max){ if(!str) return ''; str=String(str); return str.length>max ? str.slice(0,max-3)+'...' : str; }
+async function copyToClipboard(text){ try{ await navigator.clipboard.writeText(String(text)); }catch(e){} }
+let toastTimer = null;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'),1800);
+}
+
+/* === Init end === */
 </script>
-</body>
-</html>
+
+
+</body></html>
