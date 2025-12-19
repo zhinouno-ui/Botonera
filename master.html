@@ -1189,52 +1189,73 @@ function renderPCSliderPreview(){
     cont.appendChild(btn);
   });
 }
-
 /* === Mensajes de revinculación por PC (editor) === */
 function renderSaludosEditor(){
-  const listEl = document.getElementById('saludosList'); listEl.innerHTML = '';
+  const listEl = document.getElementById('saludosList'); 
+  listEl.innerHTML = '';
   const pc = config.whatsapp.pcs[sliderIndex];
   const arr = pc.mensajes || [];
+  
   if(!arr.length){
-    const p = document.createElement('p'); p.className='muted';
+    const p = document.createElement('p'); 
+    p.className='muted';
     p.textContent = 'No hay mensajes cargados para esta PC.';
     listEl.appendChild(p);
+    return;
   }
-  arr.forEach((s,idx)=>{
+  
+  arr.forEach((s, idx) => {
     const row = document.createElement('div');
     row.className = 'card-row';
- row.innerHTML = `
-  <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
-  <div>
-    <div class="wallet-header">
-      <span class="wallet-label">Mensaje #${idx+1}</span>
-      <div class="wallet-actions">
-        <button class="btn small subtle" data-move-s="${idx}" title="Mover a otra PC">↷ Mover</button>
-        <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">Eliminar</button>
+    row.innerHTML = `
+      <div class="grip" title="Arrastrar (deshabilitado)">🔒</div>
+      <div>
+        <div class="wallet-header">
+          <span class="wallet-label">Mensaje #${idx+1}</span>
+          <div class="wallet-actions">
+            <button class="btn small subtle" data-move-s="${idx}" title="Mover a otra PC">↷ Mover</button>
+            <button class="btn small subtle" data-remove-s="${idx}" title="Eliminar">Eliminar</button>
+          </div>
+        </div>
+        <div>
+          <label>Usá {usuario} en el texto</label>
+          <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
+        </div>
       </div>
-    </div>
-    <div>
-      <label>Usá {usuario} en el texto</label>
-      <textarea data-s-idx="${idx}" placeholder="Hola {usuario}, somos BET300, renovamos nuestro número a XXXXXXX">${escapeHtml(s.texto||'')}</textarea>
-    </div>
-  </div>
-`;;
+    `;
+    listEl.appendChild(row);
+  });
 
-  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el=>{
-    el.addEventListener('input', ()=>{
-      const i = parseInt(el.dataset.sIdx,10);
+  // Event listeners para edición de texto
+  listEl.querySelectorAll('textarea[data-s-idx]').forEach(el => {
+    el.addEventListener('input', () => {
+      const i = parseInt(el.dataset.sIdx, 10);
       pc.mensajes[i].texto = el.value;
-      markDirty(); renderPreview();
+      markDirty(); 
+      renderPreview();
     });
   });
-  listEl.querySelectorAll('[data-remove-s]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const i = parseInt(btn.dataset.removeS,10);
-      pc.mensajes.splice(i,1);
-      markDirty(); renderSaludosEditor(); renderPreview();
+
+  // Event listeners para eliminar mensajes
+  listEl.querySelectorAll('[data-remove-s]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.removeS, 10);
+      pc.mensajes.splice(i, 1);
+      markDirty(); 
+      renderSaludosEditor(); 
+      renderPreview();
+    });
+  });
+
+  // Event listeners para mover mensajes
+  listEl.querySelectorAll('[data-move-s]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const messageIndex = parseInt(btn.dataset.moveS, 10);
+      setupMoveMessageButton(messageIndex, sliderIndex);
     });
   });
 }
+
 /* === Mover mensaje entre PCs === */
 function setupMoveMessageButton(messageIndex, pcIndex) {
   const pcs = config.whatsapp.pcs;
@@ -1280,7 +1301,7 @@ function setupMoveMessageButton(messageIndex, pcIndex) {
   
   document.body.appendChild(dialog);
   
-  // Event listeners
+  // Event listeners del diálogo
   document.getElementById('moveCancel').addEventListener('click', () => {
     document.body.removeChild(dialog);
   });
@@ -1311,7 +1332,7 @@ function setupMoveMessageButton(messageIndex, pcIndex) {
     
     document.body.removeChild(dialog);
   });
-}
+  }
   
 /* === Billeteras editor (drag + flip animado) === */
 const WALLET_OPTS = ['Mercado Pago','Ualá','Brubank','Banco Nación','Santander','Galicia','BBVA','PPay','Ripio','Prex','Otro'];
@@ -1396,11 +1417,6 @@ function renderWallets(){
     listEl.appendChild(row);
   });
 
-  // edición
-  listEl.querySelectorAll('input[data-field], select[data-field]').forEach(el=>{
-    el.addEventListener('input', onWalletFieldChange);
-    el.addEventListener('change', onWalletFieldChange);
-  });
   // numeric enforcement for CBU/CBU2
   listEl.querySelectorAll('input[data-field="cbu"], input[data-field="cbu2"]').forEach(el=>{
     el.addEventListener('input', ()=>{
