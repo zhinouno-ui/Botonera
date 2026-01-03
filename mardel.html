@@ -83,6 +83,55 @@ button:hover {
      .Juan Carlos  { background: #212179; }
 .utilidad { background: #e67e22; }
 
+    
+.input-usuario {
+  width: 100%;
+  margin: 4px 1cm 5px 0;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  font-size: 13px;
+}
+        /* Contenedor horizontal */
+#modo-slider {
+  display: flex;
+  gap: 6px;
+  background: #2a2a2a; /* Fondo oscuro detrás del grupo */
+  padding: 4px;
+  border-radius: 20px;
+}
+.slider-btn {
+  background: #3a3a3a;
+  color: #ccc;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+}
+
+.slider-btn:active {
+  transform: scale(0.88);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+}
+
+.slider-btn.selected {
+  background: #111;
+  color: #C93C20;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(201,60,32,0.5), inset 0 0 4px rgba(201,60,32,0.3);
+  transform: scale(1.05);
+}
+#modo-slider {
+  display: flex;
+  gap: 6px;
+}
+#modo-slider .slider-btn {
+  flex: 1; /* opcional, para que todos midan lo mismo */
+}
 /* 🔔 Estilos del toast */
 .toast {
   position: fixed;
@@ -410,6 +459,13 @@ button:hover {
     </div>
   </div>
 
+    <!-- Grupo Promo Amigo -->
+  <div class="grupo promo-amigo">
+    <h3>Promo Amigo</h3>
+<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://bet300.biz')">Promo amigo</button>
+<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
+</div>
+  
     <!-- Grupo Mensaje Revin -->
   <div class="grupo mensaje-revin">
     <h3 style="display:flex;justify-content:space-between;align-items:center;">
@@ -427,13 +483,6 @@ button:hover {
 <button style="flex:1;background:#e67e22;" onclick="copiarCodigoAmigo(event)">Código Amigo</button>
     </div>
   </div>
-  
-  <!-- Grupo Promo Amigo -->
-  <div class="grupo promo-amigo">
-    <h3>Promo Amigo</h3>
-<button onclick="copiarYAnimar(event,'🎉 PROMO AMIGOS 🎉\n\n💥 Invitá a tus amigos y ganá fichas extra al instante.\n👉 Por cada amigo que cargue la mínima, vos recibís **$2.000 en fichas de regalo**.\n\n📌 Pedí tu CÓDIGO AMIGO y compartilo.\nMás amigos = más fichas 🤑🎰\n\n🔗 https://bet300.biz')">Promo amigo</button>
-<button onclick="copiarYAnimar(event,'ℹ️ ¿Cómo funciona la Promo Amigos?\n\n1️⃣ Pedí tu **CÓDIGO AMIGO**.\n2️⃣ Compartilo con tus conocidos.\n3️⃣ Cuando tu invitado haga su **primera carga mínima de $2.000**, debe enviar tu código.\n4️⃣ Una vez acreditada, vos recibís **$2.000 en fichas para jugar**.\n\n✅ No hay límite de invitados: ¡cuantos más sumes, más ganás!\n⚠️ Solo válido para usuarios nuevos que nunca hayan cargado antes.')">Info promo amigo</button>
-</div>
 
   <!-- Historial -->
   <div id="historial-box">
