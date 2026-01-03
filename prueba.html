@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ChinBotones - Corregido</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      margin: 10px;
+      padding: 10px;
+      color: #fff;
+    }
+    .grupo {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.2);
+      color: #fff;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .titulo {
+      font-size: 18px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    button:hover {
+      background: rgba(0,0,0,0.4);
+    }
+    .flip-btn, .drag-handle {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      background: #333;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+      border: none;
+      margin-left: 2px;
+      transition: background 0.1s;
+    }
+    .flip-btn:hover, .drag-handle:hover { background: #444; }
+    .drag-handle:active { cursor: grabbing; }
+
+    /* Colores */
+    .promo-amigo { background: #2ecc71; }
+    .Meza { background: #3498db; }
+    .Giordano { background: #992000; }
+    .Lemes { background: #791125; }
+    .Perez { background: #696902; }
+    .Velazquez { background: #212179; }
+    .Juan { background: #378891; }
+    .utilidad { background: #e67e22; }
+
+    .input-usuario {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      font-size: 13px;
+    }
+
+    #modo-slider {
+      display: flex;
+      gap: 6px;
+      background: #2a2a2a;
+      padding: 4px;
+      border-radius: 20px;
+    }
+    .slider-btn {
+      background: #3a3a3a;
+      color: #ccc;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      flex: 1;
+    }
+    .slider-btn.selected {
+      background: #111;
+      color: #C93C20;
+      box-shadow: 0 0 12px rgba(201,60,32,0.5);
+      transform: scale(1.05);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: 0.3s;
+      z-index: 9999;
+    }
+    .toast.show { opacity: 1; bottom: 40px; }
+
+    #historial-box {
+      margin-top: 15px;
+      background: #34495e;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    #historial-header {
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #historial-content {
+      margin-top: 8px;
+      display: none;
+      background: rgba(0,0,0,0.2);
+      padding: 8px;
+      border-radius: 4px;
+    }
+    #historial-text {
+      display: block;
+      font-size: 12px;
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+
+    .wallets-container { perspective: 1200px; margin-top: 8px; }
+    .wallets-card {
+      position: relative;
+      transition: transform 0.45s;
+      transform-style: preserve-3d;
+      min-height: 96px;
+    }
+    .wallets-card.flipped { transform: rotateY(180deg); }
+    .wallets-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: rgba(255,255,255,0.05);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .wallets-face.back { transform: rotateY(180deg); }
+    
+    .link-switch-container {
+      background: #1e1e1e;
+      border-radius: 14px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .copy-link-btn { background: #25d366; color: white; border-radius: 8px; padding: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="link-switch-container">
+  <h2 style="font-size: 1.1rem; margin: 0;">🌐 Enlace Landing</h2>
+  <p id="link-url" style="color: #aaa;">https://bet300.biz/</p>
+  <button id="btn-copy-link" class="copy-link-btn">📋 Copiar enlace</button>
+</div>
+
+<div id="lista-grupos">
+  <div class="grupo utilidad">
+    <div class="header"><div class="titulo">Utilidad</div></div>
+    <button onclick="copiarYAnimar(event,'✨ SOMOS BET300VIP ✨\n\nInfo completa...')">Info</button>
+    <button onclick="copiarYAnimar(event,'✅ ¡Saldo acreditado!...')">Cargado</button>
+    <button onclick="copiarYAnimar(event,'✅ Para hacer el retiro...')">Retiro</button>
+  </div>
+
+  <div class="grupo Giordano">
+    <div class="header">
+      <div class="titulo">Giordano</div>
+      <div class="controls">
+        <button type="button" class="flip-btn">🔄</button>
+        <button type="button" class="drag-handle">☰</button>
+      </div>
+    </div>
+    <div class="wallets-container">
+      <div class="wallets-card">
+        <div class="wallets-face front">
+          <button onclick="copiarYAnimar(event,'0000003100083186380803')">CBU Mp</button>
+          <button onclick="copiarYAnimar(event,'pablo.910.bujes.mp\nTitular PABLO LIONEL GIORDANO')">Alias Mp</button>
+        </div>
+        <div class="wallets-face back">
+          <button onclick="copiarYAnimar(event,'1430001713039240140012')">CBU Bru</button>
+          <button onclick="copiarYAnimar(event,'lio.gio.br')">Alias Bru</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grupo Lemes">
+    <div class="header">
+      <div class="titulo">Lemes</div>
+      <div class="controls"><button type="button" class="drag-handle">☰</button></div>
+    </div>
+    <button onclick="copiarYAnimar(event,'0000003100013162905609')">CBU MP</button>
+    <button onclick="copiarYAnimar(event,'jonatan.075.delta.mp')">Alias MP</button>
+  </div>
+
+  <div class="grupo Meza">
+    <div class="header">
+      <div class="titulo">Meza</div>
+      <div class="controls"><button type="button" class="drag-handle">☰</button></div>
+    </div>
+    <button onclick="copiarYAnimar(event,'0000076500000043003428')">CBU PPay</button>
+    <button onclick="copiarYAnimar(event,'ymeza44.ppay')">Alias PPay</button>
+  </div>
+</div>
+
+<div class="grupo mensaje-revin" style="background: #444;">
+  <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <h3 style="margin:0; font-size: 15px;">Mensaje Revin</h3>
+    <div id="modo-slider">
+      <button class="slider-btn" onclick="setSlider(0)">PC01</button>
+      <button class="slider-btn" onclick="setSlider(1)">PC02</button>
+      <button class="slider-btn selected" onclick="setSlider(2)">PC03</button>
+      <button class="slider-btn" onclick="setSlider(3)">PC04</button>
+      <button class="slider-btn" onclick="setSlider(4)">PC05</button>
+    </div>
+  </div>
+  <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
+  <div style="display:flex; gap:6px; margin-top:6px;">
+    <button onclick="copiarSaludo(event)">Saludo</button>
+    <button style="background: #27ae60;" onclick="copiarSoloWsp(event)">WhatsApp</button>
+    <button style="background: #e67e22;" onclick="copiarCodigoAmigo(event)">Código</button>
+  </div>
+</div>
+
+<div id="historial-box">
+  <div id="historial-header">
+    <span>📝 Último copiado</span> <span id="historial-arrow">⌄</span>
+  </div>
+  <div id="historial-content">
+    <span id="historial-text">Nada copiado aún...</span>
+    <button id="historial-copy" style="background: #222; margin-top: 5px;">Re-Copiar</button>
+  </div>
+</div>
+
+<div id="toast" class="toast">✅ Copiado</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  // Datos Globales
+  let modoSlider = 2;
+  let lastCopied = "";
+  
+  // Mock de saludos si el archivo externo falla
+  window.SALUDOS = window.SALUDOS || {
+    "PC01": ["Hola {usuario}, bienvenido a PC01"],
+    "PC02": ["Hola {usuario}, bienvenido a PC02"],
+    "PC03": ["Hola {usuario}, bienvenido a PC03"],
+    "PC04": ["Hola {usuario}, bienvenido a PC04"],
+    "PC05": ["Hola {usuario}, bienvenido a PC05"]
+  };
+
+  // --- Funciones de Slider ---
+  function setSlider(idx) {
+    modoSlider = idx;
+    const btns = document.querySelectorAll('.slider-btn');
+    btns.forEach((btn, i) => {
+      btn.classList.toggle('selected', i === idx);
+    });
+  }
+
+  // --- Copiado y UI ---
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.textContent = "✅ " + msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+
+  function addHistorial(txt) {
+    lastCopied = txt;
+    document.getElementById("historial-text").textContent = txt;
+    document.getElementById("historial-content").style.display = "block";
+  }
+
+  function copyText(txt) {
+    if (!txt) return;
+    navigator.clipboard.writeText(txt).then(() => {
+      showToast("Copiado al portapapeles");
+      addHistorial(txt);
+    });
+  }
+
+  function copiarYAnimar(event, texto) {
+    copyText(texto);
+    const btn = event.target;
+    btn.style.transform = "scale(0.95)";
+    setTimeout(() => btn.style.transform = "", 150);
+  }
+
+  // --- Lógica Revin ---
+  function copiarSaludo(event) {
+    const user = document.getElementById("usuarioInput").value.trim();
+    if (!user) return alert("Ingresa usuario");
+    const pcs = ["PC01", "PC02", "PC03", "PC04", "PC05"];
+    const pool = window.SALUDOS[pcs[modoSlider]] || [];
+    const raw = pool[Math.floor(Math.random() * pool.length)] || "Hola {usuario}";
+    copyText(raw.replace(/{usuario}/g, user));
+  }
+
+  function copiarSoloWsp(event) {
+    const user = document.getElementById("usuarioInput").value.trim();
+    const nums = ["5491130698779", "5492233491243", "5491178450114", "5491155264720", "SOPORTE-PENDIENTE"];
+    const num = nums[modoSlider];
+    copyText(`https://wa.me/${num}?text=Hola%20soy%20${encodeURIComponent(user)}`);
+  }
+
+  function copiarCodigoAmigo(event) {
+    const user = document.getElementById("usuarioInput").value.trim();
+    const prefs = ["R1", "R2", "R3", "R4", "R5"];
+    copyText(`TU CODIGO AMIGO: ${prefs[modoSlider]}${user}\nhttps://bet300.site`);
+  }
+
+  // --- Inicialización ---
+  document.addEventListener("DOMContentLoaded", () => {
+    // Sortable
+    new Sortable(document.getElementById('lista-grupos'), {
+      handle: ".drag-handle",
+      animation: 150
+    });
+
+    // Flip Cards
+    document.querySelectorAll(".flip-btn").forEach(btn => {
+      btn.onclick = (e) => {
+        const card = e.target.closest('.grupo').querySelector('.wallets-card');
+        if(card) card.classList.toggle('flipped');
+      }
+    });
+
+    // Toggle Historial
+    document.getElementById("historial-header").onclick = () => {
+      const content = document.getElementById("historial-content");
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    };
+
+    document.getElementById("historial-copy").onclick = () => copyText(lastCopied);
+
+    document.getElementById('btn-copy-link').onclick = () => {
+      copyText(document.getElementById('link-url').textContent);
+    };
+  });
+</script>
+</body>
+</html>
