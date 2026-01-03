@@ -474,6 +474,8 @@ button:hover {
         <button class="slider-btn" id="slider-PC01">PC01</button>
         <button class="slider-btn" id="slider-PC02">PC02</button>
         <button class="slider-btn" id="slider-PC03">PC03</button>
+        <button class="slider-btn" id="slider-PC03">PC04</button>
+        <button class="slider-btn" id="slider-PC03">PC05</button>
       </div>
     </h3>
     <input type="text" id="usuarioInput" class="input-usuario" placeholder="Escribí el usuario...">
@@ -498,7 +500,8 @@ button:hover {
   <div id="toast" class="toast"></div>
 
     </div>
-<script src="saludosCH01.js"></script>
+<script src="saludosMAR.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
 
@@ -523,6 +526,8 @@ button:hover {
   document.getElementById('slider-PC01').onclick=()=>{modoSlider=0;actualizarSlider();}
   document.getElementById('slider-PC02').onclick=()=>{modoSlider=1;actualizarSlider();}
   document.getElementById('slider-PC03').onclick=()=>{modoSlider=2;actualizarSlider();}
+  document.getElementById('slider-PC04').onclick=()=>{modoSlider=3;actualizarSlider();}
+  document.getElementById('slider-PC05').onclick=()=>{modoSlider=4;actualizarSlider();}
   actualizarSlider();
 
 // 🔄 Obtiene un saludo aleatorio según PC o mezcla general
@@ -567,7 +572,7 @@ function copiarSaludo(event) {
     return;
   }
 
-  const mapSlider = ["PC01", "PC02", "PC03"];
+  const mapSlider = ["PC01", "PC02", "PC03", "PC04", "PC05"];
   const tipo = mapSlider[modoSlider] || "PC01";
   const grupos = window.SALUDOS || {};
 
@@ -596,9 +601,11 @@ function copiarSoloWsp(event){
   }
 
   const numeros = [
-    "5491138601132", // PC01
-    "5491151622581", // PC02
-    "5491157736200"  // PC03
+    "5491130698779", // PC01
+    "5492233491243", // PC02
+    "5491178450114",  // PC03
+    "5491155264720",  // PC04
+    "SIN SOPORTE POR EL MOMENTO DERIBAR CON LOS OTROS MENSAJES!!!!!!!!",  // PC05
   ];
 
   const numero = numeros[modoSlider] || numeros[0];
@@ -615,7 +622,7 @@ function copiarCodigoAmigo(event){
     return;
   }
 
-  const codigos = ["R1", "R2", "R3"];
+  const codigos = ["R1", "R2", "R3", "R4", "R5"];
   const prefijo = codigos[modoSlider] || "R1";
   const mensaje = `TU CODIGO AMIGO\n${prefijo}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar!\nhttps://bet300.site`;
 
