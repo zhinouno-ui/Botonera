@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChinMaker Pro v9 - Editor Corregido</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --bg-soft: #18181b;
+            --glass: rgba(24, 24, 27, 0.7);
+            --border: rgba(63, 63, 70, 0.5);
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --accent: #8b5cf6;
+            --radius: 0.75rem;
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 480px 1fr;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container { grid-template-columns: 1fr; }
+            #preview-container { display: none; }
+        }
+
+        /* --- Editor Panel --- */
+        #editor-panel {
+            background-color: var(--bg-dark);
+            padding: 1.5rem;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        #editor-panel::-webkit-scrollbar { width: 5px; }
+        #editor-panel::-webkit-scrollbar-track { background: var(--bg-dark); }
+        #editor-panel::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+
+        .editor-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+        .editor-header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--accent);
+        }
+        .editor-header p {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .editor-section {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            backdrop-filter: blur(10px);
+        }
+        .editor-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+        .editor-section-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block; font-size: 0.75rem; font-weight: 700;
+            color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;
+        }
+        
+        input[type="text"], input[type="color"], select, textarea {
+            width: 100%; background-color: #00000060; border: 1px solid var(--border);
+            border-radius: 0.5rem; padding: 0.75rem; color: var(--text-primary);
+            font-size: 0.9rem; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        }
+        input[type="color"] { padding: 0.25rem; height: 48px; cursor: pointer; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: 999px; border: none;
+            font-weight: 700; text-transform: uppercase; font-size: 0.75rem; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.7rem; }
+        .btn-primary { background-color: var(--accent); color: white; }
+        .btn-primary:active { transform: scale(0.95); }
+        .btn-secondary { background-color: #3f3f46; color: white; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-full { width: 100%; }
+
+        .item-card {
+            background-color: rgba(255, 255, 255, 0.05); border-radius: var(--radius);
+            padding: 1rem; margin-top: 1rem; border: 1px solid var(--border);
+        }
+        
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+        .checkbox-group label { margin-bottom: 0; }
+
+        #preview-container { padding: 2rem; background-color: #0c0c0e; }
+        #preview-iframe { width: 100%; height: 100%; border: 1px solid var(--border); border-radius: var(--radius); background-color: #0c0c0e; }
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background-color: #27272a; color: white; padding: 10px 20px; border-radius: 999px;
+            border: 1px solid var(--border); font-size: 0.9rem; z-index: 1000;
+            opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <aside id="editor-panel">
+            <header class="editor-header">
+                <h1 id="editor-title">CHINMAKER PRO</h1>
+                <p>Editor Corregido v9</p>
+            </header>
+
+            <div id="editor-content">
+                <section class="editor-section">
+                    <div class="editor-section-header"><h2><i class="fas fa-cog"></i> General</h2></div>
+                    <div class="form-group">
+                        <label for="profileName">Nombre del Perfil</label>
+                        <input type="text" id="profileName">
+                    </div>
+                    <div class="form-group">
+                        <label for="accentColor">Color de Acento</label>
+                        <input type="color" id="accentColor">
+                    </div>
+                </section>
+                
+                <section class="editor-section">
+                    <div class="editor-section-header"><h2><i class="fas fa-star"></i> Sección Utilidad</h2></div>
+                    <div class="form-group">
+                        <label>Contenido Botón "Info"</label>
+                        <textarea id="utilityInfoContent"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido Botón "Cargado"</label>
+                        <textarea id="utilityCargadoContent"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido Botón "Retiro"</label>
+                        <textarea id="utilityRetiroContent"></textarea>
+                    </div>
+                </section>
+                
+                <section class="editor-section" data-section="wallets">
+                    <div class="editor-section-header">
+                        <h2><i class="fas fa-wallet"></i> Billeteras</h2>
+                        <button class="btn btn-secondary btn-sm add-item-btn"><i class="fas fa-plus"></i> Añadir Billetera</button>
+                    </div>
+                    <div class="items-list"></div>
+                </section>
+
+                <section class="editor-section">
+                    <div class="editor-section-header"><h2><i class="fas fa-gift"></i> Sección Promo Amigo</h2></div>
+                    <div class="form-group">
+                        <label>Título de la Sección</label>
+                        <input type="text" id="promoTitle">
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido Botón "Promo amigo"</label>
+                        <textarea id="promoAmigoContent"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido Botón "Info promo amigo"</label>
+                        <textarea id="infoPromoAmigoContent"></textarea>
+                    </div>
+                </section>
+
+                <section class="editor-section" data-section="pcs">
+                    <div class="editor-section-header">
+                        <h2><i class="fas fa-headset"></i> Operadores (PCs) y Mensajes</h2>
+                        <button class="btn btn-secondary btn-sm add-item-btn"><i class="fas fa-plus"></i> Añadir PC</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Título de la Sección de Mensajes</label>
+                        <input type="text" id="revinTitle">
+                    </div>
+                    <div class="items-list"></div>
+                </section>
+            </div>
+
+            <footer style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem; display: flex; gap: 1rem;">
+                <button class="btn btn-primary btn-full" id="exportHtmlBtn"><i class="fas fa-download"></i> Exportar Plantilla (HTML)</button>
+                <button class="btn btn-secondary btn-full" id="exportJsonBtn"><i class="fas fa-file-code"></i> Exportar Datos (JSON)</button>
+            </footer>
+        </aside>
+
+        <main id="preview-container">
+            <iframe id="preview-iframe" title="Previsualización en vivo"></iframe>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const STORAGE_KEY = 'chinmaker_v9_data';
+
+        const elements = {
+            profileName: document.getElementById('profileName'),
+            accentColor: document.getElementById('accentColor'),
+            utilityInfoContent: document.getElementById('utilityInfoContent'),
+            utilityCargadoContent: document.getElementById('utilityCargadoContent'),
+            utilityRetiroContent: document.getElementById('utilityRetiroContent'),
+            promoTitle: document.getElementById('promoTitle'),
+            promoAmigoContent: document.getElementById('promoAmigoContent'),
+            infoPromoAmigoContent: document.getElementById('infoPromoAmigoContent'),
+            revinTitle: document.getElementById('revinTitle'),
+            editorContent: document.getElementById('editor-content'),
+            exportHtmlBtn: document.getElementById('exportHtmlBtn'),
+            exportJsonBtn: document.getElementById('exportJsonBtn'),
+            previewIframe: document.getElementById('preview-iframe'),
+            editorTitle: document.getElementById('editor-title'),
+            toast: document.getElementById('toast'),
+        };
+
+        let config = {
+            profileName: 'BET300 VIP',
+            accentColor: '#10b981',
+            utilityContents: {
+                info: 'Contenido para el botón INFO...',
+                cargado: 'Contenido para el botón CARGADO...',
+                retiro: 'Contenido para el botón RETIRO...',
+            },
+            wallets: [],
+            promoTitle: 'Promo Amigo',
+            promoContents: {
+                promoAmigo: 'Contenido para el botón PROMO AMIGO...',
+                infoPromoAmigo: 'Contenido para el botón INFO PROMO AMIGO...',
+            },
+            revinTitle: 'Mensaje Revin',
+            pcs: [{ id: `pc_${Date.now()}`, nombre: 'PC 01', wsp: '5491100000000', saludo: 'Hola {{usuario}}! Bienvenido a nuestro chat.', codigoPrefix: 'AMIGO-' }],
+        };
+
+        const saveConfig = () => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            showToast('Configuración guardada');
+            renderPreview();
+        };
+
+        const loadConfig = () => {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) { config = JSON.parse(savedData); }
+        };
+        
+        const updateConfigValue = (key, value) => {
+            const keys = key.split('.');
+            let current = config;
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) current[keys[i]] = {};
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+            saveConfig();
+        };
+        
+        let debounceTimer;
+        const debouncedUpdate = (key, value) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateConfigValue(key, value);
+            }, 300);
+        };
+        
+        const renderers = {
+            wallets: (item) => `
+                <div class="flex-between">
+                    <div class="form-group" style="flex-grow: 1; margin-right: 1rem;"><label>Título de la Sección</label><input type="text" data-field="title" value="${item.title}"></div>
+                    <div><button class="btn btn-sm btn-secondary move-item-up" ${config.wallets.indexOf(item) === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button> <button class="btn btn-sm btn-secondary move-item-down" ${config.wallets.indexOf(item) === config.wallets.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button></div>
+                </div>
+                <div class="checkbox-group"><input type="checkbox" data-field="useFlip" id="flip-${item.id}" ${item.useFlip ? 'checked' : ''}><label for="flip-${item.id}">Usar Tarjeta Flip</label></div>
+                <div class="wallet-sides" style="display: grid; grid-template-columns: ${item.useFlip ? '1fr 1fr' : '1fr'}; gap: 1rem;">
+                    <div class="wallet-side-a">
+                        ${item.useFlip ? '<h6>Lado Frontal (A)</h6>' : ''}
+                        <input type="text" data-field="sideA.titular" value="${item.sideA.titular}" placeholder="Titular" style="margin-bottom: 0.5rem;">
+                        <input type="text" data-field="sideA.banco" value="${item.sideA.banco}" placeholder="Banco (Ej: Mercado Pago)" style="margin-bottom: 0.5rem;">
+                        <input type="text" data-field="sideA.cbu" value="${item.sideA.cbu}" placeholder="CBU" style="margin-bottom: 0.5rem;">
+                        <input type="text" data-field="sideA.alias" value="${item.sideA.alias}" placeholder="Alias" style="margin-bottom: 0.5rem;">
+                        <input type="color" data-field="sideA.color" value="${item.sideA.color}">
+                    </div>
+                    ${item.useFlip ? `
+                    <div class="wallet-side-b">
+                        <h6>Lado Trasero (B)</h6>
+                        <input type="text" data-field="sideB.titular" value="${item.sideB.titular}" placeholder="Titular" style="margin-bottom: 0.5rem;">
+                        <input type="text" data-field="sideB.banco" value="${item.sideB.banco}" placeholder="Banco" style="margin-bottom: 0.5rem;">
+                        <input type="text" data-field="sideB.cbu" value="${item.sideB.cbu}" placeholder="CBU" style="margin-bottom: 0.5rem;">
+                        <input type="text" data-field="sideB.alias" value="${item.sideB.alias}" placeholder="Alias" style="margin-bottom: 0.5rem;">
+                        <input type="color" data-field="sideB.color" value="${item.sideB.color}">
+                    </div>` : ''}
+                </div>
+            `,
+            pcs: (item) => `
+                <div class="form-group"><label>Nombre PC</label><input type="text" data-field="nombre" value="${item.nombre}"></div>
+                <div class="form-group"><label>WhatsApp (Ej: 54911...)</label><input type="text" data-field="wsp" value="${item.wsp}"></div>
+                <div class="form-group"><label>Plantilla Saludo (usar {{usuario}})</label><textarea data-field="saludo">${item.saludo}</textarea></div>
+                <div class="form-group"><label>Prefijo Código Amigo</label><input type="text" data-field="codigoPrefix" value="${item.codigoPrefix}"></div>
+            `
+        };
+
+        const renderUI = () => {
+            // General
+            elements.profileName.value = config.profileName;
+            elements.accentColor.value = config.accentColor;
+            document.documentElement.style.setProperty('--accent', config.accentColor);
+            elements.editorTitle.style.color = config.accentColor;
+            
+            // Utility
+            elements.utilityInfoContent.value = config.utilityContents.info;
+            elements.utilityCargadoContent.value = config.utilityContents.cargado;
+            elements.utilityRetiroContent.value = config.utilityContents.retiro;
+
+            // Promo
+            elements.promoTitle.value = config.promoTitle;
+            elements.promoAmigoContent.value = config.promoContents.promoAmigo;
+            elements.infoPromoAmigoContent.value = config.promoContents.infoPromoAmigo;
+            
+            // Revin
+            elements.revinTitle.value = config.revinTitle;
+
+            // Dynamic Sections (Wallets, PCs)
+            for (const section in renderers) {
+                const container = document.querySelector(`[data-section="${section}"] .items-list`);
+                container.innerHTML = '';
+                config[section].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.dataset.id = item.id;
+                    card.innerHTML = `${renderers[section](item)}<button class="btn btn-danger btn-full remove-item-btn" style="margin-top: 1rem;"><i class="fas fa-trash"></i> Eliminar</button>`;
+                    container.appendChild(card);
+                });
+            }
+        };
+
+        const generateTemplate = () => {
+            const sanitize = (str) => str.replace(/"/g,'&quot;').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${config.profileName}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');body{background-color:#09090b;color:white;font-family:'Plus Jakarta Sans',sans-serif;margin:0;padding:1rem;}.container{max-width:480px;margin:1.5rem auto}.section-card{background-color:#18181b;border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem;border:1px solid #27272a}.section-title{display:flex;justify-content:space-between;align-items:center;font-size:1.1rem;font-weight:700;margin:0 0 1rem}.btn-grid{display:flex;flex-direction:column;gap:0.75rem}.copy-btn{background-color:#3f3f46;color:white;padding:1rem;border-radius:0.75rem;border:none;width:100%;font-size:1rem;font-weight:700;cursor:pointer;text-align:left;transition:background-color .2s}.copy-btn:hover{background-color:#52525b}.wallet-copy-btn{background-color:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(5px)}.pc-slider{display:flex;overflow-x:auto;gap:0.5rem;padding-bottom:10px;margin-bottom:1rem}.pc-slider::-webkit-scrollbar{height:4px}.pc-slider::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:2px}.pc-btn{background-color:#3f3f46;color:#a1a1aa;padding:.5rem 1rem;border-radius:.5rem;border:1px solid transparent;font-weight:700;cursor:pointer;white-space:nowrap}.pc-btn.active{background-color:${config.accentColor};color:white;border-color:${config.accentColor}}#userInput{width:100%;background-color:#09090b;border:1px solid #27272a;border-radius:.5rem;padding:1rem;color:white;font-size:1rem;margin-bottom:1rem;box-sizing:border-box}#userInput:focus{outline:none;border-color:${config.accentColor}}.action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:.75rem}.action-btn{color:white;border-radius:.75rem;padding:1rem;font-weight:700;font-size:.9rem;border:none;cursor:pointer}.saludo-btn{background-color:#3f3f46}.wsp-btn{background-color:#25d366}.codigo-btn{background-color:#f97316}.toast-template{position:fixed;bottom:-100px;left:50%;transform:translateX(-50%);background-color:#22c55e;color:white;padding:10px 20px;border-radius:20px;transition:bottom .3s;z-index:10;font-size:.9rem}.toast-template.show{bottom:20px}</style></head><body><div class="container"><h1 style="text-align:center;color:${config.accentColor};font-weight:800;font-size:1.8rem;margin-bottom:2rem">${config.profileName}</h1><div class="section-card"><div class="section-title">Utilidad</div><div class="btn-grid"><button class="copy-btn" data-copy="${sanitize(config.utilityContents.info)}">Info</button><button class="copy-btn" data-copy="${sanitize(config.utilityContents.cargado)}">Cargado</button><button class="copy-btn" data-copy="${sanitize(config.utilityContents.retiro)}">Retiro</button></div></div>${config.wallets.map(w=>`<div class="section-card"><div class="section-title">${w.title}</div><div class="btn-grid"><button class="copy-btn wallet-copy-btn" data-copy="${sanitize(w.sideA.cbu)}">CBU ${w.sideA.banco}</button><button class="copy-btn wallet-copy-btn" data-copy="${sanitize(w.sideA.alias)}\nTitular ${sanitize(w.sideA.titular)} *${sanitize(w.sideA.banco)}*">Alias ${w.sideA.banco}</button></div></div>`).join('')}<div class="section-card"><div class="section-title">${config.promoTitle}</div><div class="btn-grid"><button class="copy-btn" data-copy="${sanitize(config.promoContents.promoAmigo)}">Promo amigo</button><button class="copy-btn" data-copy="${sanitize(config.promoContents.infoPromoAmigo)}">Info promo amigo</button></div></div><div class="section-card"><div class="section-title">${config.revinTitle}</div><div class="pc-slider" id="pc-slider">${config.pcs.map((pc,i)=>`<button class="pc-btn ${i===0?'active':''}" data-index="${i}">${pc.nombre}</button>`).join('')}</div><input type="text" id="userInput" placeholder="Escribí el usuario..."><div class="action-grid"><button id="saludoBtn" class="action-btn saludo-btn">Saludo</button><button id="wspBtn" class="action-btn wsp-btn">WhatsApp</button><button id="codigoBtn" class="action-btn codigo-btn">Código</button></div></div></div><div id="toast-template" class="toast-template"></div><script>const config=${JSON.stringify(config)};let selectedPcIndex=0;const toastEl=document.createElement('div');toastEl.id='toast-template';toastEl.className='toast-template';document.body.appendChild(toastEl);function showToast(message){toastEl.textContent=message;toastEl.classList.add('show');setTimeout(()=>{toastEl.classList.remove('show')},2000)}document.body.addEventListener('click',e=>{const copyBtn=e.target.closest('.copy-btn');if(copyBtn){const text=copyBtn.dataset.copy;navigator.clipboard.writeText(text).then(()=>showToast('¡Copiado!'))}});document.getElementById('pc-slider').addEventListener('click',e=>{if(e.target.matches('.pc-btn')){document.querySelectorAll('.pc-btn').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');selectedPcIndex=parseInt(e.target.dataset.index)}});document.getElementById('saludoBtn').addEventListener('click',()=>{const user=document.getElementById('userInput').value;const pc=config.pcs[selectedPcIndex];const message=pc.saludo.replace('{{usuario}}',user||'');navigator.clipboard.writeText(message).then(()=>showToast('Saludo copiado'))});document.getElementById('wspBtn').addEventListener('click',()=>{const pc=config.pcs[selectedPcIndex];window.open(`https://wa.me/${pc.wsp}`,'_blank')});document.getElementById('codigoBtn').addEventListener('click',()=>{const user=document.getElementById('userInput').value;const pc=config.pcs[selectedPcIndex];const code=\`\${pc.codigoPrefix}\${user||''}\`;navigator.clipboard.writeText(code).then(()=>showToast('Código copiado'))});<\/script></body></html>`;
+        };
+
+        const add_item_handlers = {
+            wallets: () => ({ id: `w_${Date.now()}`, title: 'Nueva Billetera', useFlip: false, sideA: { titular: '', banco: '', cbu: '', alias: '', color: '#3b82f6' }, sideB: { titular: '', banco: '', cbu: '', alias: '', color: '#8b5cf6' } }),
+            pcs: () => ({ id: `pc_${Date.now()}`, nombre: `PC 0${config.pcs.length + 1}`, wsp: '', saludo: 'Hola {{usuario}}!', codigoPrefix: 'AMIGO-' })
+        }
+
+        elements.editorContent.addEventListener('click', (e) => {
+            const sectionEl = e.target.closest('.editor-section[data-section]');
+            if (!sectionEl) return;
+            const section = sectionEl.dataset.section;
+
+            if (e.target.closest('.add-item-btn')) {
+                config[section].push(add_item_handlers[section]());
+                saveConfig(); renderUI();
+            }
+
+            if (e.target.closest('.remove-item-btn')) {
+                const id = e.target.closest('.item-card').dataset.id;
+                config[section] = config[section].filter(item => item.id !== id);
+                saveConfig(); renderUI();
+            }
+
+            if(e.target.closest('.move-item-up') || e.target.closest('.move-item-down')) {
+                const id = e.target.closest('.item-card').dataset.id;
+                const index = config[section].findIndex(item => item.id === id);
+                const isUp = e.target.closest('.move-item-up');
+                const newIndex = isUp ? index - 1 : index + 1;
+                if(newIndex >= 0 && newIndex < config[section].length) {
+                    [config[section][index], config[section][newIndex]] = [config[section][newIndex], config[section][index]];
+                    saveConfig(); renderUI();
+                }
+            }
+        });
+
+        elements.editorContent.addEventListener('input', (e) => {
+            const sectionEl = e.target.closest('.editor-section[data-section]');
+            if (!sectionEl) return;
+            const section = sectionEl.dataset.section;
+
+            const card = e.target.closest('.item-card');
+            if(card) {
+                const id = card.dataset.id;
+                const field = e.target.dataset.field;
+                const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                const item = config[section].find(i => i.id === id);
+
+                if(item && field) {
+                    let current = item; const keys = field.split('.');
+                    for (let i = 0; i < keys.length - 1; i++) {
+                        if (!current[keys[i]]) current[keys[i]] = {};
+                        current = current[keys[i]];
+                    }
+                    current[keys[keys.length - 1]] = value;
+                    debouncedUpdate(`${section}`, config[section]);
+                    if (e.target.type === 'checkbox') { saveConfig(); renderUI(); } // Re-render immediately for structural changes
+                }
+            }
+        });
+        
+        elements.profileName.addEventListener('input', (e) => debouncedUpdate('profileName', e.target.value));
+        elements.accentColor.addEventListener('input', (e) => { updateConfigValue('accentColor', e.target.value); renderUI(); });
+        elements.utilityInfoContent.addEventListener('input', (e) => debouncedUpdate('utilityContents.info', e.target.value));
+        elements.utilityCargadoContent.addEventListener('input', (e) => debouncedUpdate('utilityContents.cargado', e.target.value));
+        elements.utilityRetiroContent.addEventListener('input', (e) => debouncedUpdate('utilityContents.retiro', e.target.value));
+        elements.promoTitle.addEventListener('input', (e) => debouncedUpdate('promoTitle', e.target.value));
+        elements.promoAmigoContent.addEventListener('input', (e) => debouncedUpdate('promoContents.promoAmigo', e.target.value));
+        elements.infoPromoAmigoContent.addEventListener('input', (e) => debouncedUpdate('promoContents.infoPromoAmigo', e.target.value));
+        elements.revinTitle.addEventListener('input', (e) => debouncedUpdate('revinTitle', e.target.value));
+        
+        const exportFile = (blob, filename) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+        };
+
+        elements.exportHtmlBtn.addEventListener('click', () => {
+            const templateHtml = generateTemplate();
+            const blob = new Blob([templateHtml], { type: 'text/html' });
+            exportFile(blob, `plantilla-${config.profileName.toLowerCase().replace(/\s/g, '-')}.html`);
+            showToast('Plantilla HTML exportada!');
+        });
+        
+        elements.exportJsonBtn.addEventListener('click', () => {
+            const jsonString = JSON.stringify(config, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            exportFile(blob, `config-${config.profileName.toLowerCase().replace(/\s/g, '-')}.json`);
+            showToast('Datos JSON exportados!');
+        });
+
+        let toastTimer;
+        const showToast = (message) => {
+            elements.toast.textContent = message; elements.toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { elements.toast.classList.remove('show'); }, 2000);
+        };
+
+        loadConfig();
+        renderUI();
+        renderPreview();
+    });
+    </script>
+</body>
+</html>
