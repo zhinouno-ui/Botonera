@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>ChinBotones v3.0</title>
+  <title>ChinBotones v3.1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -82,13 +82,14 @@
     .master-btn:hover { opacity: 0.9; }
 
     #group-list-editor { flex: 1; overflow-y: auto; padding-right: 5px; }
-    .group-editor-item { background: var(--bg-surface); padding: 12px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid var(--border-color); cursor: pointer; transition: background 0.2s, border-color 0.2s; }
-    .group-editor-item.active { border-left-color: var(--accent-primary); background: #333; }
-    .group-editor-header { display: flex; justify-content: space-between; align-items: center; }
-    .group-editor-header strong { flex: 1; padding: 0 10px; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .editor-delete-btn { background: transparent; color: var(--text-secondary); border: none; font-size: 1rem; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
+    .group-editor-item { background: var(--bg-surface); padding: 12px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+    .group-editor-item.active { background: #333; box-shadow: 0 0 0 2px var(--accent-primary); }
+    .group-editor-header { display: flex; align-items: center; }
+    .group-editor-header strong { flex: 1; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .color-preview { width: 16px; height: 16px; border-radius: 4px; margin-right: 12px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+    .editor-delete-btn { background: transparent; color: var(--text-secondary); border: none; font-size: 1rem; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: all 0.2s; margin-left: auto; }
     .editor-delete-btn:hover { background: var(--danger-color); color: white; }
-    .master-drag-handle { cursor: grab; padding: 0 8px; color: var(--text-secondary); }
+    .master-drag-handle { cursor: grab; padding-right: 12px; color: var(--text-secondary); }
     .master-drag-handle:active { cursor: grabbing; }
 
     .sidebar-footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; }
@@ -124,7 +125,7 @@
 <body>
 
   <div id="splash-screen" class="view">
-    <h1>ChinBotones v3.0</h1>
+    <h1>ChinBotones v3.1</h1>
     <div id="splash-actions-container" class="splash-actions"></div>
   </div>
   
@@ -278,11 +279,17 @@
                     case 'export-config': this.exportConfig(); break;
                     case 'preview': this.renderPreview(); break;
                     case 'save-config': this.saveCurrentConfig(); break;
-                    case 'exit-master-mode': window.location.reload(); break;
+                    case 'exit-master-mode': this.exitMasterMode(); break;
                     case 'close-preview': this.showView('master-container'); break;
                     case 'flip-editor': target.closest('#button-editor-flipper').classList.toggle('flipped'); break;
-                    case 'add-saludo': this.addSaludoField(); break;
-                    case 'delete-saludo': target.closest('.saludo-item').remove(); this.updateConfigFromDynamicFields(); break;
+                    case 'add-saludo': this.addSaludoField(target.dataset.pcId); break;
+                    case 'delete-saludo':
+                        const pcEditor = target.closest('.pc-editor');
+                        if (pcEditor) {
+                            target.closest('.saludo-item').remove();
+                            this.updateConfigFromDynamicFields(pcEditor.dataset.id);
+                        }
+                        break;
                 }
             });
             document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
@@ -305,7 +312,6 @@
                         <button class="master-btn secondary" data-action="cancel-login">Cancelar</button>
                         <button class="master-btn primary" data-action="login">Ingresar</button>
                     </div>`;
-                this.config = this.appData.profiles[profileNames[0]]; // Pre-select first profile
             } else {
                 this.renderMasterLoginWelcome();
             }
@@ -370,17 +376,26 @@
         handleLogin() {
             const passInput = document.getElementById('password-input');
             const selector = document.getElementById('master-profile-selector');
+            if (!passInput || !selector) return;
+
             const profileName = selector.value;
-            this.config = this.appData.profiles[profileName];
-            
-            if (passInput.value === this.config.settings.masterPassword) {
+            const profile = this.appData.profiles[profileName];
+
+            if (!profile || !profile.settings || typeof profile.settings.masterPassword === 'undefined') {
+                this.showToast('Error: Perfil de oficina corrupto o sin contraseña.', 'error');
+                return;
+            }
+
+            if (passInput.value === profile.settings.masterPassword) {
+                this.config = profile;
                 this.appData.activeProfileName = profileName;
                 this.showView('master-container');
                 this.renderMasterView();
                 passInput.value = '';
-            } else { 
-                alert('Contraseña incorrecta.'); 
+            } else {
+                this.showToast('Contraseña incorrecta.', 'error');
                 passInput.value = '';
+                passInput.focus();
             }
         },
 
@@ -439,7 +454,12 @@
             this.config = null;
             this.$.employeeContainer.innerHTML = '';
             this.renderSplashScreen();
-            this.showView('splash-screen');
+        },
+        
+        exitMasterMode() {
+            if (confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
+                window.location.reload();
+            }
         },
         
         showView(viewId) {
@@ -518,8 +538,13 @@
                     item.className = 'group-editor-item';
                     if (group.id === this.activeEditorGroupId) item.classList.add('active');
                     item.dataset.groupId = group.id;
-                    item.style.borderLeftColor = group.colorHex || 'var(--border-color)';
-                    item.innerHTML = `<div class="group-editor-header"><i class="fas fa-grip-vertical master-drag-handle" style="color: ${group.colorHex || 'inherit'}"></i><strong>${this.escapeHTML(group.title)}</strong><button data-action="delete-group" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button></div>`;
+                    item.innerHTML = `
+                        <div class="group-editor-header">
+                            <i class="fas fa-grip-vertical master-drag-handle"></i>
+                            <span class="color-preview" style="background-color: ${group.colorHex || '#444'};"></span>
+                            <strong>${this.escapeHTML(group.title)}</strong>
+                            <button data-action="delete-group" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
+                        </div>`;
                     this.$.groupListEditor.appendChild(item);
                 });
             }
@@ -594,19 +619,20 @@
                 else if (key === 'colorHex') { 
                     const groupItem = document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"]`);
                     if(groupItem) {
-                        groupItem.style.borderLeftColor = el.value;
-                        groupItem.querySelector('.master-drag-handle').style.color = el.value;
+                        const colorPreview = groupItem.querySelector('.color-preview');
+                        if (colorPreview) colorPreview.style.backgroundColor = el.value;
                     }
                 }
             }
         },
 
-        updateConfigFromDynamicFields() {
+        updateConfigFromDynamicFields(specificPcId = null) {
             const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group || !group.isRevin) return;
-            group.pcs.forEach(pc => {
+            const pcsToUpdate = specificPcId ? group.pcs.filter(p => p.id === specificPcId) : group.pcs;
+            pcsToUpdate.forEach(pc => {
                 const saludosContainer = document.querySelector(`.pc-editor[data-id="${pc.id}"] #saludos-container`);
                 if(saludosContainer) {
-                    const saludoInputs = saludosContainer.querySelectorAll('input');
+                    const saludoInputs = saludosContainer.querySelectorAll('input.saludo-input');
                     pc.saludos = Array.from(saludoInputs).map(input => input.value);
                 }
             });
@@ -659,13 +685,14 @@
                 <div class="form-group">
                     <label>Saludos</label>
                     <div id="saludos-container">${saludosHTML}</div>
-                    <button class="master-btn secondary" data-action="add-saludo" style="margin-top: 10px;">+ Añadir Saludo</button>
+                    <button class="master-btn secondary" data-action="add-saludo" data-pc-id="${pc.id}" style="margin-top: 10px;">+ Añadir Saludo</button>
                 </div>
             </div>`; 
         },
 
-        addSaludoField() {
-            const container = this.$.editorPanel.querySelector('.pc-editor #saludos-container');
+        addSaludoField(pcId) {
+            if (!pcId) return;
+            const container = this.$.editorPanel.querySelector(`.pc-editor[data-id="${pcId}"] #saludos-container`);
             if(container) {
                 const newItem = document.createElement('div');
                 newItem.className = 'saludo-item';
@@ -726,7 +753,7 @@
         },
         attachMasterPanelListeners: function() { 
             this.$.editorPanel.oninput = (e) => { 
-                if (e.target.matches('.saludo-input')) { this.updateConfigFromDynamicFields(); } 
+                if (e.target.matches('input.saludo-input')) { this.updateConfigFromDynamicFields(); } 
                 else { this.updateConfig(e.target); } 
             }; 
             this.$.editorPanel.onclick = (e) => { 
