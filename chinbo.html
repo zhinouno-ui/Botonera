@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -594,7 +595,7 @@
                             <i class="fas fa-grip-vertical master-drag-handle"></i>
                             <span class="color-preview" style="background-color: ${group.colorHex || '#444'};"></span>
                             <strong>${this.escapeHTML(group.title)}</strong>
-                            <button type="button" data-action="delete-group" data-group-id="${group.id}" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
+                            <button type="button" data-action="delete-group" data-group-id="${group.id}" data-group-id="${group.id}" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
                         </div>`;
                     this.$.groupListEditor.appendChild(item);
                 });
