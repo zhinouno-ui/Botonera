@@ -96,8 +96,27 @@
     
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; color: var(--text-secondary); }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-primary); font-size: 1rem; }
-    
+    .form-group input:not([type="color"]), .form-group select, .form-group textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-primary); font-size: 1rem; }
+    .form-group input[type="color"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 40px;
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+    }
+    .form-group input[type="color"]::-webkit-color-swatch {
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+    }
+    .form-group input[type="color"]::-moz-color-swatch {
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+    }
+
     /* Toggle Switch */
     .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -126,7 +145,12 @@
 
   <div id="splash-screen" class="view">
     <h1>ChinBotones v3.1</h1>
-    <div id="splash-actions-container" class="splash-actions"></div>
+    <div id="splash-actions-container" class="splash-actions">
+        <button data-action="load-employee-file" class="master-btn primary splash-btn">Cargar Oficina (Empleado)</button>
+        <button data-action="open-master-login" class="master-btn secondary splash-btn">Modo Master</button>
+        <input type="file" id="employee-file-input" accept=".json" class="hidden">
+        <input type="file" id="import-config-input" accept=".json" class="hidden">
+    </div>
   </div>
   
   <div id="master-login-modal" class="modal-overlay hidden">
@@ -206,6 +230,9 @@
             this.loadAppData();
             this.renderSplashScreen();
             this.setupGlobalListeners();
+            // SOLUCIÓN DEFINITIVA: Asignar listeners de archivos UNA SOLA VEZ.
+            document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
+            document.getElementById('import-config-input').onchange = (e) => this.handleMasterImport(e);
         },
         
         loadAppData() {
@@ -225,13 +252,6 @@
         
         renderSplashScreen() {
             this.showView('splash-screen');
-            this.$.splashActions.innerHTML = `
-                <button data-action="load-employee-file" class="master-btn primary splash-btn">Cargar Oficina (Empleado)</button>
-                <button data-action="open-master-login" class="master-btn secondary splash-btn">Modo Master</button>
-                <input type="file" id="employee-file-input" accept=".json" class="hidden">
-                <input type="file" id="import-config-input" accept=".json" class="hidden">
-            `;
-            document.getElementById('import-config-input').onchange = (e) => this.handleImport(e);
         },
         
         handleEmployeeFileLoad(event) {
@@ -251,6 +271,41 @@
                 } catch (err) {
                     this.showToast(`Error al leer el archivo: ${err.message}`, 'error');
                 } finally {
+                    fileInput.value = ''; // Reset input
+                }
+            };
+            reader.readAsText(file);
+        },
+        
+        handleMasterImport(event) {
+            const file = event.target.files[0];
+            const fileInput = event.target;
+            if (!file) return;
+
+            const profileName = prompt("Introduce un nombre para esta oficina:", file.name.replace('.json', '').replace('_config', ''));
+            if(!profileName || profileName.trim() === '') {
+                this.showToast('El nombre no puede estar vacío.', 'error');
+                fileInput.value = '';
+                return;
+            }
+            if(this.appData.profiles[profileName] && !confirm(`Ya existe una oficina llamada "${profileName}". ¿Deseas sobreescribirla?`)) {
+                fileInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedConfig = JSON.parse(e.target.result);
+                    if (!importedConfig.settings || !Array.isArray(importedConfig.groups)) throw new Error("Formato de archivo inválido.");
+                    
+                    this.appData.profiles[profileName] = importedConfig;
+                    this.saveAppData();
+                    this.showToast(`Oficina "${profileName}" importada correctamente.`, 'success');
+                    this.renderMasterLogin(); // Go back to login screen to select the new profile
+                } catch (err) {
+                    this.showToast(`Error al importar: ${err.message}`, 'error');
+                } finally {
                     fileInput.value = '';
                 }
             };
@@ -264,23 +319,29 @@
                 if (!action) return;
 
                 switch (action) {
-                    case 'exit-employee-view': this.exitEmployeeView(); break;
+                    // Splash Screen & Login
                     case 'load-employee-file': document.getElementById('employee-file-input').click(); break;
                     case 'open-master-login': this.renderMasterLogin(); break;
-                    case 'cancel-login': this.showView('splash-screen'); break;
+                    case 'cancel-login': this.renderSplashScreen(); break;
                     case 'login': this.handleLogin(); break;
                     case 'render-create-profile-form': this.renderCreateProfileForm(); break;
                     case 'back-to-login-options': this.renderMasterLoginWelcome(); break;
                     case 'submit-new-profile': this.handleSubmitNewProfile(); break;
                     case 'import-profile': document.getElementById('import-config-input').click(); break;
+
+                    // Employee View
+                    case 'exit-employee-view': this.exitEmployeeView(); break;
+
+                    // Master View
                     case 'open-add-group-modal': this.showView('add-group-type-modal'); break;
                     case 'cancel-add-group': this.showView('master-container'); break;
                     case 'add-group': this.addGroup(target.dataset.type); break;
                     case 'export-config': this.exportConfig(); break;
                     case 'preview': this.renderPreview(); break;
                     case 'save-config': this.saveCurrentConfig(); break;
-                    case 'exit-master-mode': this.exitMasterMode(); break;
                     case 'close-preview': this.showView('master-container'); break;
+                    
+                    // Editor specific
                     case 'flip-editor': target.closest('#button-editor-flipper').classList.toggle('flipped'); break;
                     case 'add-saludo': this.addSaludoField(target.dataset.pcId); break;
                     case 'delete-saludo':
@@ -292,12 +353,10 @@
                         break;
                 }
             });
-            document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
         },
         
         renderMasterLogin() {
             const profileCount = Object.keys(this.appData.profiles).length;
-
             if (profileCount > 0) {
                 const profileNames = Object.keys(this.appData.profiles);
                 const options = profileNames.map(name => `<option value="${this.escapeHTML(name)}">${this.escapeHTML(name)}</option>`).join('');
@@ -346,31 +405,6 @@
                     <button class="master-btn primary" data-action="submit-new-profile">Crear y Entrar</button>
                 </div>
             `;
-        },
-
-        handleImport(event) {
-            const file = event.target.files[0];
-            const fileInput = event.target;
-            if (!file) return;
-            const profileName = prompt("Introduce un nombre para esta oficina:", file.name.replace('.json', '').replace('_config', ''));
-            
-            if(!profileName || profileName.trim() === '') { this.showToast('El nombre no puede estar vacío.', 'error'); fileInput.value = ''; return; }
-            if(this.appData.profiles[profileName] && !confirm(`Ya existe una oficina llamada "${profileName}". ¿Deseas sobreescribirla?`)) { fileInput.value = ''; return; }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedConfig = JSON.parse(e.target.result);
-                    if (!importedConfig.settings || !Array.isArray(importedConfig.groups)) throw new Error("Formato inválido.");
-                    this.appData.profiles[profileName] = importedConfig;
-                    this.saveAppData();
-                    this.showToast(`Oficina "${profileName}" importada.`, 'success');
-                    this.renderSplashScreen();
-                    this.showView('splash-screen');
-                } catch (err) { this.showToast(`Error: ${err.message}`, 'error'); } 
-                finally { fileInput.value = ''; }
-            };
-            reader.readAsText(file);
         },
         
         handleLogin() {
@@ -454,12 +488,6 @@
             this.config = null;
             this.$.employeeContainer.innerHTML = '';
             this.renderSplashScreen();
-        },
-        
-        exitMasterMode() {
-            if (confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
-                window.location.reload();
-            }
         },
         
         showView(viewId) {
@@ -548,6 +576,14 @@
                     this.$.groupListEditor.appendChild(item);
                 });
             }
+
+            // SOLUCIÓN DEFINITIVA: Asignar listener de salida DIRECTAMENTE al botón.
+            document.querySelector('[data-action="exit-master-mode"]').onclick = () => {
+                if (confirm("¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.")) {
+                    window.location.reload();
+                }
+            };
+
             this.attachMasterSidebarListeners();
             if (this.activeEditorGroupId && this.config?.groups?.some(g => g.id === this.activeEditorGroupId)) {
                 this.renderEditorPanel(this.activeEditorGroupId);
@@ -628,7 +664,7 @@
 
         updateConfigFromDynamicFields(specificPcId = null) {
             const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group || !group.isRevin) return;
-            const pcsToUpdate = specificPcId ? group.pcs.filter(p => p.id === specificPcId) : group.pcs;
+            const pcsToUpdate = specificPcId ? group.pcs.filter(p => p.id === specificPcId) : (group.pcs || []);
             pcsToUpdate.forEach(pc => {
                 const saludosContainer = document.querySelector(`.pc-editor[data-id="${pc.id}"] #saludos-container`);
                 if(saludosContainer) {
