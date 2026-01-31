@@ -146,8 +146,8 @@
   <div id="splash-screen" class="view">
     <h1>ChinBotones v3.1</h1>
     <div id="splash-actions-container" class="splash-actions">
-        <button data-action="load-employee-file" class="master-btn primary splash-btn">Cargar Oficina (Empleado)</button>
-        <button data-action="open-master-login" class="master-btn secondary splash-btn">Modo Master</button>
+        <button type="button" data-action="load-employee-file" class="master-btn primary splash-btn">Cargar Oficina (Empleado)</button>
+        <button type="button" data-action="open-master-login" class="master-btn secondary splash-btn">Modo Master</button>
         <input type="file" id="employee-file-input" accept=".json" class="hidden">
         <input type="file" id="import-config-input" accept=".json" class="hidden">
     </div>
@@ -163,10 +163,10 @@
     <div class="modal-box">
       <h3>Seleccionar Tipo de Grupo</h3>
       <div class="splash-actions">
-        <button class="master-btn secondary" data-action="add-group" data-type="buttons" style="width: 100%;"><i class="fas fa-list"></i> Grupo de Botones</button>
-        <button class="master-btn secondary" data-action="add-group" data-type="revin" style="width: 100%;"><i class="fas fa-sync-alt"></i> Grupo de Revinculación</button>
+        <button type="button" class="master-btn secondary" data-action="add-group" data-type="buttons" style="width: 100%;"><i class="fas fa-list"></i> Grupo de Botones</button>
+        <button type="button" class="master-btn secondary" data-action="add-group" data-type="revin" style="width: 100%;"><i class="fas fa-sync-alt"></i> Grupo de Revinculación</button>
       </div>
-      <button class="master-btn danger" data-action="cancel-add-group" style="margin-top: 20px; width: 100%;">Cancelar</button>
+      <button type="button" class="master-btn danger" data-action="cancel-add-group" style="margin-top: 20px; width: 100%;">Cancelar</button>
     </div>
   </div>
 
@@ -175,7 +175,7 @@
         <h3>Previsualización (Modo Empleado)</h3>
         <div id="preview-container"></div>
         <div class="modal-actions" style="margin-top: 20px;">
-            <button class="master-btn secondary" data-action="close-preview" style="width: 100%;">Cerrar</button>
+            <button type="button" class="master-btn secondary" data-action="close-preview" style="width: 100%;">Cerrar</button>
         </div>
     </div>
   </div>
@@ -187,9 +187,9 @@
     <div id="master-sidebar">
       <div class="form-group"><label>Oficina Activa: <strong><span id="active-profile-name-display"></span></strong></label></div>
       <div class="master-actions">
-        <button data-action="open-add-group-modal" class="master-btn primary"><i class="fas fa-plus"></i> Grupo</button>
-        <button data-action="export-config" class="master-btn secondary"><i class="fas fa-download"></i> Exportar</button>
-        <button data-action="preview" class="master-btn secondary"><i class="fas fa-eye"></i> Previsualizar</button>
+        <button type="button" data-action="open-add-group-modal" class="master-btn primary"><i class="fas fa-plus"></i> Grupo</button>
+        <button type="button" data-action="export-config" class="master-btn secondary"><i class="fas fa-download"></i> Exportar</button>
+        <button type="button" data-action="preview" class="master-btn secondary"><i class="fas fa-eye"></i> Previsualizar</button>
       </div>
       <div id="group-list-editor"></div>
       <div class="sidebar-footer">
@@ -197,8 +197,8 @@
             <label style="font-size: 0.9em;">Nueva Contraseña Master</label>
             <input type="password" id="new-password-input" placeholder="Dejar en blanco para no cambiar">
         </div>
-        <button data-action="save-config" class="master-btn secondary" style="width: 100%; margin-bottom: 10px;"><i class="fas fa-save"></i> Guardar Cambios</button>
-        <button data-action="exit-master-mode" class="master-btn danger" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Salir a Inicio</button>
+        <button type="button" data-action="save-config" class="master-btn secondary" style="width: 100%; margin-bottom: 10px;"><i class="fas fa-save"></i> Guardar Cambios</button>
+        <button type="button" data-action="exit-master-mode" class="master-btn danger" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Salir a Inicio</button>
       </div>
     </div>
     <div id="master-main">
@@ -224,6 +224,7 @@
           groupListEditor: document.getElementById('group-list-editor'),
           masterContainer: document.getElementById('master-container'),
           employeeContainer: document.getElementById('employee-container'),
+          masterMain: document.getElementById('master-main'),
         },
 
         init() {
@@ -282,27 +283,22 @@
             const fileInput = event.target;
             if (!file) return;
 
-            const profileName = prompt("Introduce un nombre para esta oficina:", file.name.replace('.json', '').replace('_config', ''));
-            if(!profileName || profileName.trim() === '') {
-                this.showToast('El nombre no puede estar vacío.', 'error');
-                fileInput.value = '';
-                return;
-            }
-            if(this.appData.profiles[profileName] && !confirm(`Ya existe una oficina llamada "${profileName}". ¿Deseas sobreescribirla?`)) {
-                fileInput.value = '';
-                return;
-            }
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
                     const importedConfig = JSON.parse(e.target.result);
                     if (!importedConfig.settings || !Array.isArray(importedConfig.groups)) throw new Error("Formato de archivo inválido.");
-                    
+
+                    const defaultProfileName = file.name.replace('.json', '').replace('_config', '');
+                    let profileNameInput = prompt("Introduce un nombre para esta oficina:", defaultProfileName);
+                    const profileName = (!profileNameInput || profileNameInput.trim() === '') ? defaultProfileName : profileNameInput.trim();
+
+                    if (this.appData.profiles[profileName] && !confirm(`Ya existe una oficina llamada "${profileName}". ¿Deseas sobreescribirla?`)) return;
+
                     this.appData.profiles[profileName] = importedConfig;
                     this.saveAppData();
                     this.showToast(`Oficina "${profileName}" importada correctamente.`, 'success');
-                    this.renderMasterLogin(); // Go back to login screen to select the new profile
+                    this.renderMasterLogin();
                 } catch (err) {
                     this.showToast(`Error al importar: ${err.message}`, 'error');
                 } finally {
@@ -313,13 +309,16 @@
         },
 
         setupGlobalListeners() {
+            // Listener centralizado para Clics
             document.body.addEventListener('click', (e) => {
-                const target = e.target;
-                const action = target.dataset.action || target.closest('[data-action]')?.dataset.action;
-                if (!action) return;
+                const actionEl = e.target.closest('[data-action]');
+                if (!actionEl) return;
+        
+                const action = actionEl.dataset.action;
+                const groupId = actionEl.closest('.group-editor-item')?.dataset.groupId;
 
                 switch (action) {
-                    // Splash Screen & Login
+                    // --- Splash & Login ---
                     case 'load-employee-file': document.getElementById('employee-file-input').click(); break;
                     case 'open-master-login': this.renderMasterLogin(); break;
                     case 'cancel-login': this.renderSplashScreen(); break;
@@ -328,31 +327,52 @@
                     case 'back-to-login-options': this.renderMasterLoginWelcome(); break;
                     case 'submit-new-profile': this.handleSubmitNewProfile(); break;
                     case 'import-profile': document.getElementById('import-config-input').click(); break;
-
-                    // Employee View
+        
+                    // --- Employee View ---
                     case 'exit-employee-view': this.exitEmployeeView(); break;
-
-                    // Master View
+        
+                    // --- Master Sidebar ---
                     case 'open-add-group-modal': this.showView('add-group-type-modal'); break;
                     case 'cancel-add-group': this.showView('master-container'); break;
-                    case 'add-group': this.addGroup(target.dataset.type); break;
+                    case 'add-group': this.addGroup(actionEl.dataset.type); break;
                     case 'export-config': this.exportConfig(); break;
                     case 'preview': this.renderPreview(); break;
                     case 'save-config': this.saveCurrentConfig(); break;
                     case 'close-preview': this.showView('master-container'); break;
-                    
-                    // Editor specific
-                    case 'flip-editor': target.closest('#button-editor-flipper').classList.toggle('flipped'); break;
-                    case 'add-saludo': this.addSaludoField(target.dataset.pcId); break;
-                    case 'delete-saludo':
-                        const pcEditor = target.closest('.pc-editor');
-                        if (pcEditor) {
-                            target.closest('.saludo-item').remove();
-                            this.updateConfigFromDynamicFields(pcEditor.dataset.id);
+                    case 'select-group': 
+                        this.activeEditorGroupId = groupId;
+                        this.renderMasterView();
+                        break;
+                    case 'delete-group':
+                        if (confirm(`¿Eliminar grupo?`)) {
+                            this.config.groups = this.config.groups.filter(g => g.id !== groupId);
+                            if (this.activeEditorGroupId === groupId) this.activeEditorGroupId = null;
+                            this.renderMasterView();
                         }
+                        break;
+                    
+                    // --- Master Editor Panel ---
+                    case 'flip-editor': actionEl.closest('#button-editor-flipper').classList.toggle('flipped'); break;
+                    case 'add-saludo': this.addSaludoField(actionEl.dataset.pcId); break;
+                    case 'delete-saludo':
+                        actionEl.closest('.saludo-item').remove();
+                        this.updateConfigFromDynamicFields(actionEl.closest('.pc-editor').dataset.id);
+                        break;
+                    case 'add-button':
+                    case 'delete-button':
+                    case 'add-pc':
+                    case 'delete-pc':
+                        this.handleEditorAction(action, actionEl);
                         break;
                 }
             });
+
+            // Listener centralizado para Inputs
+            this.$.masterMain.oninput = (e) => {
+                const target = e.target;
+                if (target.matches('input.saludo-input')) this.updateConfigFromDynamicFields();
+                else if (target.dataset.key) this.updateConfig(target);
+            };
         },
         
         renderMasterLogin() {
@@ -368,8 +388,13 @@
                     </div>
                     <input type="password" id="password-input" placeholder="Contraseña...">
                     <div class="modal-actions">
-                        <button class="master-btn secondary" data-action="cancel-login">Cancelar</button>
-                        <button class="master-btn primary" data-action="login">Ingresar</button>
+                        <button type="button" class="master-btn secondary" data-action="cancel-login">Cancelar</button>
+                        <button type="button" class="master-btn primary" data-action="login">Ingresar</button>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+                    <div class="modal-actions">
+                        <button type="button" class="master-btn secondary" data-action="render-create-profile-form">Crear Nueva Oficina</button>
+                        <button type="button" class="master-btn secondary" data-action="import-profile">Importar Otra</button>
                     </div>`;
             } else {
                 this.renderMasterLoginWelcome();
@@ -382,11 +407,12 @@
                 <h3>Bienvenido al Modo Master</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 20px;">No hay oficinas locales. Crea o importa una para empezar.</p>
                 <div class="splash-actions">
-                    <button class="master-btn primary splash-btn" data-action="render-create-profile-form">Crear Nueva Oficina</button>
-                    <button class="master-btn secondary splash-btn" data-action="import-profile">Importar Oficina</button>
+                    <button type="button" class="master-btn primary splash-btn" data-action="render-create-profile-form">Crear Nueva Oficina</button>
+                    <button type="button" class="master-btn secondary splash-btn" data-action="import-profile">Importar Oficina</button>
                 </div>
-                <button class="master-btn danger" data-action="cancel-login" style="margin-top: 20px; width:100%;">Cancelar</button>
+                <button type="button" class="master-btn danger" data-action="cancel-login" style="margin-top: 20px; width:100%;">Cancelar</button>
             `;
+            this.showView('master-login-modal');
         },
 
         renderCreateProfileForm() {
@@ -401,10 +427,11 @@
                     <input type="password" id="new-profile-password-input" placeholder="Crea tu contraseña">
                 </div>
                 <div class="modal-actions">
-                    <button class="master-btn secondary" data-action="back-to-login-options">Atrás</button>
-                    <button class="master-btn primary" data-action="submit-new-profile">Crear y Entrar</button>
+                    <button type="button" class="master-btn secondary" data-action="back-to-login-options">Atrás</button>
+                    <button type="button" class="master-btn primary" data-action="submit-new-profile">Crear y Entrar</button>
                 </div>
             `;
+            this.showView('master-login-modal');
         },
         
         handleLogin() {
@@ -421,7 +448,7 @@
             }
 
             if (passInput.value === profile.settings.masterPassword) {
-                this.config = profile;
+                this.config = JSON.parse(JSON.stringify(profile)); // Deep copy to avoid mutation issues
                 this.appData.activeProfileName = profileName;
                 this.showView('master-container');
                 this.renderMasterView();
@@ -440,26 +467,11 @@
             const profileName = profileNameInput.value.trim();
             const password = passwordInput.value.trim();
 
-            if (!profileName) {
-                this.showToast('El nombre de la oficina no puede estar vacío.', 'error');
-                profileNameInput.focus();
-                return;
-            }
-            if (this.appData.profiles[profileName]) {
-                this.showToast(`La oficina "${profileName}" ya existe.`, 'error');
-                profileNameInput.focus();
-                return;
-            }
-            if (!password) {
-                this.showToast('La contraseña no puede estar vacía.', 'error');
-                passwordInput.focus();
-                return;
-            }
+            if (!profileName) { this.showToast('El nombre de la oficina no puede estar vacío.', 'error'); profileNameInput.focus(); return; }
+            if (this.appData.profiles[profileName]) { this.showToast(`La oficina "${profileName}" ya existe.`, 'error'); profileNameInput.focus(); return; }
+            if (!password) { this.showToast('La contraseña no puede estar vacía.', 'error'); passwordInput.focus(); return; }
 
-            const newConfig = {
-                settings: { masterPassword: password },
-                groups: []
-            };
+            const newConfig = { settings: { masterPassword: password }, groups: [] };
 
             this.appData.profiles[profileName] = newConfig;
             this.appData.activeProfileName = profileName;
@@ -472,7 +484,7 @@
         },
         
         saveCurrentConfig() {
-            this.updateConfigFromDynamicFields(); // Ensure dynamic fields are saved
+            this.updateConfigFromDynamicFields();
             const newPass = document.getElementById('new-password-input').value;
             if (this.config.settings && newPass.trim() !== '') {
                 this.config.settings.masterPassword = newPass;
@@ -507,7 +519,7 @@
             if (containerId === 'employee-container') {
                 headerHTML = `<div class="employee-header">
                     <h2>ChinBotones</h2>
-                    <button data-action="exit-employee-view" class="master-btn danger" style="padding: 8px 12px;"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                    <button type="button" data-action="exit-employee-view" class="master-btn danger" style="padding: 8px 12px;"><i class="fas fa-sign-out-alt"></i> Salir</button>
                 </div>`;
             }
             
@@ -521,7 +533,7 @@
                     groupEl.className = 'grupo';
                     groupEl.style.backgroundColor = group.colorHex || '#333';
                     groupEl.dataset.id = group.id;
-                    let content = `<div class="header"><div class="titulo">${this.escapeHTML(group.title)}</div><div class="controls">${group.isFlip ? '<button class="control-btn flip-btn">🔄</button>' : ''}<div class="drag-handle"><i class="fas fa-grip-lines"></i></div></div></div>`;
+                    let content = `<div class="header"><div class="titulo">${this.escapeHTML(group.title)}</div><div class="controls">${group.isFlip ? '<button type="button" class="control-btn flip-btn">🔄</button>' : ''}<div class="drag-handle"><i class="fas fa-grip-lines"></i></div></div></div>`;
                     if (group.isRevin) content += this.createRevinHTML(group);
                     else if (group.isFlip) content += this.createFlipHTML(group);
                     else content += this.createSimpleButtonsHTML(group.buttons);
@@ -536,8 +548,7 @@
         attachEmployeeViewListeners(container, config) {
             new Sortable(container, { handle: '.drag-handle', animation: 150, disabled: (container.id !== 'group-container-employee-container') }); 
             container.addEventListener('click', (e) => { 
-                const target = e.target; 
-                const actionBtn = target.closest('.copy-btn, .flip-btn, .slider-btn');
+                const actionBtn = e.target.closest('.copy-btn, .flip-btn, .slider-btn');
                 if (!actionBtn) return;
                 
                 if (actionBtn.matches('.copy-btn') && !actionBtn.matches('.revin-action')) this.copyText(actionBtn.dataset.copyText, actionBtn); 
@@ -552,7 +563,7 @@
         },
         
         renderPreview() {
-            this.updateConfigFromDynamicFields(); // Make sure preview is up to date
+            this.updateConfigFromDynamicFields();
             this.showView('preview-modal');
             this.renderEmployeeView('preview-container', this.config);
         },
@@ -564,6 +575,7 @@
                 this.config.groups.forEach(group => {
                     const item = document.createElement('div');
                     item.className = 'group-editor-item';
+                    item.dataset.action = "select-group"; // For event delegation
                     if (group.id === this.activeEditorGroupId) item.classList.add('active');
                     item.dataset.groupId = group.id;
                     item.innerHTML = `
@@ -571,20 +583,19 @@
                             <i class="fas fa-grip-vertical master-drag-handle"></i>
                             <span class="color-preview" style="background-color: ${group.colorHex || '#444'};"></span>
                             <strong>${this.escapeHTML(group.title)}</strong>
-                            <button data-action="delete-group" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
+                            <button type="button" data-action="delete-group" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
                         </div>`;
                     this.$.groupListEditor.appendChild(item);
                 });
             }
 
-            // SOLUCIÓN DEFINITIVA: Asignar listener de salida DIRECTAMENTE al botón.
             document.querySelector('[data-action="exit-master-mode"]').onclick = () => {
-                if (confirm("¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.")) {
-                    window.location.reload();
-                }
+                if (confirm("¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.")) window.location.reload();
             };
 
-            this.attachMasterSidebarListeners();
+            if (this.sortableGroups) this.sortableGroups.destroy();
+            this.sortableGroups = new Sortable(this.$.groupListEditor, { handle: '.master-drag-handle', animation: 150, onEnd: (evt) => { if(!this.config.groups) return; const [movedItem] = this.config.groups.splice(evt.oldIndex, 1); this.config.groups.splice(evt.newIndex, 0, movedItem); } });
+
             if (this.activeEditorGroupId && this.config?.groups?.some(g => g.id === this.activeEditorGroupId)) {
                 this.renderEditorPanel(this.activeEditorGroupId);
             } else {
@@ -600,17 +611,11 @@
           this.$.editorPlaceholder.classList.add('hidden');
           this.$.editorPanel.classList.remove('hidden');
           
-          let flipToggleHTML = '';
-          if (!group.isRevin) {
-              flipToggleHTML = `
+          const flipToggleHTML = !group.isRevin ? `
                 <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
                     <label for="gf_${group.id}" style="margin: 0;">Usar tarjeta Flip</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="gf_${group.id}" data-key="isFlip" ${group.isFlip ? 'checked' : ''}>
-                        <span class="slider"></span>
-                    </label>
-                </div>`;
-          }
+                    <label class="toggle-switch"><input type="checkbox" id="gf_${group.id}" data-key="isFlip" ${group.isFlip ? 'checked' : ''}><span class="slider"></span></label>
+                </div>` : '';
 
           this.$.editorPanel.innerHTML = `
             <h3>Editando: ${this.escapeHTML(group.title)}</h3>
@@ -619,7 +624,6 @@
             ${flipToggleHTML}
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             ${group.isRevin ? this.createPcEditorHTML(group) : this.createButtonEditorHTML(group)}`;
-          this.attachMasterPanelListeners();
         },
         
         addGroup(type) {
@@ -628,15 +632,9 @@
             const now = Date.now();
             let newGroup;
 
-            switch(type) {
-                case 'revin':
-                    newGroup = { id: `g_${now}`, title: "Revinculación", colorHex: "#27ae60", isRevin: true, pcs: [{ id: `pc_${now}`, name: "PC 1", whatsapp: "", friendCode: "", saludos: ["Hola {usuario}! ..."] }] };
-                    break;
-                case 'buttons':
-                default:
-                    newGroup = { id: `g_${now}`, title: "Grupo de Botones", colorHex: "#34495e", isFlip: false, buttons: [{id: `b_${now}_1`, label: 'Nuevo Botón', text: ''}], frontButtons: [], backButtons: [] };
-                    break;
-            }
+            if (type === 'revin') newGroup = { id: `g_${now}`, title: "Revinculación", colorHex: "#27ae60", isRevin: true, pcs: [{ id: `pc_${now}`, name: "PC 1", whatsapp: "", friendCode: "", saludos: ["Hola {usuario}! ..."] }] };
+            else newGroup = { id: `g_${now}`, title: "Grupo de Botones", colorHex: "#34495e", isFlip: false, buttons: [{id: `b_${now}_1`, label: 'Nuevo Botón', text: ''}], frontButtons: [], backButtons: [] };
+            
             this.config.groups.push(newGroup);
             this.activeEditorGroupId = newGroup.id;
             this.renderMasterView();
@@ -645,84 +643,93 @@
         updateConfig(el) { 
             const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group) return; 
             const key = el.dataset.key; if (!key) return; 
-            const btnEditor = el.closest('.button-editor'); const pcEditor = el.closest('.pc-editor'); 
-            if (btnEditor) { const btnId = btnEditor.dataset.id; const face = btnEditor.closest('.button-editor-list')?.dataset.face; let arr = face === 'front' ? group.frontButtons : (face === 'back' ? group.backButtons : group.buttons); let btn = arr.find(b => b.id === btnId); if (btn) btn[key] = el.value; } 
-            else if (pcEditor) { const pcId = pcEditor.dataset.id; const pc = group.pcs.find(p => p.id === pcId); if (pc) pc[key] = el.value; } 
-            else { 
+            const btnEditor = el.closest('.button-editor');
+            const pcEditor = el.closest('.pc-editor'); 
+
+            if (btnEditor) { 
+                const btnId = btnEditor.dataset.id;
+                const face = btnEditor.closest('.button-editor-list')?.dataset.face;
+                let arr = face === 'front' ? group.frontButtons : (face === 'back' ? group.backButtons : group.buttons);
+                let btn = (arr || []).find(b => b.id === btnId);
+                if (btn) btn[key] = el.value;
+            } else if (pcEditor) { 
+                const pcId = pcEditor.dataset.id;
+                const pc = (group.pcs || []).find(p => p.id === pcId);
+                if (pc) pc[key] = el.value;
+            } else { 
                 group[key] = el.type === 'checkbox' ? el.checked : el.value; 
-                if (key === 'isFlip') { this.renderEditorPanel(this.activeEditorGroupId); }
-                else if (key === 'title') { document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"] strong`).textContent = el.value; }
-                else if (key === 'colorHex') { 
-                    const groupItem = document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"]`);
-                    if(groupItem) {
-                        const colorPreview = groupItem.querySelector('.color-preview');
-                        if (colorPreview) colorPreview.style.backgroundColor = el.value;
-                    }
-                }
+                if (key === 'isFlip') this.renderEditorPanel(this.activeEditorGroupId);
+                else if (key === 'title') document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"] strong`).textContent = el.value;
+                else if (key === 'colorHex') document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"] .color-preview`).style.backgroundColor = el.value;
             }
         },
 
         updateConfigFromDynamicFields(specificPcId = null) {
             const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group || !group.isRevin) return;
-            const pcsToUpdate = specificPcId ? group.pcs.filter(p => p.id === specificPcId) : (group.pcs || []);
+            const pcsToUpdate = specificPcId ? (group.pcs || []).filter(p => p.id === specificPcId) : (group.pcs || []);
             pcsToUpdate.forEach(pc => {
                 const saludosContainer = document.querySelector(`.pc-editor[data-id="${pc.id}"] #saludos-container`);
-                if(saludosContainer) {
-                    const saludoInputs = saludosContainer.querySelectorAll('input.saludo-input');
-                    pc.saludos = Array.from(saludoInputs).map(input => input.value);
-                }
+                if(saludosContainer) pc.saludos = Array.from(saludosContainer.querySelectorAll('input.saludo-input')).map(input => input.value);
             });
         },
         
-        createSimpleButtonsHTML(buttons) { return (buttons || []).map(btn => `<button class="copy-btn" data-copy-text="${this.escapeHTML(btn.text)}">${this.escapeHTML(btn.label)}</button>`).join(''); },
+        handleEditorAction(action, actionEl) {
+            const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group) return;
+            const isFlipped = this.$.editorPanel.querySelector('#button-editor-flipper')?.classList.contains('flipped');
+
+            if (action === 'add-button') {
+                const face = actionEl.dataset.face;
+                const newBtn = { id: `b_${Date.now()}`, label: 'Nuevo', text: '' };
+                if (face === 'front') { if(!group.frontButtons) group.frontButtons = []; group.frontButtons.push(newBtn); }
+                else if (face === 'back') { if(!group.backButtons) group.backButtons = []; group.backButtons.push(newBtn); }
+                else { if(!group.buttons) group.buttons = []; group.buttons.push(newBtn); }
+            } else if (action === 'delete-button') {
+                const btnId = actionEl.closest('.button-editor').dataset.id;
+                ['buttons', 'frontButtons', 'backButtons'].forEach(key => { if (group[key]) group[key] = group[key].filter(b => b.id !== btnId); });
+            } else if (action === 'add-pc') {
+                if(!group.pcs) group.pcs = [];
+                group.pcs.push({ id: `pc_${Date.now()}`, name: "Nueva PC", whatsapp: "", friendCode: "", saludos: [] });
+            } else if (action === 'delete-pc') {
+                const pcId = actionEl.closest('.pc-editor').dataset.id;
+                group.pcs = (group.pcs || []).filter(p => p.id !== pcId);
+            }
+
+            this.renderEditorPanel(this.activeEditorGroupId);
+            if (isFlipped) this.$.editorPanel.querySelector('#button-editor-flipper')?.classList.add('flipped');
+        },
+
+        createSimpleButtonsHTML(buttons) { return (buttons || []).map(btn => `<button type="button" class="copy-btn" data-copy-text="${this.escapeHTML(btn.text)}">${this.escapeHTML(btn.label)}</button>`).join(''); },
         createFlipHTML(group) { return `<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front">${this.createSimpleButtonsHTML(group.frontButtons)}</div><div class="wallets-face back">${this.createSimpleButtonsHTML(group.backButtons)}</div></div></div>`; },
-        createRevinHTML(group) { const slider = (group.pcs || []).map(pc => `<button class="slider-btn" data-pc-id="${pc.id}">${this.escapeHTML(pc.name)}</button>`).join(''); return `<h3 style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap; gap: 10px;">Mensaje Revin<div class="modo-slider">${slider}</div></h3><input type="text" class="input-usuario" placeholder="Escribí el usuario..."><div class="revin-actions"><button class="copy-btn revin-action" data-type="saludo">Copiar saludo</button><button class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;">Copiar WhatsApp</button><button class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;">Código Amigo</button></div>`; },
+        createRevinHTML(group) { const slider = (group.pcs || []).map(pc => `<button type="button" class="slider-btn" data-pc-id="${pc.id}">${this.escapeHTML(pc.name)}</button>`).join(''); return `<h3 style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap; gap: 10px;">Mensaje Revin<div class="modo-slider">${slider}</div></h3><input type="text" class="input-usuario" placeholder="Escribí el usuario..."><div class="revin-actions"><button type="button" class="copy-btn revin-action" data-type="saludo">Copiar saludo</button><button type="button" class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;">Copiar WhatsApp</button><button type="button" class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;">Código Amigo</button></div>`; },
         
         createButtonEditorHTML(group) { 
             if (group.isFlip) { 
                 return `<div id="button-editor-flipper">
                     <div class="button-editor-face front">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h4>Botones Cara Frontal</h4>
-                            <button class="master-btn secondary" data-action="flip-editor">Editar Atrás <i class="fas fa-redo"></i></button>
-                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h4>Botones Cara Frontal</h4><button type="button" class="master-btn secondary" data-action="flip-editor">Editar Atrás <i class="fas fa-redo"></i></button></div>
                         <div class="button-editor-list" data-face="front">${(group.frontButtons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div>
-                        <button class="master-btn secondary" data-action="add-button" data-face="front">+ Añadir Botón Frontal</button>
+                        <button type="button" class="master-btn secondary" data-action="add-button" data-face="front">+ Añadir Botón Frontal</button>
                     </div>
                     <div class="button-editor-face back">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h4>Botones Cara Trasera</h4>
-                            <button class="master-btn secondary" data-action="flip-editor">Editar Frente <i class="fas fa-redo"></i></button>
-                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h4>Botones Cara Trasera</h4><button type="button" class="master-btn secondary" data-action="flip-editor">Editar Frente <i class="fas fa-redo"></i></button></div>
                         <div class="button-editor-list" data-face="back">${(group.backButtons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div>
-                        <button class="master-btn secondary" data-action="add-button" data-face="back">+ Añadir Botón Trasero</button>
+                        <button type="button" class="master-btn secondary" data-action="add-button" data-face="back">+ Añadir Botón Trasero</button>
                     </div>
                 </div>`; 
-            } else { 
-                return `<h4>Botones</h4><div class="button-editor-list">${(group.buttons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div><button class="master-btn secondary" data-action="add-button">+ Añadir Botón</button>`; 
-            } 
+            }
+            return `<h4>Botones</h4><div class="button-editor-list">${(group.buttons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-button">+ Añadir Botón</button>`; 
         },
-        createSingleButtonEditor(btn) { return `<div class="button-editor" data-id="${btn.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;"><div class="group-editor-header" style="margin-bottom: 10px;"><h5>Botón</h5><button data-action="delete-button" class="editor-delete-btn" title="Eliminar Botón"><i class="fas fa-trash-alt"></i></button></div><div class="form-group"><label>Etiqueta</label><input type="text" data-key="label" value="${this.escapeHTML(btn.label)}"></div><div class="form-group"><label>Texto a Copiar</label><textarea data-key="text">${this.escapeHTML(btn.text)}</textarea></div></div>`; },
+        createSingleButtonEditor(btn) { return `<div class="button-editor" data-id="${btn.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;"><div class="group-editor-header" style="margin-bottom: 10px;"><h5>Botón</h5><button type="button" data-action="delete-button" class="editor-delete-btn" title="Eliminar Botón"><i class="fas fa-trash-alt"></i></button></div><div class="form-group"><label>Etiqueta</label><input type="text" data-key="label" value="${this.escapeHTML(btn.label)}"></div><div class="form-group"><label>Texto a Copiar</label><textarea data-key="text">${this.escapeHTML(btn.text)}</textarea></div></div>`; },
         
-        createPcEditorHTML(group) { return `<h4>Configuración de PCs</h4><div class="pc-editor-list">${(group.pcs || []).map(pc => this.createSinglePcEditor(pc)).join('')}</div><button class="master-btn secondary" data-action="add-pc">+ Añadir PC</button>`; },
+        createPcEditorHTML(group) { return `<h4>Configuración de PCs</h4><div class="pc-editor-list">${(group.pcs || []).map(pc => this.createSinglePcEditor(pc)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-pc">+ Añadir PC</button>`; },
         createSinglePcEditor(pc) {
-            const saludosHTML = (pc.saludos || []).map(saludo => `
-                <div class="saludo-item">
-                    <input type="text" value="${this.escapeHTML(saludo)}" class="saludo-input">
-                    <button class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>
-                </div>
-            `).join('');
-
+            const saludosHTML = (pc.saludos || []).map(saludo => `<div class="saludo-item"><input type="text" value="${this.escapeHTML(saludo)}" class="saludo-input"><button type="button" class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button></div>`).join('');
             return `<div class="pc-editor" data-id="${pc.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-                <div class="group-editor-header" style="margin-bottom: 10px;"><h5>PC</h5><button data-action="delete-pc" class="editor-delete-btn" title="Eliminar PC"><i class="fas fa-trash-alt"></i></button></div>
+                <div class="group-editor-header" style="margin-bottom: 10px;"><h5>PC</h5><button type="button" data-action="delete-pc" class="editor-delete-btn" title="Eliminar PC"><i class="fas fa-trash-alt"></i></button></div>
                 <div class="form-group"><label>Nombre</label><input type="text" data-key="name" value="${this.escapeHTML(pc.name)}"></div>
                 <div class="form-group"><label>Nº WhatsApp</label><input type="text" data-key="whatsapp" value="${this.escapeHTML(pc.whatsapp)}"></div>
                 <div class="form-group"><label>Código Amigo</label><input type="text" data-key="friendCode" value="${this.escapeHTML(pc.friendCode)}"></div>
-                <div class="form-group">
-                    <label>Saludos</label>
-                    <div id="saludos-container">${saludosHTML}</div>
-                    <button class="master-btn secondary" data-action="add-saludo" data-pc-id="${pc.id}" style="margin-top: 10px;">+ Añadir Saludo</button>
-                </div>
+                <div class="form-group"><label>Saludos</label><div id="saludos-container">${saludosHTML}</div><button type="button" class="master-btn secondary" data-action="add-saludo" data-pc-id="${pc.id}" style="margin-top: 10px;">+ Añadir Saludo</button></div>
             </div>`; 
         },
 
@@ -732,10 +739,7 @@
             if(container) {
                 const newItem = document.createElement('div');
                 newItem.className = 'saludo-item';
-                newItem.innerHTML = `
-                    <input type="text" value="" class="saludo-input">
-                    <button class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>
-                `;
+                newItem.innerHTML = `<input type="text" value="" class="saludo-input"><button type="button" class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>`;
                 container.appendChild(newItem);
             }
         },
@@ -749,8 +753,7 @@
             const selectedPcBtn = groupEl.querySelector('.slider-btn.selected'); 
             if (!selectedPcBtn) { this.showToast('Selecciona una PC.', 'error'); return; } 
             const pcId = selectedPcBtn.dataset.pcId; 
-            const groupId = groupEl.dataset.id;
-            const groupData = config.groups.find(g => g.id === groupId);
+            const groupData = config.groups.find(g => g.id === groupEl.dataset.id);
             const pcData = groupData?.pcs?.find(p => p.id === pcId); 
             if(!pcData) { this.showToast('Error: no se encontraron datos de PC.', 'error'); return; } 
             let textToCopy = ''; 
@@ -760,69 +763,7 @@
             else if (actionType === 'amigo') { textToCopy = `TU CODIGO AMIGO\n${pcData.friendCode}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar!\nhttps://bet300.site`; } 
             this.copyText(textToCopy, button); 
         },
-
-        attachMasterSidebarListeners: function() { 
-            if (this.sortableGroups) this.sortableGroups.destroy(); 
-            this.sortableGroups = new Sortable(this.$.groupListEditor, { 
-                handle: '.master-drag-handle', 
-                animation: 150, 
-                onEnd: (evt) => { 
-                    if(!this.config.groups) return; 
-                    const [movedItem] = this.config.groups.splice(evt.oldIndex, 1); 
-                    this.config.groups.splice(evt.newIndex, 0, movedItem);
-                    this.saveAppData(); // Save order immediately
-                } 
-            }); 
-            this.$.groupListEditor.addEventListener('click', (e) => { 
-                const item = e.target.closest('.group-editor-item'); if(!item) return; 
-                const actionTarget = e.target.closest('[data-action]'); 
-                if (actionTarget && actionTarget.dataset.action === 'delete-group') { 
-                    if (confirm(`¿Eliminar grupo "${item.querySelector('strong').textContent}"?`)) { 
-                        this.config.groups = this.config.groups.filter(g => g.id !== item.dataset.groupId); 
-                        if (this.activeEditorGroupId === item.dataset.groupId) this.activeEditorGroupId = null; this.renderMasterView(); 
-                    } 
-                } else { 
-                    this.activeEditorGroupId = item.dataset.groupId; 
-                    this.renderMasterView(); 
-                } 
-            }); 
-        },
-        attachMasterPanelListeners: function() { 
-            this.$.editorPanel.oninput = (e) => { 
-                if (e.target.matches('input.saludo-input')) { this.updateConfigFromDynamicFields(); } 
-                else { this.updateConfig(e.target); } 
-            }; 
-            this.$.editorPanel.onclick = (e) => { 
-                const action = e.target.dataset.action; if(!action) return; 
-                const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group) return; 
-                
-                const isFlipped = this.$.editorPanel.querySelector('#button-editor-flipper')?.classList.contains('flipped');
-
-                if (action === 'add-button') { 
-                    const face = e.target.dataset.face; 
-                    const newBtn = { id: `b_${Date.now()}`, label: 'Nuevo', text: '' }; 
-                    if (face === 'front') { group.frontButtons.push(newBtn); } 
-                    else if (face === 'back') { group.backButtons.push(newBtn); } 
-                    else { group.buttons.push(newBtn); } 
-                } else if (action === 'delete-button') { 
-                    const btnId = e.target.closest('.button-editor').dataset.id; 
-                    ['buttons', 'frontButtons', 'backButtons'].forEach(key => { if (group[key]) group[key] = group[key].filter(b => b.id !== btnId); }); 
-                } else if (action === 'add-pc') { 
-                    group.pcs = group.pcs || []; 
-                    group.pcs.push({ id: `pc_${Date.now()}`, name: "Nueva PC", whatsapp: "", friendCode: "", saludos: [] }); 
-                } else if (action === 'delete-pc') { 
-                    const pcId = e.target.closest('.pc-editor').dataset.id; 
-                    group.pcs = group.pcs.filter(p => p.id !== pcId); 
-                } 
-
-                if (['add-button', 'delete-button', 'add-pc', 'delete-pc'].includes(action)) {
-                    this.renderEditorPanel(this.activeEditorGroupId);
-                    if (isFlipped) {
-                        this.$.editorPanel.querySelector('#button-editor-flipper')?.classList.add('flipped');
-                    }
-                }
-            }; 
-        },
+        
         copyText: function(text, button = null) { if(typeof text !== 'string') text = ''; navigator.clipboard.writeText(text).then(() => { this.showToast('¡Copiado!'); if (button) { button.style.transform = 'scale(0.96)'; setTimeout(() => button.style.transform = '', 150); } }).catch(err => this.showToast('Error al copiar', 'error')); },
         showToast: function(message, type = 'info') { const t = document.getElementById('toast'); t.textContent = message; t.className = `toast show ${type}`; setTimeout(() => t.classList.remove('show'), 2000); },
         escapeHTML: function(str) { if(typeof str !== 'string') return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
