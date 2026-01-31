@@ -187,6 +187,7 @@
     <div id="master-sidebar">
       <div class="form-group"><label>Oficina Activa: <strong><span id="active-profile-name-display"></span></strong></label></div>
       <div class="master-actions">
+        <button type="button" data-action="create-new-office" class="master-btn secondary"><i class="fas fa-plus-circle"></i> Nueva Oficina</button>
         <button type="button" data-action="open-add-group-modal" class="master-btn primary"><i class="fas fa-plus"></i> Grupo</button>
         <button type="button" data-action="export-config" class="master-btn secondary"><i class="fas fa-download"></i> Exportar</button>
         <button type="button" data-action="preview" class="master-btn secondary"><i class="fas fa-eye"></i> Previsualizar</button>
@@ -231,7 +232,6 @@
             this.loadAppData();
             this.renderSplashScreen();
             this.setupGlobalListeners();
-            // SOLUCIÓN DEFINITIVA: Asignar listeners de archivos UNA SOLA VEZ.
             document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
             document.getElementById('import-config-input').onchange = (e) => this.handleMasterImport(e);
         },
@@ -272,7 +272,7 @@
                 } catch (err) {
                     this.showToast(`Error al leer el archivo: ${err.message}`, 'error');
                 } finally {
-                    fileInput.value = ''; // Reset input
+                    fileInput.value = '';
                 }
             };
             reader.readAsText(file);
@@ -309,16 +309,13 @@
         },
 
         setupGlobalListeners() {
-            // Listener centralizado para Clics
             document.body.addEventListener('click', (e) => {
                 const actionEl = e.target.closest('[data-action]');
                 if (!actionEl) return;
         
                 const action = actionEl.dataset.action;
-                const groupId = actionEl.closest('.group-editor-item')?.dataset.groupId;
 
                 switch (action) {
-                    // --- Splash & Login ---
                     case 'load-employee-file': document.getElementById('employee-file-input').click(); break;
                     case 'open-master-login': this.renderMasterLogin(); break;
                     case 'cancel-login': this.renderSplashScreen(); break;
@@ -328,10 +325,9 @@
                     case 'submit-new-profile': this.handleSubmitNewProfile(); break;
                     case 'import-profile': document.getElementById('import-config-input').click(); break;
         
-                    // --- Employee View ---
                     case 'exit-employee-view': this.exitEmployeeView(); break;
+                    case 'exit-master-mode': this.exitMasterMode(); break;
         
-                    // --- Master Sidebar ---
                     case 'open-add-group-modal': this.showView('add-group-type-modal'); break;
                     case 'cancel-add-group': this.showView('master-container'); break;
                     case 'add-group': this.addGroup(actionEl.dataset.type); break;
@@ -339,19 +335,26 @@
                     case 'preview': this.renderPreview(); break;
                     case 'save-config': this.saveCurrentConfig(); break;
                     case 'close-preview': this.showView('master-container'); break;
+                    case 'create-new-office':
+                        if (!confirm('¿Crear una nueva oficina? Se cerrará la actual sin guardar.')) return;
+                        this.config = null;
+                        this.activeEditorGroupId = null;
+                        this.renderCreateProfileForm();
+                        break;
                     case 'select-group': 
-                        this.activeEditorGroupId = groupId;
+                        this.activeEditorGroupId = actionEl.dataset.groupId;
                         this.renderMasterView();
                         break;
-                    case 'delete-group':
-                        if (confirm(`¿Eliminar grupo?`)) {
-                            this.config.groups = this.config.groups.filter(g => g.id !== groupId);
-                            if (this.activeEditorGroupId === groupId) this.activeEditorGroupId = null;
-                            this.renderMasterView();
-                        }
+                    case 'delete-group': {
+                        const id = actionEl.dataset.groupId;
+                        if (!id) return;
+                        if (!confirm('¿Eliminar grupo completo?')) return;
+                        this.config.groups = this.config.groups.filter(g => g.id !== id);
+                        if (this.activeEditorGroupId === id) this.activeEditorGroupId = null;
+                        this.renderMasterView();
                         break;
+                    }
                     
-                    // --- Master Editor Panel ---
                     case 'flip-editor': actionEl.closest('#button-editor-flipper').classList.toggle('flipped'); break;
                     case 'add-saludo': this.addSaludoField(actionEl.dataset.pcId); break;
                     case 'delete-saludo':
@@ -367,7 +370,6 @@
                 }
             });
 
-            // Listener centralizado para Inputs
             this.$.masterMain.oninput = (e) => {
                 const target = e.target;
                 if (target.matches('input.saludo-input')) this.updateConfigFromDynamicFields();
@@ -448,7 +450,7 @@
             }
 
             if (passInput.value === profile.settings.masterPassword) {
-                this.config = JSON.parse(JSON.stringify(profile)); // Deep copy to avoid mutation issues
+                this.config = JSON.parse(JSON.stringify(profile));
                 this.appData.activeProfileName = profileName;
                 this.showView('master-container');
                 this.renderMasterView();
@@ -498,8 +500,17 @@
 
         exitEmployeeView() {
             this.config = null;
+            this.activeEditorGroupId = null;
             this.$.employeeContainer.innerHTML = '';
-            this.renderSplashScreen();
+            this.showView('splash-screen');
+        },
+        
+        exitMasterMode() {
+            if (confirm("¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.")) {
+                this.config = null;
+                this.activeEditorGroupId = null;
+                this.showView('splash-screen');
+            }
         },
         
         showView(viewId) {
@@ -575,7 +586,7 @@
                 this.config.groups.forEach(group => {
                     const item = document.createElement('div');
                     item.className = 'group-editor-item';
-                    item.dataset.action = "select-group"; // For event delegation
+                    item.dataset.action = "select-group";
                     if (group.id === this.activeEditorGroupId) item.classList.add('active');
                     item.dataset.groupId = group.id;
                     item.innerHTML = `
@@ -583,15 +594,11 @@
                             <i class="fas fa-grip-vertical master-drag-handle"></i>
                             <span class="color-preview" style="background-color: ${group.colorHex || '#444'};"></span>
                             <strong>${this.escapeHTML(group.title)}</strong>
-                            <button type="button" data-action="delete-group" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
+                            <button type="button" data-action="delete-group" data-group-id="${group.id}" title="Eliminar Grupo" class="editor-delete-btn"><i class="fas fa-trash-alt"></i></button>
                         </div>`;
                     this.$.groupListEditor.appendChild(item);
                 });
             }
-
-            document.querySelector('[data-action="exit-master-mode"]').onclick = () => {
-                if (confirm("¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.")) window.location.reload();
-            };
 
             if (this.sortableGroups) this.sortableGroups.destroy();
             this.sortableGroups = new Sortable(this.$.groupListEditor, { handle: '.master-drag-handle', animation: 150, onEnd: (evt) => { if(!this.config.groups) return; const [movedItem] = this.config.groups.splice(evt.oldIndex, 1); this.config.groups.splice(evt.newIndex, 0, movedItem); } });
