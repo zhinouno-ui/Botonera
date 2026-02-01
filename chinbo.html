@@ -768,7 +768,7 @@
             const actionType = button.dataset.type; 
             if (actionType === 'saludo') { const saludos = pcData.saludos || []; if (saludos.length === 0) { this.showToast('No hay saludos configurados.', 'error'); return; } const saludoTemplate = saludos[Math.floor(Math.random() * saludos.length)]; textToCopy = saludoTemplate.replace(/{usuario}/g, usuario).replace(/{usuarioENC}/g, encodeURIComponent(usuario)); } 
             else if (actionType === 'wsp') { textToCopy = `https://wa.me/${pcData.whatsapp}?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`; } 
-            else if (actionType === 'amigo') { textToCopy = `TU CODIGO AMIGO\n${pcData.friendCode}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar!\nhttps://bet300.site`; } 
+            else if (actionType === 'amigo') { textToCopy = `TU CODIGO AMIGO\n${pcData.friendCode}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar desde el boton de wsp!\http://bet-300.pw/`; } 
             this.copyText(textToCopy, button); 
         },
         
