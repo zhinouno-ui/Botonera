@@ -231,10 +231,10 @@
 
         init() {
             this.loadAppData();
-            this.renderSplashScreen();
             this.setupGlobalListeners();
             document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
             document.getElementById('import-config-input').onchange = (e) => this.handleMasterImport(e);
+            if (!this.tryRestoreActiveOffice()) this.renderSplashScreen();
         },
 
         getMasterPassword(settings) {
@@ -269,15 +269,54 @@
             try {
                 const data = localStorage.getItem('chinBotonesApp');
                 this.appData = data ? JSON.parse(data) : { profiles: {} };
-                if (!this.appData.profiles) this.appData.profiles = {};
+                if (!this.appData || typeof this.appData !== 'object') this.appData = { profiles: {} };
+                if (!this.appData.profiles || typeof this.appData.profiles !== 'object') this.appData.profiles = {};
+                if (typeof this.appData.activeProfileName !== 'string') this.appData.activeProfileName = '';
+                if (typeof this.appData.lastView !== 'string') this.appData.lastView = 'splash-screen';
+
+                const profileNames = Object.keys(this.appData.profiles);
+                if (profileNames.length > 0 && (!this.appData.activeProfileName || !this.appData.profiles[this.appData.activeProfileName])) {
+                    this.appData.activeProfileName = profileNames[0];
+                }
+                if (profileNames.length === 0) {
+                    this.appData.activeProfileName = '';
+                    this.appData.lastView = 'splash-screen';
+                }
             } catch (e) {
                 console.error("Fallo al cargar datos, reseteando la aplicación.", e);
-                this.appData = { profiles: {} };
+                this.appData = { profiles: {}, activeProfileName: '', lastView: 'splash-screen' };
                 localStorage.removeItem('chinBotonesApp');
             }
         },
         saveAppData() {
             localStorage.setItem('chinBotonesApp', JSON.stringify(this.appData));
+        },
+
+        persistAppState(partial = {}) {
+            this.appData = { ...this.appData, ...partial };
+            this.saveAppData();
+        },
+
+        getActiveSavedProfile() {
+            const profileName = this.appData.activeProfileName;
+            if (!profileName || !this.appData.profiles[profileName]) return null;
+            return { profileName, profile: this.appData.profiles[profileName] };
+        },
+
+        tryRestoreActiveOffice() {
+            const active = this.getActiveSavedProfile();
+            if (!active) return false;
+
+            const restored = JSON.parse(JSON.stringify(active.profile));
+            this.normalizeConfigAuth(restored);
+            this.appData.profiles[active.profileName] = restored;
+            this.config = restored;
+            this.appData.lastView = 'employee-container';
+            this.saveAppData();
+            this.renderEmployeeView('employee-container', this.config);
+            this.showView('employee-container');
+            this.showToast(`Oficina "${active.profileName}" restaurada automáticamente.`, 'success');
+            return true;
         },
 
         renderSplashScreen() {
@@ -297,6 +336,7 @@
                     }
                     this.normalizeConfigAuth(importedConfig);
                     this.config = importedConfig;
+                    this.persistAppState({ lastView: 'employee-container' });
                     this.renderEmployeeView('employee-container', this.config);
                     this.showView('employee-container');
                 } catch (err) {
@@ -332,7 +372,7 @@
                     }
 
                     this.appData.profiles[profileName] = importedConfig;
-                    this.saveAppData();
+                    this.persistAppState({ activeProfileName: profileName });
                     this.showToast(`Oficina "${profileName}" importada correctamente.`, 'success');
                     this.renderMasterLogin();
                 } catch (err) {
@@ -417,7 +457,8 @@
             const profileCount = Object.keys(this.appData.profiles).length;
             if (profileCount > 0) {
                 const profileNames = Object.keys(this.appData.profiles);
-                const options = profileNames.map(name => `<option value="${this.escapeHTML(name)}">${this.escapeHTML(name)}</option>`).join('');
+                const preferredProfile = (this.appData.activeProfileName && this.appData.profiles[this.appData.activeProfileName]) ? this.appData.activeProfileName : profileNames[0];
+                const options = profileNames.map(name => `<option value="${this.escapeHTML(name)}" ${name === preferredProfile ? 'selected' : ''}>${this.escapeHTML(name)}</option>`).join('');
                 document.getElementById('master-login-content').innerHTML = `
                     <h3>Acceso Master</h3>
                     <div class="form-group">
@@ -461,10 +502,10 @@
                     <input type="text" id="new-profile-name-input" placeholder="Ej: Oficina Central">
                 </div>
                 <div class="form-group" style="text-align: left;">
-                    <label for="new-profile-activation-input">Clave inicial obligatoria</label>
-                    <input type="password" id="new-profile-activation-input" placeholder="Ingresá master123 para crear">
+                    <label for="new-profile-authorization-input">Clave de autorización</label>
+                    <input type="password" id="new-profile-authorization-input" placeholder="Ingresá la clave de autorización">
                 </div>
-                <p style="margin: 10px 0 0; color: var(--text-secondary); text-align: left; font-size: 0.9em;">La oficina se crea con clave temporal <strong>master123</strong> y luego te pedirá cambiarla.</p>
+                <p style="margin: 10px 0 0; color: var(--text-secondary); text-align: left; font-size: 0.9em;">Luego de crear la oficina, se te pedirá definir una nueva clave master antes de continuar.</p>
                 <div class="modal-actions">
                     <button type="button" class="master-btn secondary" data-action="back-to-login-options">Atrás</button>
                     <button type="button" class="master-btn primary" data-action="submit-new-profile">Crear y Entrar</button>
@@ -495,6 +536,7 @@
                 this.config = JSON.parse(JSON.stringify(profile));
                 this.normalizeConfigAuth(this.config);
                 this.appData.activeProfileName = profileName;
+                this.persistAppState({ activeProfileName: profileName, lastView: 'master-container' });
                 this.showView('master-container');
                 this.renderMasterView();
                 this.forcePasswordChangeIfNeeded();
@@ -508,14 +550,14 @@
 
         handleSubmitNewProfile() {
             const profileNameInput = document.getElementById('new-profile-name-input');
-            const activationInput = document.getElementById('new-profile-activation-input');
+            const authorizationInput = document.getElementById('new-profile-authorization-input');
 
             const profileName = profileNameInput.value.trim();
-            const activationKey = activationInput.value.trim();
+            const authorizationKey = authorizationInput ? authorizationInput.value.trim() : '';
 
             if (!profileName) { this.showToast('El nombre de la oficina no puede estar vacío.', 'error'); profileNameInput.focus(); return; }
             if (this.appData.profiles[profileName]) { this.showToast(`La oficina "${profileName}" ya existe.`, 'error'); profileNameInput.focus(); return; }
-            if (activationKey !== 'master123') { this.showToast('Clave inicial inválida. Debe ser master123.', 'error'); activationInput.focus(); return; }
+            if (authorizationKey !== 'master123') { this.showToast('Clave de autorización inválida.', 'error'); if (authorizationInput) authorizationInput.focus(); return; }
 
             const newConfig = { settings: { mustChangePassword: true }, groups: [] };
             this.setMasterPassword(newConfig.settings, 'master123');
@@ -523,7 +565,7 @@
             this.appData.profiles[profileName] = newConfig;
             this.appData.activeProfileName = profileName;
             this.config = newConfig;
-            this.saveAppData();
+            this.persistAppState({ activeProfileName: profileName, lastView: 'master-container' });
 
             this.showView('master-container');
             this.renderMasterView();
@@ -591,6 +633,10 @@
         },
 
         showView(viewId) {
+            if (['splash-screen', 'employee-container', 'master-container'].includes(viewId) && this.appData) {
+                this.appData.lastView = viewId;
+                this.saveAppData();
+            }
             document.querySelectorAll('.view, .modal-overlay').forEach(el => el.classList.add('hidden'));
             const viewElement = document.getElementById(viewId);
             if(viewElement) viewElement.classList.remove('hidden');
