@@ -68,7 +68,7 @@
     #splash-screen h1 { font-size: 2.5rem; color: var(--accent-primary); margin-bottom: 10px; }
     .splash-actions { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 350px; }
     .splash-btn { padding: 15px; font-size: 1.1rem; }
-    #import-config-input { display: none; }
+    #import-config-input, #employee-file-input { display: none; }
 
     /* --- VISTA MASTER --- */
     body.master-view { padding: 0; }
@@ -94,7 +94,7 @@
     .master-drag-handle:active { cursor: grabbing; }
 
     .sidebar-footer { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; }
-    
+
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; color: var(--text-secondary); }
     .form-group input:not([type="color"]), .form-group select, .form-group textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-primary); font-size: 1rem; }
@@ -138,7 +138,7 @@
 
     #preview-modal .modal-box { max-width: 420px; height: 90vh; }
     #preview-container { height: calc(100% - 70px); overflow-y: auto; padding: 10px; background: var(--bg-dark); border-radius: 8px; }
-    
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -147,17 +147,19 @@
   <div id="splash-screen" class="view">
     <h1>ChinBotones v3.1</h1>
     <div id="splash-actions-container" class="splash-actions">
-        <button type="button" data-action="open-master-login" class="master-btn primary splash-btn">Ingresar a Modo Master</button>
+        <button type="button" data-action="load-employee-file" class="master-btn primary splash-btn">Cargar Oficina (Empleado)</button>
+        <button type="button" data-action="open-master-login" class="master-btn secondary splash-btn">Modo Master</button>
+        <input type="file" id="employee-file-input" accept=".json" class="hidden">
         <input type="file" id="import-config-input" accept=".json" class="hidden">
     </div>
   </div>
-  
+
   <div id="master-login-modal" class="modal-overlay hidden">
     <div class="modal-box">
       <div id="master-login-content"></div>
     </div>
   </div>
-  
+
   <div id="add-group-type-modal" class="modal-overlay hidden">
     <div class="modal-box">
       <h3>Seleccionar Tipo de Grupo</h3>
@@ -215,7 +217,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const App = {
         appData: null, config: null, activeEditorGroupId: null, sortableGroups: null,
-        
+
         $: { /* Selectores DOM cacheados */
           splash: document.getElementById('splash-screen'),
           splashActions: document.getElementById('splash-actions-container'),
@@ -231,6 +233,7 @@
             this.loadAppData();
             this.renderSplashScreen();
             this.setupGlobalListeners();
+            document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
             document.getElementById('import-config-input').onchange = (e) => this.handleMasterImport(e);
         },
 
@@ -261,7 +264,7 @@
             this.setMasterPassword(configObject.settings, currentPass || 'master123');
             return configObject;
         },
-        
+
         loadAppData() {
             try {
                 const data = localStorage.getItem('chinBotonesApp');
@@ -276,11 +279,35 @@
         saveAppData() {
             localStorage.setItem('chinBotonesApp', JSON.stringify(this.appData));
         },
-        
+
         renderSplashScreen() {
             this.showView('splash-screen');
         },
-        
+
+        handleEmployeeFileLoad(event) {
+            const file = event.target.files[0];
+            const fileInput = event.target;
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedConfig = JSON.parse(e.target.result);
+                    if (!importedConfig.settings || !Array.isArray(importedConfig.groups)) {
+                        throw new Error("Formato de archivo inválido.");
+                    }
+                    this.normalizeConfigAuth(importedConfig);
+                    this.config = importedConfig;
+                    this.renderEmployeeView('employee-container', this.config);
+                    this.showView('employee-container');
+                } catch (err) {
+                    this.showToast(`Error al leer el archivo: ${err.message}`, 'error');
+                } finally {
+                    fileInput.value = '';
+                }
+            };
+            reader.readAsText(file);
+        },
+
         handleMasterImport(event) {
             const file = event.target.files[0];
             const fileInput = event.target;
@@ -321,10 +348,11 @@
             document.body.addEventListener('click', (e) => {
                 const actionEl = e.target.closest('[data-action]');
                 if (!actionEl) return;
-        
+
                 const action = actionEl.dataset.action;
 
                 switch (action) {
+                    case 'load-employee-file': document.getElementById('employee-file-input').click(); break;
                     case 'open-master-login': this.renderMasterLogin(); break;
                     case 'cancel-login': this.renderSplashScreen(); break;
                     case 'login': this.handleLogin(); break;
@@ -332,10 +360,10 @@
                     case 'back-to-login-options': this.renderMasterLoginWelcome(); break;
                     case 'submit-new-profile': this.handleSubmitNewProfile(); break;
                     case 'import-profile': document.getElementById('import-config-input').click(); break;
-        
+
                     case 'exit-employee-view': this.exitEmployeeView(); break;
                     case 'exit-master-mode': this.exitMasterMode(); break;
-        
+
                     case 'open-add-group-modal': this.showView('add-group-type-modal'); break;
                     case 'cancel-add-group': this.showView('master-container'); break;
                     case 'add-group': this.addGroup(actionEl.dataset.type); break;
@@ -349,7 +377,7 @@
                         this.activeEditorGroupId = null;
                         this.renderCreateProfileForm();
                         break;
-                    case 'select-group': 
+                    case 'select-group':
                         this.activeEditorGroupId = actionEl.dataset.groupId;
                         this.renderMasterView();
                         break;
@@ -362,7 +390,7 @@
                         this.renderMasterView();
                         break;
                     }
-                    
+
                     case 'flip-editor': actionEl.closest('#button-editor-flipper').classList.toggle('flipped'); break;
                     case 'add-saludo': this.addSaludoField(actionEl.dataset.pcId); break;
                     case 'delete-saludo':
@@ -384,7 +412,7 @@
                 else if (target.dataset.key) this.updateConfig(target);
             };
         },
-        
+
         renderMasterLogin() {
             const profileCount = Object.keys(this.appData.profiles).length;
             if (profileCount > 0) {
@@ -444,7 +472,7 @@
             `;
             this.showView('master-login-modal');
         },
-        
+
         handleLogin() {
             const passInput = document.getElementById('password-input');
             const selector = document.getElementById('master-profile-selector');
@@ -481,7 +509,7 @@
         handleSubmitNewProfile() {
             const profileNameInput = document.getElementById('new-profile-name-input');
             const activationInput = document.getElementById('new-profile-activation-input');
-            
+
             const profileName = profileNameInput.value.trim();
             const activationKey = activationInput.value.trim();
 
@@ -531,7 +559,7 @@
                 return true;
             }
         },
-        
+
         saveCurrentConfig() {
             this.updateConfigFromDynamicFields();
             const newPass = document.getElementById('new-password-input').value;
@@ -553,7 +581,7 @@
             this.$.employeeContainer.innerHTML = '';
             this.showView('splash-screen');
         },
-        
+
         exitMasterMode() {
             if (confirm("¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.")) {
                 this.config = null;
@@ -561,7 +589,7 @@
                 this.showView('splash-screen');
             }
         },
-        
+
         showView(viewId) {
             document.querySelectorAll('.view, .modal-overlay').forEach(el => el.classList.add('hidden'));
             const viewElement = document.getElementById(viewId);
@@ -570,11 +598,11 @@
             if (viewId === 'employee-container') document.body.classList.add('employee-view');
             else if (viewId === 'master-container') document.body.classList.add('master-view');
         },
-        
+
         renderEmployeeView(containerId, configObject) {
             const container = document.getElementById(containerId);
             if(!container) return;
-            
+
             let headerHTML = '';
             if (containerId === 'employee-container') {
                 headerHTML = `<div class="employee-header">
@@ -582,7 +610,7 @@
                     <button type="button" data-action="exit-employee-view" class="master-btn danger" style="padding: 8px 12px;"><i class="fas fa-sign-out-alt"></i> Salir</button>
                 </div>`;
             }
-            
+
             container.innerHTML = headerHTML;
 
             const groupContainer = document.createElement('div');
@@ -606,22 +634,22 @@
         },
 
         attachEmployeeViewListeners(container, config) {
-            new Sortable(container, { handle: '.drag-handle', animation: 150, disabled: (container.id !== 'group-container-employee-container') }); 
-            container.addEventListener('click', (e) => { 
+            new Sortable(container, { handle: '.drag-handle', animation: 150, disabled: (container.id !== 'group-container-employee-container') });
+            container.addEventListener('click', (e) => {
                 const actionBtn = e.target.closest('.copy-btn, .flip-btn, .slider-btn');
                 if (!actionBtn) return;
-                
-                if (actionBtn.matches('.copy-btn') && !actionBtn.matches('.revin-action')) this.copyText(actionBtn.dataset.copyText, actionBtn); 
-                else if (actionBtn.matches('.flip-btn')) actionBtn.closest('.grupo').querySelector('.wallets-card').classList.toggle('flipped'); 
-                else if (actionBtn.matches('.slider-btn')) { actionBtn.parentElement.querySelectorAll('.slider-btn').forEach(btn => btn.classList.remove('selected')); actionBtn.classList.add('selected'); } 
-                else if (actionBtn.matches('.revin-action')) this.handleRevinAction(actionBtn, config); 
-            }); 
-            container.querySelectorAll('.modo-slider').forEach(slider => { 
-                const firstBtn = slider.querySelector('.slider-btn'); 
-                if (firstBtn) firstBtn.classList.add('selected'); 
+
+                if (actionBtn.matches('.copy-btn') && !actionBtn.matches('.revin-action')) this.copyText(actionBtn.dataset.copyText, actionBtn);
+                else if (actionBtn.matches('.flip-btn')) actionBtn.closest('.grupo').querySelector('.wallets-card').classList.toggle('flipped');
+                else if (actionBtn.matches('.slider-btn')) { actionBtn.parentElement.querySelectorAll('.slider-btn').forEach(btn => btn.classList.remove('selected')); actionBtn.classList.add('selected'); }
+                else if (actionBtn.matches('.revin-action')) this.handleRevinAction(actionBtn, config);
+            });
+            container.querySelectorAll('.modo-slider').forEach(slider => {
+                const firstBtn = slider.querySelector('.slider-btn');
+                if (firstBtn) firstBtn.classList.add('selected');
             });
         },
-        
+
         renderPreview() {
             this.updateConfigFromDynamicFields();
             this.showView('preview-modal');
@@ -660,13 +688,13 @@
                 this.$.editorPanel.classList.add('hidden');
             }
         },
-        
+
         renderEditorPanel(groupId) {
           const group = this.config.groups.find(g => g.id === groupId);
           if (!group) { this.activeEditorGroupId = null; this.renderMasterView(); return; }
           this.$.editorPlaceholder.classList.add('hidden');
           this.$.editorPanel.classList.remove('hidden');
-          
+
           const flipToggleHTML = !group.isRevin ? `
                 <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
                     <label for="gf_${group.id}" style="margin: 0;">Usar tarjeta Flip</label>
@@ -681,7 +709,7 @@
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             ${group.isRevin ? this.createPcEditorHTML(group) : this.createButtonEditorHTML(group)}`;
         },
-        
+
         addGroup(type) {
             this.showView('master-container');
             if (!this.config.groups) this.config.groups = [];
@@ -690,30 +718,30 @@
 
             if (type === 'revin') newGroup = { id: `g_${now}`, title: "Revinculación", colorHex: "#27ae60", isRevin: true, pcs: [{ id: `pc_${now}`, name: "PC 1", whatsapp: "", friendCode: "", saludos: ["Hola {usuario}! ..."] }] };
             else newGroup = { id: `g_${now}`, title: "Grupo de Botones", colorHex: "#34495e", isFlip: false, buttons: [{id: `b_${now}_1`, label: 'Nuevo Botón', text: ''}], frontButtons: [], backButtons: [] };
-            
+
             this.config.groups.push(newGroup);
             this.activeEditorGroupId = newGroup.id;
             this.renderMasterView();
         },
-        
-        updateConfig(el) { 
-            const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group) return; 
-            const key = el.dataset.key; if (!key) return; 
-            const btnEditor = el.closest('.button-editor');
-            const pcEditor = el.closest('.pc-editor'); 
 
-            if (btnEditor) { 
+        updateConfig(el) {
+            const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group) return;
+            const key = el.dataset.key; if (!key) return;
+            const btnEditor = el.closest('.button-editor');
+            const pcEditor = el.closest('.pc-editor');
+
+            if (btnEditor) {
                 const btnId = btnEditor.dataset.id;
                 const face = btnEditor.closest('.button-editor-list')?.dataset.face;
                 let arr = face === 'front' ? group.frontButtons : (face === 'back' ? group.backButtons : group.buttons);
                 let btn = (arr || []).find(b => b.id === btnId);
                 if (btn) btn[key] = el.value;
-            } else if (pcEditor) { 
+            } else if (pcEditor) {
                 const pcId = pcEditor.dataset.id;
                 const pc = (group.pcs || []).find(p => p.id === pcId);
                 if (pc) pc[key] = el.value;
-            } else { 
-                group[key] = el.type === 'checkbox' ? el.checked : el.value; 
+            } else {
+                group[key] = el.type === 'checkbox' ? el.checked : el.value;
                 if (key === 'isFlip') this.renderEditorPanel(this.activeEditorGroupId);
                 else if (key === 'title') document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"] strong`).textContent = el.value;
                 else if (key === 'colorHex') document.querySelector(`.group-editor-item[data-group-id="${this.activeEditorGroupId}"] .color-preview`).style.backgroundColor = el.value;
@@ -728,7 +756,7 @@
                 if(saludosContainer) pc.saludos = Array.from(saludosContainer.querySelectorAll('input.saludo-input')).map(input => input.value);
             });
         },
-        
+
         handleEditorAction(action, actionEl) {
             const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group) return;
             const isFlipped = this.$.editorPanel.querySelector('#button-editor-flipper')?.classList.contains('flipped');
@@ -757,9 +785,9 @@
         createSimpleButtonsHTML(buttons) { return (buttons || []).map(btn => `<button type="button" class="copy-btn" data-copy-text="${this.escapeHTML(btn.text)}">${this.escapeHTML(btn.label)}</button>`).join(''); },
         createFlipHTML(group) { return `<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front">${this.createSimpleButtonsHTML(group.frontButtons)}</div><div class="wallets-face back">${this.createSimpleButtonsHTML(group.backButtons)}</div></div></div>`; },
         createRevinHTML(group) { const slider = (group.pcs || []).map(pc => `<button type="button" class="slider-btn" data-pc-id="${pc.id}">${this.escapeHTML(pc.name)}</button>`).join(''); return `<h3 style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap; gap: 10px;">Mensaje Revin<div class="modo-slider">${slider}</div></h3><input type="text" class="input-usuario" placeholder="Escribí el usuario..."><div class="revin-actions"><button type="button" class="copy-btn revin-action" data-type="saludo">Copiar saludo</button><button type="button" class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;">Copiar WhatsApp</button><button type="button" class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;">Código Amigo</button></div>`; },
-        
-        createButtonEditorHTML(group) { 
-            if (group.isFlip) { 
+
+        createButtonEditorHTML(group) {
+            if (group.isFlip) {
                 return `<div id="button-editor-flipper">
                     <div class="button-editor-face front">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h4>Botones Cara Frontal</h4><button type="button" class="master-btn secondary" data-action="flip-editor">Editar Atrás <i class="fas fa-redo"></i></button></div>
@@ -771,12 +799,12 @@
                         <div class="button-editor-list" data-face="back">${(group.backButtons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div>
                         <button type="button" class="master-btn secondary" data-action="add-button" data-face="back">+ Añadir Botón Trasero</button>
                     </div>
-                </div>`; 
+                </div>`;
             }
-            return `<h4>Botones</h4><div class="button-editor-list">${(group.buttons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-button">+ Añadir Botón</button>`; 
+            return `<h4>Botones</h4><div class="button-editor-list">${(group.buttons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-button">+ Añadir Botón</button>`;
         },
         createSingleButtonEditor(btn) { return `<div class="button-editor" data-id="${btn.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;"><div class="group-editor-header" style="margin-bottom: 10px;"><h5>Botón</h5><button type="button" data-action="delete-button" class="editor-delete-btn" title="Eliminar Botón"><i class="fas fa-trash-alt"></i></button></div><div class="form-group"><label>Etiqueta</label><input type="text" data-key="label" value="${this.escapeHTML(btn.label)}"></div><div class="form-group"><label>Texto a Copiar</label><textarea data-key="text">${this.escapeHTML(btn.text)}</textarea></div></div>`; },
-        
+
         createPcEditorHTML(group) { return `<h4>Configuración de PCs</h4><div class="pc-editor-list">${(group.pcs || []).map(pc => this.createSinglePcEditor(pc)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-pc">+ Añadir PC</button>`; },
         createSinglePcEditor(pc) {
             const saludosHTML = (pc.saludos || []).map(saludo => `<div class="saludo-item"><input type="text" value="${this.escapeHTML(saludo)}" class="saludo-input"><button type="button" class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button></div>`).join('');
@@ -786,7 +814,7 @@
                 <div class="form-group"><label>Nº WhatsApp</label><input type="text" data-key="whatsapp" value="${this.escapeHTML(pc.whatsapp)}"></div>
                 <div class="form-group"><label>Código Amigo</label><input type="text" data-key="friendCode" value="${this.escapeHTML(pc.friendCode)}"></div>
                 <div class="form-group"><label>Saludos</label><div id="saludos-container">${saludosHTML}</div><button type="button" class="master-btn secondary" data-action="add-saludo" data-pc-id="${pc.id}" style="margin-top: 10px;">+ Añadir Saludo</button></div>
-            </div>`; 
+            </div>`;
         },
 
         addSaludoField(pcId) {
@@ -801,25 +829,25 @@
         },
 
         exportConfig() { if(!this.config) { this.showToast('No hay oficina activa para exportar.', 'error'); return; } this.updateConfigFromDynamicFields(); this.normalizeConfigAuth(this.config); const dataStr = JSON.stringify(this.config, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${this.appData.activeProfileName}_config.json`; a.click(); URL.revokeObjectURL(url); this.showToast('Configuración exportada.', 'success'); },
-        
-        handleRevinAction: function(button, config) { 
-            const groupEl = button.closest('.grupo'); 
-            const usuario = groupEl.querySelector('.input-usuario').value.trim(); 
-            if (!usuario) { this.showToast('Escribe un nombre de usuario primero.', 'error'); return; } 
-            const selectedPcBtn = groupEl.querySelector('.slider-btn.selected'); 
-            if (!selectedPcBtn) { this.showToast('Selecciona una PC.', 'error'); return; } 
-            const pcId = selectedPcBtn.dataset.pcId; 
+
+        handleRevinAction: function(button, config) {
+            const groupEl = button.closest('.grupo');
+            const usuario = groupEl.querySelector('.input-usuario').value.trim();
+            if (!usuario) { this.showToast('Escribe un nombre de usuario primero.', 'error'); return; }
+            const selectedPcBtn = groupEl.querySelector('.slider-btn.selected');
+            if (!selectedPcBtn) { this.showToast('Selecciona una PC.', 'error'); return; }
+            const pcId = selectedPcBtn.dataset.pcId;
             const groupData = config.groups.find(g => g.id === groupEl.dataset.id);
-            const pcData = groupData?.pcs?.find(p => p.id === pcId); 
-            if(!pcData) { this.showToast('Error: no se encontraron datos de PC.', 'error'); return; } 
-            let textToCopy = ''; 
-            const actionType = button.dataset.type; 
-            if (actionType === 'saludo') { const saludos = pcData.saludos || []; if (saludos.length === 0) { this.showToast('No hay saludos configurados.', 'error'); return; } const saludoTemplate = saludos[Math.floor(Math.random() * saludos.length)]; textToCopy = saludoTemplate.replace(/{usuario}/g, usuario).replace(/{usuarioENC}/g, encodeURIComponent(usuario)); } 
-            else if (actionType === 'wsp') { textToCopy = `https://wa.me/${pcData.whatsapp}?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`; } 
-            else if (actionType === 'amigo') { textToCopy = `TU CODIGO AMIGO\n${pcData.friendCode}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar desde el boton de wsp!\http://bet-300.pw/`; } 
-            this.copyText(textToCopy, button); 
+            const pcData = groupData?.pcs?.find(p => p.id === pcId);
+            if(!pcData) { this.showToast('Error: no se encontraron datos de PC.', 'error'); return; }
+            let textToCopy = '';
+            const actionType = button.dataset.type;
+            if (actionType === 'saludo') { const saludos = pcData.saludos || []; if (saludos.length === 0) { this.showToast('No hay saludos configurados.', 'error'); return; } const saludoTemplate = saludos[Math.floor(Math.random() * saludos.length)]; textToCopy = saludoTemplate.replace(/{usuario}/g, usuario).replace(/{usuarioENC}/g, encodeURIComponent(usuario)); }
+            else if (actionType === 'wsp') { textToCopy = `https://wa.me/${pcData.whatsapp}?text=Hola%20soy%20${encodeURIComponent(usuario)}%20quiero%20mi%20clave%20y%20cronograma`; }
+            else if (actionType === 'amigo') { textToCopy = `TU CODIGO AMIGO\n${pcData.friendCode}${usuario}\n\nRecordá que el recomendado lo tiene que enviar al final de la carga\nCon solo enviarle el enlace ya pueden cargar desde el boton de wsp!\http://bet-300.pw/`; }
+            this.copyText(textToCopy, button);
         },
-        
+
         copyText: function(text, button = null) { if(typeof text !== 'string') text = ''; navigator.clipboard.writeText(text).then(() => { this.showToast('¡Copiado!'); if (button) { button.style.transform = 'scale(0.96)'; setTimeout(() => button.style.transform = '', 150); } }).catch(err => this.showToast('Error al copiar', 'error')); },
         showToast: function(message, type = 'info') { const t = document.getElementById('toast'); t.textContent = message; t.className = `toast show ${type}`; setTimeout(() => t.classList.remove('show'), 2000); },
         escapeHTML: function(str) { if(typeof str !== 'string') return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
