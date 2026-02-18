@@ -68,7 +68,7 @@
     #splash-screen h1 { font-size: 2.5rem; color: var(--accent-primary); margin-bottom: 10px; }
     .splash-actions { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 350px; }
     .splash-btn { padding: 15px; font-size: 1.1rem; }
-    #import-config-input, #employee-file-input { display: none; }
+    #import-config-input { display: none; }
 
     /* --- VISTA MASTER --- */
     body.master-view { padding: 0; }
@@ -147,9 +147,7 @@
   <div id="splash-screen" class="view">
     <h1>ChinBotones v3.1</h1>
     <div id="splash-actions-container" class="splash-actions">
-        <button type="button" data-action="load-employee-file" class="master-btn primary splash-btn">Cargar Oficina (Empleado)</button>
-        <button type="button" data-action="open-master-login" class="master-btn secondary splash-btn">Modo Master</button>
-        <input type="file" id="employee-file-input" accept=".json" class="hidden">
+        <button type="button" data-action="open-master-login" class="master-btn primary splash-btn">Ingresar a Modo Master</button>
         <input type="file" id="import-config-input" accept=".json" class="hidden">
     </div>
   </div>
@@ -233,8 +231,35 @@
             this.loadAppData();
             this.renderSplashScreen();
             this.setupGlobalListeners();
-            document.getElementById('employee-file-input').onchange = (e) => this.handleEmployeeFileLoad(e);
             document.getElementById('import-config-input').onchange = (e) => this.handleMasterImport(e);
+        },
+
+        getMasterPassword(settings) {
+            if (!settings) return '';
+            if (typeof settings.masterPassword === 'string' && settings.masterPassword !== '') return settings.masterPassword;
+            if (typeof settings.masterPasswordHidden === 'string' && settings.masterPasswordHidden !== '') {
+                try {
+                    const decoded = atob(settings.masterPasswordHidden);
+                    return decoded.startsWith('chinbo::') ? decoded.slice(8) : decoded;
+                } catch (_e) {
+                    return '';
+                }
+            }
+            return '';
+        },
+
+        setMasterPassword(settings, plainPassword) {
+            if (!settings) return;
+            const safePass = String(plainPassword || '');
+            settings.masterPasswordHidden = btoa(`chinbo::${safePass}`);
+            delete settings.masterPassword;
+        },
+
+        normalizeConfigAuth(configObject) {
+            if (!configObject.settings) configObject.settings = {};
+            const currentPass = this.getMasterPassword(configObject.settings);
+            this.setMasterPassword(configObject.settings, currentPass || 'master123');
+            return configObject;
         },
         
         loadAppData() {
@@ -256,29 +281,6 @@
             this.showView('splash-screen');
         },
         
-        handleEmployeeFileLoad(event) {
-            const file = event.target.files[0];
-            const fileInput = event.target;
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedConfig = JSON.parse(e.target.result);
-                    if (!importedConfig.settings || !Array.isArray(importedConfig.groups)) {
-                        throw new Error("Formato de archivo inválido.");
-                    }
-                    this.config = importedConfig;
-                    this.renderEmployeeView('employee-container', this.config);
-                    this.showView('employee-container');
-                } catch (err) {
-                    this.showToast(`Error al leer el archivo: ${err.message}`, 'error');
-                } finally {
-                    fileInput.value = '';
-                }
-            };
-            reader.readAsText(file);
-        },
-        
         handleMasterImport(event) {
             const file = event.target.files[0];
             const fileInput = event.target;
@@ -289,12 +291,18 @@
                 try {
                     const importedConfig = JSON.parse(e.target.result);
                     if (!importedConfig.settings || !Array.isArray(importedConfig.groups)) throw new Error("Formato de archivo inválido.");
+                    this.normalizeConfigAuth(importedConfig);
 
                     const defaultProfileName = file.name.replace('.json', '').replace('_config', '');
                     let profileNameInput = prompt("Introduce un nombre para esta oficina:", defaultProfileName);
                     const profileName = (!profileNameInput || profileNameInput.trim() === '') ? defaultProfileName : profileNameInput.trim();
 
                     if (this.appData.profiles[profileName] && !confirm(`Ya existe una oficina llamada "${profileName}". ¿Deseas sobreescribirla?`)) return;
+
+                    if (!this.getMasterPassword(importedConfig.settings)) {
+                        this.setMasterPassword(importedConfig.settings, 'master123');
+                        importedConfig.settings.mustChangePassword = true;
+                    }
 
                     this.appData.profiles[profileName] = importedConfig;
                     this.saveAppData();
@@ -317,7 +325,6 @@
                 const action = actionEl.dataset.action;
 
                 switch (action) {
-                    case 'load-employee-file': document.getElementById('employee-file-input').click(); break;
                     case 'open-master-login': this.renderMasterLogin(); break;
                     case 'cancel-login': this.renderSplashScreen(); break;
                     case 'login': this.handleLogin(); break;
@@ -426,9 +433,10 @@
                     <input type="text" id="new-profile-name-input" placeholder="Ej: Oficina Central">
                 </div>
                 <div class="form-group" style="text-align: left;">
-                    <label for="new-profile-password-input">Contraseña Master</label>
-                    <input type="password" id="new-profile-password-input" placeholder="Crea tu contraseña">
+                    <label for="new-profile-activation-input">Clave inicial obligatoria</label>
+                    <input type="password" id="new-profile-activation-input" placeholder="Ingresá master123 para crear">
                 </div>
+                <p style="margin: 10px 0 0; color: var(--text-secondary); text-align: left; font-size: 0.9em;">La oficina se crea con clave temporal <strong>master123</strong> y luego te pedirá cambiarla.</p>
                 <div class="modal-actions">
                     <button type="button" class="master-btn secondary" data-action="back-to-login-options">Atrás</button>
                     <button type="button" class="master-btn primary" data-action="submit-new-profile">Crear y Entrar</button>
@@ -445,16 +453,23 @@
             const profileName = selector.value;
             const profile = this.appData.profiles[profileName];
 
-            if (!profile || !profile.settings || typeof profile.settings.masterPassword === 'undefined') {
+            if (!profile || !profile.settings) {
                 this.showToast('Error: Perfil de oficina corrupto o sin contraseña.', 'error');
                 return;
             }
 
-            if (passInput.value === profile.settings.masterPassword) {
+            const currentPass = this.getMasterPassword(profile.settings);
+            if (!currentPass) {
+                this.showToast('Error: Perfil de oficina sin clave válida.', 'error');
+                return;
+            }
+            if (passInput.value === currentPass) {
                 this.config = JSON.parse(JSON.stringify(profile));
+                this.normalizeConfigAuth(this.config);
                 this.appData.activeProfileName = profileName;
                 this.showView('master-container');
                 this.renderMasterView();
+                this.forcePasswordChangeIfNeeded();
                 passInput.value = '';
             } else {
                 this.showToast('Contraseña incorrecta.', 'error');
@@ -465,16 +480,17 @@
 
         handleSubmitNewProfile() {
             const profileNameInput = document.getElementById('new-profile-name-input');
-            const passwordInput = document.getElementById('new-profile-password-input');
+            const activationInput = document.getElementById('new-profile-activation-input');
             
             const profileName = profileNameInput.value.trim();
-            const password = passwordInput.value.trim();
+            const activationKey = activationInput.value.trim();
 
             if (!profileName) { this.showToast('El nombre de la oficina no puede estar vacío.', 'error'); profileNameInput.focus(); return; }
             if (this.appData.profiles[profileName]) { this.showToast(`La oficina "${profileName}" ya existe.`, 'error'); profileNameInput.focus(); return; }
-            if (!password) { this.showToast('La contraseña no puede estar vacía.', 'error'); passwordInput.focus(); return; }
+            if (activationKey !== 'master123') { this.showToast('Clave inicial inválida. Debe ser master123.', 'error'); activationInput.focus(); return; }
 
-            const newConfig = { settings: { masterPassword: password }, groups: [] };
+            const newConfig = { settings: { mustChangePassword: true }, groups: [] };
+            this.setMasterPassword(newConfig.settings, 'master123');
 
             this.appData.profiles[profileName] = newConfig;
             this.appData.activeProfileName = profileName;
@@ -484,16 +500,48 @@
             this.showView('master-container');
             this.renderMasterView();
             this.showToast(`Oficina "${profileName}" creada. ¡Bienvenido!`, 'success');
+            this.forcePasswordChangeIfNeeded();
+        },
+
+        forcePasswordChangeIfNeeded() {
+            if (!this.config || !this.config.settings || !this.config.settings.mustChangePassword) return;
+            const changed = this.requestNewMasterPassword();
+            if (changed) {
+                this.config.settings.mustChangePassword = false;
+                this.appData.profiles[this.appData.activeProfileName] = this.config;
+                this.saveAppData();
+                this.showToast('Clave master cambiada correctamente.', 'success');
+            }
+        },
+
+        requestNewMasterPassword() {
+            while (true) {
+                const newPass = prompt('Por seguridad, cambiá la clave master antes de continuar:');
+                if (newPass === null) return false;
+                const cleaned = newPass.trim();
+                if (!cleaned) {
+                    alert('La clave no puede quedar vacía.');
+                    continue;
+                }
+                if (cleaned === 'master123') {
+                    alert('La nueva clave no puede ser master123.');
+                    continue;
+                }
+                this.setMasterPassword(this.config.settings, cleaned);
+                return true;
+            }
         },
         
         saveCurrentConfig() {
             this.updateConfigFromDynamicFields();
             const newPass = document.getElementById('new-password-input').value;
             if (this.config.settings && newPass.trim() !== '') {
-                this.config.settings.masterPassword = newPass;
+                this.setMasterPassword(this.config.settings, newPass.trim());
+                this.config.settings.mustChangePassword = false;
                 document.getElementById('new-password-input').value = '';
                 this.showToast('¡Contraseña actualizada!', 'success');
             }
+            this.normalizeConfigAuth(this.config);
             this.appData.profiles[this.appData.activeProfileName] = this.config;
             this.saveAppData();
             this.showToast('Configuración guardada', 'success');
@@ -752,7 +800,7 @@
             }
         },
 
-        exportConfig() { if(!this.config) { this.showToast('No hay oficina activa para exportar.', 'error'); return; } this.updateConfigFromDynamicFields(); const dataStr = JSON.stringify(this.config, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${this.appData.activeProfileName}_config.json`; a.click(); URL.revokeObjectURL(url); this.showToast('Configuración exportada.', 'success'); },
+        exportConfig() { if(!this.config) { this.showToast('No hay oficina activa para exportar.', 'error'); return; } this.updateConfigFromDynamicFields(); this.normalizeConfigAuth(this.config); const dataStr = JSON.stringify(this.config, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${this.appData.activeProfileName}_config.json`; a.click(); URL.revokeObjectURL(url); this.showToast('Configuración exportada.', 'success'); },
         
         handleRevinAction: function(button, config) { 
             const groupEl = button.closest('.grupo'); 
