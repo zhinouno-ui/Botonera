@@ -337,7 +337,11 @@
         <div id="edit-pc-content"></div>
         <div class="modal-actions" style="margin-top: 20px;">
             <button type="button" class="master-btn primary" data-action="save-pc-edit" style="width: 100%;">Guardar Cambios</button>
-            <button type="button" class="master-btn secondary" data-action="close-pc-edit" style="width: 100%;">Cerrar</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="button" class="master-btn danger" data-action="delete-pc-from-modal" style="flex: 1;"><i class="fas fa-trash-alt"></i> Eliminar Principal</button>
+                <button type="button" class="master-btn secondary" data-action="add-new-pc-from-modal" style="flex: 1;"><i class="fas fa-plus"></i> Añadir Nuevo</button>
+            </div>
+            <button type="button" class="master-btn secondary" data-action="close-pc-edit" style="width: 100%; margin-top: 10px;">Cerrar</button>
         </div>
     </div>
   </div>
@@ -568,6 +572,8 @@
                     case 'open-edit-pc': this.openEditPcModal(actionEl); break;
                     case 'save-pc-edit': this.savePcEdit(); break;
                     case 'close-pc-edit': this.showView('employee-container'); break;
+                    case 'delete-pc-from-modal': this.deletePcFromModal(); break;
+                    case 'add-new-pc-from-modal': this.addNewPcFromModal(); break;
 
                     case 'open-add-group-modal': this.showView('add-group-type-modal'); break;
                     case 'cancel-add-group': this.showView('master-container'); break;
@@ -860,8 +866,33 @@
                     return;
                 }
 
-                if (actionBtn.matches('.copy-btn') && !actionBtn.matches('.revin-action')) {
-                    // Sistema de variantes
+                // PRIORIDAD 1: Botones de admin de Revin (marcar caído, etc)
+                if (actionBtn.matches('.revin-admin-btn')) {
+                    this.handleRevinAdminAction(actionBtn, config);
+                    return;
+                }
+
+                // PRIORIDAD 2: Botones de acción de Revin (copiar saludo, wsp, etc)
+                if (actionBtn.matches('.revin-action')) {
+                    this.handleRevinAction(actionBtn, config);
+                    return;
+                }
+
+                // PRIORIDAD 3: Botones flip
+                if (actionBtn.matches('.flip-btn')) {
+                    actionBtn.closest('.grupo').querySelector('.wallets-card').classList.toggle('flipped');
+                    return;
+                }
+
+                // PRIORIDAD 4: Slider buttons
+                if (actionBtn.matches('.slider-btn')) {
+                    actionBtn.parentElement.querySelectorAll('.slider-btn').forEach(btn => btn.classList.remove('selected'));
+                    actionBtn.classList.add('selected');
+                    return;
+                }
+
+                // PRIORIDAD 5: Botones de copiar normales (con variantes)
+                if (actionBtn.matches('.copy-btn')) {
                     const btnId = actionBtn.dataset.btnId;
                     if (btnId) {
                         const group = config.groups.find(g => g.id === actionBtn.dataset.groupId);
@@ -883,10 +914,6 @@
                     }
                     this.copyText(actionBtn.dataset.copyText, actionBtn);
                 }
-                else if (actionBtn.matches('.flip-btn')) actionBtn.closest('.grupo').querySelector('.wallets-card').classList.toggle('flipped');
-                else if (actionBtn.matches('.slider-btn')) { actionBtn.parentElement.querySelectorAll('.slider-btn').forEach(btn => btn.classList.remove('selected')); actionBtn.classList.add('selected'); }
-                else if (actionBtn.matches('.revin-admin-btn')) this.handleRevinAdminAction(actionBtn, config);
-                else if (actionBtn.matches('.revin-action')) this.handleRevinAction(actionBtn, config);
             });
             
             container.querySelectorAll('.revin-pc-select').forEach(select => {
@@ -1088,21 +1115,44 @@
             const pcId = this.getSelectedRevinPc(groupEl);
             const pcData = (groupData.pcs || []).find(p => p.id === pcId);
             if (!pcData) return;
+            
             const statusChip = groupEl.querySelector('.revin-state-chip');
             if (statusChip) {
                 statusChip.textContent = pcData.isDown ? 'CAÍDO' : 'ACTIVO';
                 statusChip.classList.toggle('down', !!pcData.isDown);
                 statusChip.classList.toggle('active', !pcData.isDown);
             }
+            
             const toggleBtn = groupEl.querySelector('.revin-toggle-status-btn');
             if (toggleBtn) {
-                toggleBtn.textContent = pcData.isDown ? 'Reactivar principal' : 'Marcar principal caído';
+                toggleBtn.textContent = pcData.isDown ? 'Reactivar principal ✓' : 'Marcar principal caído ✗';
             }
+            
             const select = groupEl.querySelector('.revin-pc-select');
             if (select) {
                 const opt = Array.from(select.options).find(o => o.value === pcData.id);
                 if (opt) opt.textContent = pcData.isDown ? `${pcData.name} (CAÍDO)` : pcData.name;
             }
+            
+            // Deshabilitar/habilitar inputs y botones según el estado
+            const inputUsuario = groupEl.querySelector('.input-usuario');
+            if (inputUsuario) {
+                inputUsuario.disabled = !!pcData.isDown;
+            }
+            
+            const actionBtns = groupEl.querySelectorAll('.revin-action');
+            actionBtns.forEach(btn => {
+                btn.disabled = !!pcData.isDown;
+                if (pcData.isDown) {
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                } else {
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                }
+            });
+            
+            // EL SELECTOR SIEMPRE QUEDA HABILITADO para poder cambiar de PC
         },
 
         createSimpleButtonsHTML(buttons) { 
@@ -1122,26 +1172,28 @@
         createRevinHTML(group) { 
             const firstPc = (group.pcs || [])[0]; 
             const options = (group.pcs || []).map(pc => `<option value="${pc.id}">${this.formatRevinPcLabel(pc)}</option>`).join(''); 
+            const isDown = firstPc && firstPc.isDown;
             
             return `<h3>Mensaje Revin</h3>
                 <div style="display:flex; gap:6px; align-items:center;">
                     <select class="revin-pc-select revin-select">${options}</select>
-                    <span class="revin-state-chip ${firstPc && firstPc.isDown ? 'down' : 'active'}">${firstPc && firstPc.isDown ? 'CAÍDO' : 'ACTIVO'}</span>
+                    <span class="revin-state-chip ${isDown ? 'down' : 'active'}">${isDown ? 'CAÍDO' : 'ACTIVO'}</span>
                     <button type="button" class="edit-pc-btn" data-action="open-edit-pc" data-group-id="${group.id}" title="Editar Principal"><i class="fas fa-cog"></i></button>
                 </div>
-                <input type="text" class="input-usuario" placeholder="Escribí el usuario...">
+                <input type="text" class="input-usuario" placeholder="Escribí el usuario..." ${isDown ? 'disabled' : ''}>
                 <div class="revin-actions">
-                    <button type="button" class="copy-btn revin-action" data-type="saludo">Copiar saludo</button>
-                    <button type="button" class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;">Copiar WhatsApp</button>
-                    <button type="button" class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;">Código Amigo</button>
+                    <button type="button" class="copy-btn revin-action" data-type="saludo" ${isDown ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>Copiar saludo</button>
+                    <button type="button" class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;" ${isDown ? 'disabled style="opacity: 0.5; cursor: not-allowed; background:#27ae60;"' : ''}>Copiar WhatsApp</button>
+                    <button type="button" class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;" ${isDown ? 'disabled style="opacity: 0.5; cursor: not-allowed; background:#e67e22;"' : ''}>Código Amigo</button>
                 </div>
                 <div class="revin-admin-actions">
-                    <button type="button" class="copy-btn revin-admin-btn" data-type="edit-revin-text">Editar texto revin</button>
-                    <button type="button" class="copy-btn revin-admin-btn revin-toggle-status-btn" data-type="toggle-pc-status" style="background:#8e44ad;">${firstPc && firstPc.isDown ? 'Reactivar principal' : 'Marcar principal caído'}</button>
+                    <button type="button" class="copy-btn revin-admin-btn revin-toggle-status-btn" data-type="toggle-pc-status" style="background:#8e44ad;">${isDown ? 'Reactivar principal ✓' : 'Marcar principal caído ✗'}</button>
                 </div>`; 
         },
 
         createRevinPcItemHTML(pc, groupId) {
+            const group = this.config.groups.find(g => g.id === groupId);
+            const revinTemplate = group ? (group.revinMessageTemplate || 'Hola soy {usuario} quiero mi clave y cronograma') : 'Hola soy {usuario} quiero mi clave y cronograma';
             const lastModified = pc.lastModified ? new Date(pc.lastModified).toLocaleString('es-AR') : 'Sin modificaciones';
             const saludosHTML = (pc.saludos || []).map((saludo, idx) => `
                 <div class="revin-saludo-item">
@@ -1164,9 +1216,19 @@
                     <input type="text" value="${this.escapeHTML(pc.friendCode || '')}" data-field="friendCode" class="pc-edit-input">
                 </div>
                 <div class="form-group">
+                    <label>Mensaje de Revinculación (usa {usuario} para reemplazo)</label>
+                    <textarea class="expandable" id="revin-template-input" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-primary);">${this.escapeHTML(revinTemplate)}</textarea>
+                </div>
+                <div class="form-group">
                     <label>Saludos</label>
                     <div class="revin-saludo-list" id="modal-saludo-list">${saludosHTML}</div>
                     <button type="button" class="master-btn secondary" data-action="add-saludo-modal" style="padding: 6px 12px; font-size: 12px; margin-top: 8px;">+ Añadir Saludo</button>
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                    <label style="margin: 0;">Estado del Principal</label>
+                    <button type="button" class="copy-btn" data-action="toggle-pc-status-modal" style="background: ${pc.isDown ? '#27ae60' : '#e74c3c'}; padding: 8px 16px;">
+                        ${pc.isDown ? '✓ Reactivar' : '✗ Marcar como caído'}
+                    </button>
                 </div>
                 <div class="revin-timestamp">Última modificación: ${lastModified}</div>
             `;
@@ -1300,6 +1362,7 @@
         },
 
         currentEditingPc: null,
+        currentEditingPcId: null,  // NUEVO: solo el ID
         currentEditingGroup: null,
         undoStack: [],
 
@@ -1318,7 +1381,8 @@
                 return;
             }
             
-            this.currentEditingPc = JSON.parse(JSON.stringify(pc)); // Copia profunda
+            this.currentEditingPc = JSON.parse(JSON.stringify(pc)); // Copia para editar
+            this.currentEditingPcId = pc.id;  // NUEVO: guardar ID original
             this.currentEditingGroup = groupId;
             
             const modalContent = document.getElementById('edit-pc-content');
@@ -1346,6 +1410,14 @@
                     const idx = parseInt(target.dataset.saludoIdx, 10);
                     if (!this.currentEditingPc.saludos) this.currentEditingPc.saludos = [];
                     this.currentEditingPc.saludos[idx] = target.value;
+                }
+                
+                if (target.id === 'revin-template-input') {
+                    // Guardar template en el grupo (no en el PC)
+                    const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+                    if (group) {
+                        group.revinMessageTemplate = target.value;
+                    }
                 }
             });
             
@@ -1386,6 +1458,18 @@
                     
                     // Mostrar toast de undo
                     this.showUndoToast();
+                }
+                
+                if (action === 'toggle-pc-status-modal') {
+                    this.currentEditingPc.isDown = !this.currentEditingPc.isDown;
+                    this.currentEditingPc.lastModified = Date.now();
+                    
+                    // Re-renderizar
+                    const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+                    modalContent.innerHTML = this.createRevinPcItemHTML(this.currentEditingPc, group.id);
+                    this.attachPcModalListeners();
+                    
+                    this.showToast(this.currentEditingPc.isDown ? 'Principal marcado como caído' : 'Principal reactivado', 'success');
                 }
             });
         },
@@ -1428,18 +1512,18 @@
         },
 
         savePcEdit() {
-            if (!this.currentEditingPc || !this.currentEditingGroup) return;
+            if (!this.currentEditingPc || !this.currentEditingPcId || !this.currentEditingGroup) return;
             
             const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
             if (!group || !group.pcs) return;
             
-            const pcIndex = group.pcs.findIndex(p => p.id === this.currentEditingPc.id);
+            const pcIndex = group.pcs.findIndex(p => p.id === this.currentEditingPcId);
             if (pcIndex === -1) return;
             
             // Actualizar timestamp
             this.currentEditingPc.lastModified = Date.now();
             
-            // Guardar cambios
+            // Guardar cambios usando el ID para encontrar el PC original
             group.pcs[pcIndex] = this.currentEditingPc;
             
             this.saveEmployeeChanges(this.config);
@@ -1449,48 +1533,141 @@
             
             // Limpiar estado
             this.currentEditingPc = null;
+            this.currentEditingPcId = null;
             this.currentEditingGroup = null;
             this.undoStack = [];
         },
 
+        deletePcFromModal() {
+            // Verificar estado inicial
+            if (!this.currentEditingPcId) {
+                alert('ERROR: currentEditingPcId está vacío');
+                return;
+            }
+            if (!this.currentEditingGroup) {
+                alert('ERROR: currentEditingGroup está vacío');
+                return;
+            }
+            
+            const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+            if (!group) {
+                alert('ERROR: No se encontró el grupo con ID ' + this.currentEditingGroup);
+                return;
+            }
+            if (!group.pcs) {
+                alert('ERROR: El grupo no tiene PCs');
+                return;
+            }
+            
+            // Verificar cantidad
+            if (group.pcs.length <= 1) {
+                alert('Solo hay 1 principal, no se puede eliminar (debe haber al menos uno)');
+                return;
+            }
+            
+            const pcToDelete = group.pcs.find(p => p.id === this.currentEditingPcId);
+            if (!pcToDelete) {
+                alert('ERROR: No se encontró el PC con ID ' + this.currentEditingPcId + '\nPCs disponibles: ' + group.pcs.map(p => p.id).join(', '));
+                return;
+            }
+            
+            if (!confirm(`¿Eliminar "${pcToDelete.name}"?`)) return;
+            
+            // Estado ANTES
+            const cantidadAntes = group.pcs.length;
+            
+            // Eliminar PC del array
+            const indexToDelete = group.pcs.findIndex(p => p.id === this.currentEditingPcId);
+            group.pcs.splice(indexToDelete, 1);
+            
+            // Estado DESPUÉS
+            const cantidadDespues = group.pcs.length;
+            
+            if (cantidadAntes === cantidadDespues) {
+                alert('ERROR: El splice no eliminó nada. Antes: ' + cantidadAntes + ' Después: ' + cantidadDespues);
+                return;
+            }
+            
+            // Guardar
+            this.appData.profiles[this.appData.activeProfileName] = this.config;
+            this.saveAppData();
+            
+            // Limpiar estado
+            this.currentEditingPc = null;
+            this.currentEditingPcId = null;
+            this.currentEditingGroup = null;
+            this.undoStack = [];
+            
+            // Cerrar modal y renderizar
+            this.showView('employee-container');
+            this.renderEmployeeView('employee-container', this.config);
+            
+            this.showToast('Principal eliminado correctamente', 'success');
+        },
+
+        addNewPcFromModal() {
+            if (!this.currentEditingGroup) return;
+            
+            const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+            if (!group) return;
+            
+            if (!group.pcs) group.pcs = [];
+            
+            const newPc = {
+                id: `pc_${Date.now()}`,
+                name: 'Nuevo Principal',
+                whatsapp: '',
+                friendCode: '',
+                saludos: [''],
+                lastModified: Date.now(),
+                isDown: false
+            };
+            
+            group.pcs.push(newPc);
+            
+            // Cambiar al nuevo PC para editarlo
+            this.currentEditingPc = JSON.parse(JSON.stringify(newPc));
+            this.currentEditingPcId = newPc.id;
+            
+            // Re-renderizar modal
+            const modalContent = document.getElementById('edit-pc-content');
+            modalContent.innerHTML = this.createRevinPcItemHTML(newPc, group.id);
+            this.attachPcModalListeners();
+            
+            this.showToast('Nuevo principal creado', 'success');
+        },
+
         handleRevinAdminAction: function(button, config) {
             const groupEl = button.closest('.grupo');
+            if (!groupEl) return;
+            
             const groupData = config.groups.find(g => g.id === groupEl.dataset.id);
             if (!groupData) return;
+            
             const pcId = this.getSelectedRevinPc(groupEl);
             const pcData = (groupData.pcs || []).find(p => p.id === pcId);
-            if (!pcData) { this.showToast('Selecciona un principal válido.', 'error'); return; }
-
-            if (button.dataset.type === 'edit-revin-text') {
-                const current = groupData.revinMessageTemplate || 'Hola soy {usuario} quiero mi clave y cronograma';
-                const next = prompt('Editar texto de revinculación ({usuario} para reemplazo):', current);
-                if (next === null) return;
-                const cleaned = next.trim();
-                if (!cleaned) { this.showToast('El texto no puede quedar vacío.', 'error'); return; }
-                groupData.revinMessageTemplate = cleaned;
-                if (config === this.config && this.appData.activeProfileName && this.appData.profiles[this.appData.activeProfileName]) {
-                    this.appData.profiles[this.appData.activeProfileName] = this.config;
-                    this.saveAppData();
-                }
-                this.showToast('Texto de revinculación actualizado.', 'success');
-                return;
+            if (!pcData) { 
+                this.showToast('Selecciona un principal válido.', 'error'); 
+                return; 
             }
 
             if (button.dataset.type === 'toggle-pc-status') {
+                // Cambiar estado
                 pcData.isDown = !pcData.isDown;
                 pcData.lastModified = Date.now();
                 
-                if (config === this.config && this.appData.activeProfileName && this.appData.profiles[this.appData.activeProfileName]) {
-                    this.appData.profiles[this.appData.activeProfileName] = this.config;
-                    this.saveAppData();
-                }
-                this.syncRevinAdminUI(groupEl, config);
+                // Guardar inmediatamente
+                this.saveEmployeeChanges(config);
                 
-                // Re-renderizar para mostrar nuevo timestamp
+                // Re-renderizar TODO el view para actualizar botones
                 const containerId = groupEl.closest('.view').id;
                 this.renderEmployeeView(containerId, config);
                 
-                this.showToast(pcData.isDown ? `${pcData.name} marcado como caído.` : `${pcData.name} reactivado.`, 'success');
+                // Mostrar toast
+                this.showToast(
+                    pcData.isDown ? `${pcData.name} marcado como caído` : `${pcData.name} reactivado`, 
+                    'success'
+                );
             }
         },
 
