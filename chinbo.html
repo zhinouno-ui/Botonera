@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,8 +40,23 @@
     .wallets-card.flipped { transform: rotateY(180deg); }
 
     /* Botones de Copiado */
-    button.copy-btn { width: 100%; padding: 12px; border-radius: 6px; border: none; background: rgba(0,0,0,0.25); color: #fff; font-weight: 700; cursor: pointer; font-size: 15px; margin: 0; box-shadow: 0 1px 4px #0001; transition: background 0.18s, transform 0.1s; }
+    button.copy-btn { width: 100%; padding: 12px; border-radius: 6px; border: none; background: rgba(0,0,0,0.25); color: #fff; font-weight: 700; cursor: pointer; font-size: 15px; margin: 0; box-shadow: 0 1px 4px #0001; transition: background 0.18s, transform 0.1s; position: relative; }
     button.copy-btn:hover { background: rgba(0,0,0,0.35); } button.copy-btn:active { transform: scale(0.96); }
+    
+    /* Indicador de variantes */
+    .variant-indicator { 
+        position: absolute; 
+        top: 4px; 
+        right: 6px; 
+        background: rgba(201, 60, 32, 0.9); 
+        color: #fff; 
+        font-size: 10px; 
+        padding: 2px 6px; 
+        border-radius: 10px; 
+        font-weight: 600;
+        pointer-events: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
 
     /* Mensaje Revin */
     .modo-slider { display: flex; gap: 6px; background: #2a2a2a; padding: 4px; border-radius: 20px; flex-wrap: wrap; }
@@ -56,6 +70,136 @@
     .revin-actions { display: flex; gap: 6px; } .revin-actions button { flex: 1; }
     .revin-admin-actions { display: flex; gap: 6px; margin-top: 6px; }
     .revin-admin-actions button { flex: 1; font-size: 12px; padding: 9px; }
+
+    /* Panel de administración de PCs en modo empleado */
+    .revin-employee-admin { 
+        margin-top: 15px; 
+        padding: 12px; 
+        background: rgba(0,0,0,0.2); 
+        border-radius: 8px; 
+        border: 1px solid var(--border-color);
+    }
+    .revin-employee-admin h4 { 
+        font-size: 14px; 
+        margin-bottom: 10px; 
+        color: var(--text-secondary); 
+    }
+    .revin-pc-item {
+        background: rgba(255,255,255,0.05);
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+    }
+    .revin-pc-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .revin-pc-item-header strong {
+        font-size: 13px;
+    }
+    .revin-pc-field {
+        margin-bottom: 6px;
+    }
+    .revin-pc-field label {
+        display: block;
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-bottom: 3px;
+    }
+    .revin-pc-field input {
+        width: 100%;
+        padding: 6px;
+        font-size: 12px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+    }
+    .revin-saludo-list {
+        margin-top: 6px;
+    }
+    .revin-saludo-item {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+    .revin-saludo-item input {
+        flex: 1;
+        padding: 6px;
+        font-size: 12px;
+    }
+    .revin-timestamp {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-top: 8px;
+        text-align: center;
+        font-style: italic;
+    }
+    
+    /* Modal de edición de PC */
+    #edit-pc-modal .modal-box {
+        max-width: 450px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .edit-pc-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background: rgba(0,0,0,0.3);
+        color: #fff;
+        border-radius: 6px;
+        font-size: 14px;
+        border: none;
+        transition: background 0.2s;
+        margin-left: 6px;
+    }
+    .edit-pc-btn:hover {
+        background: rgba(201, 60, 32, 0.5);
+    }
+    
+    /* Textareas expandibles */
+    textarea.expandable {
+        min-height: 38px;
+        max-height: 300px;
+        resize: vertical;
+        overflow-y: auto;
+        font-family: inherit;
+        transition: min-height 0.2s;
+    }
+    textarea.expandable:focus {
+        min-height: 80px;
+    }
+    
+    /* Undo toast */
+    .undo-toast {
+        background: rgba(0,0,0,0.9) !important;
+        cursor: pointer;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .undo-toast .undo-btn {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 12px;
+    }
+    .undo-toast .undo-btn:hover {
+        opacity: 0.9;
+    }
 
     /* Historial y Toast */
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.5s; z-index: 10001; }
@@ -138,9 +282,9 @@
     .button-editor-face { backface-visibility: hidden; }
     .button-editor-face.back { transform: rotateY(180deg); position: absolute; inset: 0; }
 
-    /* Editor Saludos Dinámicos */
-    .saludo-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .saludo-item input { flex: 1; }
+    /* Editor Variantes */
+    .variant-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .variant-item input { flex: 1; }
 
     #preview-modal .modal-box { max-width: 420px; height: 90vh; }
     #preview-container { height: calc(100% - 70px); overflow-y: auto; padding: 10px; background: var(--bg-dark); border-radius: 8px; }
@@ -183,6 +327,17 @@
         <div id="preview-container"></div>
         <div class="modal-actions" style="margin-top: 20px;">
             <button type="button" class="master-btn secondary" data-action="close-preview" style="width: 100%;">Cerrar</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="edit-pc-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h3>Editar Principal</h3>
+        <div id="edit-pc-content"></div>
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="master-btn primary" data-action="save-pc-edit" style="width: 100%;">Guardar Cambios</button>
+            <button type="button" class="master-btn secondary" data-action="close-pc-edit" style="width: 100%;">Cerrar</button>
         </div>
     </div>
   </div>
@@ -410,6 +565,10 @@
                     case 'exit-employee-view': this.exitEmployeeView(); break;
                     case 'exit-master-mode': this.exitMasterMode(); break;
 
+                    case 'open-edit-pc': this.openEditPcModal(actionEl); break;
+                    case 'save-pc-edit': this.savePcEdit(); break;
+                    case 'close-pc-edit': this.showView('employee-container'); break;
+
                     case 'open-add-group-modal': this.showView('add-group-type-modal'); break;
                     case 'cancel-add-group': this.showView('master-container'); break;
                     case 'add-group': this.addGroup(actionEl.dataset.type); break;
@@ -438,10 +597,10 @@
                     }
 
                     case 'flip-editor': actionEl.closest('#button-editor-flipper').classList.toggle('flipped'); break;
-                    case 'add-saludo': this.addSaludoField(actionEl.dataset.pcId); break;
-                    case 'delete-saludo':
-                        actionEl.closest('.saludo-item').remove();
-                        this.updateConfigFromDynamicFields(actionEl.closest('.pc-editor').dataset.id);
+                    case 'add-variant': this.addVariantField(actionEl.dataset.btnId); break;
+                    case 'delete-variant':
+                        actionEl.closest('.variant-item').remove();
+                        this.updateConfigFromDynamicFields(actionEl.closest('.button-editor').dataset.id);
                         break;
                     case 'add-button':
                     case 'delete-button':
@@ -454,7 +613,7 @@
 
             this.$.masterMain.oninput = (e) => {
                 const target = e.target;
-                if (target.matches('input.saludo-input')) this.updateConfigFromDynamicFields();
+                if (target.matches('input.variant-input')) this.updateConfigFromDynamicFields();
                 else if (target.dataset.key) this.updateConfig(target);
             };
         },
@@ -688,25 +847,74 @@
 
         attachEmployeeViewListeners(container, config) {
             new Sortable(container, { handle: '.drag-handle', animation: 150, disabled: (container.id !== 'group-container-employee-container') });
+            
             container.addEventListener('click', (e) => {
-                const actionBtn = e.target.closest('.copy-btn, .flip-btn, .slider-btn, .revin-admin-btn');
+                const actionBtn = e.target.closest('.copy-btn, .flip-btn, .slider-btn, .revin-admin-btn, [data-action]');
                 if (!actionBtn) return;
 
-                if (actionBtn.matches('.copy-btn') && !actionBtn.matches('.revin-action')) this.copyText(actionBtn.dataset.copyText, actionBtn);
+                const action = actionBtn.dataset.action;
+                
+                // Botón de abrir modal de edición
+                if (action === 'open-edit-pc') {
+                    this.openEditPcModal(actionBtn);
+                    return;
+                }
+
+                if (actionBtn.matches('.copy-btn') && !actionBtn.matches('.revin-action')) {
+                    // Sistema de variantes
+                    const btnId = actionBtn.dataset.btnId;
+                    if (btnId) {
+                        const group = config.groups.find(g => g.id === actionBtn.dataset.groupId);
+                        if (group) {
+                            const btn = this.findButtonInGroup(group, btnId);
+                            if (btn) {
+                                const variantData = this.getButtonTextWithVariants(btn);
+                                this.copyText(variantData.text, actionBtn);
+                                if (variantData.hasVariants) {
+                                    const newIndex = this.advanceVariantIndex(btnId, variantData.total);
+                                    const indicator = actionBtn.querySelector('.variant-indicator');
+                                    if (indicator) {
+                                        indicator.textContent = `🔀 ${newIndex + 1}/${variantData.total}`;
+                                    }
+                                }
+                                return;
+                            }
+                        }
+                    }
+                    this.copyText(actionBtn.dataset.copyText, actionBtn);
+                }
                 else if (actionBtn.matches('.flip-btn')) actionBtn.closest('.grupo').querySelector('.wallets-card').classList.toggle('flipped');
                 else if (actionBtn.matches('.slider-btn')) { actionBtn.parentElement.querySelectorAll('.slider-btn').forEach(btn => btn.classList.remove('selected')); actionBtn.classList.add('selected'); }
                 else if (actionBtn.matches('.revin-admin-btn')) this.handleRevinAdminAction(actionBtn, config);
                 else if (actionBtn.matches('.revin-action')) this.handleRevinAction(actionBtn, config);
             });
+            
             container.querySelectorAll('.revin-pc-select').forEach(select => {
                 if (!select.value && select.options.length > 0) select.value = select.options[0].value;
                 this.syncRevinAdminUI(select.closest('.grupo'), config);
             });
+            
             container.addEventListener('change', (e) => {
                 const select = e.target.closest('.revin-pc-select');
                 if (!select) return;
                 this.syncRevinAdminUI(select.closest('.grupo'), config);
             });
+        },
+
+        findButtonInGroup(group, btnId) {
+            if (group.buttons) {
+                const btn = group.buttons.find(b => b.id === btnId);
+                if (btn) return btn;
+            }
+            if (group.frontButtons) {
+                const btn = group.frontButtons.find(b => b.id === btnId);
+                if (btn) return btn;
+            }
+            if (group.backButtons) {
+                const btn = group.backButtons.find(b => b.id === btnId);
+                if (btn) return btn;
+            }
+            return null;
         },
 
         renderPreview() {
@@ -807,13 +1015,32 @@
             }
         },
 
-        updateConfigFromDynamicFields(specificPcId = null) {
-            const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); if (!group || !group.isRevin) return;
-            const pcsToUpdate = specificPcId ? (group.pcs || []).filter(p => p.id === specificPcId) : (group.pcs || []);
-            pcsToUpdate.forEach(pc => {
-                const saludosContainer = document.querySelector(`.pc-editor[data-id="${pc.id}"] #saludos-container`);
-                if(saludosContainer) pc.saludos = Array.from(saludosContainer.querySelectorAll('input.saludo-input')).map(input => input.value);
-            });
+        updateConfigFromDynamicFields(specificBtnId = null) {
+            const group = this.config.groups.find(g => g.id === this.activeEditorGroupId); 
+            if (!group) return;
+            
+            // Actualizar variantes de botones
+            if (!group.isRevin) {
+                const buttonsToUpdate = specificBtnId 
+                    ? [this.findButtonInGroup(group, specificBtnId)].filter(Boolean)
+                    : [...(group.buttons || []), ...(group.frontButtons || []), ...(group.backButtons || [])];
+                
+                buttonsToUpdate.forEach(btn => {
+                    const variantsContainer = document.querySelector(`.button-editor[data-id="${btn.id}"] #variants-container`);
+                    if (variantsContainer) {
+                        const variants = Array.from(variantsContainer.querySelectorAll('input.variant-input'))
+                            .map(input => input.value)
+                            .filter(v => v.trim() !== '');
+                        
+                        if (variants.length > 0) {
+                            btn.variants = variants;
+                            if (!btn.text) btn.text = variants[0];
+                        } else {
+                            delete btn.variants;
+                        }
+                    }
+                });
+            }
         },
 
         handleEditorAction(action, actionEl) {
@@ -840,7 +1067,6 @@
             this.renderEditorPanel(this.activeEditorGroupId);
             if (isFlipped) this.$.editorPanel.querySelector('#button-editor-flipper')?.classList.add('flipped');
         },
-
 
         getSelectedRevinPc(groupEl) {
             if (!groupEl) return null;
@@ -879,9 +1105,72 @@
             }
         },
 
-        createSimpleButtonsHTML(buttons) { return (buttons || []).map(btn => `<button type="button" class="copy-btn" data-copy-text="${this.escapeHTML(btn.text)}">${this.escapeHTML(btn.label)}</button>`).join(''); },
-        createFlipHTML(group) { return `<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front">${this.createSimpleButtonsHTML(group.frontButtons)}</div><div class="wallets-face back">${this.createSimpleButtonsHTML(group.backButtons)}</div></div></div>`; },
-        createRevinHTML(group) { const firstPc = (group.pcs || [])[0]; const options = (group.pcs || []).map(pc => `<option value="${pc.id}">${this.formatRevinPcLabel(pc)}</option>`).join(''); return `<h3>Mensaje Revin</h3><div style="display:flex; gap:6px; align-items:center;"><select class="revin-pc-select revin-select">${options}</select><span class="revin-state-chip ${firstPc && firstPc.isDown ? 'down' : 'active'}">${firstPc && firstPc.isDown ? 'CAÍDO' : 'ACTIVO'}</span></div><input type="text" class="input-usuario" placeholder="Escribí el usuario..."><div class="revin-actions"><button type="button" class="copy-btn revin-action" data-type="saludo">Copiar saludo</button><button type="button" class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;">Copiar WhatsApp</button><button type="button" class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;">Código Amigo</button></div><div class="revin-admin-actions"><button type="button" class="copy-btn revin-admin-btn" data-type="edit-revin-text">Editar texto revin</button><button type="button" class="copy-btn revin-admin-btn revin-toggle-status-btn" data-type="toggle-pc-status" style="background:#8e44ad;">${firstPc && firstPc.isDown ? 'Reactivar principal' : 'Marcar principal caído'}</button></div>`; },
+        createSimpleButtonsHTML(buttons) { 
+            return (buttons || []).map(btn => {
+                const variantData = this.getButtonTextWithVariants(btn);
+                const indicator = variantData.hasVariants 
+                    ? `<span class="variant-indicator">🔀 ${variantData.currentIndex + 1}/${variantData.total}</span>` 
+                    : '';
+                return `<button type="button" class="copy-btn" data-copy-text="${this.escapeHTML(variantData.text)}" data-btn-id="${btn.id}" data-group-id="${this.activeEditorGroupId || ''}">${this.escapeHTML(btn.label)}${indicator}</button>`;
+            }).join(''); 
+        },
+        
+        createFlipHTML(group) { 
+            return `<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front">${this.createSimpleButtonsHTML(group.frontButtons)}</div><div class="wallets-face back">${this.createSimpleButtonsHTML(group.backButtons)}</div></div></div>`; 
+        },
+        
+        createRevinHTML(group) { 
+            const firstPc = (group.pcs || [])[0]; 
+            const options = (group.pcs || []).map(pc => `<option value="${pc.id}">${this.formatRevinPcLabel(pc)}</option>`).join(''); 
+            
+            return `<h3>Mensaje Revin</h3>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <select class="revin-pc-select revin-select">${options}</select>
+                    <span class="revin-state-chip ${firstPc && firstPc.isDown ? 'down' : 'active'}">${firstPc && firstPc.isDown ? 'CAÍDO' : 'ACTIVO'}</span>
+                    <button type="button" class="edit-pc-btn" data-action="open-edit-pc" data-group-id="${group.id}" title="Editar Principal"><i class="fas fa-cog"></i></button>
+                </div>
+                <input type="text" class="input-usuario" placeholder="Escribí el usuario...">
+                <div class="revin-actions">
+                    <button type="button" class="copy-btn revin-action" data-type="saludo">Copiar saludo</button>
+                    <button type="button" class="copy-btn revin-action" data-type="wsp" style="background:#27ae60;">Copiar WhatsApp</button>
+                    <button type="button" class="copy-btn revin-action" data-type="amigo" style="background:#e67e22;">Código Amigo</button>
+                </div>
+                <div class="revin-admin-actions">
+                    <button type="button" class="copy-btn revin-admin-btn" data-type="edit-revin-text">Editar texto revin</button>
+                    <button type="button" class="copy-btn revin-admin-btn revin-toggle-status-btn" data-type="toggle-pc-status" style="background:#8e44ad;">${firstPc && firstPc.isDown ? 'Reactivar principal' : 'Marcar principal caído'}</button>
+                </div>`; 
+        },
+
+        createRevinPcItemHTML(pc, groupId) {
+            const lastModified = pc.lastModified ? new Date(pc.lastModified).toLocaleString('es-AR') : 'Sin modificaciones';
+            const saludosHTML = (pc.saludos || []).map((saludo, idx) => `
+                <div class="revin-saludo-item">
+                    <textarea class="revin-saludo-input expandable" data-pc-id="${pc.id}" data-saludo-idx="${idx}">${this.escapeHTML(saludo)}</textarea>
+                    <button type="button" class="master-btn danger" data-action="delete-revin-saludo" data-pc-id="${pc.id}" data-saludo-idx="${idx}" style="padding: 4px 8px; font-size: 11px;"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" value="${this.escapeHTML(pc.name || '')}" data-field="name" class="pc-edit-input">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp</label>
+                    <input type="text" value="${this.escapeHTML(pc.whatsapp || '')}" data-field="whatsapp" class="pc-edit-input">
+                </div>
+                <div class="form-group">
+                    <label>Código Amigo</label>
+                    <input type="text" value="${this.escapeHTML(pc.friendCode || '')}" data-field="friendCode" class="pc-edit-input">
+                </div>
+                <div class="form-group">
+                    <label>Saludos</label>
+                    <div class="revin-saludo-list" id="modal-saludo-list">${saludosHTML}</div>
+                    <button type="button" class="master-btn secondary" data-action="add-saludo-modal" style="padding: 6px 12px; font-size: 12px; margin-top: 8px;">+ Añadir Saludo</button>
+                </div>
+                <div class="revin-timestamp">Última modificación: ${lastModified}</div>
+            `;
+        },
 
         createButtonEditorHTML(group) {
             if (group.isFlip) {
@@ -900,9 +1189,59 @@
             }
             return `<h4>Botones</h4><div class="button-editor-list">${(group.buttons || []).map(b => this.createSingleButtonEditor(b)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-button">+ Añadir Botón</button>`;
         },
-        createSingleButtonEditor(btn) { return `<div class="button-editor" data-id="${btn.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;"><div class="group-editor-header" style="margin-bottom: 10px;"><h5>Botón</h5><button type="button" data-action="delete-button" class="editor-delete-btn" title="Eliminar Botón"><i class="fas fa-trash-alt"></i></button></div><div class="form-group"><label>Etiqueta</label><input type="text" data-key="label" value="${this.escapeHTML(btn.label)}"></div><div class="form-group"><label>Texto a Copiar</label><textarea data-key="text">${this.escapeHTML(btn.text)}</textarea></div></div>`; },
+        
+        createSingleButtonEditor(btn) { 
+            const hasVariants = btn.variants && btn.variants.length > 0;
+            const variantsHTML = hasVariants ? btn.variants.map(v => 
+                `<div class="variant-item">
+                    <input type="text" value="${this.escapeHTML(v)}" class="variant-input">
+                    <button type="button" class="master-btn danger" data-action="delete-variant" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>
+                </div>`
+            ).join('') : '';
+            
+            return `<div class="button-editor" data-id="${btn.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                <div class="group-editor-header" style="margin-bottom: 10px;">
+                    <h5>Botón</h5>
+                    <button type="button" data-action="delete-button" class="editor-delete-btn" title="Eliminar Botón"><i class="fas fa-trash-alt"></i></button>
+                </div>
+                <div class="form-group">
+                    <label>Etiqueta</label>
+                    <input type="text" data-key="label" value="${this.escapeHTML(btn.label)}">
+                </div>
+                <div class="form-group">
+                    <label>Texto a Copiar (usado si no hay variantes)</label>
+                    <textarea data-key="text" class="expandable">${this.escapeHTML(btn.text)}</textarea>
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="use-variants-${btn.id}" style="margin: 0;">Usar variantes de mensaje</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="use-variants-${btn.id}" ${hasVariants ? 'checked' : ''} onchange="
+                            const section = this.closest('.button-editor').querySelector('#variants-section-${btn.id}');
+                            const container = section.querySelector('#variants-container');
+                            if (this.checked) {
+                                section.style.display = 'block';
+                                if (container.children.length === 0) {
+                                    container.innerHTML = '<div class=\\'variant-item\\'><input type=\\'text\\' class=\\'variant-input\\'><button type=\\'button\\' class=\\'master-btn danger\\' data-action=\\'delete-variant\\' style=\\'padding: 5px 10px;\\'><i class=\\'fas fa-trash-alt\\'></i></button></div>';
+                                }
+                            } else {
+                                section.style.display = 'none';
+                            }
+                        ">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="form-group" id="variants-section-${btn.id}" style="${hasVariants ? '' : 'display: none;'}">
+                    <label>Variantes (rotación secuencial)</label>
+                    <div id="variants-container">${variantsHTML}</div>
+                    <button type="button" class="master-btn secondary" data-action="add-variant" data-btn-id="${btn.id}" style="margin-top: 10px;">+ Añadir Variante</button>
+                </div>
+            </div>`; 
+        },
 
-        createPcEditorHTML(group) { return `<h4>Configuración de PCs</h4><div class="pc-editor-list">${(group.pcs || []).map(pc => this.createSinglePcEditor(pc)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-pc">+ Añadir PC</button>`; },
+        createPcEditorHTML(group) { 
+            return `<h4>Configuración de PCs</h4><div class="pc-editor-list">${(group.pcs || []).map(pc => this.createSinglePcEditor(pc)).join('')}</div><button type="button" class="master-btn secondary" data-action="add-pc">+ Añadir PC</button>`; 
+        },
+        
         createSinglePcEditor(pc) {
             const saludosHTML = (pc.saludos || []).map(saludo => `<div class="saludo-item"><input type="text" value="${this.escapeHTML(saludo)}" class="saludo-input"><button type="button" class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button></div>`).join('');
             return `<div class="pc-editor" data-id="${pc.id}" style="border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 10px;">
@@ -914,13 +1253,13 @@
             </div>`;
         },
 
-        addSaludoField(pcId) {
-            if (!pcId) return;
-            const container = this.$.editorPanel.querySelector(`.pc-editor[data-id="${pcId}"] #saludos-container`);
-            if(container) {
+        addVariantField(btnId) {
+            if (!btnId) return;
+            const container = this.$.editorPanel.querySelector(`.button-editor[data-id="${btnId}"] #variants-container`);
+            if (container) {
                 const newItem = document.createElement('div');
-                newItem.className = 'saludo-item';
-                newItem.innerHTML = `<input type="text" value="" class="saludo-input"><button type="button" class="master-btn danger" data-action="delete-saludo" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>`;
+                newItem.className = 'variant-item';
+                newItem.innerHTML = `<input type="text" class="variant-input"><button type="button" class="master-btn danger" data-action="delete-variant" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>`;
                 container.appendChild(newItem);
             }
         },
@@ -935,8 +1274,184 @@
             return exportConfig;
         },
 
-        exportConfig() { if(!this.config) { this.showToast('No hay oficina activa para exportar.', 'error'); return; } this.updateConfigFromDynamicFields(); const exportConfig = this.buildExportConfig(); const dataStr = JSON.stringify(exportConfig, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${this.appData.activeProfileName}_config.json`; a.click(); URL.revokeObjectURL(url); this.showToast('Configuración exportada sin credenciales.', 'success'); },
+        exportConfig() { 
+            if(!this.config) { this.showToast('No hay oficina activa para exportar.', 'error'); return; } 
+            this.updateConfigFromDynamicFields(); 
+            const exportConfig = this.buildExportConfig(); 
+            const dataStr = JSON.stringify(exportConfig, null, 2); 
+            const blob = new Blob([dataStr], { type: "application/json" }); 
+            const url = URL.createObjectURL(blob); 
+            const a = document.createElement('a'); 
+            a.href = url; 
+            a.download = `${this.appData.activeProfileName}_config.json`; 
+            a.click(); 
+            URL.revokeObjectURL(url); 
+            this.showToast('Configuración exportada con variantes.', 'success'); 
+        },
 
+        saveEmployeeChanges(config) {
+            // Solo guardar si estamos en modo empleado y hay una oficina activa
+            if (!this.appData.activeProfileName || !this.appData.profiles[this.appData.activeProfileName]) return;
+            
+            // Actualizar el perfil en memoria
+            this.appData.profiles[this.appData.activeProfileName] = config;
+            this.config = config;
+            this.saveAppData();
+        },
+
+        currentEditingPc: null,
+        currentEditingGroup: null,
+        undoStack: [],
+
+        openEditPcModal(button) {
+            const groupEl = button.closest('.grupo');
+            const groupId = groupEl.dataset.id;
+            const group = this.config.groups.find(g => g.id === groupId);
+            
+            if (!group) return;
+            
+            const pcId = this.getSelectedRevinPc(groupEl);
+            const pc = (group.pcs || []).find(p => p.id === pcId);
+            
+            if (!pc) {
+                this.showToast('Seleccioná un principal primero', 'error');
+                return;
+            }
+            
+            this.currentEditingPc = JSON.parse(JSON.stringify(pc)); // Copia profunda
+            this.currentEditingGroup = groupId;
+            
+            const modalContent = document.getElementById('edit-pc-content');
+            modalContent.innerHTML = this.createRevinPcItemHTML(pc, groupId);
+            
+            this.showView('edit-pc-modal');
+            
+            // Agregar listeners del modal
+            this.attachPcModalListeners();
+        },
+
+        attachPcModalListeners() {
+            const modalContent = document.getElementById('edit-pc-content');
+            
+            // Listener de inputs
+            modalContent.addEventListener('input', (e) => {
+                const target = e.target;
+                
+                if (target.matches('.pc-edit-input')) {
+                    const field = target.dataset.field;
+                    this.currentEditingPc[field] = target.value;
+                }
+                
+                if (target.matches('.revin-saludo-input')) {
+                    const idx = parseInt(target.dataset.saludoIdx, 10);
+                    if (!this.currentEditingPc.saludos) this.currentEditingPc.saludos = [];
+                    this.currentEditingPc.saludos[idx] = target.value;
+                }
+            });
+            
+            // Listener de botones
+            modalContent.addEventListener('click', (e) => {
+                const actionBtn = e.target.closest('[data-action]');
+                if (!actionBtn) return;
+                
+                const action = actionBtn.dataset.action;
+                
+                if (action === 'add-saludo-modal') {
+                    if (!this.currentEditingPc.saludos) this.currentEditingPc.saludos = [];
+                    this.currentEditingPc.saludos.push('');
+                    
+                    // Re-renderizar
+                    const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+                    modalContent.innerHTML = this.createRevinPcItemHTML(this.currentEditingPc, group.id);
+                    this.attachPcModalListeners();
+                }
+                
+                if (action === 'delete-revin-saludo') {
+                    const idx = parseInt(actionBtn.dataset.saludoIdx, 10);
+                    const deletedSaludo = this.currentEditingPc.saludos[idx];
+                    
+                    // Guardar en undo stack
+                    this.undoStack.push({
+                        type: 'delete-saludo',
+                        index: idx,
+                        value: deletedSaludo
+                    });
+                    
+                    this.currentEditingPc.saludos.splice(idx, 1);
+                    
+                    // Re-renderizar
+                    const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+                    modalContent.innerHTML = this.createRevinPcItemHTML(this.currentEditingPc, group.id);
+                    this.attachPcModalListeners();
+                    
+                    // Mostrar toast de undo
+                    this.showUndoToast();
+                }
+            });
+        },
+
+        showUndoToast() {
+            const toast = document.getElementById('toast');
+            toast.className = 'toast undo-toast show';
+            toast.innerHTML = `
+                <span>Saludo eliminado</span>
+                <button class="undo-btn" onclick="App.performUndo()">Deshacer</button>
+            `;
+            
+            // Auto-hide después de 5 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+                this.undoStack = [];
+            }, 5000);
+        },
+
+        performUndo() {
+            if (this.undoStack.length === 0) return;
+            
+            const lastAction = this.undoStack.pop();
+            
+            if (lastAction.type === 'delete-saludo') {
+                if (!this.currentEditingPc.saludos) this.currentEditingPc.saludos = [];
+                this.currentEditingPc.saludos.splice(lastAction.index, 0, lastAction.value);
+                
+                // Re-renderizar
+                const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+                const modalContent = document.getElementById('edit-pc-content');
+                modalContent.innerHTML = this.createRevinPcItemHTML(this.currentEditingPc, group.id);
+                this.attachPcModalListeners();
+                
+                this.showToast('Saludo restaurado', 'success');
+            }
+            
+            // Ocultar toast de undo
+            document.getElementById('toast').classList.remove('show');
+        },
+
+        savePcEdit() {
+            if (!this.currentEditingPc || !this.currentEditingGroup) return;
+            
+            const group = this.config.groups.find(g => g.id === this.currentEditingGroup);
+            if (!group || !group.pcs) return;
+            
+            const pcIndex = group.pcs.findIndex(p => p.id === this.currentEditingPc.id);
+            if (pcIndex === -1) return;
+            
+            // Actualizar timestamp
+            this.currentEditingPc.lastModified = Date.now();
+            
+            // Guardar cambios
+            group.pcs[pcIndex] = this.currentEditingPc;
+            
+            this.saveEmployeeChanges(this.config);
+            this.renderEmployeeView('employee-container', this.config);
+            this.showView('employee-container');
+            this.showToast('Principal actualizado', 'success');
+            
+            // Limpiar estado
+            this.currentEditingPc = null;
+            this.currentEditingGroup = null;
+            this.undoStack = [];
+        },
 
         handleRevinAdminAction: function(button, config) {
             const groupEl = button.closest('.grupo');
@@ -963,11 +1478,18 @@
 
             if (button.dataset.type === 'toggle-pc-status') {
                 pcData.isDown = !pcData.isDown;
+                pcData.lastModified = Date.now();
+                
                 if (config === this.config && this.appData.activeProfileName && this.appData.profiles[this.appData.activeProfileName]) {
                     this.appData.profiles[this.appData.activeProfileName] = this.config;
                     this.saveAppData();
                 }
                 this.syncRevinAdminUI(groupEl, config);
+                
+                // Re-renderizar para mostrar nuevo timestamp
+                const containerId = groupEl.closest('.view').id;
+                this.renderEmployeeView(containerId, config);
+                
                 this.showToast(pcData.isDown ? `${pcData.name} marcado como caído.` : `${pcData.name} reactivado.`, 'success');
             }
         },
@@ -990,11 +1512,66 @@
             this.copyText(textToCopy, button);
         },
 
-        copyText: function(text, button = null) { if(typeof text !== 'string') text = ''; navigator.clipboard.writeText(text).then(() => { this.showToast('¡Copiado!'); if (button) { button.style.transform = 'scale(0.96)'; setTimeout(() => button.style.transform = '', 150); } }).catch(err => this.showToast('Error al copiar', 'error')); },
-        showToast: function(message, type = 'info') { const t = document.getElementById('toast'); t.textContent = message; t.className = `toast show ${type}`; setTimeout(() => t.classList.remove('show'), 2000); },
-        escapeHTML: function(str) { if(typeof str !== 'string') return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+        copyText: function(text, button = null) { 
+            if(typeof text !== 'string') text = ''; 
+            navigator.clipboard.writeText(text).then(() => { 
+                this.showToast('¡Copiado!'); 
+                if (button) { 
+                    button.style.transform = 'scale(0.96)'; 
+                    setTimeout(() => button.style.transform = '', 150); 
+                } 
+            }).catch(err => this.showToast('Error al copiar', 'error')); 
+        },
+        
+        showToast: function(message, type = 'info') { 
+            const t = document.getElementById('toast'); 
+            t.textContent = message; 
+            t.className = `toast show ${type}`; 
+            setTimeout(() => t.classList.remove('show'), 2000); 
+        },
+        
+        escapeHTML: function(str) { 
+            if(typeof str !== 'string') return ''; 
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); 
+        },
+
+        // === SISTEMA DE VARIANTES ===
+        getVariantIndex(btnId) {
+            const key = `variant_${btnId}`;
+            const stored = sessionStorage.getItem(key);
+            return stored ? parseInt(stored, 10) : 0;
+        },
+        
+        setVariantIndex(btnId, index) {
+            sessionStorage.setItem(`variant_${btnId}`, index.toString());
+        },
+        
+        getButtonTextWithVariants(btn) {
+            if (!btn.variants || !Array.isArray(btn.variants) || btn.variants.length === 0) {
+                return { text: btn.text || '', hasVariants: false, currentIndex: 0, total: 1 };
+            }
+            const currentIndex = this.getVariantIndex(btn.id);
+            const validIndex = currentIndex % btn.variants.length;
+            return {
+                text: btn.variants[validIndex] || btn.text || '',
+                hasVariants: true,
+                currentIndex: validIndex,
+                total: btn.variants.length
+            };
+        },
+        
+        advanceVariantIndex(btnId, totalVariants) {
+            if (!totalVariants || totalVariants <= 1) return 0;
+            const current = this.getVariantIndex(btnId);
+            const next = (current + 1) % totalVariants;
+            this.setVariantIndex(btnId, next);
+            return next;
+        }
       };
       App.init();
+      
+      // Exponer App globalmente para botones inline
+      window.App = App;
     });
   </script>
 </body>
