@@ -843,7 +843,7 @@
                     let content = `<div class="header"><div class="titulo">${this.escapeHTML(group.title)}</div><div class="controls">${group.isFlip ? '<button type="button" class="control-btn flip-btn">🔄</button>' : ''}<div class="drag-handle"><i class="fas fa-grip-lines"></i></div></div></div>`;
                     if (group.isRevin) content += this.createRevinHTML(group);
                     else if (group.isFlip) content += this.createFlipHTML(group);
-                    else content += this.createSimpleButtonsHTML(group.buttons);
+                    else content += this.createSimpleButtonsHTML(group.buttons, group.id);
                     groupEl.innerHTML = content;
                     groupContainer.appendChild(groupEl);
                 });
@@ -1156,18 +1156,18 @@
             // EL SELECTOR SIEMPRE QUEDA HABILITADO para poder cambiar de PC
         },
 
-        createSimpleButtonsHTML(buttons) { 
+        createSimpleButtonsHTML(buttons, groupId) {
             return (buttons || []).map(btn => {
                 const variantData = this.getButtonTextWithVariants(btn);
-                const indicator = variantData.hasVariants 
-                    ? `<span class="variant-indicator">🔀 ${variantData.currentIndex + 1}/${variantData.total}</span>` 
+                const indicator = variantData.hasVariants
+                    ? `<span class="variant-indicator">🔀 ${variantData.currentIndex + 1}/${variantData.total}</span>`
                     : '';
-                return `<button type="button" class="copy-btn" data-copy-text="${this.escapeHTML(variantData.text)}" data-btn-id="${btn.id}" data-group-id="${this.activeEditorGroupId || ''}">${this.escapeHTML(btn.label)}${indicator}</button>`;
-            }).join(''); 
+                return `<button type="button" class="copy-btn" data-copy-text="${this.escapeHTML(variantData.text)}" data-btn-id="${btn.id}" data-group-id="${groupId || this.activeEditorGroupId || ''}">${this.escapeHTML(btn.label)}${indicator}</button>`;
+            }).join('');
         },
-        
-        createFlipHTML(group) { 
-            return `<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front">${this.createSimpleButtonsHTML(group.frontButtons)}</div><div class="wallets-face back">${this.createSimpleButtonsHTML(group.backButtons)}</div></div></div>`; 
+
+        createFlipHTML(group) {
+            return `<div class="wallets-container"><div class="wallets-card"><div class="wallets-face front">${this.createSimpleButtonsHTML(group.frontButtons, group.id)}</div><div class="wallets-face back">${this.createSimpleButtonsHTML(group.backButtons, group.id)}</div></div></div>`; 
         },
         
         createRevinHTML(group) { 
