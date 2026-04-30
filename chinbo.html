@@ -1728,16 +1728,17 @@
             if (!btn.variants || !Array.isArray(btn.variants) || btn.variants.length === 0) {
                 return { text: btn.text || '', hasVariants: false, currentIndex: 0, total: 1 };
             }
+            const pool = [btn.text || '', ...btn.variants];
             const currentIndex = this.getVariantIndex(btn.id);
-            const validIndex = currentIndex % btn.variants.length;
+            const validIndex = currentIndex % pool.length;
             return {
-                text: btn.variants[validIndex] || btn.text || '',
+                text: pool[validIndex] || '',
                 hasVariants: true,
                 currentIndex: validIndex,
-                total: btn.variants.length
+                total: pool.length
             };
         },
-        
+
         advanceVariantIndex(btnId, totalVariants) {
             if (!totalVariants || totalVariants <= 1) return 0;
             const current = this.getVariantIndex(btnId);
