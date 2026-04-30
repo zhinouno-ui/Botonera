@@ -283,8 +283,9 @@
     .button-editor-face.back { transform: rotateY(180deg); position: absolute; inset: 0; }
 
     /* Editor Variantes */
-    .variant-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .variant-item input { flex: 1; }
+    .variant-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+    .variant-item input, .variant-item textarea { flex: 1; }
+    .variant-item textarea { resize: vertical; min-height: 60px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-primary); font-size: 1rem; font-family: inherit; }
 
     #preview-modal .modal-box { max-width: 420px; height: 90vh; }
     #preview-container { height: calc(100% - 70px); overflow-y: auto; padding: 10px; background: var(--bg-dark); border-radius: 8px; }
@@ -619,7 +620,7 @@
 
             this.$.masterMain.oninput = (e) => {
                 const target = e.target;
-                if (target.matches('input.variant-input')) this.updateConfigFromDynamicFields();
+                if (target.matches('input.variant-input') || target.matches('textarea.variant-input')) this.updateConfigFromDynamicFields();
                 else if (target.dataset.key) this.updateConfig(target);
             };
         },
@@ -1055,7 +1056,7 @@
                 buttonsToUpdate.forEach(btn => {
                     const variantsContainer = document.querySelector(`.button-editor[data-id="${btn.id}"] #variants-container`);
                     if (variantsContainer) {
-                        const variants = Array.from(variantsContainer.querySelectorAll('input.variant-input'))
+                        const variants = Array.from(variantsContainer.querySelectorAll('.variant-input'))
                             .map(input => input.value)
                             .filter(v => v.trim() !== '');
                         
@@ -1254,9 +1255,9 @@
         
         createSingleButtonEditor(btn) { 
             const hasVariants = btn.variants && btn.variants.length > 0;
-            const variantsHTML = hasVariants ? btn.variants.map(v => 
+            const variantsHTML = hasVariants ? btn.variants.map(v =>
                 `<div class="variant-item">
-                    <input type="text" value="${this.escapeHTML(v)}" class="variant-input">
+                    <textarea class="variant-input">${this.escapeHTML(v)}</textarea>
                     <button type="button" class="master-btn danger" data-action="delete-variant" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>
                 </div>`
             ).join('') : '';
@@ -1283,7 +1284,7 @@
                             if (this.checked) {
                                 section.style.display = 'block';
                                 if (container.children.length === 0) {
-                                    container.innerHTML = '<div class=\\'variant-item\\'><input type=\\'text\\' class=\\'variant-input\\'><button type=\\'button\\' class=\\'master-btn danger\\' data-action=\\'delete-variant\\' style=\\'padding: 5px 10px;\\'><i class=\\'fas fa-trash-alt\\'></i></button></div>';
+                                    container.innerHTML = '<div class=\\'variant-item\\'><textarea class=\\'variant-input\\'></textarea><button type=\\'button\\' class=\\'master-btn danger\\' data-action=\\'delete-variant\\' style=\\'padding: 5px 10px;\\'><i class=\\'fas fa-trash-alt\\'></i></button></div>';
                                 }
                             } else {
                                 section.style.display = 'none';
@@ -1321,7 +1322,7 @@
             if (container) {
                 const newItem = document.createElement('div');
                 newItem.className = 'variant-item';
-                newItem.innerHTML = `<input type="text" class="variant-input"><button type="button" class="master-btn danger" data-action="delete-variant" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>`;
+                newItem.innerHTML = `<textarea class="variant-input"></textarea><button type="button" class="master-btn danger" data-action="delete-variant" style="padding: 5px 10px;"><i class="fas fa-trash-alt"></i></button>`;
                 container.appendChild(newItem);
             }
         },
